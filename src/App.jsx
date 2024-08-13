@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import './App.css';
+import './styles/index.css';
 import Header from './componentes/Header.jsx';
 import Slide from './componentes/Slide.jsx';
 import ElementosSobre from './componentes/ElementosSobre.jsx';
