@@ -1,13 +1,22 @@
 import React, { useEffect } from 'react';
-import Header from '../../componentes/Header.jsx'
-import '../../styles/App.css'
+import HeaderApp from '../../componentes/HeaderApp.jsx';
+import '../../styles/index.css'
 
 export default function DiaristaApp() {
     return (
-        <> 
-            <Header href="src/assets/img/limppay-embreve.png" alt="Limppay"  text2="Serviços" text3="Quem Somos" text4="Dúvidas" text5="Contatos" l2="index.html" l3="index.html" l4="index.html" l5="index.html"/>
+        <>
+            <HeaderApp/>
             <main>
-                {/* content */}
+                <section className='pt-12'>
+                    <div className="flex items-center justify-around">
+                        <h1 >Seja Diarista</h1>
+                        <div>
+                            <h2>Diarista</h2>
+                            <p>A<b>Limppay</b> te conecta ao cliente de forma totalmente gratuita</p>
+                            <a href="#">Quero ser diarista</a>
+                        </div>
+                    </div>
+                </section>
             </main>
         </>
     )
