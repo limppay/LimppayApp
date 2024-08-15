@@ -8,7 +8,7 @@ export default function Servicos() {
                 <section className="section-servicos-content">
                     <div className="servico">
                         <div className="servico-img-box">
-                            <img src="img/MG_9549.webp" alt="limpeza residencial" />
+                            <img src="src/assets/img/MG_9549.webp" alt="limpeza residencial" />
                             <div className="servico-img-box-content">
                                 <h3>Limpeza residencial</h3>
                                 <p>Casas e apartamentos mais limpos e organizados</p>
@@ -20,7 +20,7 @@ export default function Servicos() {
                     </div>
                     <div className="servico">
                         <div className="servico-img-box">
-                            <img src="img/MG_9585.webp" alt="limpeza residencial" />
+                            <img src="src/assets/img/MG_9585.webp" alt="limpeza residencial" />
                             <div className="servico-img-box-content">
                                 <h3>Roupas passadas</h3>
                                 <p>Serviço profissional disponível por diária.</p>
@@ -32,7 +32,7 @@ export default function Servicos() {
                     </div>
                     <div className="servico">
                         <div className="servico-img-box">
-                            <img src="img/MG_9567.webp" alt="limpeza residencial" />
+                            <img src="src/assets/img/MG_9567.webp" alt="limpeza residencial" />
                             <div className="servico-img-box-content">
                                 <h3>Limpeza empresarial</h3>
                                 <p>Ambientes profissionais, como consultórios e escritórios.</p>

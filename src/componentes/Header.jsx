@@ -24,7 +24,7 @@ export default function Header(props) {
                     <li><a href="#nossos-contatos">Contato</a></li>
                 </ul>
                 <div className="btn">
-                    <a href="https://limppay.com/seja-diarista/" id="seja-diarista">Seja Diarista</a>
+                    <a href="seja-diarista.html" id="seja-diarista">Seja Diarista</a>
                     <a href="https://app.limppay.com/" id="contrate-online">Contrate online</a>
                 </div>
             </nav>

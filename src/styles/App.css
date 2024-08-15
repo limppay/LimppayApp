@@ -154,11 +154,12 @@ main {
 .informações {
     display: flex;
     align-items: center;
-    justify-content: center;
-    text-align: center;
 }
 
 .info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 10px;
 }
 
@@ -169,6 +170,7 @@ main {
 .info p {
     color: #54595F;
 }
+
 
 /* segunda section */
 .contrate {
@@ -187,6 +189,9 @@ main {
 }
 
 .img-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 2rem;
 }
 
@@ -260,7 +265,10 @@ main {
 }
 
 .servico-img-box {
-   margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
 .servico-img-box img {
@@ -289,16 +297,22 @@ main {
 .sobre-contratar {
     display: flex;
     justify-content: center;
+    align-items: center;
     padding-bottom: 5rem;
 }
 
-.container {
+.sobre-contratar .container {
     display: flex;
-    text-align: center;
+    justify-content: center;
     align-items: center;
+    text-align: center;
+
 }
 
 .content-sobre {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 50vh;
     padding: 10px;
 }

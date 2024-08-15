@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
-import './App.css';
-import './styles/index.css';
-import Header from './componentes/Header.jsx';
-import Slide from './componentes/Slide.jsx';
-import ElementosSobre from './componentes/ElementosSobre.jsx';
-import Contrate from './componentes/Contrate.jsx';
-import Servicos from './componentes/Servicos.jsx';
-import Sobre from './componentes/Sobre.jsx';
-import Contratar from './componentes/Contratar.jsx';
-import QuemSomos from './componentes/QuemSomos.jsx';
-import DuvidasFrequentes from './componentes/DuvidasFrequentes.jsx';
-import NossosContatos from './componentes/NossosContatos.jsx';
-import Footer from './componentes/Footer.jsx';
+import '../../styles/App.css';
+import '../../styles/index.css';
+import Header from '../../componentes/Header.jsx';
+import Slide from '../../componentes/home/Slide.jsx';
+import ElementosSobre from '../../componentes/home/ElementosSobre.jsx';
+import Contrate from '../../componentes/home/Contrate.jsx';
+import Servicos from '../../componentes/home/Servicos.jsx';
+import Sobre from '../../componentes/home/Sobre.jsx';
+import Contratar from '../../componentes/home/Contratar.jsx';
+import QuemSomos from '../../componentes/home/QuemSomos.jsx';
+import DuvidasFrequentes from '../../componentes/DuvidasFrequentes.jsx';
+import NossosContatos from '../../componentes/home/NossosContatos.jsx';
+import Footer from '../../componentes/Footer.jsx';
 
 export default function App() {
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function App() {
     });
 
     // Função para adicionar textos grandes no HTML
-    fetch('src/index.json')
+    fetch('src/pages/home/index.json')
       .then(response => response.json())
       .then(data => {
         paragraphs.forEach(p => {
@@ -56,9 +56,9 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header href="img/limppay-embreve.png" alt="Limppay"/>
+      <Header href="src/assets/img/limppay-embreve.png" alt="Limppay"/>
       <main>
-        <Slide href="img/slide/1920x700-01.webp" alt="fale com a gente"/>
+        <Slide href="src/assets/img/slide/1920x700-01.webp" alt="fale com a gente"/>
         <ElementosSobre/>
         <Contrate/>
         <Servicos/>
