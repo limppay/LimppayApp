@@ -56,7 +56,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header href="src/assets/img/limppay-embreve.png" alt="Limppay"/>
+      <Header href="src/assets/img/limppay-embreve.png" alt="Limppay" text1="Quem Somos" text2="Serviços" text3="Dúvidas" text4="Blog" text5="Contato"  l1="#quem-somos" l2="#servicos" l3="#duvidas" l4="https://limppay.com/blog/"l5="#contatos"/>
       <main>
         <Slide href="src/assets/img/slide/1920x700-01.webp" alt="fale com a gente"/>
         <ElementosSobre/>

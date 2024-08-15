@@ -11,21 +11,21 @@ export default function Header(props) {
             </div>
 
             <nav className="navigation">
-                <a href="#"><img 
+                <a href="index"><img 
                 src={props.href} 
                 alt={props.alt}
                 /></a>
 
                 <ul>
-                    <li><a href="#quem-somos">Quem Somos</a></li>
-                    <li><a href="#servicos">Serviços</a></li>
-                    <li><a href="#duvidas">Dúvidas</a></li>
-                    <li><a href="https://limppay.com/blog/">Blog</a></li>
-                    <li><a href="#nossos-contatos">Contato</a></li>
+                    <li><a href={props.l1}>{props.text1}</a></li>
+                    <li><a href={props.l2}>{props.text2}</a></li>
+                    <li><a href={props.l3}>{props.text3}</a></li>
+                    <li><a href={props.l4}>{props.text4}</a></li>
+                    <li><a href={props.l5}>{props.text5}</a></li>
                 </ul>
                 <div className="btn">
                     <a href="seja-diarista.html" id="seja-diarista">Seja Diarista</a>
-                    <a href="https://app.limppay.com/" id="contrate-online">Contrate online</a>
+                    <a href="#" id="contrate-online">Contrate online</a>
                 </div>
             </nav>
         </header>
