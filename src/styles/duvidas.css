@@ -1,0 +1,78 @@
+:root {
+    --destaque-prim: #EC6500;
+    --destaque-sec: #519F21;
+    --primaria: #0091bd;
+    --paragrafo: #54595F;
+}
+
+
+/* section dúvidas */
+.duvidas-frequentes {
+    display: flex;
+    justify-content: center;
+}
+
+.container-duvidas-frequentes {
+    align-items: center;
+    margin-left: 25rem;
+    margin-right: 25rem;
+    padding: 1rem;
+}
+
+.container-duvidas-frequentes-title {
+    margin-bottom: 2rem;
+    color: var(--primaria);
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.container-duvidas-frequentes-info {
+    margin-bottom: 2rem;
+    color: var(--paragrafo);
+}
+
+.container-duvidas-frequentes-painel {
+    text-align: center;
+}
+
+.paineis-duvida {
+    align-items: center;
+    justify-content: center;
+    width: 100vh;
+}
+
+.painel-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: solid 0.5px #ccc;
+}
+
+.painel-title span {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.painel-title span:hover {
+    color: var(--destaque-prim);
+}
+
+/* efeito de abrir e fechar a duvida */
+.painel-content {
+    max-height: 0;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease-out;
+}
+
+.mostrar {
+    max-height: 200px;
+    padding: 1rem 0rem 1rem;
+}
+
+/* ------------------------------------ */
+
+.painel-content p {
+    color: var(--paragrafo);
+}
