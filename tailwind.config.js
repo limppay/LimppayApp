@@ -13,7 +13,8 @@ export default {
       des: "#F58634",
       desSec: "#00AFEF",
       bord: "#CCCCCC",
-      trans: "transparent"
+      trans: "transparent",
+      white: "white",
     },
   },
   plugins: [
