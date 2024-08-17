@@ -1,6 +1,6 @@
 export default function HeaderTeste() {
     return(
-        <header className="pt-3 pb-3 shadow-xl lg:md:sm:pt-2 lg:md:sm:pb-2 lg:md:sm:pr-12 lg:md:sm:pl-12 lg:md:sm:w-full ">
+        <header className="pt-3 pb-3 shadow-md lg:md:sm:pt-2 lg:md:sm:pb-2 lg:md:sm:pr-12 lg:md:sm:pl-12 lg:md:sm:w-full fixed w-full bg-white">
             <nav className="flex items-center pl-2 pr-2 lg:md:sm:flex lg:md:sm:items-center justify-around lg:md:sm:pl-2 lg:md:sm:pr-2 lg:md:sm:max-w-full lg:md:sm:text-md">
                 
                 <a href="#" className="block max-w-full"><img src="src/assets/img/limppay-logo.png" alt="Limppay" className="w-8/12 lg:md:sm:w-full"/></a>
