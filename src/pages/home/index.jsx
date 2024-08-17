@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
 import '../../styles/App.css';
 import '../../styles/index.css';
-import Header from '../../componentes/Header.jsx';
+import '../../styles/duvidas.css';
+import "../../styles/footer.css";
+import HeaderApp from '../../componentes/HeaderApp.jsx';
 import Slide from '../../componentes/home/Slide.jsx';
 import ElementosSobre from '../../componentes/home/ElementosSobre.jsx';
 import Contrate from '../../componentes/home/Contrate.jsx';
@@ -14,49 +15,17 @@ import NossosContatos from '../../componentes/home/NossosContatos.jsx';
 import Footer from '../../componentes/Footer.jsx';
 
 export default function App() {
-  useEffect(() => {
-    // Função para adicionar um índice para cada parágrafo
-    const paragraphs = document.querySelectorAll(".text");
-    paragraphs.forEach((paragrafo, index) => {
-      paragrafo.setAttribute('data-index', index);
-    });
-
-    // Função para adicionar textos grandes no HTML
-    fetch('src/pages/home/index.json')
-      .then(response => response.json())
-      .then(data => {
-        paragraphs.forEach(p => {
-          const index = p.getAttribute('data-index');
-          if (data[index] !== undefined) {
-            p.innerHTML = data[index];
-          }
-        });
-      })
-      .catch(error => console.error("Erro ao carregar JSON:", error));
-
-    // Função para a seção de dúvidas
-    const spans = document.querySelectorAll(".painel-title");
-    const toggleContents = [];
-    spans.forEach((span, index) => {
-      const handleClick = () => {
-        const duvida = document.querySelectorAll(".painel-content")[index];
-        duvida.classList.toggle("mostrar");
-      };
-      span.addEventListener("click", handleClick);
-      toggleContents.push({ span, handleClick });
-    });
-
-    // Função de limpeza para remover event listeners
-    return () => {
-      toggleContents.forEach(({ span, handleClick }) => {
-        span.removeEventListener("click", handleClick);
-      });
-    };
-  }, []);
+  const buttons = [
+    {link: "#quem-somos", text: "Quem somos"},
+    {link: "#servicos", text: "Serviços"},
+    {link: "#duvidas", text: "Dúvidas"},
+    {link: "https://limppay.com/blog/", text: "Blog"},
+    {link: "#contatos", text: "Contato"},
+  ]
 
   return (
     <div className="app">
-      <Header href="src/assets/img/limppay-embreve.png" alt="Limppay" text1="Quem Somos" text2="Serviços" text3="Dúvidas" text4="Blog" text5="Contato"  l1="#quem-somos" l2="#servicos" l3="#duvidas" l4="https://limppay.com/blog/"l5="#contatos"/>
+      <HeaderApp buttons={buttons}/>
       <main>
         <Slide href="src/assets/img/slide/1920x700-01.webp" alt="fale com a gente"/>
         <ElementosSobre/>

@@ -1,24 +1,20 @@
-import React, { useEffect } from 'react';
-import HeaderApp from '../../componentes/HeaderApp.jsx';
-import Button from '../../componentes/Button.jsx';
+import { cadastroIcon, areaDiarista, solicitarServiço, iniciandoServico, finalizandoServico, cancelandoServico, DuvidasFrequentes, Footer, HeaderApp, Button } from "../../componentes/imports.jsx"
 import '../../styles/index.css'
 import '../../styles/font.css'
 import '../../styles/duvidas.css'
 import "../../styles/footer.css"
-import diaristaBanner from '../../assets/img/seja-diarista/banner-02-1.jpg'
-import cadastroIcon from "../../assets/img/seja-diarista/Screenshot_7-e1682524500249.png"
-import areaDiarista from "../../assets/img/seja-diarista/Screenshot_8-e1682525181143.png"
-import solicitarServiço from "../../assets/img/seja-diarista/Screenshot_1.png"
-import iniciandoServico from "../../assets/img/seja-diarista/Screenshot_4-1.png"
-import finalizandoServico from "../../assets/img/seja-diarista/Screenshot_5-1.png"
-import cancelandoServico from "../../assets/img/seja-diarista/Screenshot_6-1.png"
-import DuvidasFrequentes from '../../componentes/DuvidasFrequentes.jsx';
-import Footer from '../../componentes/Footer.jsx';
 
 export default function DiaristaApp() {
+    const buttons = [
+        { link: "#contatos", text: "Contato"},
+        { link: "/", text: "Serviços"},
+        { link: "/", text: "Quem Somos"},
+        { link: "#duvidas", text: "Dúvidas"},
+    ]
+
     return (
         <>
-            <HeaderApp/>
+            <HeaderApp buttons={buttons} text1="Seja Bem-vindo!" text2="Entre ou cadastre-se"/>
             <main className='w-full flex flex-col items-center justify-center'>
                 <section className='pb-10 w-full items-center lg:md:sm:flex lg:md:sm:flex-col pt-28 md:pt-16 sm:pt-16 lg:pt-28 bg-[url(src/assets/img/seja-diarista/banner-02-1.jpg)] bg-cover bg-center '>                 
                   <div className='lg:md:sm:flex lg:md:sm:items-baseline'>
@@ -53,7 +49,7 @@ export default function DiaristaApp() {
                     </div>                   
                 </section>
                 
-                <section className='flex flex-col gap-2 pt-10 pb-5 w-full lg:md:sm:flex items-center bg-desSec bg-opacity-5'>
+                <section className='flex flex-col gap-2 pt-10 pb-5 w-full lg:md:sm:flex items-center bg-desSec bg-opacity-10'>
                     <div  className='p3 lg:md:ms:p-80 pt-0  pb-0 flex flex-col'>
                         <div className='text-center text-3xl text-desSec'>
                             <h2>Como funciona o cadastro</h2>
@@ -150,7 +146,7 @@ export default function DiaristaApp() {
                     </div>                   
                 </section>
 
-                <section className='flex flex-col gap-2 pb-5 w-full lg:md:sm:flex items-center bg-sec bg-opacity-5'>
+                <section className='flex flex-col gap-2 pb-5 w-full lg:md:sm:flex items-center bg-sec bg-opacity-10'>
                     <div  className='p-3 lg:md:ms:p-80 pt-5 pb-0 flex flex-col'>
                         <div className='text-center '>
                             <h2 className='text-prim text-3xl'>Como funciona</h2>
@@ -214,7 +210,9 @@ export default function DiaristaApp() {
                         </div>
                     </div>
                 </section>
-            </main>      
+                <DuvidasFrequentes/>
+            </main>
+            <Footer/>      
         </>
     )
 }

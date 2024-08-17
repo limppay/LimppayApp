@@ -4,14 +4,6 @@ export default function Footer() {
             <div className="container-footer">
                 <div className="footer-content">
                     <div className="footer-section">
-                        <h3>Links Rápidos</h3>
-                        <ul>
-                            <li><a href="#inicio">Início</a></li>
-                            <li><a href="#servicos">Serviços</a></li>
-                            <li><a href="#quem-somos">Sobre Nós</a></li>
-                        </ul>
-                    </div>
-                    <div className="footer-section">
                         <h3>Contato</h3>
                         <p>Telefone: (92) 9264 8251</p>
                         <p>Email: contato@limppay.com</p>
