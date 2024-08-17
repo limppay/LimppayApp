@@ -16,6 +16,7 @@ export default function DiaristaApp() {
         <>
             <HeaderApp buttons={buttons} text1="Seja Bem-vindo!" text2="Entre ou cadastre-se"/>
             <main className='w-full flex flex-col items-center justify-center'>
+
                 <section className='pb-10 w-full items-center lg:md:sm:flex lg:md:sm:flex-col pt-28 md:pt-16 sm:pt-16 lg:pt-28 bg-[url(src/assets/img/seja-diarista/banner-02-1.jpg)] bg-cover bg-center '>                 
                   <div className='lg:md:sm:flex lg:md:sm:items-baseline'>
                         <div className="p-5 lg:md:sm:flex lg:md:sm:justify-center lg:md:sm:w-full">
