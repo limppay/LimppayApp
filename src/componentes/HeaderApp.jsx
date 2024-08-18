@@ -62,7 +62,7 @@ export default function HeaderTeste({ buttons, text1, text2 }) {
                     </div>
                 </nav>
             </header>
-            <div className="mobile-menu bg-white shadow-md pt-24 p-5" id="mobileMenu">
+            <div className="mobile-menu bg-white shadow-md pt-24 p-5 " id="mobileMenu">
                 <ul className="space-y-4 text-start">
                     <div>
                         {buttons.map((button, index) => (
