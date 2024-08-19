@@ -13,9 +13,9 @@ export default function DiaristaApp() {
     ]
 
     const btnAcess = [
-        { AcessPrim: "Seja Diarista", 
-            AcessSec: "Contrate Online",
-            LinkPrim: "seja-diarista.html",
+        { AcessPrim: "Quero ser Diarista", 
+            AcessSec: "Área Diarista",
+            LinkPrim: "diarista-cadastro.html",
             LinkSec: "#"  
         },
     ]

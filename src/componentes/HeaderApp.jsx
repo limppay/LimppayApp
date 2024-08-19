@@ -53,7 +53,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                         <div className="flex ml-5">
                             <div className='text-sm'>
                                 <p className="text-ter"><strong>{text1}</strong></p>
-                                <a href="#" className="text-prim transition-all hover:text-sec">{text2}</a>
+                                <p className='text-prim'>{text2}</p>
                             </div>
                         </div>
                         <i className="fas fa-bars cursor-pointer text-2xl text-des ml-2  lg:hidden" id="hamburguerButton"></i>
