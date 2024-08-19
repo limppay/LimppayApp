@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import HeaderButton from "./HeaderButton";
-import Logo from "../assets/img/limppay-logo.png";
+import ButtonAcess from './home/ButtonAcess';
 import "../styles/menu-hamburguer.css";
 
-export default function HeaderTeste({ buttons, text1, text2 }) {
+export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2,  }) {
     useEffect(() => {
         const hamburguerButton = document.getElementById("hamburguerButton");
         const mobileMenu = document.getElementById("mobileMenu");
@@ -34,7 +34,7 @@ export default function HeaderTeste({ buttons, text1, text2 }) {
             <header className="pt-3 pb-3 shadow-md lg:pt-2 lg:pb-2 lg:pr-12 lg:pl-12 fixed w-full bg-white z-10">
                 <nav className="flex items-center justify-around px-2 lg:px-12">
                     <a href="/" className="block max-w-full">
-                        <img src={Logo} alt="Limppay" className="w-8/12 lg:w-full" />
+                        <img src={img} alt={alt} className="w-8/12 lg:w-full" />
                     </a>
                     <div className="flex items-center">
                         <ul className='flex'>
@@ -44,12 +44,10 @@ export default function HeaderTeste({ buttons, text1, text2 }) {
                                 ))}
                             </div>
                             <div className='text-center hidden lg:flex md:flex'>
-                                <li className="p-3 ml-1 mr-1 text-prim border rounded-md border-sec transition-all hover:bg-sec hover:bg-opacity-90 hover:text-white">
-                                    <a href="seja-diarista.html">Seja Diarista</a>
-                                </li>
-                                <li className="p-3 ml-1 mr-1 text-white bg-des hover:bg-opacity-90 border rounded-md  transition-all">
-                                    <a href="#">Contrate Online</a>
-                                </li>
+                                {btnAcess.map((acess, index) => (
+                                    <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec}/>
+                                ))}
+    
                             </div>
                         </ul>
                         <div className="flex ml-5">
@@ -71,12 +69,9 @@ export default function HeaderTeste({ buttons, text1, text2 }) {
                     </div>
                   
                     <div className='flex flex-col gap-3 text-center'>
-                        <li className="p-3 ml-1 mr-1 text-prim border rounded-md border-sec transition-all hover:bg-sec hover:bg-opacity-90 hover:text-white">
-                            <a href="seja-diarista.html">Seja Diarista</a>
-                        </li>
-                        <li className="p-3 ml-1 mr-1 text-white bg-des hover:bg-opacity-85 border rounded-md border-bord transition-all">
-                            <a href="#">Contrate Online</a>
-                        </li>
+                        {btnAcess.map((acess, index) => (
+                            <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec}/>
+                        ))}
                     </div>
                 </ul>
 

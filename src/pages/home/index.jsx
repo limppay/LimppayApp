@@ -13,6 +13,7 @@ import QuemSomos from '../../componentes/home/QuemSomos.jsx';
 import DuvidasFrequentes from '../../componentes/DuvidasFrequentes.jsx';
 import NossosContatos from '../../componentes/home/NossosContatos.jsx';
 import Footer from '../../componentes/Footer.jsx';
+import logo from '../../assets/img/limppay-logo.png'
 
 export default function App() {
   const buttons = [
@@ -23,9 +24,17 @@ export default function App() {
     {link: "#contatos", text: "Contato"},
   ]
 
+  const btnAcess = [
+    { AcessPrim: "Seja Diarista", 
+      AcessSec: "Contrate Online",
+      LinkPrim: "seja-diarista.html",
+      LinkSec: "#"  
+    },
+  ]
+
   return (
     <div className="app">
-      <HeaderApp buttons={buttons}/>
+      <HeaderApp img={logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
       <main>
         <Slide href="src/assets/img/slide/1920x700-01.webp" alt="fale com a gente"/>
         <ElementosSobre/>

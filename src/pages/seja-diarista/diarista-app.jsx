@@ -1,4 +1,4 @@
-import { cadastroIcon, areaDiarista, solicitarServiço, iniciandoServico, finalizandoServico, cancelandoServico, AreaDiarista1, AreaDiarista2, AreaDiarista3, AreaDiarista4, DuvidasFrequentes, Footer, HeaderApp, Button, CardInfo } from "../../componentes/imports.jsx"
+import { Logo, cadastroIcon, areaDiarista, solicitarServiço, iniciandoServico, finalizandoServico, cancelandoServico, AreaDiarista1, AreaDiarista2, AreaDiarista3, AreaDiarista4, DuvidasFrequentes, Footer, HeaderApp, Button, CardInfo } from "../../componentes/imports.jsx"
 import '../../styles/index.css'
 import '../../styles/font.css'
 import '../../styles/duvidas.css'
@@ -12,9 +12,17 @@ export default function DiaristaApp() {
         { link: "#duvidas", text: "Dúvidas"},
     ]
 
+    const btnAcess = [
+        { AcessPrim: "Seja Diarista", 
+            AcessSec: "Contrate Online",
+            LinkPrim: "seja-diarista.html",
+            LinkSec: "#"  
+        },
+    ]
+
     return (
         <>
-            <HeaderApp buttons={buttons} text1="Seja Bem-vindo!" text2="Entre ou cadastre-se"/>
+            <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess} text1="Seja Bem-vindo!" text2="Entre ou cadastre-se"/>
             <main className='w-full flex flex-col items-center justify-center'>
 
                 <section className='pb-10 w-full items-center lg:md:sm:flex lg:md:sm:flex-col pt-28 md:pt-16 sm:pt-16 lg:pt-28 bg-[url(src/assets/img/seja-diarista/banner-02-1.jpg)] bg-cover bg-center '>                 
@@ -50,7 +58,7 @@ export default function DiaristaApp() {
                     </div>                   
                 </section>
                 
-                <section className='flex flex-col gap-2 pt-10 pb-5 w-full lg:md:sm:flex items-center bg-desSec bg-opacity-10'>
+                <section className='flex flex-col gap-2 pt-10 pb-5 w-full lg:md:sm:flex items-center '>
                     <div  className='p3 lg:md:ms:p-80 pt-0  pb-0 flex flex-col'>
                         <div className='text-center text-3xl text-desSec'>
                             <h2>Como funciona o cadastro</h2>
@@ -74,7 +82,7 @@ export default function DiaristaApp() {
                         </div>
                     </div>
                 </section>
-                <section className='flex flex-col gap-2 pb-5 w-full lg:md:sm:flex items-center'>
+                <section className='flex flex-col gap-2 pb-5 w-full lg:md:sm:flex items-center bg-sec bg-opacity-10'>
                     <div  className='p-3 lg:md:ms:p-4 pt-5 pb-0 flex flex-col'>
                         <div className='text-center '>
                             <h2 className='text-prim text-3xl'>Como funciona</h2>
@@ -123,7 +131,7 @@ export default function DiaristaApp() {
                     </div>                   
                 </section>
 
-                <section className='flex flex-col gap-2 pb-5 w-full lg:md:sm:flex items-center bg-sec bg-opacity-10'>
+                <section className='flex flex-col gap-2 pb-5 w-full lg:md:sm:flex items-center'>
                     <div  className='p-3 lg:md:ms:p-80 pt-5 pb-0 flex flex-col'>
                         <div className='text-center '>
                             <h2 className='text-prim text-3xl'>Como funciona</h2>

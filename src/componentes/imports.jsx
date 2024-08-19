@@ -15,6 +15,7 @@ import AreaDiarista1 from "../assets/img/seja-diarista/AreaDiarista_1.png"
 import AreaDiarista2 from "../assets/img/seja-diarista/AreaDiarista_2.png"
 import AreaDiarista3 from "../assets/img/seja-diarista/AreaDiarista_3.png"
 import AreaDiarista4 from "../assets/img/seja-diarista/AreaDiarista_4.png"
+import Logo from "../assets/img/limppay-logo.png";
 
 // componentes
 import DuvidasFrequentes from './DuvidasFrequentes.jsx';
@@ -34,6 +35,7 @@ export {
     AreaDiarista2,
     AreaDiarista3,
     AreaDiarista4,
+    Logo,
     DuvidasFrequentes,
     Footer,
     HeaderApp,
