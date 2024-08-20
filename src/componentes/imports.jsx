@@ -24,6 +24,9 @@ import Footer from './Footer.jsx';
 import HeaderApp from './HeaderApp.jsx';
 import Button from './Button.jsx'
 import CardInfo from './CardInfo.jsx'
+import InputForm from './InputForm.jsx'
+import SelectForm from './SelectForm.jsx'
+import OptionsForm from './home/OptionsForm.jsx'
 
 export {
     cadastroIcon,
@@ -42,5 +45,8 @@ export {
     Footer,
     HeaderApp,
     Button,
-    CardInfo
+    CardInfo,
+    InputForm,
+    SelectForm,
+    OptionsForm
 }
