@@ -49,7 +49,7 @@ export default function DiaristaCadastro() {
                         </div>
                         <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                             <label htmlFor="biografia" className="text-prim">Sobre mim</label>
-                            <textarea name="biografia" id="biografia" className="border rounded-md border-bord p-3 pt-1 pb-1"></textarea>
+                            <textarea name="biografia" id="biografia" className="border rounded-md border-bord p-3 pt-1 pb-1 min-h-20"></textarea>
                         </div>
                         <InputForm label={"Nome"} text={"Nome completo"} name={"Nome"} type={"text"}/> 
                         <InputForm label={"CPF"} text={"Somente números"} name={"Cpf"} type={"text"}/> 
