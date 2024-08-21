@@ -27,6 +27,7 @@ import CardInfo from './CardInfo.jsx'
 import InputForm from './InputForm.jsx'
 import SelectForm from './SelectForm.jsx'
 import OptionsForm from './home/OptionsForm.jsx'
+import CheckForm from './CheckForm.jsx'
 
 export {
     cadastroIcon,
@@ -48,5 +49,6 @@ export {
     CardInfo,
     InputForm,
     SelectForm,
-    OptionsForm
+    OptionsForm,
+    CheckForm
 }
