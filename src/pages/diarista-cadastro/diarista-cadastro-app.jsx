@@ -1,4 +1,5 @@
-import { HeaderApp, LogoDiarista, Logo, InputForm, SelectForm, CheckForm } from "../../componentes/imports.jsx"
+import { HeaderApp, Logo, InputForm, SelectForm, CheckForm, AnexoForm, Footer } from "../../componentes/imports.jsx"
+import "../../styles/footer.css"
 
 export default function DiaristaCadastro() {
     const buttons = [
@@ -104,9 +105,32 @@ export default function DiaristaCadastro() {
                         <InputForm label={"Bairro"} text={""} name={"Bairro"} type={"text"}/>
                         <InputForm label={"Cidade"} text={""} name={"Cidade"} type={"text"}/>
                         <SelectForm options={estados} text={"Selecione"} label={"Estado"}/>
+                        <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
+                            <h2 className="text-2xl text-desSec">Anexos</h2>
+                        </div>
+                        <AnexoForm name={"docIdt"} text={"RG ou CNH"} span={"(frente e verso)"}/>
+                        <AnexoForm name={"docCpf"} text={"CPF"} span={"(frente e verso)"}/>
+                        <AnexoForm name={"docResidencia"} text={"Comprovante de residência"} span={""}/>
+                        <AnexoForm name={"docBancario"} text={"Comprovante bancário"} span={""}/>
+                        <AnexoForm name={"docCurriculo"} text={"Currículo"} span={""}/>
+                        <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
+                            <h2 className="text-2xl text-desSec">Senha</h2>
+                        </div>
+                        <InputForm label={"Senha"} text={""} name={"senha"} type={"password"}/>
+                        <InputForm label={"Repita a senha"} text={""} name={"againsenha"} type={"password"}/>
+                        <div className="mt-4 text-prim pr-9 pl-9">
+                            <div className="flex gap-2 items-baseline">
+                                <input type="checkbox" name="vCheck" id="vCheck" value required />
+                                <label htmlFor="vCheck">Concordo com os termos de uso e contrato de serviço - <a href="#" className="text-des">Ver termos</a></label>
+                            </div>
+                        </div>
+                        <div className="mt-4 pl-9 pr-9 pb-9 ">
+                            <button type="submit" className="text-center w-full lg:w-1/2  bg-des rounded-md text-white  p-2"> Cadastrar </button>
+                        </div>
                     </form>                 
                 </section>
             </main>
+            <Footer/>
         </>
     )
 }

@@ -28,6 +28,7 @@ import InputForm from './InputForm.jsx'
 import SelectForm from './SelectForm.jsx'
 import OptionsForm from './home/OptionsForm.jsx'
 import CheckForm from './CheckForm.jsx'
+import AnexoForm from './AnexoForm.jsx'
 
 export {
     cadastroIcon,
@@ -50,5 +51,6 @@ export {
     InputForm,
     SelectForm,
     OptionsForm,
-    CheckForm
+    CheckForm,
+    AnexoForm
 }
