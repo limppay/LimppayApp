@@ -29,6 +29,7 @@ import SelectForm from './SelectForm.jsx'
 import OptionsForm from './home/OptionsForm.jsx'
 import CheckForm from './CheckForm.jsx'
 import AnexoForm from './AnexoForm.jsx'
+import Perfil from './Perfil.jsx'
 
 export {
     cadastroIcon,
@@ -52,5 +53,6 @@ export {
     SelectForm,
     OptionsForm,
     CheckForm,
-    AnexoForm
+    AnexoForm,
+    Perfil
 }
