@@ -1,21 +1,23 @@
-import { HeaderApp, Logo, InputForm, SelectForm, CheckForm, AnexoForm, Footer, Perfil } from "../../componentes/imports.jsx"
+import { HeaderApp, Logo, InputForm, SelectForm, CheckForm, AnexoForm, Footer, Perfil, ModalLoginDiarista, ModalQuemSomos, ModalDuvidas } from "../../componentes/imports.jsx"
 import "../../styles/footer.css"
 
 export default function DiaristaCadastro() {
     const buttons = [
-        {link: "#", text: "Dúvidas"},
-        {link: "/", text: "Quem Somos"},
+        {link: "#", text: "Dúvidas", Class: "OpenDuvidas"},
+        {link: "#", text: "Quem Somos", Class: "OpenQuemSomos"},
     ]
 
     const btnAcess = [
         {
-            AcessPrim: "Área Diarista",
-            LinkPrim: "#",
-            AcessSec: "Página inicial",
-            LinkSec: "/"
+            AcessPrim: "Página Inicial",
+            LinkPrim: "/",
+            AcessSec: "Área Diarista",
+            LinkSec: "#",
+            Class: "OpenLoginDiarista"
         }
     ]
 
+    // chamar via banco de dados?
     const options = [
         {text: "Solteiro(a)"},
         {text: "Casado(a)"},
@@ -31,6 +33,7 @@ export default function DiaristaCadastro() {
     const estados = [
         {text: "Amazonas"}
     ]
+    // 
 
     return (
         <>
@@ -146,6 +149,9 @@ export default function DiaristaCadastro() {
                 </section>
             </main>
             <Footer/>
+            <ModalDuvidas/>
+            <ModalQuemSomos/>
+            
         </>
     )
 }

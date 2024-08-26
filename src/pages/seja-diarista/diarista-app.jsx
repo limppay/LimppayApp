@@ -1,4 +1,4 @@
-import { Logo, cadastroIcon, areaDiarista, solicitarServiço, iniciandoServico, finalizandoServico, cancelandoServico, AreaDiarista1, AreaDiarista2, AreaDiarista3, AreaDiarista4, DuvidasFrequentes, Footer, HeaderApp, Button, CardInfo } from "../../componentes/imports.jsx"
+import { Logo, cadastroIcon, areaDiarista, solicitarServiço, iniciandoServico, finalizandoServico, cancelandoServico, AreaDiarista1, AreaDiarista2, AreaDiarista3, AreaDiarista4, DuvidasFrequentes, Footer, HeaderApp, Button, CardInfo, ModalLoginDiarista } from "../../componentes/imports.jsx"
 import '../../styles/index.css'
 import '../../styles/font.css'
 import '../../styles/duvidas.css'
@@ -16,7 +16,8 @@ export default function DiaristaApp() {
         { AcessPrim: "Quero ser Diarista", 
             AcessSec: "Área Diarista",
             LinkPrim: "diarista-cadastro.html",
-            LinkSec: "#"  
+            LinkSec: "#",
+            Id: "OpenLoginDiarista"  
         },
     ]
 
@@ -171,7 +172,8 @@ export default function DiaristaApp() {
                 </section>
                 <DuvidasFrequentes/>
             </main>
-            <Footer/>     
+            <Footer/>
+
         </>
     )
 }

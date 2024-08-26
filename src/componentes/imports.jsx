@@ -31,6 +31,11 @@ import CheckForm from './CheckForm.jsx'
 import AnexoForm from './AnexoForm.jsx'
 import Perfil from './Perfil.jsx'
 
+// modals
+import ModalLoginDiarista from './modals/ModaLoginDiarista.jsx'
+import ModalQuemSomos from './modals/ModalQuemSomos.jsx'
+import ModalDuvidas from './modals/ModalDuvidas.jsx'
+
 export {
     cadastroIcon,
     areaDiarista,
@@ -54,5 +59,9 @@ export {
     OptionsForm,
     CheckForm,
     AnexoForm,
-    Perfil
+    Perfil,
+    ModalLoginDiarista,
+    ModalQuemSomos,
+    ModalDuvidas
+
 }

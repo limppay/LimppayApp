@@ -2,7 +2,7 @@ import { useState} from "react"
 
 export default function AnexoForm({name, text, span}){
 
-    const [fileName, setFileName] = useState("Arquivo não selecionado");
+    const [fileName, setFileName] = useState("Arquivo não selecionado")
 
     const handleNameChange = (event) => {
         const file = event.target.files[0]
@@ -11,7 +11,7 @@ export default function AnexoForm({name, text, span}){
         } else {
             setFileName("Arquivo não selecionado")
         }
-    };
+    }
     
     return(
         <div className="mt-4 text-prim pr-9 pl-9">

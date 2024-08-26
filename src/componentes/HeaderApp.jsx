@@ -37,19 +37,24 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                         <img src={img} alt={alt} className="w-8/12 lg:w-full" />
                     </a>
                     <div className="flex items-center">
-                        <ul className='flex'>
+                        
                             <div className='hidden items-center lg:flex'>
-                                {buttons.map((button, index) => (
-                                    <HeaderButton key={index} link={button.link} text={button.text} />
-                                ))}
+                                <ul className='flex'>
+                                    {buttons.map((button, index) => (
+                                        <HeaderButton key={index} link={button.link} text={button.text} Class={button.Class} />
+                                    ))}
+                                </ul>
                             </div>
+
+                            {/* botões de acesso */}
                             <div className='text-center hidden lg:flex md:flex'>
-                                {btnAcess.map((acess, index) => (
-                                    <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec}/>
-                                ))}
-    
+                                <ul className='flex'>
+                                    {btnAcess.map((acess, index) => (
+                                        <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec} Class={acess.Class}/>
+                                    ))} 
+                                </ul>
                             </div>
-                        </ul>
+                   
                         <div className="flex ml-5">
                             <div className='text-sm'>
                                 <p className="text-ter"><strong>{text1}</strong></p>
@@ -61,19 +66,23 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                 </nav>
             </header>
             <div className="mobile-menu bg-white shadow-md pt-24 p-5 " id="mobileMenu">
-                <ul className="space-y-4 text-start">
+                <div className="space-y-4 text-start">
                     <div>
-                        {buttons.map((button, index) => (
-                            <HeaderButton key={index} link={button.link} text={button.text} />
-                        ))} 
+                        <ul>
+                            {buttons.map((button, index) => (
+                                <HeaderButton key={index} link={button.link} text={button.text} Class={button.Class} />
+                            ))}
+                        </ul>
                     </div>
                   
-                    <div className='flex flex-col gap-3 text-center'>
-                        {btnAcess.map((acess, index) => (
-                            <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec}/>
-                        ))}
+                    <div>
+                        <ul className='flex flex-col text-center gap-3'>
+                            {btnAcess.map((acess, index) => (
+                                <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec} Class={acess.Class}/>
+                            ))} 
+                        </ul>
                     </div>
-                </ul>
+                </div>
 
             </div>
         </>
