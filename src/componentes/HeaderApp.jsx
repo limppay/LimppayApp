@@ -41,7 +41,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                             <div className='hidden items-center lg:flex'>
                                 <ul className='flex'>
                                     {buttons.map((button, index) => (
-                                        <HeaderButton key={index} link={button.link} text={button.text} Class={button.Class} />
+                                        <HeaderButton key={index} link={button.link} text={button.text} Id={button.Id}/>
                                     ))}
                                 </ul>
                             </div>
@@ -70,20 +70,19 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                     <div>
                         <ul>
                             {buttons.map((button, index) => (
-                                <HeaderButton key={index} link={button.link} text={button.text} Class={button.Class} />
+                                <HeaderButton key={index} link={button.link} text={button.text} Id={button.Id}/>
                             ))}
                         </ul>
                     </div>
                   
                     <div>
-                        <ul className='flex flex-col text-center gap-3'>
+                        <ul className='flex flex-col text-center gap-3'>                         
                             {btnAcess.map((acess, index) => (
-                                <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec} Class={acess.Class}/>
+                                <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec}/>
                             ))} 
                         </ul>
                     </div>
                 </div>
-
             </div>
         </>
     );

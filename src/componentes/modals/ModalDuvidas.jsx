@@ -3,9 +3,10 @@ import {useEffect} from 'react'
 
 export default function ModalDuvidas() {
     useEffect(() => {
-        const OpenModal = document.querySelector(".OpenDuvidas")
+        const OpenModal = document.getElementById("OpenDuvidas")
         const Modal = document.getElementById("Duvidas")
         const CloseModal = document.querySelector(".CloseModalDuvidas")
+        console.log(OpenModal)
         
         OpenModal.onclick = () => {
             Modal.showModal()

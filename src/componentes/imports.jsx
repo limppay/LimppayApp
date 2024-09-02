@@ -30,6 +30,8 @@ import OptionsForm from './home/OptionsForm.jsx'
 import CheckForm from './CheckForm.jsx'
 import AnexoForm from './AnexoForm.jsx'
 import Perfil from './Perfil.jsx'
+import FormDiarista from './FormCadastro/FormDiarista.jsx'
+import FormTeste from './FormCadastro/FormTeste.jsx'
 
 // modals
 import ModalLoginDiarista from './modals/ModaLoginDiarista.jsx'
@@ -62,6 +64,7 @@ export {
     Perfil,
     ModalLoginDiarista,
     ModalQuemSomos,
-    ModalDuvidas
-
+    ModalDuvidas,
+    FormDiarista,
+    FormTeste
 }

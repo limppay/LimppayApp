@@ -15,6 +15,7 @@ export default {
       bord: "#CCCCCC",
       trans: "transparent",
       white: "white",
+      error: "red"
     },
   },
   plugins: [

@@ -1,6 +1,6 @@
 export default function Footer() {
     return(
-        <footer id="contatos">
+        <footer id="contatos" className="text-ter">
             <div className="container-footer">
                 <div className="footer-content">
                     <div className="footer-section">
