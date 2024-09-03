@@ -142,6 +142,7 @@ export default function FormDiarista() {
     ]
 
     const Banco = [
+        {text: "Santander"}
 
     ]
 
