@@ -1,21 +1,29 @@
-import { InputForm, SelectForm, CheckForm, AnexoForm, Perfil } from "../imports.jsx"
+import { AnexoForm } from "../imports.jsx"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import {useEffect} from 'react'
 import { useState} from "react"
 
+
 export default function FormDiarista() {
+    // schema de validações do form
     const schema = yup.object({
+        // perfil
         bio: yup.string(),
         name: yup.string().required("O nome é obrigatório"),
+
+        // dados pessoais
         cpf: yup.string().required("O CPF é obrigatório").min(11, "Digite um CPF válido").matches(/^\d+$/, 'Apenas números').max(11, "CPF deve ter 11 digitos"),
         rg: yup.string().required("O RH é obrigatório").min(8, "Digite um RH válido").matches(/^\d+$/, 'Apenas números').max(8, "RH deve ter 8 digitos"),
         email: yup.string().required("E-mail é obrigatório").email("Email inválido."),
         telefone: yup.string().required("Telefone é obrigatório").min(11, "Digite um telefone válido").matches(/^\d+$/, 'Apenas números'),
-        EstadoCivil: yup.string().required("Estado Civil é obrigatório"),
+        EstadoCivil: yup.string().required("Estado civil é obrigatório"),
+        banco: yup.string().required("Banco é obrigatório"),
         agencia:  yup.string().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
         conta:  yup.string().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
+
+        // endereço
         cep:  yup.string().required("CEP é obrigatório").min(8, "Digite um cep válido").matches(/^\d+$/, 'Apenas números'),
         logradouro:  yup.string().required("Logradouro é obrigatório"),
         numero:  yup.string().required("Número é obrigatório"),
@@ -23,28 +31,53 @@ export default function FormDiarista() {
         pontoRef:  yup.string(),
         bairro:  yup.string().required("Bairro é obrigatório"),
         cidade:  yup.string().required("Cidade é obrigatório"),
+
+        // senha
         password: yup.string().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
         confirmPassword: yup.string().required("Confirme sua senha").oneOf([yup.ref("password")], "As senhas devem ser iguais"),
-        termo: yup.boolean().required("Aceite os termos")
+
+        // termo
+        termo: yup.boolean().required("Aceite os termos"),
+
+        // Dias da semana
+        domingo: yup.boolean(),
+        segunda: yup.boolean(),
+        terca: yup.boolean(),
+        quarta: yup.boolean(),
+        quinta: yup.boolean(),
+        sexta: yup.boolean(),
+        sabado: yup.boolean(),
+        diasSemana: yup.boolean().test('at-least-one-day', 'Selecione pelo menos um dia', function () {
+            const { domingo, segunda, terca, quarta, quinta, sexta, sabado } = this.parent
+            return domingo || segunda || terca || quarta || quinta || sexta || sabado
+        }),
     })
     .required()
     
+    
+    // Hook Forms
     const {
         register,
         handleSubmit,
         formState: { errors },
-        reset
+        reset,
+        setValue, 
+        getValues,
+        setError, 
+        clearErrors
       } = useForm({
         resolver: yupResolver(schema),
       })
 
+    // onSubmit do Forms
     const onSubmit = (data) => {
         console.log(data)
         reset()
-        window.location.href = "/seja-diarista.html"
+        // window.location.href = "/seja-diarista.html"
     }
     console.log(errors)
 
+    // Função de ativar o botão quando o termo for clicado
     useEffect(() => {
         const buttonSubmit = document.getElementById("buttonSubmit")
         const checkTermos = document.getElementById("termo")
@@ -52,21 +85,65 @@ export default function FormDiarista() {
             buttonSubmit.toggleAttribute("disabled")
             buttonSubmit.classList.toggle("opacity-50")
         }
-        console.log(checkTermos)
     })
 
+    // função para selecionar os dias da semana
+    useEffect(() => {
+        const selectDays = document.getElementById("selectDays")
+        const days = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
+
+        const updateButtonState = () => {
+            const allChecked = days.every(day => getValues(day))
+            selectDays.value = allChecked ? "Desmarcar todos os dias" : "Selecionar todos os dias"
+        };
+
+        selectDays.onclick = () => {
+            const allChecked = days.every(day => getValues(day));
+            days.forEach(day => {
+                setValue(day, !allChecked)
+            })
+            updateButtonState()
+        };
+
+        updateButtonState()
+    }, [setValue, getValues])
+
+    // função para validar se algum dia foi selecionado ou não
+    useEffect(() => {
+        const daysCheckboxes = document.querySelectorAll(".days")
+        daysCheckboxes.forEach((checkbox) => {
+            checkbox.addEventListener('change', () => {
+                const allDays = Array.from(daysCheckboxes).map(cb => cb.checked)
+                if (allDays.some(day => day)) {
+                    clearErrors('diasSemana')
+                } else {
+                    setError('diasSemana', { message: 'Selecione pelo menos um dia' })
+                }
+            });
+        });
+
+        return () => {
+            daysCheckboxes.forEach((checkbox) => {
+                checkbox.removeEventListener('change', () => {})
+            });
+        };
+    }, [clearErrors, setError])
+    
+
     // chamar via banco de dados
-    const options = [
+    const EstadoCivil = [
         {text: "Solteiro(a)"},
         {text: "Casado(a)"},
         {text: "Divorciado(a)"},
         {text: "Viúvo(a)"},
         {text: "Separado(a)"},
     ]
-    const optionsBanco = [
+
+    const Banco = [
 
     ]
-    const estados = [
+
+    const Estados = [
         {text: "Amazonas"}
     ]
 
@@ -178,23 +255,35 @@ export default function FormDiarista() {
                     {errors.telefone && 
                     <span className="text-error opacity-75">{errors.telefone?.message}</span>}
                 </div>
-                <SelectForm 
-                options={options} 
-                name={"EstadoCivil"} 
-                label={"Estado Civil"} 
-                text={"Selecione"} 
-                />
-                {errors.EstadoCivil && 
-                <span className="text-error opacity-75">{errors.EstadoCivil?.message}</span>}
+                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                    <label htmlFor="EstadoCivil" className="text-prim">Estado Civil</label>
+                    <select  
+                    id="EstadoCivil"
+                    {...register("EstadoCivil")}
+                    className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
+                        <option value="" >Selecione</option>
+                        {EstadoCivil.map((options, index) => (
+                            <option key={index} value={options.text}>{options.text}</option>
+                        ))}
+                    </select>
+                    {errors.EstadoCivil && 
+                    <span className="text-error opacity-75">{errors.EstadoCivil?.message}</span>}           
+                </div>
             </div>
-
-            <SelectForm 
-            options={optionsBanco} 
-            name={"banco"} 
-            label={"Banco"} 
-            text={"Selecione o Banco"}
-             />
-
+            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                <label htmlFor="banco" className="text-prim">Banco</label>
+                <select  
+                id="banco"
+                {...register("banco")}
+                className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
+                    <option value="" >Selecione</option>
+                    {Banco.map((options, index) => (
+                        <option key={index} value={options.text}>{options.text}</option>
+                    ))}
+                </select>
+                {errors.banco && 
+                <span className="text-error opacity-75">{errors.banco?.message}</span>}           
+            </div>
             <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                 <label htmlFor="agencia" className="text-prim">Agência</label>
                 <input 
@@ -218,6 +307,7 @@ export default function FormDiarista() {
                 />
                 {errors.conta && 
                 <span className="text-error opacity-75">{errors.conta?.message}</span>}
+
             </div>
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h3 className="text-xl text-desSec">Disponibilidade e serviços</h3>
@@ -225,22 +315,81 @@ export default function FormDiarista() {
             <div className="mt-4 p-9 pt-0 pb-0 flex flex-col text-prim">
                 <p><b>Dias disponíveis para trabalhar</b></p>
                 <div className="mt-2">
-                    <input type="button" value="Selecionar todos os dias" className="p-2 border border-bord rounded-md"/>
+                    <input id="selectDays" type="button" value="Selecionar todos os dias" className="p-2 border border-bord rounded-md cursor-pointer"/>
                 </div>
                 <div className="flex justify-between">
-                    <CheckForm label={"Domingo"} id={"checkbox1"} value={1}/>
-                    <CheckForm label={"Segunda"} id={"checkbox2"} value={2}/>
-                    <CheckForm label={"Terça"} id={"checkbox3"} value={3}/>
+                    <div className="m-3 mb-0 ml-0 flex gap-2">
+                        <input 
+                        type="checkbox" 
+                        id="domingo" 
+                        {...register("domingo", {required: true})}
+                        className="days cursor-pointer"
+                        />
+                        <label htmlFor="domingo">Domingo</label>
+                    </div>
+                    <div className="m-3 mb-0 ml-0 flex gap-2">
+                        <input 
+                        type="checkbox" 
+                        id="segunda" 
+                        {...register("segunda")}
+                        className="days cursor-pointer"
+                        />
+                        <label htmlFor="segunda">Segunda</label>
+                    </div>
+                    <div className="m-3 mb-0 ml-0 flex gap-2">
+                        <input 
+                        type="checkbox" 
+                        id="terca" 
+                        {...register("terca")}
+                        className="days cursor-pointer"
+                        />
+                        <label htmlFor="terca">Terça</label>
+                    </div>
                 </div>
                 <div className="flex justify-between">
-                    <CheckForm label={"Quarta"} id={"checkbox4"} value={4}/>
-                    <CheckForm label={"Quinta"} id={"checkbox5"} value={5}/>
-                    <CheckForm label={"Sexta"} id={"checkbox6"} value={6}/>
+                    <div className="m-3 mb-0 ml-0 flex gap-2">
+                        <input 
+                        type="checkbox" 
+                        id="quarta" 
+                        {...register("quarta")}
+                        className="days cursor-pointer"
+                        />
+                        <label htmlFor="quarta">Quarta</label>
+                    </div>
+                    <div className="m-3 mb-0 ml-0 flex gap-2">
+                        <input 
+                        type="checkbox" 
+                        id="quinta" 
+                        {...register("quinta")}
+                        className="days cursor-pointer"
+                        />
+                        <label htmlFor="quinta">Quinta</label>
+                    </div>
+                    <div className="m-3 mb-0 ml-0 flex gap-2">
+                        <input 
+                        type="checkbox" 
+                        id="sexta" 
+                        {...register("sexta")}
+                        className="days cursor-pointer"
+                        />
+                        <label htmlFor="sexta">Sexta</label>
+                    </div>
                 </div>
                 <div className="flex justify-between">
-                    <CheckForm label={"Sabado"} id={"checkbox7"} value={7}/>
+                    <div className="m-3 mb-0 ml-0 flex gap-2">
+                        <input 
+                        type="checkbox" 
+                        id="sabado" 
+                        {...register("sabado")}
+                        className="days cursor-pointer"
+                        />
+                        <label htmlFor="sabado">Sábado</label>
+                    </div>
                 </div>
-                
+                <div className="mt-2">
+                    {errors.diasSemana && <p className="text-error opacity-75">{errors.diasSemana.message}</p>}
+                </div>
+             
             </div>
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Endereço</h2>
@@ -334,7 +483,21 @@ export default function FormDiarista() {
                 {errors.cidade && 
                 <span className="text-error opacity-75">{errors.cidade?.message}</span>}
             </div>
-            <SelectForm options={estados} text={"Selecione"} label={"Estado"}/>
+            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                <label htmlFor="estado" className="text-prim">Estado</label>
+                <select  
+                id="estado"
+                {...register("estado")}
+                className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
+                    <option value="" >Selecione</option>
+                    {Estados.map((options, index) => (
+                        <option key={index} value={options.text}>{options.text}</option>
+                    ))}
+                </select>
+                {errors.banco && 
+                <span className="text-error opacity-75">{errors.banco?.message}</span>}           
+            </div>
+            {/* <SelectForm options={estados} text={"Selecione"} label={"Estado"}/> */}
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Anexos</h2>
             </div>
