@@ -6,6 +6,7 @@ import {useEffect} from 'react'
 import { useState} from "react"
 
 
+
 export default function FormDiarista() {
     // schema de validações do form
     const schema = yup.object({
@@ -31,6 +32,7 @@ export default function FormDiarista() {
         pontoRef:  yup.string(),
         bairro:  yup.string().required("Bairro é obrigatório"),
         cidade:  yup.string().required("Cidade é obrigatório"),
+        estado: yup.string().required("Estado é obrigatório"),
 
         // senha
         password: yup.string().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
@@ -494,8 +496,8 @@ export default function FormDiarista() {
                         <option key={index} value={options.text}>{options.text}</option>
                     ))}
                 </select>
-                {errors.banco && 
-                <span className="text-error opacity-75">{errors.banco?.message}</span>}           
+                {errors.estado && 
+                <span className="text-error opacity-75">{errors.estado?.message}</span>}           
             </div>
             {/* <SelectForm options={estados} text={"Selecione"} label={"Estado"}/> */}
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">

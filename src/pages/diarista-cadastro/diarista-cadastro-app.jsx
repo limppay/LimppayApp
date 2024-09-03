@@ -1,4 +1,4 @@
-import { HeaderApp, Logo, Footer, ModalLoginDiarista, ModalQuemSomos, ModalDuvidas, FormDiarista, FormTeste } from "../../componentes/imports.jsx"
+import { HeaderApp, Logo, Footer, ModalLoginDiarista, ModalQuemSomos, ModalDuvidas, FormDiarista } from "../../componentes/imports.jsx"
 import "../../styles/footer.css"
 
 export default function DiaristaCadastro() {
