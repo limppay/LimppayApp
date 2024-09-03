@@ -41,7 +41,12 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                             <div className='hidden items-center lg:flex'>
                                 <ul className='flex'>
                                     {buttons.map((button, index) => (
-                                        <HeaderButton key={index} link={button.link} text={button.text} Id={button.Id}/>
+                                        <HeaderButton 
+                                        key={index} 
+                                        link={button.link} 
+                                        text={button.text} 
+                                        OnClick={button.OnClick}
+                                        />
                                     ))}
                                 </ul>
                             </div>
@@ -50,7 +55,15 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                             <div className='text-center hidden lg:flex md:flex'>
                                 <ul className='flex'>
                                     {btnAcess.map((acess, index) => (
-                                        <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec} Class={acess.Class}/>
+                                        <ButtonAcess 
+                                        key={index} 
+                                        AcessPrim={acess.AcessPrim} 
+                                        AcessSec={acess.AcessSec} 
+                                        LinkPrim={acess.LinkPrim} 
+                                        LinkSec={acess.LinkSec} 
+                                        Class={acess.Class} 
+                                        OnClickPrim={acess.OnClickPrim} 
+                                        OnClickSec={acess.OnClickSec}/>
                                     ))} 
                                 </ul>
                             </div>
@@ -70,7 +83,12 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                     <div>
                         <ul>
                             {buttons.map((button, index) => (
-                                <HeaderButton key={index} link={button.link} text={button.text} Id={button.Id}/>
+                                <HeaderButton 
+                                key={index} 
+                                link={button.link} 
+                                text={button.text} 
+                                OnClick={button.OnClick}
+                                />
                             ))}
                         </ul>
                     </div>

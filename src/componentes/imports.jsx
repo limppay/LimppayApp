@@ -34,8 +34,9 @@ import FormDiarista from './FormCadastro/FormDiarista.jsx'
 
 // modals
 import ModalLoginDiarista from './modals/ModaLoginDiarista.jsx'
-import ModalQuemSomos from './modals/ModalQuemSomos.jsx'
 import ModalDuvidas from './modals/ModalDuvidas.jsx'
+import ModalQuemSomos from './modals/ModalQuemSomos.jsx'
+
 
 export {
     cadastroIcon,
@@ -62,7 +63,7 @@ export {
     AnexoForm,
     Perfil,
     ModalLoginDiarista,
-    ModalQuemSomos,
-    ModalDuvidas,
     FormDiarista,
+    ModalDuvidas,
+    ModalQuemSomos
 }
