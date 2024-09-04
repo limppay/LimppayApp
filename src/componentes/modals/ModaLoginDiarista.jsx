@@ -18,7 +18,7 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
             <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start justify-center">
                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                  <div className="mt-2 lg:flex">
+                  <div className="mt-2 lg:flex h-1/2 ">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col justify-center p-2">
                       <img
                         alt="Limppay"

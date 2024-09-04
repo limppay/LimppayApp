@@ -16,7 +16,7 @@ export default function DiaristaApp() {
         {   AcessPrim: "Quero ser Diarista", 
             AcessSec: "Área Diarista",
             LinkPrim: "cadastro-diarista",
-            LinkSec: "area-diarista",  
+            LinkSec: "diarista-login",  
         },
     ]
 
@@ -51,7 +51,7 @@ export default function DiaristaApp() {
                                     <p className='text-white opacity-90'>Entre na sua área para ver seus serviços, valores, avaliações e muito mais.</p>
                                 </div>
                                 <div>
-                                    <Button text={"Entrar na área diarista"} link={"area-diarista"}/>
+                                    <Button text={"Entrar na área diarista"} link={"diarista-login"}/>
                                 </div>
                             </div>
                         </div>                      
