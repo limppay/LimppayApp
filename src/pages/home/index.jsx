@@ -27,8 +27,8 @@ export default function App() {
   const btnAcess = [
     { AcessPrim: "Seja Diarista", 
       AcessSec: "Contrate Online",
-      LinkPrim: "seja-diarista.html",
-      LinkSec: "#"  
+      LinkPrim: "seja-diarista",
+      LinkSec: "contrate-online"  
     },
   ]
 

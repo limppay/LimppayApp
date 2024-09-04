@@ -1,22 +1,23 @@
-import { HeaderApp, Logo, Footer, FormDiarista, ModalDuvidas, ModalQuemSomos } from "../../componentes/imports.jsx"
+import { HeaderApp, Logo, Footer, FormDiarista, ModalQuemSomos, ModalDuvidas, ModalLoginDiarista } from "../../componentes/imports.jsx"
 import "../../styles/footer.css"
 import { useState } from "react"
 
 export default function DiaristaCadastro() {
-    const [openModal, setOpenModal] = useState(false)
-    const [quemSomos, setQuemSomos] = useState(false)
+    const [Open, SetOpen] = useState(false)
+    const [OpenDuvidas, SetOpenDuvidas] = useState(false)
+    const [OpenLogin, SetOpenLogin] = useState(false)
 
     const buttons = [
         {
             link: "#", 
             text: "Dúvidas", 
-            OnClick: () => setOpenModal(true)
+            OnClick: () => SetOpenDuvidas(true)
         },
         {
             link: "#", 
             text: "Quem Somos", 
             Id: "OpenQuemSomos",
-            OnClick: () => setQuemSomos(true)
+            OnClick: () => SetOpen(true)
         },
     ]
 
@@ -26,7 +27,7 @@ export default function DiaristaCadastro() {
             LinkPrim: "/",
             AcessSec: "Área Diarista",
             LinkSec: "#",
-            Class: "OpenLoginDiarista",
+            OnClickSec: () => SetOpenLogin(true)
         }
     ]
 
@@ -43,11 +44,10 @@ export default function DiaristaCadastro() {
                 </section>
             </main>
             <Footer/>
-
             {/* modals */}
-            <ModalDuvidas isOpen={openModal} setOpenModal={() => setOpenModal(!openModal)}/>
-            <ModalQuemSomos isOpen={quemSomos} setQuemSomos={() => setQuemSomos(!quemSomos)} />
-    
+            <ModalQuemSomos Open={Open} SetOpen={() => SetOpen(!Open)}/>
+            <ModalDuvidas OpenDuvidas={OpenDuvidas} SetOpenDuvidas={() => SetOpenDuvidas(!OpenDuvidas)}/>
+            <ModalLoginDiarista OpenLogin={OpenLogin} SetOpenLogin={() => SetOpenLogin(!OpenLogin)}/>
         </>
     )
 }

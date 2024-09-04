@@ -13,11 +13,10 @@ export default function DiaristaApp() {
     ]
 
     const btnAcess = [
-        { AcessPrim: "Quero ser Diarista", 
+        {   AcessPrim: "Quero ser Diarista", 
             AcessSec: "Área Diarista",
-            LinkPrim: "diarista-cadastro.html",
-            LinkSec: "#",
-            Id: "OpenLoginDiarista"  
+            LinkPrim: "cadastro-diarista",
+            LinkSec: "area-diarista",  
         },
     ]
 
@@ -38,7 +37,7 @@ export default function DiaristaApp() {
                                     <p className='text-white opacity-80'>A <b>Limppay</b> te conecta ao cliente de forma totalmente gratuita</p>
                                 </div>
                                 <div>
-                                    <Button buttonName="Quero ser diarista"/>
+                                    <Button text={"Quero ser diarista"} link={"cadastro-diarista"}/>
                                 </div>
                             </div>
                         </div>
@@ -52,7 +51,7 @@ export default function DiaristaApp() {
                                     <p className='text-white opacity-90'>Entre na sua área para ver seus serviços, valores, avaliações e muito mais.</p>
                                 </div>
                                 <div>
-                                    <Button buttonName="Entrar na área diarista"/>
+                                    <Button text={"Entrar na área diarista"} link={"area-diarista"}/>
                                 </div>
                             </div>
                         </div>                      

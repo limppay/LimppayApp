@@ -96,7 +96,15 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                     <div>
                         <ul className='flex flex-col text-center gap-3'>                         
                             {btnAcess.map((acess, index) => (
-                                <ButtonAcess key={index} AcessPrim={acess.AcessPrim} AcessSec={acess.AcessSec} LinkPrim={acess.LinkPrim} LinkSec={acess.LinkSec}/>
+                                <ButtonAcess 
+                                key={index} 
+                                AcessPrim={acess.AcessPrim} 
+                                AcessSec={acess.AcessSec} 
+                                LinkPrim={acess.LinkPrim} 
+                                LinkSec={acess.LinkSec} 
+                                Class={acess.Class} 
+                                OnClickPrim={acess.OnClickPrim} 
+                                OnClickSec={acess.OnClickSec}/>
                             ))} 
                         </ul>
                     </div>

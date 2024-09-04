@@ -500,7 +500,6 @@ export default function FormDiarista() {
                 {errors.estado && 
                 <span className="text-error opacity-75">{errors.estado?.message}</span>}           
             </div>
-            {/* <SelectForm options={estados} text={"Selecione"} label={"Estado"}/> */}
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Anexos</h2>
             </div>

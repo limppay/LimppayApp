@@ -33,9 +33,9 @@ import Perfil from './Perfil.jsx'
 import FormDiarista from './FormCadastro/FormDiarista.jsx'
 
 // modals
-import ModalLoginDiarista from './modals/ModaLoginDiarista.jsx'
+import ModalQuemSomos from './modals/ModalQueSomos.jsx'
 import ModalDuvidas from './modals/ModalDuvidas.jsx'
-import ModalQuemSomos from './modals/ModalQuemSomos.jsx'
+import ModalLoginDiarista from "./modals/ModaLoginDiarista.jsx"
 
 
 export {
@@ -62,8 +62,8 @@ export {
     CheckForm,
     AnexoForm,
     Perfil,
-    ModalLoginDiarista,
     FormDiarista,
+    ModalQuemSomos,
     ModalDuvidas,
-    ModalQuemSomos
+    ModalLoginDiarista
 }
