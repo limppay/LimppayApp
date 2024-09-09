@@ -1,12 +1,13 @@
 import React from 'react'
 import { Logo,  } from '../../componentes/imports'
-import painel from "../../assets/img/painel.jpg"
+import painel from "../../assets/img/banner-diarista.jpg"
+// fazer validações de login
 
 export default function DaristaLogin() {
   return (
     <>
         <div className='flex h-screen justify-center max-w-full '>
-            <div className='h-screen flex flex-col p-10  shadow-2xl w-full lg:w-5/12 bg-[url(src/assets/img/painel.jpg)] bg-center bg-cover lg:bg-none md:bg-none sm:bg-none md:shadow-none sm:shadow-none'>
+            <div className='h-screen flex flex-col p-10  shadow-2xl w-full lg:w-5/12 bg-[url(src/assets/img/banner-diarista.jpg)] bg-center bg-cover lg:bg-none md:bg-none sm:bg-none md:shadow-none sm:shadow-none'>
                 <main className='flex flex-col gap-10 shadow-lg lg:shadow-none rounded-md p-5 bg-white'>
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                         <img
@@ -33,7 +34,7 @@ export default function DaristaLogin() {
                                 type="email"
                                 required
                                 autoComplete="email"
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
                                 />
                             </div>
                             </div>
@@ -56,7 +57,7 @@ export default function DaristaLogin() {
                                 type="password"
                                 required
                                 autoComplete="current-password"
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
                                 />
                             </div>
                             </div>
@@ -73,7 +74,7 @@ export default function DaristaLogin() {
                     </div>            
                 </main>
             </div>
-            <img src={painel} alt="" className='hidden lg:flex opacity-70 w-full '/>
+            <img src={painel} alt="" className='hidden lg:flex  w-full '/>
         </div>
     </>
   )
