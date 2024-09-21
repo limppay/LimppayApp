@@ -5,25 +5,22 @@ import * as yup from "yup"
 import {useEffect} from 'react'
 import { useState} from "react"
 
-
-
 export default function FormDiarista() {
     // schema de validações do form
     const schema = yup.object({
         // perfil
         bio: yup.string(),
         name: yup.string().required("O nome é obrigatório"),
-
         // dados pessoais
         cpf: yup.string().required("O CPF é obrigatório").min(11, "Digite um CPF válido").matches(/^\d+$/, 'Apenas números').max(11, "CPF deve ter 11 digitos"),
         rg: yup.string().required("O RH é obrigatório").min(8, "Digite um RH válido").matches(/^\d+$/, 'Apenas números').max(8, "RH deve ter 8 digitos"),
         email: yup.string().required("E-mail é obrigatório").email("Email inválido."),
         telefone: yup.string().required("Telefone é obrigatório").min(11, "Digite um telefone válido").matches(/^\d+$/, 'Apenas números'),
+        genero: yup.string().required("Gênero é obrigatório"),
         EstadoCivil: yup.string().required("Estado civil é obrigatório"),
         banco: yup.string().required("Banco é obrigatório"),
         agencia:  yup.string().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
         conta:  yup.string().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
-
         // endereço
         cep:  yup.string().required("CEP é obrigatório").min(8, "Digite um cep válido").matches(/^\d+$/, 'Apenas números'),
         logradouro:  yup.string().required("Logradouro é obrigatório"),
@@ -72,11 +69,22 @@ export default function FormDiarista() {
       })
 
     // onSubmit do Forms
-    const onSubmit = (data) => {
-        console.log(data)
-        reset()
-        // window.location.href = "/seja-diarista.html"
-    }
+    const onSubmit = async (data) => {
+        try {
+            // Enviar os dados do formulário para a API
+            const response = await axios.post('localhost:3000', data);
+            console.log('Dados enviados com sucesso:', response.data);
+            
+            // Resetar o formulário após o envio
+            reset();
+            
+            // Redirecionar ou exibir uma mensagem de sucesso, se necessário
+            // window.location.href = "/seja-diarista.html";
+        } catch (error) {
+            console.error('Erro ao enviar os dados:', error);
+            // Tratar o erro, exibir mensagem de erro, etc.
+        }
+    };
     console.log(errors)
 
     // Função de ativar o botão quando o termo for clicado
@@ -133,6 +141,13 @@ export default function FormDiarista() {
     
 
     // chamar via banco de dados
+    const Genero = [
+        {text: "Masculino"},
+        {text: "Feminino"},
+        {text: "Outro"},
+    ]
+
+
     const EstadoCivil = [
         {text: "Solteiro(a)"},
         {text: "Casado(a)"},
@@ -205,6 +220,20 @@ export default function FormDiarista() {
                     />
                     { errors.name &&
                     <span className="text-error opacity-75">{errors.name?.message}</span>}
+                </div>
+                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                    <label htmlFor="Genero" className="text-prim">Gênero</label>
+                    <select  
+                    id="Genero"
+                    {...register("genero")}
+                    className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
+                        <option value="" >Selecione</option>
+                        {Genero.map((options, index) => (
+                            <option key={index} value={options.text}>{options.text}</option>
+                        ))}
+                    </select>
+                    {errors.genero && 
+                    <span className="text-error opacity-75">{errors.genero?.message}</span>}           
                 </div>
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="cpf" className="text-prim">CPF</label>
