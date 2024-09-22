@@ -4,52 +4,65 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import {useEffect} from 'react'
 import { useState} from "react"
+import { createUser } from "../../services/api.js"
+
+
+/* 
+
+    Atenção: Alguns techos de codigos abaixo foram comentados por motivos de testes.
+
+*/
+
 
 export default function FormDiarista() {
     // schema de validações do form
     const schema = yup.object({
-        // perfil
-        bio: yup.string(),
+        // scheam do prisma na API
+        sobre: yup.string(),
         name: yup.string().required("O nome é obrigatório"),
-        // dados pessoais
-        cpf: yup.string().required("O CPF é obrigatório").min(11, "Digite um CPF válido").matches(/^\d+$/, 'Apenas números').max(11, "CPF deve ter 11 digitos"),
-        rg: yup.string().required("O RH é obrigatório").min(8, "Digite um RH válido").matches(/^\d+$/, 'Apenas números').max(8, "RH deve ter 8 digitos"),
-        email: yup.string().required("E-mail é obrigatório").email("Email inválido."),
-        telefone: yup.string().required("Telefone é obrigatório").min(11, "Digite um telefone válido").matches(/^\d+$/, 'Apenas números'),
         genero: yup.string().required("Gênero é obrigatório"),
-        EstadoCivil: yup.string().required("Estado civil é obrigatório"),
-        banco: yup.string().required("Banco é obrigatório"),
-        agencia:  yup.string().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
-        conta:  yup.string().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
-        // endereço
+        estadoCivil: yup.number().required("Estado civil é obrigatório"),
+        telefone: yup.string().required("Telefone é obrigatório").min(11, "Digite um telefone válido").matches(/^\d+$/, 'Apenas números'),
+        email: yup.string().required("E-mail é obrigatório").email("Email inválido."),
         cep:  yup.string().required("CEP é obrigatório").min(8, "Digite um cep válido").matches(/^\d+$/, 'Apenas números'),
         logradouro:  yup.string().required("Logradouro é obrigatório"),
         numero:  yup.string().required("Número é obrigatório"),
         complemento:  yup.string(),
-        pontoRef:  yup.string(),
         bairro:  yup.string().required("Bairro é obrigatório"),
         cidade:  yup.string().required("Cidade é obrigatório"),
-        estado: yup.string().required("Estado é obrigatório"),
+        estado: yup.number().required("Estado é obrigatório"),
+        cpfCnpj: yup.string().required("O CPF é obrigatório").min(11, "Digite um CPF válido").matches(/^\d+$/, 'Apenas números').max(11, "CPF deve ter 11 digitos"),
+        rg: yup.string().required("O RH é obrigatório").min(8, "Digite um RH válido").matches(/^\d+$/, 'Apenas números').max(8, "RH deve ter 8 digitos"),
+        banco: yup.number().required("Banco é obrigatório"),
+        agencia:  yup.string().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
+        conta:  yup.string().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
+        senha: yup.string().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
 
-        // senha
-        password: yup.string().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
-        confirmPassword: yup.string().required("Confirme sua senha").oneOf([yup.ref("password")], "As senhas devem ser iguais"),
+        // o banco de dados não tem um campo para "confirmPassword", então removi temporariamente.
+        // confirmPassword: yup.string().required("Confirme sua senha").oneOf([yup.ref("senha")], "As senhas devem ser iguais"),
 
-        // termo
-        termo: yup.boolean().required("Aceite os termos"),
 
+        referencia:  yup.string(),
+        endereco: yup.string().required("Endereço é obrigatório"),
+
+        // o banco de dados não tem um campo para "termo", então removi temporariamente.
+        // termo: yup.boolean().required("Aceite os termos"),
+
+        // a regra de negocio para os dias da semana, ainda ta em processo de revisão.
         // Dias da semana
-        domingo: yup.boolean(),
-        segunda: yup.boolean(),
-        terca: yup.boolean(),
-        quarta: yup.boolean(),
-        quinta: yup.boolean(),
-        sexta: yup.boolean(),
-        sabado: yup.boolean(),
-        diasSemana: yup.boolean().test('at-least-one-day', 'Selecione pelo menos um dia', function () {
-            const { domingo, segunda, terca, quarta, quinta, sexta, sabado } = this.parent
-            return domingo || segunda || terca || quarta || quinta || sexta || sabado
-        }),
+        // domingo: yup.boolean(),
+        // segunda: yup.boolean(),
+        // terca: yup.boolean(),
+        // quarta: yup.boolean(),
+        // quinta: yup.boolean(),
+        // sexta: yup.boolean(),
+        // sabado: yup.boolean(),
+        // diasSemana: yup.boolean().test('at-least-one-day', 'Selecione pelo menos um dia', function () {
+        //     const { domingo, segunda, terca, quarta, quinta, sexta, sabado } = this.parent
+        //     return domingo || segunda || terca || quarta || quinta || sexta || sabado
+        // }),
+
+
     })
     .required()
     
@@ -71,23 +84,17 @@ export default function FormDiarista() {
     // onSubmit do Forms
     const onSubmit = async (data) => {
         try {
-            // Enviar os dados do formulário para a API
-            const response = await axios.post('localhost:3000', data);
-            console.log('Dados enviados com sucesso:', response.data);
-            
-            // Resetar o formulário após o envio
-            reset();
-            
-            // Redirecionar ou exibir uma mensagem de sucesso, se necessário
-            // window.location.href = "/seja-diarista.html";
+          const response = await createUser(data); // Chama a função do serviço
+          console.log('Usuário criado com sucesso:', response.data);
+          reset()
         } catch (error) {
-            console.error('Erro ao enviar os dados:', error);
-            // Tratar o erro, exibir mensagem de erro, etc.
+          console.error('Erro ao criar o usuário:', error);
         }
-    };
+
+      };
     console.log(errors)
 
-    // Função de ativar o botão quando o termo for clicado
+    // // Função de ativar o botão quando o termo for clicado
     useEffect(() => {
         const buttonSubmit = document.getElementById("buttonSubmit")
         const checkTermos = document.getElementById("termo")
@@ -97,47 +104,47 @@ export default function FormDiarista() {
         }
     })
 
-    // função para selecionar os dias da semana
-    useEffect(() => {
-        const selectDays = document.getElementById("selectDays")
-        const days = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
+    // // função para selecionar os dias da semana
+    // useEffect(() => {
+    //     const selectDays = document.getElementById("selectDays")
+    //     const days = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
 
-        const updateButtonState = () => {
-            const allChecked = days.every(day => getValues(day))
-            selectDays.value = allChecked ? "Desmarcar todos os dias" : "Selecionar todos os dias"
-        };
+    //     const updateButtonState = () => {
+    //         const allChecked = days.every(day => getValues(day))
+    //         selectDays.value = allChecked ? "Desmarcar todos os dias" : "Selecionar todos os dias"
+    //     };
 
-        selectDays.onclick = () => {
-            const allChecked = days.every(day => getValues(day));
-            days.forEach(day => {
-                setValue(day, !allChecked)
-            })
-            updateButtonState()
-        };
+    //     selectDays.onclick = () => {
+    //         const allChecked = days.every(day => getValues(day));
+    //         days.forEach(day => {
+    //             setValue(day, !allChecked)
+    //         })
+    //         updateButtonState()
+    //     };
 
-        updateButtonState()
-    }, [setValue, getValues])
+    //     updateButtonState()
+    // }, [setValue, getValues])
 
-    // função para validar se algum dia foi selecionado ou não
-    useEffect(() => {
-        const daysCheckboxes = document.querySelectorAll(".days")
-        daysCheckboxes.forEach((checkbox) => {
-            checkbox.addEventListener('change', () => {
-                const allDays = Array.from(daysCheckboxes).map(cb => cb.checked)
-                if (allDays.some(day => day)) {
-                    clearErrors('diasSemana')
-                } else {
-                    setError('diasSemana', { message: 'Selecione pelo menos um dia' })
-                }
-            });
-        });
+    // // função para validar se algum dia foi selecionado ou não
+    // useEffect(() => {
+    //     const daysCheckboxes = document.querySelectorAll(".days")
+    //     daysCheckboxes.forEach((checkbox) => {
+    //         checkbox.addEventListener('change', () => {
+    //             const allDays = Array.from(daysCheckboxes).map(cb => cb.checked)
+    //             if (allDays.some(day => day)) {
+    //                 clearErrors('diasSemana')
+    //             } else {
+    //                 setError('diasSemana', { message: 'Selecione pelo menos um dia' })
+    //             }
+    //         });
+    //     });
 
-        return () => {
-            daysCheckboxes.forEach((checkbox) => {
-                checkbox.removeEventListener('change', () => {})
-            });
-        };
-    }, [clearErrors, setError])
+    //     return () => {
+    //         daysCheckboxes.forEach((checkbox) => {
+    //             checkbox.removeEventListener('change', () => {})
+    //         });
+    //     };
+    // }, [clearErrors, setError])
     
 
     // chamar via banco de dados
@@ -149,20 +156,20 @@ export default function FormDiarista() {
 
 
     const EstadoCivil = [
-        {text: "Solteiro(a)"},
-        {text: "Casado(a)"},
-        {text: "Divorciado(a)"},
-        {text: "Viúvo(a)"},
-        {text: "Separado(a)"},
+        {text: "Solteiro(a)", value: 1},
+        {text: "Casado(a)", value: 2},
+        {text: "Divorciado(a)", value: 3},
+        {text: "Viúvo(a)", value: 4},
+        {text: "Separado(a)", value: 5},
     ]
 
     const Banco = [
-        {text: "Santander"}
+        {text: "Santander", value: 1}
 
     ]
 
     const Estados = [
-        {text: "Amazonas"}
+        {text: "Amazonas", value: 1}
     ]
 
     // profile
@@ -203,7 +210,7 @@ export default function FormDiarista() {
                     <label htmlFor="biografia" className="text-prim">Sobre mim</label>
                     <textarea  
                     id="biografia"
-                    {...register("bio")} 
+                    {...register("sobre")} 
                     className="border rounded-md border-bord p-3 pt-1 pb-1 min-h-20 lg:min-h-40 focus:outline-ter text-prim lg:max-w-full max-h-1"></textarea>
                 </div>
             </div>
@@ -242,10 +249,10 @@ export default function FormDiarista() {
                     id="cpf" 
                     type="text" 
                     placeholder="Somente números" 
-                    {...register("cpf")}
+                    {...register("cpfCnpj")}
                     />
-                    {errors.cpf && 
-                    <span className="text-error opacity-75">{errors.cpf?.message}</span>}
+                    {errors.cpfCnpj && 
+                    <span className="text-error opacity-75">{errors.cpfCnpj?.message}</span>}
                 </div>
             
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
@@ -291,15 +298,15 @@ export default function FormDiarista() {
                     <label htmlFor="EstadoCivil" className="text-prim">Estado Civil</label>
                     <select  
                     id="EstadoCivil"
-                    {...register("EstadoCivil")}
+                    {...register("estadoCivil")}
                     className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
                         <option value="" >Selecione</option>
                         {EstadoCivil.map((options, index) => (
-                            <option key={index} value={options.text}>{options.text}</option>
+                            <option key={index} value={options.value}>{options.text}</option>
                         ))}
                     </select>
-                    {errors.EstadoCivil && 
-                    <span className="text-error opacity-75">{errors.EstadoCivil?.message}</span>}           
+                    {errors.estadoCivil && 
+                    <span className="text-error opacity-75">{errors.estadoCivil?.message}</span>}           
                 </div>
             </div>
             <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
@@ -310,7 +317,7 @@ export default function FormDiarista() {
                 className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
                     <option value="" >Selecione</option>
                     {Banco.map((options, index) => (
-                        <option key={index} value={options.text}>{options.text}</option>
+                        <option key={index} value={options.value}>{options.text}</option>
                     ))}
                 </select>
                 {errors.banco && 
@@ -344,7 +351,9 @@ export default function FormDiarista() {
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h3 className="text-xl text-desSec">Disponibilidade e serviços</h3>
             </div>
-            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col text-prim">
+
+
+            {/* <div className="mt-4 p-9 pt-0 pb-0 flex flex-col text-prim">
                 <p><b>Dias disponíveis para trabalhar</b></p>
                 <div className="mt-2">
                     <input id="selectDays" type="button" value="Selecionar todos os dias" className="p-2 border border-bord rounded-md cursor-pointer"/>
@@ -422,7 +431,9 @@ export default function FormDiarista() {
                     {errors.diasSemana && <p className="text-error opacity-75">{errors.diasSemana.message}</p>}
                 </div>
              
-            </div>
+            </div> */}
+
+
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Endereço</h2>
             </div>
@@ -439,6 +450,18 @@ export default function FormDiarista() {
                     />
                     {errors.cep && 
                     <span className="text-error opacity-75">{errors.cep?.message}</span>}
+                </div>
+                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                    <label htmlFor="endereco" className="text-prim">Endereço</label>
+                    <input 
+                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                    id="endereco" 
+                    type="text" 
+                    placeholder="Digite seu endereço" 
+                    {...register("endereco")}
+                    />
+                    {errors.endereco && 
+                    <span className="text-error opacity-75">{errors.endereco?.message}</span>}
                 </div>
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="logradouro" className="text-prim">Logradouro</label>
@@ -485,10 +508,10 @@ export default function FormDiarista() {
                     id="pontoRef" 
                     type="text" 
                     placeholder="" 
-                    {...register("pontoRef")}
+                    {...register("referencia")}
                     />
                     {errors.pontoRef && 
-                    <span className="text-error opacity-75">{errors.pontoRef?.message}</span>}
+                    <span className="text-error opacity-75">{errors.referencia?.message}</span>}
                 </div>
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="bairro" className="text-prim">Bairro</label>
@@ -523,7 +546,7 @@ export default function FormDiarista() {
                 className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
                     <option value="" >Selecione</option>
                     {Estados.map((options, index) => (
-                        <option key={index} value={options.text}>{options.text}</option>
+                        <option key={index} value={options.value}>{options.text}</option>
                     ))}
                 </select>
                 {errors.estado && 
@@ -532,11 +555,17 @@ export default function FormDiarista() {
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Anexos</h2>
             </div>
-            <AnexoForm name={"docIdt"} text={"RG ou CNH"} span={"(frente e verso)"}/>
+
+
+            {/* O fluxo para salvar arquivos no banco de dados, ainda ta em andamento, por motivos de teste o mesmo foi desabilitado*/}
+
+            {/* <AnexoForm name={"docIdt"} text={"RG ou CNH"} span={"(frente e verso)"}/>
             <AnexoForm name={"docCpf"} text={"CPF"} span={"(frente e verso)"}/>
             <AnexoForm name={"docResidencia"} text={"Comprovante de residência"} span={""}/>
             <AnexoForm name={"docBancario"} text={"Comprovante bancário"} span={""}/>
-            <AnexoForm name={"docCurriculo"} text={"Currículo"} span={""}/>
+            <AnexoForm name={"docCurriculo"} text={"Currículo"} span={""}/> */}
+
+
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Senha</h2>
             </div>
@@ -547,12 +576,14 @@ export default function FormDiarista() {
                 id="password" 
                 type="password"
                 placeholder="" 
-                {...register("password")}
+                {...register("senha")}
                 />
                 {errors.password && 
-                <span className="text-error opacity-75">{errors.password?.message}</span>}
+                <span className="text-error opacity-75">{errors.senha?.message}</span>}
             </div>
-            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+
+
+            {/* <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                 <label htmlFor="confirmPassword" className="text-prim">Confirmar Senha</label>
                 <input 
                 className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
@@ -563,14 +594,17 @@ export default function FormDiarista() {
                 />
                 {errors.confirmPassword && 
                 <span className="text-error opacity-75">{errors.confirmPassword?.message}</span>}
-            </div>
+            </div> */}
+
 
             <div className="mt-4 text-prim pr-9 pl-9">
                 <div className="flex gap-2 items-baseline">
                     <input 
                     type="checkbox" 
                     id="termo" 
-                    {...register("termo")} 
+
+                    // {...register("termo")} 
+
                     />
                     <label htmlFor="termo">Concordo com os termos de uso e contrato de serviço - <a href="#" className="text-des">Ver termos</a></label>
                 </div>

@@ -1,10 +1,17 @@
-import axios from "axios"
+import axios from 'axios';
 
-export const api = axios.create({
-    baseURL: "http://localhost:3000"
-})
+// Cria a instância do Axios
+const api = axios.create({
+  baseURL: 'http://localhost:3000', // URL base da sua API
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  //timeout: 10000
+});
 
 export const createUser = async (userData) => {
-    const response = await api.post('/users', userData);
-    return response.data;
-}
+  return await api.post('/users', userData);
+};
+
+
+export default api;
