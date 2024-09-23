@@ -1,4 +1,3 @@
-import { AnexoForm } from "../imports.jsx"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
@@ -18,13 +17,13 @@ export default function FormDiarista() {
     // schema de validações do form
     const schema = yup.object({
         // scheam do prisma na API
-        sobre: yup.string(),
         name: yup.string().required("O nome é obrigatório"),
         genero: yup.string().required("Gênero é obrigatório"),
         estadoCivil: yup.number().required("Estado civil é obrigatório"),
         telefone: yup.string().required("Telefone é obrigatório").min(11, "Digite um telefone válido").matches(/^\d+$/, 'Apenas números'),
         email: yup.string().required("E-mail é obrigatório").email("Email inválido."),
         cep:  yup.string().required("CEP é obrigatório").min(8, "Digite um cep válido").matches(/^\d+$/, 'Apenas números'),
+        endereco: yup.string().required("Endereço é obrigatório"),
         logradouro:  yup.string().required("Logradouro é obrigatório"),
         numero:  yup.string().required("Número é obrigatório"),
         complemento:  yup.string(),
@@ -37,14 +36,17 @@ export default function FormDiarista() {
         agencia:  yup.string().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
         conta:  yup.string().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
         senha: yup.string().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
+        sobre: yup.string(),
+        referencia:  yup.string(),
+        arquivoFoto: yup.mixed().required("Foto de perfil é obrigatório"),
+        arquivodt: yup.mixed().required("Identidade é obrigatório"),
+        arquivoCpf: yup.mixed().required("CPF é obrigatório"),
+        arquivoResidencia: yup.mixed().required("Comprovante de residência é obrigatório"),
+        arquivoCurriculo: yup.mixed().required("Currículo é obrigatório"),
 
         // o banco de dados não tem um campo para "confirmPassword", então removi temporariamente.
         // confirmPassword: yup.string().required("Confirme sua senha").oneOf([yup.ref("senha")], "As senhas devem ser iguais"),
-
-
-        referencia:  yup.string(),
-        endereco: yup.string().required("Endereço é obrigatório"),
-
+        
         // o banco de dados não tem um campo para "termo", então removi temporariamente.
         // termo: yup.boolean().required("Aceite os termos"),
 
@@ -66,11 +68,11 @@ export default function FormDiarista() {
     })
     .required()
     
-    
     // Hook Forms
     const {
         register,
         handleSubmit,
+        trigger,
         formState: { errors },
         reset,
         setValue, 
@@ -83,10 +85,39 @@ export default function FormDiarista() {
 
     // onSubmit do Forms
     const onSubmit = async (data) => {
+        console.log(data)
+        const formData = new FormData()
+        formData.append('name', data.name)
+        formData.append('genero', data.genero)
+        formData.append('estadoCivil', data.estadoCivil)
+        formData.append('telefone', data.telefone)
+        formData.append('email', data.email)
+        formData.append('cep', data.cep)
+        formData.append('endereco', data.endereco)
+        formData.append('logradouro', data.logradouro)
+        formData.append('numero', data.numero)
+        formData.append('complemento', data.complemento)
+        formData.append('bairro', data.bairro)
+        formData.append('cidade', data.cidade)
+        formData.append('estado', data.estado)
+        formData.append('cpfCnpj', data.cpfCnpj)
+        formData.append('rg', data.rg)
+        formData.append('banco', data.banco)
+        formData.append('agencia', data.agencia)
+        formData.append('conta', data.conta)
+        formData.append('senha', data.senha)
+        formData.append('sobre', data.sobre)
+        formData.append('referencia', data.referencia)
+
+        formData.append('arquivoFoto', data.arquivoFoto[0]);
+        formData.append('arquivodt', data.arquivodt[0]);
+        formData.append('arquivoCpf', data.arquivoCpf[0]);
+        formData.append('arquivoResidencia', data.arquivoResidencia[0]);
+        formData.append('arquivoCurriculo', data.arquivoCurriculo[0]);
+
         try {
-          const response = await createUser(data); // Chama a função do serviço
+          const response = await createUser(formData);
           console.log('Usuário criado com sucesso:', response.data);
-          reset()
         } catch (error) {
           console.error('Erro ao criar o usuário:', error);
         }
@@ -94,7 +125,8 @@ export default function FormDiarista() {
       };
     console.log(errors)
 
-    // // Função de ativar o botão quando o termo for clicado
+    // Funções
+    // Função de ativar o botão quando o termo for clicado
     useEffect(() => {
         const buttonSubmit = document.getElementById("buttonSubmit")
         const checkTermos = document.getElementById("termo")
@@ -103,8 +135,8 @@ export default function FormDiarista() {
             buttonSubmit.classList.toggle("opacity-50")
         }
     })
+    // função para selecionar os dias da semana
 
-    // // função para selecionar os dias da semana
     // useEffect(() => {
     //     const selectDays = document.getElementById("selectDays")
     //     const days = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
@@ -147,13 +179,12 @@ export default function FormDiarista() {
     // }, [clearErrors, setError])
     
 
-    // chamar via banco de dados
+    // Arrays
     const Genero = [
         {text: "Masculino"},
         {text: "Feminino"},
         {text: "Outro"},
     ]
-
 
     const EstadoCivil = [
         {text: "Solteiro(a)", value: 1},
@@ -172,12 +203,35 @@ export default function FormDiarista() {
         {text: "Amazonas", value: 1}
     ]
 
-    // profile
+    // states
     const [image, setImage] = useState("src/assets/img/diarista-cadastro/user.png")
-    // estou transformando o objeto/arquivo ( imagem ), em um link, para depois utilizar ele
+    const [fileNames, setFileNames] = useState({
+        docIdt: "Arquivo não selecionado",
+        docCpf: "Arquivo não selecionado",
+        docResidencia: "Arquivo não selecionado",
+        docCurriculo: "Arquivo não selecionado",
+      });
+      
+    // Handles
     const handleImageChange = (event) => {
-        setImage(URL.createObjectURL(event.target.files[0]));
-    }
+        const file = event.target.files[0];
+        if (file) {
+          const imageUrl = URL.createObjectURL(file);
+          setImage(imageUrl);
+          setValue("arquivoFoto", file); // Armazenando o arquivo no formulário
+          trigger("arquivoFoto"); // Forçando a validação do campo
+        }
+      };
+    
+    
+    const handleNameChange = (event) => {
+        const { name, files } = event.target;
+        const file = files[0];
+        setFileNames((prevFileNames) => ({
+          ...prevFileNames,
+          [name]: file ? file.name : "Arquivo não selecionado",
+        }));
+      };
      
   return (
     <>
@@ -196,16 +250,29 @@ export default function FormDiarista() {
                             />                  
                             <input 
                             type="file" 
-                            name="photoProfile" 
-                            id="fotoPerfil" 
-                            accept="image/*" 
+                            id="fotoPerfil"
+                            accept="image/*"
+                            
                             onChange={handleImageChange} 
                             className=" p-2 w-full hidden"
                             />                      
                         </label>
-                        <span className="text-prim">Foto de perfil</span>  
+                        <span className="text-prim">Foto de perfil</span>
+                        {errors.arquivoFoto && 
+                        <span className="text-error opacity-75">{errors.arquivoFoto?.message}</span>}
+
                     </div>
                 </div>
+
+                <input 
+                type="file" 
+                id="teste"
+                accept="image/*"
+                {...register("arquivoFoto", { required: "Foto de perfil é obrigatório" })} 
+                onChange={handleImageChange} 
+                className=" p-2 w-full"
+                />  
+                
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col lg:mt-0 lg:w-1/2 lg:p-0 lg:mb-10 max-w-full">
                     <label htmlFor="biografia" className="text-prim">Sobre mim</label>
                     <textarea  
@@ -214,6 +281,7 @@ export default function FormDiarista() {
                     className="border rounded-md border-bord p-3 pt-1 pb-1 min-h-20 lg:min-h-40 focus:outline-ter text-prim lg:max-w-full max-h-1"></textarea>
                 </div>
             </div>
+            
 
             <div className="lg:flex">
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
@@ -555,16 +623,98 @@ export default function FormDiarista() {
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Anexos</h2>
             </div>
-
-
+            
             {/* O fluxo para salvar arquivos no banco de dados, ainda ta em andamento, por motivos de teste o mesmo foi desabilitado*/}
 
-            {/* <AnexoForm name={"docIdt"} text={"RG ou CNH"} span={"(frente e verso)"}/>
-            <AnexoForm name={"docCpf"} text={"CPF"} span={"(frente e verso)"}/>
-            <AnexoForm name={"docResidencia"} text={"Comprovante de residência"} span={""}/>
-            <AnexoForm name={"docBancario"} text={"Comprovante bancário"} span={""}/>
-            <AnexoForm name={"docCurriculo"} text={"Currículo"} span={""}/> */}
+            <div className="mt-4 text-prim pr-9 pl-9">
+                <label htmlFor="docIdt">
+                    RG ou CNH
+                    <span className="ml-2">(Frente e verso)</span>
+                    <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
+                        <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
+                            <p>Selecione o arquivo</p>
+                            <input 
+                            type="file" 
+                            {...register("arquivodt")} 
+                            id="docIdt"  
+                            accept="application/pdf, image/*" 
+                            className=" p-2 w-full hidden" 
+                            onChange={handleNameChange}/>
+                        </div>
+                        <div className="flex  overflow-hidden lg:text-start">
+                            <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docIdt}</span>
+                        </div>
+                    </div>           
+                </label>
+                {errors.arquivodt && 
+                <span className="text-error opacity-75">{errors.arquivodt?.message}</span>}       
+            </div>
 
+            <div className="mt-4 text-prim pr-9 pl-9">
+                <label htmlFor="docCpf">
+                    CPF
+                    <span className="ml-2">(Frente e verso)</span>
+                    <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
+                        <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
+                            <p>Selecione o arquivo</p>
+                            <input 
+                            type="file" 
+                            name="docCpf" 
+                            id="docCpf"  
+                            accept="application/pdf, image/*" 
+                            className=" p-2 w-full hidden" 
+                            onChange={handleNameChange}/>
+                        </div>
+                        <div className="flex  overflow-hidden lg:text-start">
+                            <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docCpf}</span>
+                        </div>
+                    </div>           
+                </label>       
+            </div>
+
+            <div className="mt-4 text-prim pr-9 pl-9">
+                <label htmlFor="docResidencia">
+                    Comprovante de residência
+                    <span className="ml-2"></span>
+                    <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
+                        <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
+                            <p>Selecione o arquivo</p>
+                            <input 
+                            type="file" 
+                            name="docResidencia" 
+                            id="docResidencia"  
+                            accept="application/pdf, image/*" 
+                            className=" p-2 w-full hidden" 
+                            onChange={handleNameChange}/>
+                        </div>
+                        <div className="flex  overflow-hidden lg:text-start">
+                            <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docResidencia}</span>
+                        </div>
+                    </div>           
+                </label>       
+            </div>
+
+            <div className="mt-4 text-prim pr-9 pl-9">
+                <label htmlFor="docCurriculo">
+                    Currículo
+                    <span className="ml-2"></span>
+                    <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
+                        <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
+                            <p>Selecione o arquivo</p>
+                            <input 
+                            type="file" 
+                            name="docCurriculo" 
+                            id="docCurriculo"  
+                            accept="application/pdf, image/*" 
+                            className=" p-2 w-full hidden" 
+                            onChange={handleNameChange}/>
+                        </div>
+                        <div className="flex  overflow-hidden lg:text-start">
+                            <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docCurriculo}</span>
+                        </div>
+                    </div>           
+                </label>       
+            </div>
 
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Senha</h2>
