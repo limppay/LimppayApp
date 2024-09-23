@@ -695,7 +695,7 @@ export default function FormDiarista() {
                             className=" p-2 w-full hidden" 
                             onChange={(e) => {
                                 const file = e.target.files[0]; // Pega o arquivo selecionado
-                                handleNameChange(e)
+                                handleNameChange(e); // Exibe o nome do arquivo
                                 setValue("arquivodt", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
                               }}/>
                         </div>
@@ -723,8 +723,8 @@ export default function FormDiarista() {
                             className=" p-2 w-full hidden" 
                             onChange={(e) => {
                                 const file = e.target.files[0]; // Pega o arquivo selecionado
-                                handleImageChange(e); // Exibe a imagem
-                                setValue("docCpf", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                                handleNameChange(e); // Exibe o nome do arquivo
+                                setValue("arquivoCpf", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
                               }}/>
                         </div>
                         <div className="flex  overflow-hidden lg:text-start">
@@ -752,8 +752,8 @@ export default function FormDiarista() {
                             className=" p-2 w-full hidden" 
                             onChange={(e) => {
                                 const file = e.target.files[0]; // Pega o arquivo selecionado
-                                handleImageChange(e); // Exibe a imagem
-                                setValue("docResidencia", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                                handleNameChange(e); // Exibe o nome do arquivo
+                                setValue("arquivoResidencia", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
                               }}/>
                         </div>
                         <div className="flex  overflow-hidden lg:text-start">
@@ -781,8 +781,8 @@ export default function FormDiarista() {
                             className=" p-2 w-full hidden" 
                             onChange={(e) => {
                                 const file = e.target.files[0]; // Pega o arquivo selecionado
-                                
-                                setValue("docCurriculo", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                                handleNameChange(e); // Exibe o nome do arquivo
+                                setValue("arquivoCurriculo", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
                               }}/>
                         </div>
                         <div className="flex  overflow-hidden lg:text-start">
