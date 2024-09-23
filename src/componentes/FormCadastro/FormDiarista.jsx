@@ -38,11 +38,66 @@ export default function FormDiarista() {
         senha: yup.string().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
         sobre: yup.string(),
         referencia:  yup.string(),
-        arquivoFoto: yup.mixed().required("Foto de perfil é obrigatório"),
-        arquivodt: yup.mixed().required("Identidade é obrigatório"),
-        arquivoCpf: yup.mixed().required("CPF é obrigatório"),
-        arquivoResidencia: yup.mixed().required("Comprovante de residência é obrigatório"),
-        arquivoCurriculo: yup.mixed().required("Currículo é obrigatório"),
+
+        arquivoFoto: yup
+            .mixed()
+            .test("required", "Foto de perfil é obrigatório", (value) => {
+                return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+                return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+                return value && ['image/jpeg', 'image/png'].includes(value.type); // Limita os tipos permitidos
+        }),
+
+        arquivodt: yup
+            .mixed()
+            .test("required", "A Identidade é obrigatória", (value) => {
+            return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
+            }),
+
+        arquivoCpf: yup
+            .mixed()
+            .test("required", "CPF é obrigatório", (value) => {
+            return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
+            }),
+
+        arquivoResidencia: yup
+            .mixed()
+            .test("required", "Comprovante de Residência é obrigatório", (value) => {
+            return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
+            }),
+
+        arquivoCurriculo: yup
+            .mixed()
+            .test("required", "Curriculo é obrigatório", (value) => {
+            return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
+            }),
 
         // o banco de dados não tem um campo para "confirmPassword", então removi temporariamente.
         // confirmPassword: yup.string().required("Confirme sua senha").oneOf([yup.ref("senha")], "As senhas devem ser iguais"),
@@ -249,29 +304,28 @@ export default function FormDiarista() {
                             className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
                             />                  
                             <input 
-                            type="file" 
-                            id="fotoPerfil"
-                            accept="image/*"
-                            
-                            onChange={handleImageChange} 
-                            className=" p-2 w-full hidden"
+                                type="file" 
+                                id="fotoPerfil"
+                                accept="image/*"
+                                {...register("arquivoFoto")}
+                                onChange={(e) => {
+                                    const file = e.target.files[0]; // Pega o arquivo selecionado
+                                    handleImageChange(e); // Exibe a imagem
+                                    setValue("arquivoFoto", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                                  }}
+                                  className="p-2 w-full hidden"
                             />                      
                         </label>
                         <span className="text-prim">Foto de perfil</span>
-                        {errors.arquivoFoto && 
-                        <span className="text-error opacity-75">{errors.arquivoFoto?.message}</span>}
+                        {errors.arquivoFoto && (
+                            <span className="text-error opacity-75">{errors.arquivoFoto.message}</span>
+                        )}
+
 
                     </div>
                 </div>
 
-                <input 
-                type="file" 
-                id="teste"
-                accept="image/*"
-                {...register("arquivoFoto", { required: "Foto de perfil é obrigatório" })} 
-                onChange={handleImageChange} 
-                className=" p-2 w-full"
-                />  
+
                 
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col lg:mt-0 lg:w-1/2 lg:p-0 lg:mb-10 max-w-full">
                     <label htmlFor="biografia" className="text-prim">Sobre mim</label>
@@ -635,11 +689,15 @@ export default function FormDiarista() {
                             <p>Selecione o arquivo</p>
                             <input 
                             type="file" 
-                            {...register("arquivodt")} 
+                            name="docIdt"
                             id="docIdt"  
                             accept="application/pdf, image/*" 
                             className=" p-2 w-full hidden" 
-                            onChange={handleNameChange}/>
+                            onChange={(e) => {
+                                const file = e.target.files[0]; // Pega o arquivo selecionado
+                                handleNameChange(e)
+                                setValue("arquivodt", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                              }}/>
                         </div>
                         <div className="flex  overflow-hidden lg:text-start">
                             <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docIdt}</span>
@@ -663,13 +721,20 @@ export default function FormDiarista() {
                             id="docCpf"  
                             accept="application/pdf, image/*" 
                             className=" p-2 w-full hidden" 
-                            onChange={handleNameChange}/>
+                            onChange={(e) => {
+                                const file = e.target.files[0]; // Pega o arquivo selecionado
+                                handleImageChange(e); // Exibe a imagem
+                                setValue("docCpf", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                              }}/>
                         </div>
                         <div className="flex  overflow-hidden lg:text-start">
                             <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docCpf}</span>
                         </div>
                     </div>           
-                </label>       
+                </label> 
+                {errors.arquivoCpf && (
+                    <span className="text-error opacity-75">{errors.arquivoCpf.message}</span>
+                )}      
             </div>
 
             <div className="mt-4 text-prim pr-9 pl-9">
@@ -685,13 +750,20 @@ export default function FormDiarista() {
                             id="docResidencia"  
                             accept="application/pdf, image/*" 
                             className=" p-2 w-full hidden" 
-                            onChange={handleNameChange}/>
+                            onChange={(e) => {
+                                const file = e.target.files[0]; // Pega o arquivo selecionado
+                                handleImageChange(e); // Exibe a imagem
+                                setValue("docResidencia", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                              }}/>
                         </div>
                         <div className="flex  overflow-hidden lg:text-start">
                             <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docResidencia}</span>
                         </div>
                     </div>           
-                </label>       
+                </label>  
+                {errors.arquivoResidencia && (
+                    <span className="text-error opacity-75">{errors.arquivoResidencia.message}</span>
+                )}      
             </div>
 
             <div className="mt-4 text-prim pr-9 pl-9">
@@ -707,13 +779,20 @@ export default function FormDiarista() {
                             id="docCurriculo"  
                             accept="application/pdf, image/*" 
                             className=" p-2 w-full hidden" 
-                            onChange={handleNameChange}/>
+                            onChange={(e) => {
+                                const file = e.target.files[0]; // Pega o arquivo selecionado
+                                
+                                setValue("docCurriculo", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                              }}/>
                         </div>
                         <div className="flex  overflow-hidden lg:text-start">
                             <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docCurriculo}</span>
                         </div>
                     </div>           
-                </label>       
+                </label>    
+                {errors.arquivoCurriculo && (
+                    <span className="text-error opacity-75">{errors.arquivoCurriculo.message}</span>
+                )}    
             </div>
 
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
