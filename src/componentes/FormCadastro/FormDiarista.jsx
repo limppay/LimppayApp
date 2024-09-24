@@ -164,11 +164,11 @@ export default function FormDiarista() {
         formData.append('sobre', data.sobre)
         formData.append('referencia', data.referencia)
 
-        formData.append('arquivoFoto', data.arquivoFoto[0]);
-        formData.append('arquivodt', data.arquivodt[0]);
-        formData.append('arquivoCpf', data.arquivoCpf[0]);
-        formData.append('arquivoResidencia', data.arquivoResidencia[0]);
-        formData.append('arquivoCurriculo', data.arquivoCurriculo[0]);
+        formData.append('arquivoFoto', data.arquivoFoto);
+        formData.append('arquivodt', data.arquivodt);
+        formData.append('arquivoCpf', data.arquivoCpf);
+        formData.append('arquivoResidencia', data.arquivoResidencia);
+        formData.append('arquivoCurriculo', data.arquivoCurriculo);
 
         try {
           const response = await createUser(formData);
