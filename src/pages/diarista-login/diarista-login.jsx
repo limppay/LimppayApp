@@ -3,6 +3,8 @@ import { Logo,  } from '../../componentes/imports'
 import painel from "../../assets/img/banner-diarista.jpg"
 import { login } from '../../services/api'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 // fazer validações de login
 
 export default function DaristaLogin() {
@@ -10,18 +12,21 @@ export default function DaristaLogin() {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const success = await login(email, senha);
-        if (!success) {
-            setError('Email ou senha inválidos.');
+      
+        const { access_token, userId } = await login(email, senha);
+        if (!access_token) {
+          setError('Email ou senha inválidos.');
         } else {
-            // Redirecionar ou fazer outras ações após o login
-            console.log('Login bem-sucedido!');
+          // Redirecionar ou fazer outras ações após o login
+          console.log('Login bem-sucedido!', { access_token, userId });
+          navigate('/user-profile'); // Redirecionar para a página de dashboard ou outra página
         }
-    };
+      };
+      
 
 
   return (

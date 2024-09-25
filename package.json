@@ -20,7 +20,7 @@
     "react-hook-form": "^7.53.0",
     "react-imask": "^7.6.1",
     "react-input-mask": "^2.0.4",
-    "react-router-dom": "^6.26.1",
+    "react-router-dom": "^6.26.2",
     "yup": "^1.4.0"
   },
   "devDependencies": {

@@ -8,6 +8,7 @@ import DiaristaApp from './pages/seja-diarista/diarista-app'
 import DiaristaCadastro from './pages/diarista-cadastro/diarista-cadastro-app'
 import Error404 from './Error404'
 import DaristaLogin from './pages/diarista-login/diarista-login'
+import AreaDiarista from './pages/area-diarista/area-diarista'
 // 3 - rotas
 const router = createBrowserRouter([
     {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
     {
       path: "diarista-login",
       element: <DaristaLogin/>
+    },
+    {
+      path: "user-profile",
+      element: <AreaDiarista/>
     }
 ])
 

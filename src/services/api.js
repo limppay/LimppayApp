@@ -22,14 +22,21 @@ export const login = async (email, senha) => {
       senha,
     });
 
-    const { token } = response.data;
-    localStorage.setItem('token', token); // Armazenar o token
+    const { access_token, userId } = response.data; // Desestruturando corretamente
 
-    return true; // Login bem-sucedido
+    if (access_token) {
+      localStorage.setItem('token', access_token); // Armazenar o token
+      localStorage.setItem('userId', userId); // Armazenar o ID do usuário
+
+      return { access_token, userId }; // Retornar o token e o ID do usuário
+    } else {
+      throw new Error('Token não encontrado na resposta.');
+    }
   } catch (error) {
     console.error('Erro ao fazer login:', error.response?.data || error.message);
     return false; // Login falhou
   }
 };
+
 
 export default api;
