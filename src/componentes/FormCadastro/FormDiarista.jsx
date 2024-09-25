@@ -31,7 +31,7 @@ export default function FormDiarista() {
         cidade:  yup.string().required("Cidade é obrigatório"),
         estado: yup.number().required("Estado é obrigatório"),
         cpfCnpj: yup.string().required("O CPF é obrigatório").min(11, "Digite um CPF válido").matches(/^\d+$/, 'Apenas números').max(11, "CPF deve ter 11 digitos"),
-        rg: yup.string().required("O RH é obrigatório").min(8, "Digite um RH válido").matches(/^\d+$/, 'Apenas números').max(8, "RH deve ter 8 digitos"),
+        rg: yup.string().required("O RH é obrigatório").min(8, "Digite um RG válido").matches(/^\d+$/, 'Apenas números').max(8, "RH deve ter 8 digitos"),
         banco: yup.number().required("Banco é obrigatório"),
         agencia:  yup.string().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
         conta:  yup.string().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
@@ -107,19 +107,17 @@ export default function FormDiarista() {
 
         // a regra de negocio para os dias da semana, ainda ta em processo de revisão.
         // Dias da semana
-        // domingo: yup.boolean(),
-        // segunda: yup.boolean(),
-        // terca: yup.boolean(),
-        // quarta: yup.boolean(),
-        // quinta: yup.boolean(),
-        // sexta: yup.boolean(),
-        // sabado: yup.boolean(),
-        // diasSemana: yup.boolean().test('at-least-one-day', 'Selecione pelo menos um dia', function () {
-        //     const { domingo, segunda, terca, quarta, quinta, sexta, sabado } = this.parent
-        //     return domingo || segunda || terca || quarta || quinta || sexta || sabado
-        // }),
-
-
+        dom: yup.boolean(),
+        seg: yup.boolean(),
+        ter: yup.boolean(),
+        quart: yup.boolean(),
+        qui: yup.boolean(),
+        sex: yup.boolean(),
+        sab: yup.boolean(),
+        diasSemana: yup.boolean().test('at-least-one-day', 'Selecione pelo menos um dia', function () {
+            const { dom, seg, ter, quart, qui, sex, sab } = this.parent
+            return dom || seg || ter || quart || qui || sex || sab
+        }),
     })
     .required()
     
@@ -164,6 +162,14 @@ export default function FormDiarista() {
         formData.append('sobre', data.sobre)
         formData.append('referencia', data.referencia)
 
+        formData.append('dom', data.dom)
+        formData.append('seg', data.seg)
+        formData.append('ter', data.ter)
+        formData.append('quart', data.quart)
+        formData.append('qui', data.qui)
+        formData.append('sex', data.sex)
+        formData.append('sab', data.sab)
+
         formData.append('arquivoFoto', data.arquivoFoto);
         formData.append('arquivodt', data.arquivodt);
         formData.append('arquivoCpf', data.arquivoCpf);
@@ -192,46 +198,46 @@ export default function FormDiarista() {
     })
     // função para selecionar os dias da semana
 
-    // useEffect(() => {
-    //     const selectDays = document.getElementById("selectDays")
-    //     const days = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
+    useEffect(() => {
+        const selectDays = document.getElementById("selectDays")
+        const days = ['dom', 'seg', 'ter', 'quart', 'qui', 'sex', 'sab']
 
-    //     const updateButtonState = () => {
-    //         const allChecked = days.every(day => getValues(day))
-    //         selectDays.value = allChecked ? "Desmarcar todos os dias" : "Selecionar todos os dias"
-    //     };
+        const updateButtonState = () => {
+            const allChecked = days.every(day => getValues(day))
+            selectDays.value = allChecked ? "Desmarcar todos os dias" : "Selecionar todos os dias"
+        };
 
-    //     selectDays.onclick = () => {
-    //         const allChecked = days.every(day => getValues(day));
-    //         days.forEach(day => {
-    //             setValue(day, !allChecked)
-    //         })
-    //         updateButtonState()
-    //     };
+        selectDays.onclick = () => {
+            const allChecked = days.every(day => getValues(day));
+            days.forEach(day => {
+                setValue(day, !allChecked)
+            })
+            updateButtonState()
+        };
 
-    //     updateButtonState()
-    // }, [setValue, getValues])
+        updateButtonState()
+    }, [setValue, getValues])
 
-    // // função para validar se algum dia foi selecionado ou não
-    // useEffect(() => {
-    //     const daysCheckboxes = document.querySelectorAll(".days")
-    //     daysCheckboxes.forEach((checkbox) => {
-    //         checkbox.addEventListener('change', () => {
-    //             const allDays = Array.from(daysCheckboxes).map(cb => cb.checked)
-    //             if (allDays.some(day => day)) {
-    //                 clearErrors('diasSemana')
-    //             } else {
-    //                 setError('diasSemana', { message: 'Selecione pelo menos um dia' })
-    //             }
-    //         });
-    //     });
+    // função para validar se algum dia foi selecionado ou não
+    useEffect(() => {
+        const daysCheckboxes = document.querySelectorAll(".days")
+        daysCheckboxes.forEach((checkbox) => {
+            checkbox.addEventListener('change', () => {
+                const allDays = Array.from(daysCheckboxes).map(cb => cb.checked)
+                if (allDays.some(day => day)) {
+                    clearErrors('diasSemana')
+                } else {
+                    setError('diasSemana', { message: 'Selecione pelo menos um dia' })
+                }
+            });
+        });
 
-    //     return () => {
-    //         daysCheckboxes.forEach((checkbox) => {
-    //             checkbox.removeEventListener('change', () => {})
-    //         });
-    //     };
-    // }, [clearErrors, setError])
+        return () => {
+            daysCheckboxes.forEach((checkbox) => {
+                checkbox.removeEventListener('change', () => {})
+            });
+        };
+    }, [clearErrors, setError])
     
 
     // Arrays
@@ -475,7 +481,7 @@ export default function FormDiarista() {
             </div>
 
 
-            {/* <div className="mt-4 p-9 pt-0 pb-0 flex flex-col text-prim">
+            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col text-prim">
                 <p><b>Dias disponíveis para trabalhar</b></p>
                 <div className="mt-2">
                     <input id="selectDays" type="button" value="Selecionar todos os dias" className="p-2 border border-bord rounded-md cursor-pointer"/>
@@ -485,7 +491,7 @@ export default function FormDiarista() {
                         <input 
                         type="checkbox" 
                         id="domingo" 
-                        {...register("domingo", {required: true})}
+                        {...register("dom", {required: true})}
                         className="days cursor-pointer"
                         />
                         <label htmlFor="domingo">Domingo</label>
@@ -494,7 +500,7 @@ export default function FormDiarista() {
                         <input 
                         type="checkbox" 
                         id="segunda" 
-                        {...register("segunda")}
+                        {...register("seg")}
                         className="days cursor-pointer"
                         />
                         <label htmlFor="segunda">Segunda</label>
@@ -503,7 +509,7 @@ export default function FormDiarista() {
                         <input 
                         type="checkbox" 
                         id="terca" 
-                        {...register("terca")}
+                        {...register("ter")}
                         className="days cursor-pointer"
                         />
                         <label htmlFor="terca">Terça</label>
@@ -514,7 +520,7 @@ export default function FormDiarista() {
                         <input 
                         type="checkbox" 
                         id="quarta" 
-                        {...register("quarta")}
+                        {...register("quart")}
                         className="days cursor-pointer"
                         />
                         <label htmlFor="quarta">Quarta</label>
@@ -523,7 +529,7 @@ export default function FormDiarista() {
                         <input 
                         type="checkbox" 
                         id="quinta" 
-                        {...register("quinta")}
+                        {...register("qui")}
                         className="days cursor-pointer"
                         />
                         <label htmlFor="quinta">Quinta</label>
@@ -532,7 +538,7 @@ export default function FormDiarista() {
                         <input 
                         type="checkbox" 
                         id="sexta" 
-                        {...register("sexta")}
+                        {...register("sex")}
                         className="days cursor-pointer"
                         />
                         <label htmlFor="sexta">Sexta</label>
@@ -543,7 +549,7 @@ export default function FormDiarista() {
                         <input 
                         type="checkbox" 
                         id="sabado" 
-                        {...register("sabado")}
+                        {...register("sab")}
                         className="days cursor-pointer"
                         />
                         <label htmlFor="sabado">Sábado</label>
@@ -553,7 +559,7 @@ export default function FormDiarista() {
                     {errors.diasSemana && <p className="text-error opacity-75">{errors.diasSemana.message}</p>}
                 </div>
              
-            </div> */}
+            </div> 
 
 
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
