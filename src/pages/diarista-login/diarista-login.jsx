@@ -1,9 +1,29 @@
 import React from 'react'
 import { Logo,  } from '../../componentes/imports'
 import painel from "../../assets/img/banner-diarista.jpg"
+import { login } from '../../services/api'
+import { useState } from 'react'
 // fazer validações de login
 
 export default function DaristaLogin() {
+
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+    const [error, setError] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const success = await login(email, senha);
+        if (!success) {
+            setError('Email ou senha inválidos.');
+        } else {
+            // Redirecionar ou fazer outras ações após o login
+            console.log('Login bem-sucedido!');
+        }
+    };
+
+
   return (
     <>
         <div className='flex h-screen justify-center max-w-full '>
@@ -22,7 +42,7 @@ export default function DaristaLogin() {
                     </div>
                     
                     <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
-                        <form action="#" method="POST" className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
                             <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                                 Email
@@ -34,6 +54,8 @@ export default function DaristaLogin() {
                                 type="email"
                                 required
                                 autoComplete="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
                                 />
                             </div>
@@ -57,6 +79,8 @@ export default function DaristaLogin() {
                                 type="password"
                                 required
                                 autoComplete="current-password"
+                                value={senha}
+                                onChange={(e) => setSenha(e.target.value)}
                                 className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
                                 />
                             </div>
@@ -70,6 +94,7 @@ export default function DaristaLogin() {
                                 Entrar
                             </button>
                             </div>
+                            {error && <p>{error}</p>}
                         </form>
                     </div>            
                 </main>
