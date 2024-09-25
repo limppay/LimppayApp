@@ -3,8 +3,10 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import {useEffect} from 'react'
 import { useState} from "react"
+import React, { useRef } from "react"
 import { createUser } from "../../services/api.js"
-
+import axios from "axios"
+import InputMask from "react-input-mask"
 
 /* 
 
@@ -12,31 +14,30 @@ import { createUser } from "../../services/api.js"
 
 */
 
-
 export default function FormDiarista() {
     // schema de validações do form
     const schema = yup.object({
         // scheam do prisma na API
         name: yup.string().required("O nome é obrigatório"),
         genero: yup.string().required("Gênero é obrigatório"),
-        estadoCivil: yup.number().required("Estado civil é obrigatório"),
-        telefone: yup.string().required("Telefone é obrigatório").min(11, "Digite um telefone válido").matches(/^\d+$/, 'Apenas números'),
+        estadoCivil: yup.number().required("Estado civil é obrigatório").typeError("Estado Civil é obrigatório"),
+        telefone: yup.string().required("Telefone é obrigatório"),
         email: yup.string().required("E-mail é obrigatório").email("Email inválido."),
-        cep:  yup.string().required("CEP é obrigatório").min(8, "Digite um cep válido").matches(/^\d+$/, 'Apenas números'),
-        endereco: yup.string().required("Endereço é obrigatório"),
-        logradouro:  yup.string().required("Logradouro é obrigatório"),
+        cep:  yup.string().required("CEP é obrigatório").min(8, "Digite um cep válido"),
+        logradouro:  yup.string(),
         numero:  yup.string().required("Número é obrigatório"),
         complemento:  yup.string(),
         bairro:  yup.string().required("Bairro é obrigatório"),
-        cidade:  yup.string().required("Cidade é obrigatório"),
-        estado: yup.number().required("Estado é obrigatório"),
-        cpfCnpj: yup.string().required("O CPF é obrigatório").min(11, "Digite um CPF válido").matches(/^\d+$/, 'Apenas números').max(11, "CPF deve ter 11 digitos"),
-        rg: yup.string().required("O RH é obrigatório").min(8, "Digite um RG válido").matches(/^\d+$/, 'Apenas números').max(8, "RH deve ter 8 digitos"),
-        banco: yup.number().required("Banco é obrigatório"),
+        cidade:  yup.string(),
+        estado: yup.number().required("Estado é obrigatório").typeError("Estado é obrigatório"),
+        cpfCnpj: yup.string().required("O CPF é obrigatório").min(11, "Digite um CPF válido"),
+        rg: yup.string().required("O RG é obrigatório").min(8, "Digite um RG válido"),
+        banco: yup.number().required("Banco é obrigatório").typeError("Banco é obrigatório"),
         agencia:  yup.string().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
         conta:  yup.string().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
+        pix: yup.string().required("Pix é obrigatório"),
         senha: yup.string().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
-        sobre: yup.string(),
+        sobre: yup.string().required("Sobre mim é obrigatório"),
         referencia:  yup.string(),
 
         arquivoFoto: yup
@@ -131,10 +132,12 @@ export default function FormDiarista() {
         setValue, 
         getValues,
         setError, 
+        watch,
         clearErrors
-      } = useForm({
+        } = useForm({
         resolver: yupResolver(schema),
-      })
+    })
+    
 
     // onSubmit do Forms
     const onSubmit = async (data) => {
@@ -146,7 +149,6 @@ export default function FormDiarista() {
         formData.append('telefone', data.telefone)
         formData.append('email', data.email)
         formData.append('cep', data.cep)
-        formData.append('endereco', data.endereco)
         formData.append('logradouro', data.logradouro)
         formData.append('numero', data.numero)
         formData.append('complemento', data.complemento)
@@ -158,6 +160,7 @@ export default function FormDiarista() {
         formData.append('banco', data.banco)
         formData.append('agencia', data.agencia)
         formData.append('conta', data.conta)
+        formData.append('pix', data.pix)
         formData.append('senha', data.senha)
         formData.append('sobre', data.sobre)
         formData.append('referencia', data.referencia)
@@ -271,29 +274,56 @@ export default function FormDiarista() {
         docCpf: "Arquivo não selecionado",
         docResidencia: "Arquivo não selecionado",
         docCurriculo: "Arquivo não selecionado",
-      });
-      
+    });
+    const [loading, setLoading] = useState(false);
+    const watchCep = watch("cep");
+    const inputRef = useRef(null)
+
+    
     // Handles
     const handleImageChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-          const imageUrl = URL.createObjectURL(file);
+            const imageUrl = URL.createObjectURL(file);
           setImage(imageUrl);
           setValue("arquivoFoto", file); // Armazenando o arquivo no formulário
           trigger("arquivoFoto"); // Forçando a validação do campo
         }
       };
     
-    
+      
     const handleNameChange = (event) => {
         const { name, files } = event.target;
         const file = files[0];
         setFileNames((prevFileNames) => ({
-          ...prevFileNames,
+            ...prevFileNames,
           [name]: file ? file.name : "Arquivo não selecionado",
         }));
       };
-     
+      
+      const handleCepChange = async (e) => {
+          const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
+          if (cep.length === 8) {
+            try {
+              setLoading(true);
+              const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+              if (!response.data.erro) {
+                setValue("logradouro", response.data.logradouro);
+                setValue("bairro", response.data.bairro);
+                setValue("cidade", response.data.localidade);
+                setValue("uf", response.data.uf);
+              } else {
+                alert('CEP não encontrado.');
+              }
+            } catch (error) {
+              console.error('Erro ao buscar o CEP:', error);
+              alert('Erro ao buscar o CEP.');
+            } finally {
+              setLoading(false);
+            }
+          }
+      };
+
   return (
     <>
         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
@@ -339,6 +369,9 @@ export default function FormDiarista() {
                     id="biografia"
                     {...register("sobre")} 
                     className="border rounded-md border-bord p-3 pt-1 pb-1 min-h-20 lg:min-h-40 focus:outline-ter text-prim lg:max-w-full max-h-1"></textarea>
+                    {errors.sobre && (
+                        <span className="text-error opacity-75">{errors.sobre.message}</span>
+                    )}
                 </div>
             </div>
             
@@ -372,7 +405,9 @@ export default function FormDiarista() {
                 </div>
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="cpf" className="text-prim">CPF</label>
-                    <input 
+                    <InputMask
+                    mask="999.999.999-99"
+                    ref={inputRef} 
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="cpf" 
                     type="text" 
@@ -385,7 +420,9 @@ export default function FormDiarista() {
             
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="cpf" className="text-prim">RG</label>
-                    <input 
+                    <InputMask
+                    ref={inputRef}
+                    mask="9999999-9" 
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="rg" 
                     type="text" 
@@ -412,7 +449,9 @@ export default function FormDiarista() {
                 </div>
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="telefone" className="text-prim">Telefone</label>
-                    <input 
+                    <InputMask
+                    ref={inputRef}
+                    mask="(99) 99999-9999" 
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="telefone" 
                     type="text" 
@@ -428,7 +467,7 @@ export default function FormDiarista() {
                     id="EstadoCivil"
                     {...register("estadoCivil")}
                     className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
-                        <option value="" >Selecione</option>
+                        <option defaultValue='0' >Selecione</option>
                         {EstadoCivil.map((options, index) => (
                             <option key={index} value={options.value}>{options.text}</option>
                         ))}
@@ -475,6 +514,18 @@ export default function FormDiarista() {
                 {errors.conta && 
                 <span className="text-error opacity-75">{errors.conta?.message}</span>}
 
+            </div>
+            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                <label htmlFor="pix" className="text-prim">Pix</label>
+                <input 
+                className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                id="pix" 
+                type="text" 
+                placeholder="Digite sua chave pix" 
+                {...register("pix")}
+                />
+                {errors.pix && 
+                <span className="text-error opacity-75">{errors.pix?.message}</span>}
             </div>
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h3 className="text-xl text-desSec">Disponibilidade e serviços</h3>
@@ -569,27 +620,18 @@ export default function FormDiarista() {
             <div className="lg:flex">
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="cep" className="text-prim">CEP</label>
-                    <input 
+                    <InputMask 
+                    ref={inputRef}
+                    mask="99999-999"
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="cep" 
                     type="text" 
                     placeholder="Somente números" 
                     {...register("cep")}
+                    onChange={handleCepChange}
                     />
                     {errors.cep && 
                     <span className="text-error opacity-75">{errors.cep?.message}</span>}
-                </div>
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="endereco" className="text-prim">Endereço</label>
-                    <input 
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="endereco" 
-                    type="text" 
-                    placeholder="Digite seu endereço" 
-                    {...register("endereco")}
-                    />
-                    {errors.endereco && 
-                    <span className="text-error opacity-75">{errors.endereco?.message}</span>}
                 </div>
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="logradouro" className="text-prim">Logradouro</label>
@@ -599,6 +641,7 @@ export default function FormDiarista() {
                     type="text" 
                     placeholder="" 
                     {...register("logradouro")}
+                    readOnly
                     />
                     {errors.logradouro && 
                     <span className="text-error opacity-75">{errors.logradouro?.message}</span>}
@@ -649,6 +692,7 @@ export default function FormDiarista() {
                     type="text" 
                     placeholder="" 
                     {...register("bairro")}
+                    readOnly
                     />
                     {errors.bairro && 
                     <span className="text-error opacity-75">{errors.bairro?.message}</span>}
@@ -662,6 +706,7 @@ export default function FormDiarista() {
                 type="text" 
                 placeholder="" 
                 {...register("cidade")}
+                readOnly
                 />
                 {errors.cidade && 
                 <span className="text-error opacity-75">{errors.cidade?.message}</span>}
@@ -671,6 +716,7 @@ export default function FormDiarista() {
                 <select  
                 id="estado"
                 {...register("estado")}
+                readOnly
                 className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
                     <option value="" >Selecione</option>
                     {Estados.map((options, index) => (
@@ -813,7 +859,7 @@ export default function FormDiarista() {
                 placeholder="" 
                 {...register("senha")}
                 />
-                {errors.password && 
+                {errors.senha && 
                 <span className="text-error opacity-75">{errors.senha?.message}</span>}
             </div>
 
