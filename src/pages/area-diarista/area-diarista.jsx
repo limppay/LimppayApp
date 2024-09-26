@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { HeaderApp, Logo} from '../../componentes/imports.jsx'
 import User from "../../assets/img/diarista-cadastro/user.png"
+import EditUserModal from './EditUserModal.jsx';
 
 const AreaDiarista = () => {
     const [userInfo, setUserInfo] = useState(null);
+    const[isModalOpen, setIsModalOpen] = useState(false)
     const userId = localStorage.getItem('userId'); // Obter o ID do usuário do localStorage
     const token = localStorage.getItem('token'); // Obter o token do localStorage
     // Recuperar as URLs e converter para objeto JSON
@@ -26,6 +28,10 @@ const AreaDiarista = () => {
             fetchUserInfo();
         }
     }, [token, userId]);
+
+    const handleUserUpdated = (updatedInfo) => {
+        setUserInfo(updatedInfo);
+    };
 
     // Anexos
     const avatarUrl = urls ? Object.values(urls)[0] : null;
@@ -124,8 +130,18 @@ const AreaDiarista = () => {
                                         </div>
                                     </div>
                                     <div className='flex justify-end'>
-                                        <buttons className="text-center w-full lg:w-2/12 bg-desSec rounded-md text-white p-2 hover:bg-sec transition-all duration-100 lg:text-sm"> Editar </buttons>
-                                    </div>                            
+                                        <buttons className="text-center w-full lg:w-2/12 bg-desSec rounded-md text-white p-2 hover:bg-sec transition-all duration-100 lg:text-sm"
+                                        onClick={()=> setIsModalOpen(true)}> Editar </buttons>
+                                    </div>
+
+                                      {/* Modal de edição */}
+                                        <EditUserModal 
+                                            isOpen={isModalOpen}
+                                            onClose={() => setIsModalOpen(false)} 
+                                            userInfo={userInfo} 
+                                            token={token} 
+                                            onUserUpdated={handleUserUpdated} 
+                                        />                          
                                 </div>
                             </div>      
                         </section>
