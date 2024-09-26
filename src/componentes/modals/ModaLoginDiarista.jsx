@@ -1,8 +1,46 @@
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import { Logo } from '../imports'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { login } from '../../services/api';
 
 export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
+
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true)
+        
+        try {
+            const { access_token, userId, urls } = await login(email, senha);
+            if (!access_token) {
+                setError('Email ou senha inválidos.');
+            } else {
+                // Salvar os dados no localStorage
+                localStorage.setItem('token', access_token);
+                localStorage.setItem('userId', userId);
+                localStorage.setItem('urls', JSON.stringify(urls)); // Salvar URLs no localStorage
+                // Redirecionar para a página de dashboard ou outra página
+                navigate("/area-diarista");
+            }
+        } catch (err) {
+            setError('Ocorreu um erro ao tentar fazer login. Tente novamente.');
+            console.error(err); // Log do erro para depuração
+        } finally {
+          setLoading(false);
+        }
+    };
+
+
+
+
+
   return (
     <Dialog open={OpenLogin} onClose={SetOpenLogin} className="relative z-10">
       <DialogBackdrop
@@ -29,14 +67,14 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
                         <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 text-desSec">
                           Ja tem uma conta?
                         </h2>
-                        <p>Entre na sua conta agora mesmo para ter acesso a plataforma da Limppay</p>
+                        <p className='text-prim'>Entre na sua conta agora mesmo para ter acesso a plataforma da Limppay</p>
                       </div>
                     </div>
 
                     <div className="mt-1 lg:mt-10 sm:mx-auto sm:w-full sm:max-w-sm p-2">
-                      <form className="space-y-6 ">
+                      <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
-                          <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                          <label htmlFor="email" className="block text-sm font-medium leading-6 text-ter">
                             Email
                           </label>
                           <div className="mt-2">
@@ -46,14 +84,17 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
                               type="email"
                               required
                               autoComplete="email"
-                              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              className="block w-full rounded-md p-2 shadow-sm sm:text-sm sm:leading-6 
+                              border border-bord  focus:outline-ter text-prim"
                             />
                           </div>
                         </div>
 
                         <div>
                           <div className="flex flex-col justify-between">
-                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-ter">
                               Senha
                             </label>
                           </div>
@@ -63,24 +104,30 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
                               name="password"
                               type="password"
                               required
+                              value={senha}
+                              onChange={(e) => setSenha(e.target.value)}
                               autoComplete="current-password"
-                              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              className="block w-full rounded-md p-2 shadow-sm sm:text-sm sm:leading-6 
+                              border border-bord  focus:outline-ter text-prim"
                             />
                           </div>
                           <div className="text-sm text-end mt-2">
-                              <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                              <a href="#" className="font-semibold text-ter hover:text-indigo-500 ">
                                 Esqueceu sua senha?
                               </a>
                           </div>
                         </div>
 
-                        <div>
-                          <button
-                            type="submit"
-                            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 bg-desSec text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                          >
-                            Entrar
-                          </button>
+                        <div className='flex flex-col gap-2'>
+                          <div>
+                              <button
+                                  type="submit"
+                                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              >
+                                  {loading ? 'Entrando...' : 'Entrar'}
+                              </button>
+                          </div>
+                            {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
                         </div>
                       </form>
                     </div>  

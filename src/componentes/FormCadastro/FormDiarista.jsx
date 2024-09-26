@@ -7,6 +7,10 @@ import React, { useRef } from "react"
 import { createUser } from "../../services/api.js"
 import axios from "axios"
 import InputMask from "react-input-mask"
+'use client'
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
+import {useNavigate } from 'react-router-dom';
+import { Logo } from "../imports.jsx"
 
 /* 
 
@@ -15,6 +19,7 @@ import InputMask from "react-input-mask"
 */
 
 export default function FormDiarista() {
+    const navigate = useNavigate();
     // schema de validações do form
     const schema = yup.object({
         // scheam do prisma na API
@@ -141,6 +146,8 @@ export default function FormDiarista() {
 
     // onSubmit do Forms
     const onSubmit = async (data) => {
+        setLoading(true)
+
         console.log(data)
         const formData = new FormData()
         formData.append('name', data.name)
@@ -181,13 +188,22 @@ export default function FormDiarista() {
 
         try {
           const response = await createUser(formData);
+          reset()
           console.log('Usuário criado com sucesso:', response.data);
+          setModalIsOpen(true)
+          setLoading(false)
         } catch (error) {
           console.error('Erro ao criar o usuário:', error);
         }
 
       };
+
     console.log(errors)
+
+    const closeModal = () => {
+        setModalIsOpen(false)
+        navigate("/diarista-login")
+    }
 
     // Funções
     // Função de ativar o botão quando o termo for clicado
@@ -276,6 +292,7 @@ export default function FormDiarista() {
         docCurriculo: "Arquivo não selecionado",
     });
     const [loading, setLoading] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(false)
     const watchCep = watch("cep");
     const inputRef = useRef(null)
 
@@ -891,9 +908,57 @@ export default function FormDiarista() {
                 </div>
             </div>
             <div className="mt-4 pl-9 pr-9 pb-9 ">
-                <button type="submit" className="text-center w-full lg:w-1/2  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 opacity-50" id="buttonSubmit" disabled> Cadastrar </button>
+                <button type="submit" className="text-center w-full lg:w-1/2  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 opacity-50" id="buttonSubmit" disabled>{loading ? 'Criando conta...' : 'Cadastrar'}</button>
             </div>
         </form>
+
+
+        <Dialog open={modalIsOpen} onClose={setModalIsOpen} className="relative z-10">
+            <DialogBackdrop
+                transition
+                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+            />
+            <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-prim bg-opacity-50">
+                <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+                    <DialogPanel
+                        transition
+                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+                    >
+                        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                            <div className="sm:flex sm:items-start justify-center">
+                                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                    <div className="mt-2 lg:flex h-1/2 ">
+                                        <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col justify-center p-2">
+                                            <img
+                                                alt="Limppay"
+                                                src={Logo}
+                                                className="mx-auto h-20 w-auto"
+                                            />
+                                            <div className='flex flex-col items-center text-justify gap-2'>
+                                                <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 text-desSec">
+                                                Conta criada com sucesso! :D
+                                                </h2>
+                                                <p className='text-prim'>Entre na sua conta agora mesmo para ter acesso a plataforma da Limppay</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-gray-50 px-4 py-3 sm:px-6 justify-center flex ">
+                            <button
+                                type="button"
+                                data-autofocus
+                                onClick={closeModal}
+                                className="flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            >
+                                Fazer Login
+                            </button>
+                        </div>
+                    </DialogPanel>
+                </div>
+            </div>
+        </Dialog>
     </>
   )
 }
