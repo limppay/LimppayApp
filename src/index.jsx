@@ -29,7 +29,7 @@ const router = createBrowserRouter([
       element: <DaristaLogin/>
     },
     {
-      path: "user-profile",
+      path: "area-diarista",
       element: <AreaDiarista/>
     }
 ])

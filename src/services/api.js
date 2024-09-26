@@ -22,13 +22,14 @@ export const login = async (email, senha) => {
       senha,
     });
 
-    const { access_token, userId } = response.data; // Desestruturando corretamente
+    const { access_token, userId, urls } = response.data; // Desestruturando corretamente
 
     if (access_token) {
       localStorage.setItem('token', access_token); // Armazenar o token
       localStorage.setItem('userId', userId); // Armazenar o ID do usuário
+      localStorage.setItem('urls', JSON.stringify(urls))
 
-      return { access_token, userId }; // Retornar o token e o ID do usuário
+      return { access_token, userId, urls }; // Retornar o token e o ID do usuário
     } else {
       throw new Error('Token não encontrado na resposta.');
     }

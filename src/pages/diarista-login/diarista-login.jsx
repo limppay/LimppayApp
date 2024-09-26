@@ -1,38 +1,39 @@
-import React from 'react'
-import { Logo,  } from '../../componentes/imports'
-import painel from "../../assets/img/banner-diarista.jpg"
-import { login } from '../../services/api'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-
-// fazer validações de login
+import React, { useState } from 'react';
+import { Logo } from '../../componentes/imports';
+import painel from "../../assets/img/banner-diarista.jpg";
+import { login } from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
 export default function DaristaLogin() {
-
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-      
-        const { access_token, userId } = await login(email, senha);
-        if (!access_token) {
-          setError('Email ou senha inválidos.');
-        } else {
-          // Redirecionar ou fazer outras ações após o login
-          console.log('Login bem-sucedido!', { access_token, userId });
-          navigate('/user-profile'); // Redirecionar para a página de dashboard ou outra página
+        
+        try {
+            const { access_token, userId, urls } = await login(email, senha);
+            if (!access_token) {
+                setError('Email ou senha inválidos.');
+            } else {
+                // Salvar os dados no localStorage
+                localStorage.setItem('token', access_token);
+                localStorage.setItem('userId', userId);
+                localStorage.setItem('urls', JSON.stringify(urls)); // Salvar URLs no localStorage
+                // Redirecionar para a página de dashboard ou outra página
+                navigate("/area-diarista");
+            }
+        } catch (err) {
+            setError('Ocorreu um erro ao tentar fazer login. Tente novamente.');
+            console.error(err); // Log do erro para depuração
         }
-      };
-      
+    };
 
-
-  return (
-    <>
-        <div className='flex h-screen justify-center max-w-full '>
-            <div className='h-screen flex flex-col p-10  shadow-2xl w-full lg:w-5/12 bg-[url(src/assets/img/banner-diarista.jpg)] bg-center bg-cover lg:bg-none md:bg-none sm:bg-none md:shadow-none sm:shadow-none'>
+    return (
+        <div className='flex h-screen justify-center max-w-full'>
+            <div className='h-screen flex flex-col p-10 shadow-2xl w-full lg:w-5/12 bg-[url(src/assets/img/banner-diarista.jpg)] bg-center bg-cover lg:bg-none md:bg-none sm:bg-none md:shadow-none sm:shadow-none'>
                 <main className='flex flex-col gap-10 shadow-lg lg:shadow-none rounded-md p-5 bg-white'>
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                         <img
@@ -49,63 +50,62 @@ export default function DaristaLogin() {
                     <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
-                            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                Email
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                required
-                                autoComplete="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
-                                />
-                            </div>
-                            </div>
-
-                            <div>
-                            <div className="flex items-center justify-between">
-                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                                Senha
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                    Email
                                 </label>
-                                <div className="text-sm">
-                                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                                    Esqueceu sua senha?
-                                </a>
+                                <div className="mt-2">
+                                    <input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        required
+                                        autoComplete="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
+                                    />
                                 </div>
                             </div>
-                            <div className="mt-2">
-                                <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                autoComplete="current-password"
-                                value={senha}
-                                onChange={(e) => setSenha(e.target.value)}
-                                className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
-                                />
-                            </div>
+
+                            <div>
+                                <div className="flex items-center justify-between">
+                                    <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                                        Senha
+                                    </label>
+                                    <div className="text-sm">
+                                        <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                            Esqueceu sua senha?
+                                        </a>
+                                    </div>
+                                </div>
+                                <div className="mt-2">
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        required
+                                        autoComplete="current-password"
+                                        value={senha}
+                                        onChange={(e) => setSenha(e.target.value)}
+                                        className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
+                                    />
+                                </div>
                             </div>
 
                             <div>
-                            <button
-                                type="submit"
-                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            >
-                                Entrar
-                            </button>
+                                <button
+                                    type="submit"
+                                    className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                >
+                                    Entrar
+                                </button>
                             </div>
-                            {error && <p>{error}</p>}
+                            {error && <p className="text-red-500">{error}</p>}
                         </form>
                     </div>            
                 </main>
             </div>
-            <img src={painel} alt="" className='hidden lg:flex  w-full '/>
+            <img src={painel} alt="" className='hidden lg:flex w-full' />
         </div>
-    </>
-  )
+    );
 }

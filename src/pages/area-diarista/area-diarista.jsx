@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { HeaderApp, Logo} from '../../componentes/imports.jsx'
+import User from "../../assets/img/diarista-cadastro/user.png"
 
 const AreaDiarista = () => {
     const [userInfo, setUserInfo] = useState(null);
     const userId = localStorage.getItem('userId'); // Obter o ID do usuário do localStorage
     const token = localStorage.getItem('token'); // Obter o token do localStorage
+    // Recuperar as URLs e converter para objeto JSON
+    const urls = JSON.parse(localStorage.getItem('urls'));
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -23,19 +27,288 @@ const AreaDiarista = () => {
         }
     }, [token, userId]);
 
+    // Anexos
+    const avatarUrl = urls ? Object.values(urls)[0] : null;
+    const arquivoIdentidade = urls ? Object.values(urls)[1] : null; 
+    const arquivoCPF = urls ? Object.values(urls)[2] : null; 
+    const arquivoResidencia = urls ? Object.values(urls)[3] : null; 
+    const arquivoCurriculo = urls ? Object.values(urls)[4] : null; 
+
+    const buttons = [
+        { link: "/", text: "Dúvidas"},
+        { link: "/", text: "Quem Somos"},
+    ]
+
+    const btnAcess = [
+        {   AcessPrim: "Suporte", 
+            AcessSec: "Sair",
+            LinkPrim: "cadastro-diarista",
+            LinkSec: "diarista-login",  
+        },
+    ]
+
     return (
         <div>
-            {userInfo ? (
-                <div>
-                    <h1>Informações do Usuário</h1>
-                    <p>{userInfo.arquivoFoto}</p>
-                    <p>Email: {userInfo.email}</p>
-                    <p>Nome: {userInfo.name}</p>
-                    {/* Adicione mais informações conforme necessário */}
-                </div>
-            ) : (
-                <p>Carregando informações...</p>
-            )}
+            <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
+            <main className='flex flex-col  p-5 '>
+                {userInfo ? (
+                    <>
+                        <section className='pt-14 lg:pt-24 lg:flex justify-between w-full gap-1 '>
+                            <div className='flex flex-col gap-5 text-center max-w-50 min-w-72 min-h-60  p-5 rounded-md  lg:w-4/12 lg:h-96'>
+                                <div className="flex flex-col justify-center items-center gap-2">
+                                    <img src={avatarUrl} 
+                                    alt="foto de perfil" 
+                                    className="transition-all duration-200 rounded-full w-60 h-60 lg:w-32 lg:h-32 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
+                                    />                                             
+                                </div>
+                                <div className='flex flex-col gap-3 h-full max-w-full max-h-full pl-5 pr-5'>
+                                    <h1 className='text-xl text-ter'>{userInfo.name}</h1>
+                                    <div className="overflow-y-auto max-h-32">
+                                        <p className='text-prim text-center'>
+                                            {userInfo.sobre} 
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='flex flex-col shadow-md shadow-prim rounded-md text-center lg:w-8/12 '>
+                                <div className='bg-desSec text-white p-5 rounded-b-none rounded-md lg:hidden'>
+                                    <h1 className='text-xl'>Minhas Informações</h1>
+                                </div>
+                                <div className='p-5 flex gap-10 flex-col lg:gap-7'>
+                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
+                                        <div className='lg:w-3/12'>
+                                            <p className='flex items-start text-ter lg:text-sm'>Nome Completo</p>
+                                        </div>
+                                        <div>
+                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.name}</p>
+                                        </div>
+                                    </div>
+                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
+                                        <div className='w-3/12'>
+                                            <p className='flex items-start text-ter lg:text-sm'>Email</p>
+                                        </div>
+                                        <div className='flex'>
+                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
+                                        <div className='w-3/12'>
+                                            <p className='flex items-start text-ter lg:text-sm'>Telefone</p>
+                                        </div>
+                                        <div>
+                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.telefone}</p>
+                                        </div>
+                                    </div>
+                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
+                                        <div className='w-3/12'>
+                                            <p className='flex items-start text-ter lg:text-sm'>Estado</p>
+                                        </div>
+                                        <div>
+                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.estado}</p>
+                                        </div>
+                                    </div>
+                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
+                                        <div className='w-3/12'>
+                                            <p className='flex items-start text-ter lg:text-sm'>Cidade</p>
+                                        </div>
+                                        <div>
+                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.cidade}</p>
+                                        </div>
+                                    </div>
+                                    <div className='border-b border-bord p-2 flex flex-col  gap-2 lg:flex-row lg:p-0'>
+                                        <div className='w-3/12'>
+                                            <p className='flex items-start text-ter lg:text-sm'>Endereço</p>
+                                        </div>
+                                        <div>
+                                            <p className='text-start text-prim lg:text-sm '>{userInfo.logradouro + ", " +  userInfo.numero + ", " + userInfo.bairro + ", " + userInfo.cep}</p>
+                                        </div>
+                                    </div>
+                                    <div className='flex justify-end'>
+                                        <buttons className="text-center w-full lg:w-2/12 bg-desSec rounded-md text-white p-2 hover:bg-sec transition-all duration-100 lg:text-sm"> Editar </buttons>
+                                    </div>                            
+                                </div>
+                            </div>      
+                        </section>
+                        <section className='mt-5 lg:flex-row lg:gap-5 lg:justify-around flex flex-col gap-5'>
+                            <div className='lg:w-1/2 flex flex-col items-center shadow-md shadow-prim rounded-md'>
+                                <div className='p-5 pb-3 border-b border-bord w-full text-center'>
+                                    <h1 className='text-ter text-lg' >Carreira</h1>
+                                </div>
+                                <div>
+                                    {/* content here */}
+                                </div>
+                            </div>
+                            
+
+                            <div className='lg:w-1/2 flex flex-col items-center shadow-md shadow-prim rounded-md'>
+                                <div className='p-5 pb-3 border-b border-bord w-full text-center'>
+                                    <h1 className='text-ter text-lg' > Serviços</h1>
+                                </div>
+                                <div className=' p-5 flex flex-col gap-5 overflow-y-auto max-h-96'>
+                                    <div className='flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
+                                        <div className='flex flex-col gap-2 items-center'>
+                                            <img 
+                                            src={User} 
+                                            alt="avatarCliente"
+                                            className='w-10'
+                                             />
+                                            <h3>Cliente</h3>
+                                        </div>
+                                        <div className='flex flex-col gap-2'>
+                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
+                                                <p>Limpeza - 8Hrs - 26 de Setembro de 2024</p>
+                                                <p>Subtotal: R$26,60</p>
+                                            </div>
+                                            <div className='flex  justify-end gap-5 items-center'>
+                                                <div>
+                                                    <p className='text-desSec'>Andamento</p>
+                                                </div>
+                                                <div >
+                                                    <button className='bg-des p-2 rounded-md text-white'>Detalhes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className='flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
+                                        <div className='flex flex-col gap-2 items-center'>
+                                            <img 
+                                            src={User} 
+                                            alt="avatarCliente"
+                                            className='w-10'
+                                             />
+                                            <h3>Cliente</h3>
+                                        </div>
+                                        <div className='flex flex-col gap-2'>
+                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
+                                                <p>Limpeza - 16Hrs - 27 de Setembro de 2024</p>
+                                                <p>Subtotal: R$50,60</p>
+                                            </div>
+                                            <div className='flex items-end justify-end gap-5'>
+                                                <div>
+                                                    <p className='text-des'>Agendado</p>
+                                                </div>
+                                                <div>
+                                                    <button className='bg-des p-2 rounded-md text-white'>Detalhes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className='flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
+                                        <div className='flex flex-col gap-2 items-center'>
+                                            <img 
+                                            src={User} 
+                                            alt="avatarCliente"
+                                            className='w-10'
+                                             />
+                                            <h3>Cliente</h3>
+                                        </div>
+                                        <div className='flex flex-col gap-2'>
+                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
+                                                <p>Limpeza - 16Hrs - 27 de Setembro de 2024</p>
+                                                <p>Subtotal: R$50,60</p>
+                                            </div>
+                                            <div className='flex items-end justify-end gap-5'>
+                                                <div>
+                                                    <p className='text-sec'>Concluído</p>
+                                                </div>
+                                                <div >
+                                                    <button className='bg-des p-2 rounded-md text-white'>Detalhes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+
+                            <div className='lg:w-6/12 flex flex-col items-center shadow-md shadow-prim rounded-md'>
+                                <div className='title p-5 pb-3 border-b border-bord w-full text-center'>
+                                    <h1 className='text-ter text-lg'>Avaliações</h1>
+                                </div>
+                                <div className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5'>
+                                    <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
+                                        <div className='flex flex-col gap-2 items-center'>
+                                            <img 
+                                            src={User} 
+                                            alt="avatarCliente"
+                                            className=''
+                                             />
+                                            <h3>Cliente</h3>
+                                        </div>
+                                        <div>
+                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
+                                                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
+                                            </div>
+                                            <div>
+                                                {/* estrela */}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
+                                        <div className='flex flex-col gap-2 items-center'>
+                                            <img 
+                                            src={User} 
+                                            alt="avatarCliente"
+                                            className=''
+                                             />
+                                            <h3>Cliente</h3>
+                                        </div>
+                                        <div>
+                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
+                                                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
+                                            </div>
+                                            <div>
+                                                {/* estrela */}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
+                                        <div className='flex flex-col gap-2 items-center'>
+                                            <img 
+                                            src={User} 
+                                            alt="avatarCliente"
+                                            className=''
+                                             />
+                                            <h3>Cliente</h3>
+                                        </div>
+                                        <div>
+                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
+                                                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
+                                            </div>
+                                            <div>
+                                                {/* estrela */}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
+                                        <div className='flex flex-col gap-2 items-center'>
+                                            <img 
+                                            src={User} 
+                                            alt="avatarCliente"
+                                            className=''
+                                             />
+                                            <h3>Cliente</h3>
+                                        </div>
+                                        <div>
+                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
+                                                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
+                                            </div>
+                                            <div>
+                                                {/* estrela */}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </section>
+                    </>                    
+                ) : (
+                    <p>Carregando informações...</p>
+                )}
+            </main>
         </div>
     );
 };
