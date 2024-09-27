@@ -42,9 +42,9 @@ export default function DiaristaApp() {
                             </div>
                         </div>
                         <div className="p-5 lg:md:sm:flex lg:md:sm:justify-center lg:md:sm:w-full">
-                            <div className='flex flex-col gap-5 p-2 text-center lg:md:sm:gap-8 lg:md:sm:flex lg:md:sm:w-8/12 lg:md:sm:text-center '>
+                            <div className='flex flex-col gap-5 p-2 text-center lg:md:sm:gap-8 lg:md:sm:flex lg:md:sm:w-8/12 lg:md:sm:text-center'>
                                 <div>
-                                    <div className='text-center text-3xl'>
+                                    <div className='text-center text-3xl '>
                                         <h2 className='text-des'>Fiz meu cadastro</h2>
                                         <h3 className='text-white'>Quero fazer meu login</h3>
                                     </div>                                

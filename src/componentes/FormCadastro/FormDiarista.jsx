@@ -8,7 +8,7 @@ import { createUser } from "../../services/api.js"
 import axios from "axios"
 import InputMask from "react-input-mask"
 'use client'
-import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
+import { Dialog, DialogBackdrop, DialogPanel, Input } from '@headlessui/react'
 import {useNavigate } from 'react-router-dom';
 import { Logo } from "../imports.jsx"
 
@@ -24,24 +24,27 @@ export default function FormDiarista() {
     const schema = yup.object({
         // scheam do prisma na API
         name: yup.string().required("O nome é obrigatório"),
-        genero: yup.string().required("Gênero é obrigatório"),
+        genero: yup.string(),
         estadoCivil: yup.number().required("Estado civil é obrigatório").typeError("Estado Civil é obrigatório"),
         telefone: yup.string().required("Telefone é obrigatório"),
         email: yup.string().required("E-mail é obrigatório").email("Email inválido."),
-        cep:  yup.string().required("CEP é obrigatório").min(8, "Digite um cep válido"),
+        cep:  yup.string().required("Preencha os campos abaixo").min(8, "Digite um cep válido"),
         logradouro:  yup.string(),
         numero:  yup.string().required("Número é obrigatório"),
         complemento:  yup.string(),
-        bairro:  yup.string().required("Bairro é obrigatório"),
+        bairro:  yup.string(),
         cidade:  yup.string(),
-        estado: yup.number().required("Estado é obrigatório").typeError("Estado é obrigatório"),
+        estado: yup.string().typeError(""),
         cpfCnpj: yup.string().required("O CPF é obrigatório").min(11, "Digite um CPF válido"),
-        rg: yup.string().required("O RG é obrigatório").min(8, "Digite um RG válido"),
+        rg: yup.string().required("O RG é obrigatório"),
         banco: yup.number().required("Banco é obrigatório").typeError("Banco é obrigatório"),
         agencia:  yup.string().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
         conta:  yup.string().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
         pix: yup.string().required("Pix é obrigatório"),
+
         senha: yup.string().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
+        confirmarSenha: yup.string().required("Confirme sua senha").oneOf([yup.ref("senha")], "As senhas devem ser iguais"),
+
         sobre: yup.string().required("Sobre mim é obrigatório"),
         referencia:  yup.string(),
 
@@ -106,7 +109,6 @@ export default function FormDiarista() {
             }),
 
         // o banco de dados não tem um campo para "confirmPassword", então removi temporariamente.
-        // confirmPassword: yup.string().required("Confirme sua senha").oneOf([yup.ref("senha")], "As senhas devem ser iguais"),
         
         // o banco de dados não tem um campo para "termo", então removi temporariamente.
         // termo: yup.boolean().required("Aceite os termos"),
@@ -293,11 +295,42 @@ export default function FormDiarista() {
     });
     const [loading, setLoading] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false)
-    const watchCep = watch("cep");
-    const inputRef = useRef(null)
+    const [cepError, setCepError] = useState("")
+    const [mask, setMask] = useState('999.999.999-99')
+
+
+    const [genero, setGenero] = useState('');
+    const [outroGenero, setOutroGenero] = useState('');
 
     
+    const inputRef = useRef(null)
+    
+    const watchCep = watch("cep");
+    
+    
     // Handles
+    const handleGeneroChange = (event) => {
+        const value = event.target.value;
+        setGenero(value);
+        setValue('genero', value); // Atualiza o valor no React Hook Form
+        if (value !== 'Outro') {
+          setOutroGenero('');
+        }
+      };
+    
+      const handleOutroGeneroChange = (event) => {
+        const value = event.target.value;
+        setOutroGenero(value);
+        setValue('genero', value); // Atualiza o valor no React Hook Form
+      };
+    
+      const voltarParaSelect = () => {
+        setGenero('');
+        setOutroGenero('');
+        setValue('genero', ''); // Reseta o valor no React Hook Form
+      };
+
+
     const handleImageChange = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -318,28 +351,66 @@ export default function FormDiarista() {
         }));
       };
       
-      const handleCepChange = async (e) => {
-          const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
-          if (cep.length === 8) {
-            try {
-              setLoading(true);
-              const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-              if (!response.data.erro) {
-                setValue("logradouro", response.data.logradouro);
-                setValue("bairro", response.data.bairro);
-                setValue("cidade", response.data.localidade);
-                setValue("uf", response.data.uf);
-              } else {
-                alert('CEP não encontrado.');
-              }
-            } catch (error) {
-              console.error('Erro ao buscar o CEP:', error);
-              alert('Erro ao buscar o CEP.');
-            } finally {
-              setLoading(false);
-            }
-          }
+      const estados = {
+        "AC": "Acre",
+        "AL": "Alagoas",
+        "AP": "Amapá",
+        "AM": "Amazonas",
+        "BA": "Bahia",
+        "CE": "Ceará",
+        "DF": "Distrito Federal",
+        "ES": "Espírito Santo",
+        "GO": "Goiás",
+        "MA": "Maranhão",
+        "MT": "Mato Grosso",
+        "MS": "Mato Grosso do Sul",
+        "MG": "Minas Gerais",
+        "PA": "Pará",
+        "PB": "Paraíba",
+        "PR": "Paraná",
+        "PE": "Pernambuco",
+        "PI": "Piauí",
+        "RJ": "Rio de Janeiro",
+        "RN": "Rio Grande do Norte",
+        "RS": "Rio Grande do Sul",
+        "RO": "Rondônia",
+        "RR": "Roraima",
+        "SC": "Santa Catarina",
+        "SP": "São Paulo",
+        "SE": "Sergipe",
+        "TO": "Tocantins"
       };
+      
+      const handleCepChange = async (e) => {
+        const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
+        setCepError("")
+      
+        if (cep.length === 8) {
+          try {
+            setLoading(true);
+            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+            if (!response.data.erro) {
+              setValue("logradouro", response.data.logradouro);
+              setValue("bairro", response.data.bairro);
+              setValue("cidade", response.data.localidade);
+      
+              // Converter a sigla do estado para o nome completo
+              const nomeEstado = estados[response.data.uf];
+              setValue("estado", nomeEstado);
+      
+              setCepError("");
+            } else {
+              setCepError("CEP não encontrado");
+            }
+          } catch (error) {
+            console.error('Erro ao buscar o CEP:', error);
+            alert('Erro ao buscar o CEP.');
+          } finally {
+            setLoading(false);
+          }
+        }
+      };
+      
 
   return (
     <>
@@ -402,28 +473,65 @@ export default function FormDiarista() {
                     type="text" 
                     placeholder="Nome completo" 
                     {...register("name")}
+                    
                     />
                     { errors.name &&
                     <span className="text-error opacity-75">{errors.name?.message}</span>}
                 </div>
+
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
-                    <label htmlFor="Genero" className="text-prim">Gênero</label>
-                    <select  
-                    id="Genero"
-                    {...register("genero")}
-                    className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
-                        <option value="" >Selecione</option>
-                        {Genero.map((options, index) => (
-                            <option key={index} value={options.text}>{options.text}</option>
-                        ))}
-                    </select>
-                    {errors.genero && 
-                    <span className="text-error opacity-75">{errors.genero?.message}</span>}           
+                    <div className="flex gap-2 justify-between">
+                        <label htmlFor="Genero" className="text-prim">Gênero</label>
+
+                        {genero === 'Outro' ? (
+                            <>
+                                <p onClick={voltarParaSelect} className="cursor-pointer text-prim">Voltar para seleção</p>
+                            </>
+                        ) : (
+                            <span>
+                                
+                            </span>
+                        )}
+                    </div>
+                    
+                    {genero === 'Outro' ? (
+                        <>
+                            <input
+                            type="text"
+                            id="outroGenero"
+                            name="outroGenero"
+                            value={outroGenero}
+                            onChange={handleOutroGeneroChange}
+                            required
+                            placeholder="Especifique seu gênero"
+                            className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim"
+                            />
+                        </>
+                    ) : (
+                        <select
+                        id="Genero"
+                        value={genero}
+                        onChange={handleGeneroChange}
+                        required
+                        className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim w-full">
+                            <option value="">Selecione</option>
+                            {Genero.map((options, index) => (
+                                <option key={index} value={options.text}>{options.text}</option>
+                            ))}                            
+                        </select>
+                    )}
+
+
+                    {errors.genero && (
+                        <span className="text-error opacity-75">{errors.genero?.message}</span>
+                    )}
                 </div>
+                
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="cpf" className="text-prim">CPF</label>
+                    <label htmlFor="cpf" className="text-prim">CPF / CNPJ</label>
                     <InputMask
                     mask="999.999.999-99"
+                    maskChar={null}
                     ref={inputRef} 
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="cpf" 
@@ -437,9 +545,7 @@ export default function FormDiarista() {
             
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="cpf" className="text-prim">RG</label>
-                    <InputMask
-                    ref={inputRef}
-                    mask="9999999-9" 
+                    <input
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="rg" 
                     type="text" 
@@ -469,6 +575,7 @@ export default function FormDiarista() {
                     <InputMask
                     ref={inputRef}
                     mask="(99) 99999-9999" 
+                    maskChar={null}
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="telefone" 
                     type="text" 
@@ -632,14 +739,17 @@ export default function FormDiarista() {
 
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Endereço</h2>
+                {errors.cep && 
+                <span className="text-error opacity-75">{errors.cep?.message}</span>}
             </div>
 
-            <div className="lg:flex">
+            <div className="lg:flex lg:justify-between">
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="cep" className="text-prim">CEP</label>
                     <InputMask 
                     ref={inputRef}
                     mask="99999-999"
+                    maskChar={null}
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="cep" 
                     type="text" 
@@ -647,8 +757,7 @@ export default function FormDiarista() {
                     {...register("cep")}
                     onChange={handleCepChange}
                     />
-                    {errors.cep && 
-                    <span className="text-error opacity-75">{errors.cep?.message}</span>}
+                    {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
                 </div>
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="logradouro" className="text-prim">Logradouro</label>
@@ -676,14 +785,15 @@ export default function FormDiarista() {
                     <span className="text-error opacity-75">{errors.numero?.message}</span>}
                 </div>
             </div>
-            <div className="lg:flex">
+            <div className="lg:flex lg:justify-between">
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="complemento" className="text-prim">Complemento</label>
                     <input 
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="complemento" 
                     type="text" 
-                    placeholder="Casa, apt, bloco, etc" 
+                    placeholder="Casa, apt, bloco, etc"
+                    maxLength="100" 
                     {...register("complemento")}
                     />
                     {errors.complemento && 
@@ -696,6 +806,7 @@ export default function FormDiarista() {
                     id="pontoRef" 
                     type="text" 
                     placeholder="" 
+                    maxLength="150"
                     {...register("referencia")}
                     />
                     {errors.pontoRef && 
@@ -715,6 +826,7 @@ export default function FormDiarista() {
                     <span className="text-error opacity-75">{errors.bairro?.message}</span>}
                 </div>
             </div>
+
             <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                 <label htmlFor="cidade" className="text-prim">Cidade</label>
                 <input 
@@ -728,21 +840,21 @@ export default function FormDiarista() {
                 {errors.cidade && 
                 <span className="text-error opacity-75">{errors.cidade?.message}</span>}
             </div>
-            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+
+            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                 <label htmlFor="estado" className="text-prim">Estado</label>
-                <select  
-                id="estado"
+                <input 
+                className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                id="estado" 
+                type="text" 
+                placeholder=""
                 {...register("estado")}
                 readOnly
-                className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
-                    <option value="" >Selecione</option>
-                    {Estados.map((options, index) => (
-                        <option key={index} value={options.value}>{options.text}</option>
-                    ))}
-                </select>
+                />
                 {errors.estado && 
-                <span className="text-error opacity-75">{errors.estado?.message}</span>}           
+                <span className="text-error opacity-75">{errors.estado?.message}</span>}
             </div>
+            
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Anexos</h2>
             </div>
@@ -881,18 +993,18 @@ export default function FormDiarista() {
             </div>
 
 
-            {/* <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                 <label htmlFor="confirmPassword" className="text-prim">Confirmar Senha</label>
                 <input 
                 className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                 id="confirmPassword" 
                 type="password"
-                placeholder="" 
-                {...register("confirmPassword")}
+                {...register('confirmarSenha')}
+                placeholder=""
                 />
-                {errors.confirmPassword && 
-                <span className="text-error opacity-75">{errors.confirmPassword?.message}</span>}
-            </div> */}
+                {errors.confirmarSenha && 
+                <span className="text-error opacity-75">{errors.confirmarSenha?.message}</span>}
+            </div>
 
 
             <div className="mt-4 text-prim pr-9 pl-9">

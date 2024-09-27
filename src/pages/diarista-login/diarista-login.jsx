@@ -103,6 +103,7 @@ export default function DaristaLogin() {
                                 </button>
                             </div>
                             {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
+  
                         </form>
                     </div>            
                 </main>
