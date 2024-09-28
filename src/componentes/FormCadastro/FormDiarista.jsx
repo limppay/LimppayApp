@@ -281,10 +281,6 @@ export default function FormDiarista() {
 
     ]
 
-    const Estados = [
-        {text: "Amazonas", value: 1}
-    ]
-
     // states
     const [image, setImage] = useState("src/assets/img/diarista-cadastro/user.png")
     const [fileNames, setFileNames] = useState({
@@ -544,7 +540,7 @@ export default function FormDiarista() {
                 </div>
             
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="cpf" className="text-prim">RG</label>
+                    <label htmlFor="rg" className="text-prim">RG</label>
                     <input
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="rg" 
