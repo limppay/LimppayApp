@@ -39,5 +39,20 @@ export const login = async (email, senha) => {
   }
 };
 
+// Função para atualizar o usuário
+export const updateUser = async (id, userData) => {
+  try {
+    const response = await api.put(`/users/${id}`, userData, {
+      headers: {
+        'Content-Type': 'application/json', // Definindo o Content-Type como JSON
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
+      },
+    });
+    return response.data; // Retornar os dados do usuário atualizado
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error.response?.data || error.message);
+    return false; // Retornar false em caso de erro
+  }
+};
 
 export default api;

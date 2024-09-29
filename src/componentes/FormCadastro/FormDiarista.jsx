@@ -217,8 +217,8 @@ export default function FormDiarista() {
             buttonSubmit.classList.toggle("opacity-50")
         }
     })
-    // função para selecionar os dias da semana
 
+    // função para selecionar os dias da semana
     useEffect(() => {
         const selectDays = document.getElementById("selectDays")
         const days = ['dom', 'seg', 'ter', 'quart', 'qui', 'sex', 'sab']
@@ -294,11 +294,9 @@ export default function FormDiarista() {
     const [cepError, setCepError] = useState("")
     const [mask, setMask] = useState('999.999.999-99')
 
-
     const [genero, setGenero] = useState('');
     const [outroGenero, setOutroGenero] = useState('');
 
-    
     const inputRef = useRef(null)
     
     const watchCep = watch("cep");
