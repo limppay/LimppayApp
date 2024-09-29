@@ -8,7 +8,7 @@ import InputMask from "react-input-mask"
 import axios from "axios"
 import { updateUser } from '../../services/api';
 
-const EditUserModal = ({ Open, SetOpen, userInfo}) => {
+const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
 
   const schema = yup.object({
     // scheam do prisma na API
@@ -223,6 +223,10 @@ const EditUserModal = ({ Open, SetOpen, userInfo}) => {
 
   ] 
 
+  const avatarUrl = Urls ? Object.values(Urls)[0] : null;
+
+
+
     return (
       <Dialog open={Open} onClose={SetOpen} className="relative z-10">
       <DialogBackdrop
@@ -233,27 +237,35 @@ const EditUserModal = ({ Open, SetOpen, userInfo}) => {
         <div className="flex items-center justify-center p-4 text-center sm:items-center sm:p-0">
           <DialogPanel
             transition
-            className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:max-w-full data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+            className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 w-[300vh] md:max-w-[100vh] lg:max-w-[100vh] data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
             <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 ">
-              <div className="sm:flex sm:items-start lg:justify-center">
+              <div className="lg:justify-center">
                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                   <div className="mt-2">
                       <div className="flex flex-col  text-prim">
                         <form className='flex flex-col gap-4' onSubmit={handleSubmit(onSubmit)}  >
-                          
                           <div className="overflow-y-auto max-h-[70vh]"> 
 
+                            <div className='lg:flex-row flex flex-col items-center lg:justify-around'>
+                                <img src={avatarUrl}
+                                  id='avatar' 
+                                  alt="foto de perfil" 
+                                  className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
+                                  
+                                />
 
-                            <div className="mt-4 p-5 pt-0 pb-0 flex flex-col lg:mt-0 lg:w-1/2 lg:p-0 lg:mb-10 max-w-full">
-                                <label htmlFor="biografia" className="text-prim">Sobre mim</label>
-                                <textarea  
-                                id="biografia"
-                                {...register("sobre")}
-                                className="border rounded-md border-bord p-3 pt-1 pb-1 min-h-40 focus:outline-ter text-prim lg:max-w-full max-h-1"></textarea>
+                              <div className="mt-4 p-5 pt-0 pb-0 flex flex-col lg:mt-0 lg:w-1/2 lg:p-0 lg:mb-10 w-full">
+                                  <label htmlFor="biografia" className="text-prim">Sobre mim</label>
+                                  <textarea  
+                                  id="biografia"
+                                  {...register("sobre")}
+                                  className="border rounded-md border-bord p-3 pt-1 pb-1 min-h-40 focus:outline-ter text-prim lg:max-w-full max-h-1"></textarea>
+                              </div>
                             </div>
 
-                            <div className="p-5 pt-0 pb-0 flex flex-col">
+
+                            <div className="p-5 pt-4 pb-0 flex flex-col">
                                 <label htmlFor="name" className="text-prim">Nome</label>
                                 <input 
                                 className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
@@ -307,7 +319,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo}) => {
                               )}
                             </div>
                               
-                            <div className="p-5 pt-0 pb-0 flex flex-col">
+                            <div className="p-5 pt-4 pb-0 flex flex-col">
                                 <label htmlFor="email" className="text-prim">Email</label>
                                 <input 
                                 className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
@@ -318,7 +330,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo}) => {
                                 />
                             </div>
 
-                            <div className="p-5 pt-0 pb-0 flex flex-col">
+                            <div className="p-5 pt-4 pb-0 flex flex-col">
                                 <label htmlFor="telefone" className="text-prim">Telefone</label>
                                 <input 
                                 className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "

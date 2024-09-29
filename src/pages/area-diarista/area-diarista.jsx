@@ -149,7 +149,8 @@ const AreaDiarista = () => {
                                             SetOpen={() => SetOpen(false)} 
                                             userInfo={userInfo} 
                                             token={token} 
-                                            onUserUpdated={handleUserUpdated} 
+                                            onUserUpdated={handleUserUpdated}
+                                            Urls={urls} 
                                         />                          
                                 </div>
                             </div>      
