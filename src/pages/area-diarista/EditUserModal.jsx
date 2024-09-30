@@ -30,6 +30,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
     pix: yup.string(),
     sobre: yup.string(),
     referencia:  yup.string(),
+
   })
 
   const {
@@ -48,13 +49,12 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
       defaultValues: userInfo
     })
 
-    console.log(userInfo)
-
   // onSubmit do Forms
   const onSubmit = async (data) => {
       setLoading(true)
 
       console.log(data)
+
       const formData = new FormData()
       formData.append('name', data.name)
       formData.append('genero', data.genero)
@@ -75,9 +75,17 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
       formData.append('sobre', data.sobre)
       formData.append('referencia', data.referencia)
 
+      // Anexa o arquivo da foto de perfil ao FormData
+      console.log('Arquivo anexado:', data.arquivoFoto); // Verifique se o arquivo existe aqui
+      formData.append('arquivoFoto', file)
+
+      for (let pair of formData.entries()) {
+        console.log(pair[0]+ ', ' + pair[1]); 
+      }
+
       try {
         const userId = localStorage.getItem('userId')
-        const updatedUser = await updateUser(userId, data)
+        const updatedUser = await updateUser(userId, formData)
 
         if (updatedUser) {
           console.log('Usuário atualizado com sucesso:', updatedUser);
@@ -100,27 +108,41 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
   const [cepError, setCepError] = useState("")
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null)
+  const avatarUrl = Urls ? Object.values(Urls)[0] : null;
+  const [image, setImage] = useState(avatarUrl)
+  const [file, setFile] = useState(null);
 
   // função para validar se algum dia foi selecionado ou não
-    useEffect(() => {
-      const daysCheckboxes = document.querySelectorAll(".days")
-      daysCheckboxes.forEach((checkbox) => {
-          checkbox.addEventListener('change', () => {
-              const allDays = Array.from(daysCheckboxes).map(cb => cb.checked)
-              if (allDays.some(day => day)) {
-                  clearErrors('diasSemana')
-              } else {
-                  setError('diasSemana', { message: 'Selecione pelo menos um dia' })
-              }
-          });
-      });
+  useEffect(() => {
+    const daysCheckboxes = document.querySelectorAll(".days")
+    daysCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+            const allDays = Array.from(daysCheckboxes).map(cb => cb.checked)
+            if (allDays.some(day => day)) {
+                clearErrors('diasSemana')
+            } else {
+                setError('diasSemana', { message: 'Selecione pelo menos um dia' })
+            }
+        });
+    });
 
-      return () => {
-          daysCheckboxes.forEach((checkbox) => {
-              checkbox.removeEventListener('change', () => {})
-          });
-      };
-    }, [clearErrors, setError])
+    return () => {
+        daysCheckboxes.forEach((checkbox) => {
+            checkbox.removeEventListener('change', () => {})
+        });
+    };
+  }, [clearErrors, setError])
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFile(file); // Armazenando o arquivo diretamente no estado
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);
+      trigger("arquivoFoto");
+      console.log("Arquivo selecionado:", file);
+    }
+  };
 
   const handleGeneroChange = (event) => {
     const value = event.target.value;
@@ -223,9 +245,6 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
 
   ] 
 
-  const avatarUrl = Urls ? Object.values(Urls)[0] : null;
-
-
 
     return (
       <Dialog open={Open} onClose={SetOpen} className="relative z-10">
@@ -237,7 +256,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
         <div className="flex items-center justify-center p-4 text-center sm:items-center sm:p-0">
           <DialogPanel
             transition
-            className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 w-[300vh] md:max-w-[100vh] lg:max-w-[100vh] data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+            className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 w-[300vh] md:max-w-[100vh] lg:max-w-[150vh] data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
             <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 ">
               <div className="lg:justify-center">
@@ -245,15 +264,26 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                   <div className="mt-2">
                       <div className="flex flex-col  text-prim">
                         <form className='flex flex-col gap-4' onSubmit={handleSubmit(onSubmit)}  >
-                          <div className="overflow-y-auto max-h-[70vh]"> 
+                          <div className="overflow-y-auto max-h-[70vh] lg:max-h-[60vh]"> 
 
                             <div className='lg:flex-row flex flex-col items-center lg:justify-around'>
-                                <img src={avatarUrl}
-                                  id='avatar' 
+
+                            <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
+                                  <img src={image} 
                                   alt="foto de perfil" 
-                                  className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
-                                  
-                                />
+                                  className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
+                                  />                  
+                                  <input 
+                                      type="file" 
+                                      id="fotoPerfil"
+                                      accept="image/*"
+                                      onChange={(e) => {
+                                        handleImageChange(e);
+                                      }}
+                                      className="p-2 w-full hidden"
+                                  />                      
+                              </label>
+                              {errors.arquivoFoto && <p>{errors.arquivoFoto.message}</p>}
 
                               <div className="mt-4 p-5 pt-0 pb-0 flex flex-col lg:mt-0 lg:w-1/2 lg:p-0 lg:mb-10 w-full">
                                   <label htmlFor="biografia" className="text-prim">Sobre mim</label>

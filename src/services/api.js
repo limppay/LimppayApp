@@ -44,7 +44,7 @@ export const updateUser = async (id, userData) => {
   try {
     const response = await api.put(`/users/${id}`, userData, {
       headers: {
-        'Content-Type': 'application/json', // Definindo o Content-Type como JSON
+        'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
       },
     });
