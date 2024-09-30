@@ -8,30 +8,29 @@ import InputMask from "react-input-mask"
 import axios from "axios"
 import { updateUser } from '../../services/api';
 
-const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
+const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
   const schema = yup.object({
-    // scheam do prisma na API
-    name: yup.string(),
+    name: yup.string().trim().required("Nome não pode ser vazio"),
     genero: yup.string(),
-    estadoCivil: yup.number(),
-    telefone: yup.string(),
-    email: yup.string(),
-    cep:  yup.string(),
+    estadoCivil: yup.number().required("Estado civil não pode ser vazio").typeError("Estado Civil não pode ser vazio"),
+    telefone: yup.string().trim().required("Telefone não pode ser vazio"),
+    email: yup.string().trim().required("E-mail não pode ser vazio").email("Email inválido."),
+    cep:  yup.string().trim().required("Os campos abaixo não podem ser vazios").min(8, "Digite um cep válido"),
     logradouro:  yup.string(),
-    numero:  yup.string(),
+    numero:  yup.string().trim().required("Número não pode ser vazio"),
     complemento:  yup.string(),
     bairro:  yup.string(),
     cidade:  yup.string(),
     estado: yup.string().typeError(""),
-    banco: yup.number(),
-    agencia:  yup.string().matches(/^\d+$/, 'Apenas números'),
-    conta:  yup.string().matches(/^\d+$/, 'Apenas números'),
-    pix: yup.string(),
-    sobre: yup.string(),
+    banco: yup.number().required("Banco não pode ser vazio").typeError("Banco não pode ser vazio"),
+    agencia:  yup.string().trim().required("Agência não pode ser vazio").matches(/^\d+$/, 'Apenas números'),
+    conta:  yup.string().trim().required("Conta não pode ser vazio").matches(/^\d+$/, 'Apenas números'),
+    pix: yup.string().trim().required("Pix não pode ser vazio"),
+    sobre: yup.string().trim().required("Sobre mim não pode ser vazio"),
     referencia:  yup.string(),
+  });
 
-  })
 
   const {
       register,
@@ -47,7 +46,16 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
     } = useForm({
       resolver: yupResolver(schema),
       defaultValues: userInfo
-    })
+  })
+
+  // Efeito para resetar o formulário ao abrir o modal
+  useEffect(() => {
+    if (Open) {
+      setImage(avatarUrl)
+      reset(userInfo); // Restaura os valores padrão sempre que o modal é aberto
+    }
+  }, [Open, userInfo, reset]);
+
 
   // onSubmit do Forms
   const onSubmit = async (data) => {
@@ -89,6 +97,14 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
 
         if (updatedUser) {
           console.log('Usuário atualizado com sucesso:', updatedUser);
+          setLoading(false)
+
+          const newUrls = updateUser.urls
+          localStorage.setItem('urls', JSON.stringify(newUrls))
+
+
+          onUserUpdated(updatedUser);
+
           SetOpen(false); // Fechar o modal após o sucesso
         } else {
           console.error('Falha ao atualizar o usuário.');
@@ -96,7 +112,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
         }
 
       } catch (error) {
-        console.error('Erro ao criar o usuário:', error);
+        console.error('Erro ao atualizar o usuário:', error);
       }
 
   };
@@ -105,6 +121,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
 
   const [genero, setGenero] = useState('');
   const [outroGenero, setOutroGenero] = useState('');
+
   const [cepError, setCepError] = useState("")
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null)
@@ -144,26 +161,38 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
     }
   };
 
+  // Carrega os dados do usuário
+  useEffect(() => {
+    if (userInfo) {
+        if (userInfo.genero !== 'Masculino' && userInfo.genero !== 'Feminino') {
+            setGenero('Outro');
+            setOutroGenero(userInfo.genero);
+        } else {
+            setGenero(userInfo.genero);
+            setOutroGenero('');
+        }
+    }
+  }, [userInfo]);
+
   const handleGeneroChange = (event) => {
     const value = event.target.value;
     setGenero(value);
-    setValue('genero', value); // Atualiza o valor no React Hook Form
     if (value !== 'Outro') {
-      setOutroGenero('');
+        setOutroGenero('');
+        setValue('genero', value);
+    } else {
+        setValue('genero', outroGenero);
     }
   };
-
+  
+  // Lida com a mudança no input de gênero personalizado
   const handleOutroGeneroChange = (event) => {
     const value = event.target.value;
     setOutroGenero(value);
-    setValue('genero', value); // Atualiza o valor no React Hook Form
+    setValue('genero', value);
   };
 
-  const voltarParaSelect = () => {
-    setGenero('');
-    setOutroGenero('');
-    setValue('genero', ''); // Reseta o valor no React Hook Form
-  };
+  console.log(userInfo.genero)
 
   const estados = {
     "AC": "Acre",
@@ -226,10 +255,10 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
 
 
   const Genero = [
-      {text: "Masculino"},
-      {text: "Feminino"},
-      {text: "Outro"},
-  ]
+    { text: "Masculino" },
+    { text: "Feminino" },
+    { text: "Outro" }, // Mantemos "Outro" como uma opção fixa
+  ];
 
 
   const EstadoCivil = [
@@ -283,7 +312,6 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                       className="p-2 w-full hidden"
                                   />                      
                               </label>
-                              {errors.arquivoFoto && <p>{errors.arquivoFoto.message}</p>}
 
                               <div className="mt-4 p-5 pt-0 pb-0 flex flex-col lg:mt-0 lg:w-1/2 lg:p-0 lg:mb-10 w-full">
                                   <label htmlFor="biografia" className="text-prim">Sobre mim</label>
@@ -291,6 +319,9 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                   id="biografia"
                                   {...register("sobre")}
                                   className="border rounded-md border-bord p-3 pt-1 pb-1 min-h-40 focus:outline-ter text-prim lg:max-w-full max-h-1"></textarea>
+                                  {errors.sobre && (
+                                    <span className="text-error opacity-75">{errors.sobre.message}</span>
+                                  )}
                               </div>
                             </div>
 
@@ -304,48 +335,42 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                 placeholder="Nome"
                                 {...register("name")}                         
                                 />
+                                {errors.name && (
+                                    <span className="text-error opacity-75">{errors.name.message}</span>
+                                )}
                             </div>
 
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col w-full">
                               <div className="flex gap-2 justify-between">
-                                  <label htmlFor="Genero" className="text-prim">Gênero</label>
-
-                                  {genero === 'Outro' ? (
-                                      <>
-                                          <p onClick={voltarParaSelect} className="cursor-pointer text-prim">Voltar para seleção</p>
-                                      </>
-                                  ) : (
-                                      <span>
-                                          
-                                      </span>
-                                  )}
+                                <label htmlFor="Genero" className="text-prim">Gênero</label>
+                                {genero === 'Outro' && (
+                                  <p onClick={() => setGenero('')} className="cursor-pointer text-prim">Voltar para seleção</p>
+                                )}
                               </div>
-                              
+
                               {genero === 'Outro' ? (
-                                  <>
-                                      <input
-                                      type="text"
-                                      id="outroGenero"
-                                      name="outroGenero"
-                                      value={outroGenero}
-                                      onChange={handleOutroGeneroChange}
-                                      placeholder="Especifique seu gênero"
-                                      {...register("genero")}
-                                      className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim"
-                                      />
-                                  </>
+                                <input
+                                  type="text"
+                                  id="outroGenero"
+                                  name="outroGenero"
+                                  value={outroGenero}
+                                  onChange={handleOutroGeneroChange}
+                                  placeholder="Especifique seu gênero"
+                                  className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim"
+                                />
                               ) : (
-                                  <select
+                                <select
                                   id="Genero"
                                   value={genero}
                                   onChange={handleGeneroChange}
                                   {...register("genero")}
-                                  className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim w-full">
-                                      <option value="">Selecione</option>
-                                      {Genero.map((options, index) => (
-                                          <option key={index} value={options.text}>{options.text}</option>
-                                      ))}                            
-                                  </select>
+                                  className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim w-full"
+                                >
+                                  <option value="">Selecione</option>
+                                  {Genero.map((options, index) => (
+                                    <option key={index} value={options.text}>{options.text}</option>
+                                  ))}
+                                </select>
                               )}
                             </div>
                               
@@ -358,6 +383,9 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                 placeholder="Email"
                                 {...register("email")}                         
                                 />
+                                {errors.email && (
+                                  <span className="text-error opacity-75">{errors.email.message}</span>
+                                )}
                             </div>
 
                             <div className="p-5 pt-4 pb-0 flex flex-col">
@@ -369,6 +397,9 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                 placeholder="Telefone"
                                 {...register("telefone")}                         
                                 />
+                                {errors.telefone && (
+                                  <span className="text-error opacity-75">{errors.telefone.message}</span>
+                                )}
                             </div>
 
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col w-full">
@@ -381,7 +412,10 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                     {EstadoCivil.map((options, index) => (
                                         <option key={index} value={options.value}>{options.text}</option>
                                     ))}
-                                </select>                               
+                                </select>
+                                {errors.estadoCivil && (
+                                  <span className="text-error opacity-75">{errors.estadoCivil.message}</span>
+                                )}                               
                             </div>
 
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col w-full">
@@ -395,6 +429,9 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                         <option key={index} value={options.value}>{options.text}</option>
                                     ))}
                                 </select>
+                                {errors.banco && (
+                                  <span className="text-error opacity-75">{errors.banco.message}</span>
+                                )}  
                             </div>
 
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col">
@@ -405,7 +442,10 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                 type="text" 
                                 placeholder="Somente números"
                                 {...register("agencia")}                            
-                                />                          
+                                />
+                                {errors.agencia && (
+                                  <span className="text-error opacity-75">{errors.agencia.message}</span>
+                                )}                           
                             </div>
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col">
                                 <label htmlFor="conta" className="text-prim">Conta</label>
@@ -415,7 +455,10 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                 type="text" 
                                 placeholder="Somente números"
                                 {...register("conta")}                 
-                                />      
+                                />
+                                {errors.conta && (
+                                  <span className="text-error opacity-75">{errors.conta.message}</span>
+                                )}       
                             </div>
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col">
                                 <label htmlFor="pix" className="text-prim">Pix</label>
@@ -425,11 +468,17 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                                 type="text" 
                                 placeholder="Digite sua chave pix" 
                                 {...register("pix")}
-                                />                          
+                                />
+                                {errors.pix && (
+                                  <span className="text-error opacity-75">{errors.pix.message}</span>
+                                )}                           
                             </div> 
 
                             <div className="mt-7 p-5 pt-0 pb-0 flex flex-col">
                                 <h2 className="text-2xl text-desSec">Endereço</h2>
+                                {errors.cep && (
+                                  <span className="text-error opacity-75">{errors.cep.message}</span>
+                                )} 
                             </div>
 
                             <div className="lg:flex lg:justify-between">
@@ -538,7 +587,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls}) => {
                             </div>
                           </div>
                           <div className="bg-gray-50 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 lg:gap-10 flex flex-row-reverse gap-5">
-                            <button type='submit'  className="text-center w-full lg:w-2/12  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 ">Editar</button>
+                            <button type='submit'  className="text-center w-full lg:w-2/12  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 ">{loading ? "Editando..." : "Editar"}</button>
                             <button
                               type="button"
                               data-autofocus

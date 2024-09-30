@@ -23,29 +23,29 @@ export default function FormDiarista() {
     // schema de validações do form
     const schema = yup.object({
         // scheam do prisma na API
-        name: yup.string().required("O nome é obrigatório"),
+        name: yup.string().trim().required("O nome é obrigatório"),
         genero: yup.string(),
         estadoCivil: yup.number().required("Estado civil é obrigatório").typeError("Estado Civil é obrigatório"),
-        telefone: yup.string().required("Telefone é obrigatório"),
-        email: yup.string().required("E-mail é obrigatório").email("Email inválido."),
+        telefone: yup.string().trim().required("Telefone é obrigatório"),
+        email: yup.string().trim().required("E-mail é obrigatório").email("Email inválido."),
         cep:  yup.string().required("Preencha os campos abaixo").min(8, "Digite um cep válido"),
         logradouro:  yup.string(),
-        numero:  yup.string().required("Número é obrigatório"),
+        numero:  yup.string().trim().required("Número é obrigatório"),
         complemento:  yup.string(),
         bairro:  yup.string(),
         cidade:  yup.string(),
         estado: yup.string().typeError(""),
-        cpfCnpj: yup.string().required("O CPF é obrigatório").min(11, "Digite um CPF válido"),
-        rg: yup.string().required("O RG é obrigatório"),
+        cpfCnpj: yup.string().trim().required("O CPF é obrigatório").min(11, "Digite um CPF válido"),
+        rg: yup.string().trim().required("O RG é obrigatório"),
         banco: yup.number().required("Banco é obrigatório").typeError("Banco é obrigatório"),
-        agencia:  yup.string().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
-        conta:  yup.string().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
-        pix: yup.string().required("Pix é obrigatório"),
+        agencia:  yup.string().trim().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
+        conta:  yup.string().trim().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
+        pix: yup.string().trim().required("Pix é obrigatório"),
 
-        senha: yup.string().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
-        confirmarSenha: yup.string().required("Confirme sua senha").oneOf([yup.ref("senha")], "As senhas devem ser iguais"),
+        senha: yup.string().trim().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
+        confirmarSenha: yup.string().trim().required("Confirme sua senha").oneOf([yup.ref("senha")], "As senhas devem ser iguais"),
 
-        sobre: yup.string().required("Sobre mim é obrigatório"),
+        sobre: yup.string().trim().required("Sobre mim é obrigatório"),
         referencia:  yup.string(),
 
         arquivoFoto: yup
@@ -108,13 +108,12 @@ export default function FormDiarista() {
             return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
             }),
 
-        // o banco de dados não tem um campo para "confirmPassword", então removi temporariamente.
-        
+
         // o banco de dados não tem um campo para "termo", então removi temporariamente.
         // termo: yup.boolean().required("Aceite os termos"),
 
         // a regra de negocio para os dias da semana, ainda ta em processo de revisão.
-        // Dias da semana
+        // Dias da semana 
         dom: yup.boolean(),
         seg: yup.boolean(),
         ter: yup.boolean(),

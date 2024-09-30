@@ -11,7 +11,7 @@ const AreaDiarista = () => {
     const userId = localStorage.getItem('userId'); // Obter o ID do usuário do localStorage
     const token = localStorage.getItem('token'); // Obter o token do localStorage
     // Recuperar as URLs e converter para objeto JSON
-    const urls = JSON.parse(localStorage.getItem('urls'));
+    const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {}); // Atualize o estado URLs aqui
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -30,8 +30,19 @@ const AreaDiarista = () => {
         }
     }, [token, userId]);
 
+
+    useEffect(() => {
+        console.log("Informações do usuário atualizadas:", userInfo);
+    }, [userInfo]); // Isso vai logar as informações do usuário toda vez que mudarem
+    
+
     const handleUserUpdated = (updatedInfo) => {
-        setUserInfo(updatedInfo);
+        setUserInfo(updatedInfo.updatedUser)
+        // Atualize as URLs aqui também
+        const newUrls = updatedInfo.urls; // Supondo que a resposta inclui as novas URLs
+        localStorage.setItem('urls', JSON.stringify(newUrls));
+        setUrls(newUrls); // Atualiza o estado com as novas URLs
+
     };
 
     // Anexos
