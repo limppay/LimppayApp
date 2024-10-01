@@ -275,6 +275,11 @@ export default function FormDiarista() {
         {text: "Separado(a)", value: 5},
     ]
 
+    const CpfCnpj = [
+        {text:"CPF"},
+        {text:"CNPJ"},
+    ]
+
     const Banco = [
         {text: "Santander", value: 1}
 
@@ -295,6 +300,9 @@ export default function FormDiarista() {
 
     const [genero, setGenero] = useState('');
     const [outroGenero, setOutroGenero] = useState('');
+
+    const[cpfCnpj, setcpfCnpj]=useState('')
+    console.log(cpfCnpj)
 
     const inputRef = useRef(null)
     
@@ -323,6 +331,16 @@ export default function FormDiarista() {
         setValue('genero', ''); // Reseta o valor no React Hook Form
       };
 
+      const handleCpfCnpjChange = (event)=>{
+        const value = event.target.value;
+        setcpfCnpj(value);
+        setValue('CpfCnpj', value);
+      }
+
+      const voltarParaSelectCpfCnpj = () =>{
+        setcpfCnpj('');
+        setValue('cpfCnpj', '');
+      }
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
@@ -520,21 +538,62 @@ export default function FormDiarista() {
                     )}
                 </div>
                 
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="cpf" className="text-prim">CPF / CNPJ</label>
-                    <InputMask
-                    mask="999.999.999-99"
-                    maskChar={null}
-                    ref={inputRef} 
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="cpf" 
-                    type="text" 
-                    placeholder="Somente números" 
-                    {...register("cpfCnpj")}
-                    />
-                    {errors.cpfCnpj && 
-                    <span className="text-error opacity-75">{errors.cpfCnpj?.message}</span>}
+                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                    <div className="flex gap-2 justify-between">
+                        <label htmlFor="CpfCnpj" className="text-prim">
+                            {cpfCnpj ? cpfCnpj : "CPF / CNPJ"} {/* Exibe CPF ou CNPJ se selecionado */}
+                        </label>
+
+                        {cpfCnpj === 'CPF' || cpfCnpj === 'CNPJ' ? (
+                            <p onClick={voltarParaSelectCpfCnpj} className="cursor-pointer text-prim">Voltar para seleção</p>
+                        ) : (
+                            <span></span>
+                        )}
+                    </div>
+
+                    {cpfCnpj === 'CPF' ? (
+                        <InputMask
+                            mask="999.999.999-99"
+                            maskChar={null}
+                            ref={inputRef}
+                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                            id="cpf"
+                            type="text"
+                            placeholder="Somente números"
+                            {...register("cpfCnpj")}
+                        />
+                    ) : cpfCnpj === 'CNPJ' ? (
+                        <InputMask
+                            mask="99.999.999/9999-99"
+                            maskChar={null}
+                            ref={inputRef}
+                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                            id="cnpj"
+                            type="text"
+                            onChange={handleCpfCnpjChange}
+                            placeholder="Somente números"
+                            {...register("cpfCnpj")}
+                        />
+                    ) : (
+                        <select
+                            id="CpfCnpj"
+                            value={cpfCnpj}
+                            onChange={handleCpfCnpjChange}
+                            required
+                            className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim w-full">
+                            <option value="">Selecione</option>
+                            {CpfCnpj.map((options, index) => (
+                                <option key={index} value={options.text}>{options.text}</option>
+                            ))}
+                        </select>
+                    )}
+
+                    {errors.cpfCnpj && (
+                        <span className="text-error opacity-75">{errors.cpfCnpj?.message}</span>
+                    )}
                 </div>
+
+                
             
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="rg" className="text-prim">RG</label>
