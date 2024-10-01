@@ -176,14 +176,14 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
   const handleGeneroChange = (event) => {
     const value = event.target.value;
-    setGenero(value);
+    setGenero(value);  // Atualiza o estado do gênero
     if (value !== 'Outro') {
-        setOutroGenero('');
-        setValue('genero', value);
-    } else {
-        setValue('genero', outroGenero);
+      setOutroGenero('');  // Limpa o valor de outro gênero se 'Outro' não for selecionado
+      setValue('genero', value);  // Define o valor no formulário para 'Masculino' ou 'Feminino'
     }
   };
+  
+  
   
   // Lida com a mudança no input de gênero personalizado
   const handleOutroGeneroChange = (event) => {
@@ -339,15 +339,17 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                                     <span className="text-error opacity-75">{errors.name.message}</span>
                                 )}
                             </div>
-
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col w-full">
                               <div className="flex gap-2 justify-between">
                                 <label htmlFor="Genero" className="text-prim">Gênero</label>
                                 {genero === 'Outro' && (
-                                  <p onClick={() => setGenero('')} className="cursor-pointer text-prim">Voltar para seleção</p>
+                                  <p onClick={() => setGenero('')} className="cursor-pointer text-prim">
+                                    Voltar para seleção
+                                  </p>
                                 )}
                               </div>
 
+                              {/* Renderiza o campo de texto se o gênero for 'Outro', caso contrário exibe o select */}
                               {genero === 'Outro' ? (
                                 <input
                                   type="text"
@@ -361,18 +363,20 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                               ) : (
                                 <select
                                   id="Genero"
-                                  value={genero}
+                                  value={genero}  // Garante que o estado correto seja atribuído ao select
                                   onChange={handleGeneroChange}
-                                  {...register("genero")}
                                   className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim w-full"
                                 >
                                   <option value="">Selecione</option>
-                                  {Genero.map((options, index) => (
-                                    <option key={index} value={options.text}>{options.text}</option>
+                                  {Genero.map((option, index) => (
+                                    <option key={index} value={option.text}>
+                                      {option.text}
+                                    </option>
                                   ))}
                                 </select>
                               )}
                             </div>
+
                               
                             <div className="p-5 pt-4 pb-0 flex flex-col">
                                 <label htmlFor="email" className="text-prim">Email</label>
