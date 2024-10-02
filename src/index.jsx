@@ -9,6 +9,9 @@ import DiaristaCadastro from './pages/diarista-cadastro/diarista-cadastro-app'
 import Error404 from './Error404'
 import DaristaLogin from './pages/diarista-login/diarista-login'
 import AreaDiarista from './pages/area-diarista/area-diarista'
+import ResetPassword from './pages/diarista-login/reset-password'
+import RequestResetPassword from './pages/diarista-login/request-reset-password'
+
 // 3 - rotas
 const router = createBrowserRouter([
     {
@@ -27,6 +30,14 @@ const router = createBrowserRouter([
     {
       path: "diarista-login",
       element: <DaristaLogin/>
+    },
+    {
+      path: "request-reset-password",
+      element: <RequestResetPassword/>
+    },
+    {
+      path:"reset-password",
+      element: <ResetPassword/>
     },
     {
       path: "area-diarista",

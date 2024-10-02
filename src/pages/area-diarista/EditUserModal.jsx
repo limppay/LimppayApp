@@ -12,7 +12,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
   const schema = yup.object({
     name: yup.string().trim().required("Nome não pode ser vazio"),
-    genero: yup.string(),
+    genero: yup.string().required("Gênero não pode ser vazio"),
     estadoCivil: yup.number().required("Estado civil não pode ser vazio").typeError("Estado Civil não pode ser vazio"),
     telefone: yup.string().trim().required("Telefone não pode ser vazio"),
     email: yup.string().trim().required("E-mail não pode ser vazio").email("Email inválido."),
@@ -359,7 +359,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                                   onChange={handleOutroGeneroChange}
                                   placeholder="Especifique seu gênero"
                                   className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim"
-                                />
+                                />                                
                               ) : (
                                 <select
                                   id="Genero"
@@ -374,6 +374,9 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                                     </option>
                                   ))}
                                 </select>
+                              )}
+                              {errors.genero && (
+                                  <span className="text-error opacity-75">{errors.genero.message}</span>
                               )}
                             </div>
 

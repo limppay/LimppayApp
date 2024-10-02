@@ -55,4 +55,36 @@ export const updateUser = async (id, userData) => {
   }
 };
 
+
+// Função para solicitar o link de redefinição de senha
+export const requestPasswordReset = async (email, cpfCnpj) => {
+  try {
+    const response = await api.post('/auth/request-password-reset', {
+      email,
+      cpfCnpj
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao solicitar redefinição de senha:', error.response?.data || error.message);
+    return false;
+  }
+};
+
+// Função para redefinir a senha
+export const resetPassword = async (token, newPassword) => {
+  try {
+    const response = await api.post('/auth/reset-password', {
+      token,
+      newPassword,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao redefinir senha:', error.response?.data || error.message);
+    return false;
+  }
+}
+
+
 export default api;
