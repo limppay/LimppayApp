@@ -4,9 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import InputMask from "react-input-mask"
 import axios from "axios"
 import { updateUser } from '../../services/api';
+
+import InputMask from "react-input-mask"
+
 
 const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
@@ -61,15 +63,23 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
   const onSubmit = async (data) => {
       setLoading(true)
 
+      const telefoneSemMascara = removerMascara(data.telefone);
+      const cepSemMascara = removerMascara(data.cep);
+
+
       console.log(data)
 
       const formData = new FormData()
       formData.append('name', data.name)
       formData.append('genero', data.genero)
       formData.append('estadoCivil', data.estadoCivil)
-      formData.append('telefone', data.telefone)
+
+      formData.append('telefone', telefoneSemMascara)
+
       formData.append('email', data.email)
-      formData.append('cep', data.cep)
+
+      formData.append('cep', cepSemMascara)
+
       formData.append('logradouro', data.logradouro)
       formData.append('numero', data.numero)
       formData.append('complemento', data.complemento)
@@ -183,7 +193,9 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
     }
   };
   
-  
+  const removerMascara = (valor) => {
+    return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são números
+  };
   
   // Lida com a mudança no input de gênero personalizado
   const handleOutroGeneroChange = (event) => {
@@ -397,16 +409,18 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
                             <div className="p-5 pt-4 pb-0 flex flex-col">
                                 <label htmlFor="telefone" className="text-prim">Telefone</label>
-                                <input 
+                                <InputMask
+                                ref={inputRef}
+                                mask="(99) 99999-9999" 
+                                maskChar={null}
                                 className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                id="telefone"
+                                id="telefone" 
                                 type="text" 
-                                placeholder="Telefone"
-                                {...register("telefone")}                         
+                                placeholder="(00) 00000-0000" 
+                                {...register("telefone")}
                                 />
-                                {errors.telefone && (
-                                  <span className="text-error opacity-75">{errors.telefone.message}</span>
-                                )}
+                                {errors.telefone && 
+                                <span className="text-error opacity-75">{errors.telefone?.message}</span>}
                             </div>
 
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col w-full">

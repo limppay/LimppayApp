@@ -47,6 +47,7 @@ const AreaDiarista = () => {
 
     // Anexos
     const avatarUrl = urls ? Object.values(urls)[0] : null;
+    
     const arquivoIdentidade = urls ? Object.values(urls)[1] : null; 
     const arquivoCPF = urls ? Object.values(urls)[2] : null; 
     const arquivoResidencia = urls ? Object.values(urls)[3] : null; 

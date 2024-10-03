@@ -6,13 +6,21 @@ const api = axios.create({
 
 // Função para criar o usuário e enviar arquivos
 export const createUser = async (userData) => {
-  return await api.post('/users', userData, {
-    headers: {
-      // O Content-Type será definido automaticamente como multipart/form-data
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  try {
+    const response = await api.post('/users', userData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
+
+    throw new Error(errorMessage)
+  }
 };
+
+
 
 // Função para fazer login
 export const login = async (email, senha) => {
@@ -34,8 +42,9 @@ export const login = async (email, senha) => {
       throw new Error('Token não encontrado na resposta.');
     }
   } catch (error) {
-    console.error('Erro ao fazer login:', error.response?.data || error.message);
-    return false; // Login falhou
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
+
+    throw new Error(errorMessage)
   }
 };
 
@@ -66,10 +75,11 @@ export const requestPasswordReset = async (email, cpfCnpj) => {
 
     return response.data;
   } catch (error) {
-    console.error('Erro ao solicitar redefinição de senha:', error.response?.data || error.message);
-    return false;
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage); // Lançando o erro com a mensagem apropriada
   }
 };
+
 
 // Função para redefinir a senha
 export const resetPassword = async (token, newPassword) => {

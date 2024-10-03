@@ -1,6 +1,6 @@
 import React from 'react'
 import { Logo } from '../../componentes/imports'
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { requestPasswordReset } from '../../services/api';
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
@@ -8,6 +8,8 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/re
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
+
+import InputMask from "react-input-mask"
 
 
 export default function RequestResetPassword() {
@@ -31,26 +33,46 @@ export default function RequestResetPassword() {
     const [Open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false);
     const [sendCpfCnpj, setSendCpfCnpj] = useState(false)
-  
-    const onSubmit = async (data) => {
-      setLoading(true);
-      console.log(data)
+    const[cpfCnpj, setcpfCnpj]=useState('')
+    const inputRef = useRef(null)
+    const [timer, setTimer] = useState(0); 
 
-      try {
-        const response = await requestPasswordReset(data.email, data.cpfCnpj);
 
-        if (response) {
-            setLoading(false)
-            setMessage(null)
-            setOpen(true)
-        } else {
-            setLoading(false)
-        }
-      } catch (error) {
-        console.error(error);
-        setMessage(error)
+    const CpfCnpj = [
+        {text:"CPF"},
+        {text:"CNPJ"},
+    ]
+
+    const handleCpfCnpjChange = (event)=>{
+        const value = event.target.value;
+        setcpfCnpj(value);
+        setValue('CpfCnpj', value);
       }
-    };
+
+      const voltarParaSelectCpfCnpj = () =>{
+        setcpfCnpj('');
+        setValue('cpfCnpj', '');
+      }
+
+  
+      const onSubmit = async (data) => {
+        setLoading(true);
+        setMessage(null); // Limpar mensagens anteriores
+        const cpfCnpjSemMascara = removerMascara(data.cpfCnpj);
+    
+        try {
+          const response = await requestPasswordReset(data.email, cpfCnpjSemMascara);
+          
+          setLoading(false);
+          setOpen(true); // Sucesso ao enviar o link
+          setTimer(30); // Define o timer para 5 segundos após envio bem-sucedido
+          
+        } catch (error) {
+          setLoading(false);
+          setMessage(error.message); // Definindo a mensagem de erro no estado
+        }
+      };
+    
 
     const handleSendCpfCnpj = () => {
         reset()
@@ -61,6 +83,24 @@ export default function RequestResetPassword() {
         reset()
         setSendCpfCnpj(false)
     }
+
+    const removerMascara = (valor) => {
+        return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são números
+    };
+
+    useEffect(() => {
+        let interval = null;
+        if (timer > 0) {
+
+
+            interval = setInterval(() => {
+                setTimer((prevTimer) => prevTimer - 1);
+            }, 1000);
+        } else if (timer === 0) {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [timer]); // Reexecuta sempre que o timer mudar
 
 
   return (
@@ -87,9 +127,9 @@ export default function RequestResetPassword() {
                                         <label htmlFor="email" className="block text-sm font-medium leading-6 text-ter">
                                             Email
                                         </label>
-                                        <p className='text-prim cursor-pointer' 
+                                        <button className='text-prim cursor-pointer' 
                                         onClick={handleSendCpfCnpj}
-                                        >Esqueci meu email</p>
+                                        >Esqueci meu email</button>
                                     </div>
                                     <div className="mt-2">
                                         <input
@@ -106,23 +146,63 @@ export default function RequestResetPassword() {
                                 
                             ) : (
                                 <>
-                                    <div className='flex justify-between'>
-                                        <label htmlFor="cpfCnpj" className="block text-sm font-medium leading-6 text-ter">
-                                            CPF / CNPJ
-                                        </label>
-                                        <p className='text-prim cursor-pointer' 
-                                        onClick={handleSendEmail}
-                                        >Usar Email</p>
-                                    </div>
-                                    <div className="mt-2">
-                                        <input
-                                            id="cpfCnpj"
-                                            {...register("cpfCnpj")}
-                                            placeholder='Digite seu CPF ou CNPJ'
-                                            className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
-                                        />
-                                        {errors.cpfCnpj?.message && (
-                                            <span className="text-error opacity-75">{errors.cpfCnpj.message}</span>
+                                    <div >
+                                        <div className="flex gap-2 justify-between">
+                                            <label htmlFor="CpfCnpj" className="block text-sm font-medium leading-6 text-ter">
+                                                {cpfCnpj ? cpfCnpj : "CPF / CNPJ"} {/* Exibe CPF ou CNPJ se selecionado */}
+                                            </label>
+
+                                            <button className='text-prim cursor-pointer' 
+                                            onClick={handleSendEmail}
+                                            >Usar Email</button>
+                                        </div>
+
+                                        {cpfCnpj === 'CPF' ? (
+                                            <InputMask
+                                                mask="999.999.999-99"
+                                                maskChar={null}
+                                                ref={inputRef}
+                                                className="border rounded-md border-bord p-3 pt-2 pb-2 mt-2 focus:outline-prim text-ter w-full "
+                                                id="cpf"
+                                                type="text"
+                                                placeholder="Somente números"
+                                                {...register("cpfCnpj")}
+                                            />
+                                        ) : cpfCnpj === 'CNPJ' ? (
+                                            <InputMask
+                                                mask="99.999.999/9999-99"
+                                                maskChar={null}
+                                                ref={inputRef}
+                                                className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter mt-2 w-full"
+                                                id="cnpj"
+                                                type="text"
+                                                onChange={handleCpfCnpjChange}
+                                                placeholder="Somente números"
+                                                {...register("cpfCnpj")}
+                                            />
+                                        ) : (
+                                            <select
+                                                id="CpfCnpj"
+                                                value={cpfCnpj}
+                                                onChange={handleCpfCnpjChange}
+                                                required
+                                                className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim w-full mt-2">
+                                                <option value="">Selecione</option>
+                                                {CpfCnpj.map((options, index) => (
+                                                    <option key={index} value={options.text}>{options.text}</option>
+                                                ))}
+                                            </select>
+                                            
+                                        )}
+
+                                        {cpfCnpj === 'CPF' || cpfCnpj === 'CNPJ' ? (
+                                                <p onClick={voltarParaSelectCpfCnpj} className="cursor-pointer text-prim text-end">Voltar para seleção</p>
+                                            ) : (
+                                                <span></span>
+                                        )}
+
+                                        {errors.cpfCnpj && (
+                                            <span className="text-error opacity-75">{errors.cpfCnpj?.message}</span>
                                         )}
                                     </div>
                                 </>
@@ -135,12 +215,16 @@ export default function RequestResetPassword() {
 
                         <div className='flex justify-center flex-col text-center gap-5'>
                             <button
+                                id='submitButton'
                                 type="submit"
-                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 hover:bg-sec transition-all duration-300"
+                                disabled={timer > 0}
+                                className={`flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-all duration-300 ${timer > 0 ? 'bg-opacity-50 cursor-not-allowed' : 'hover:bg-sec'}`}
                             >
-                                {loading ? 'Enviando Link...' : 'Enviar link'} 
+                                {loading ? 'Enviando Link...' : timer > 0 ? `Aguarde ${timer}s` : 'Enviar link'} 
                             </button>
-                            <p className='text-error'>{message}</p>
+                            {message && (
+                                <p className='text-error'>{message}</p>
+                            )}
                         </div>
                     </form>
                 </div>            

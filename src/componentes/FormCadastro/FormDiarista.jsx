@@ -7,6 +7,7 @@ import React, { useRef } from "react"
 import { createUser } from "../../services/api.js"
 import axios from "axios"
 import InputMask from "react-input-mask"
+
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, Input } from '@headlessui/react'
 import {useNavigate } from 'react-router-dom';
@@ -108,11 +109,6 @@ export default function FormDiarista() {
             return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
             }),
 
-
-        // o banco de dados não tem um campo para "termo", então removi temporariamente.
-        // termo: yup.boolean().required("Aceite os termos"),
-
-        // a regra de negocio para os dias da semana, ainda ta em processo de revisão.
         // Dias da semana 
         dom: yup.boolean(),
         seg: yup.boolean(),
@@ -148,22 +144,33 @@ export default function FormDiarista() {
     // onSubmit do Forms
     const onSubmit = async (data) => {
         setLoading(true)
+        setMessage(null)
+
+        const cpfCnpjSemMascara = removerMascara(data.cpfCnpj);
+        const telefoneSemMascara = removerMascara(data.telefone);
+        const cepSemMascara = removerMascara(data.cep);
 
         console.log(data)
         const formData = new FormData()
         formData.append('name', data.name)
         formData.append('genero', data.genero)
         formData.append('estadoCivil', data.estadoCivil)
-        formData.append('telefone', data.telefone)
+
+        formData.append('telefone', telefoneSemMascara)
+
         formData.append('email', data.email)
-        formData.append('cep', data.cep)
+
+        formData.append('cep', cepSemMascara)
+
         formData.append('logradouro', data.logradouro)
         formData.append('numero', data.numero)
         formData.append('complemento', data.complemento)
         formData.append('bairro', data.bairro)
         formData.append('cidade', data.cidade)
         formData.append('estado', data.estado)
-        formData.append('cpfCnpj', data.cpfCnpj)
+
+        formData.append('cpfCnpj', cpfCnpjSemMascara)
+
         formData.append('rg', data.rg)
         formData.append('banco', data.banco)
         formData.append('agencia', data.agencia)
@@ -190,11 +197,15 @@ export default function FormDiarista() {
         try {
           const response = await createUser(formData);
           reset()
+
           console.log('Usuário criado com sucesso:', response.data);
           setModalIsOpen(true)
           setLoading(false)
+          
         } catch (error) {
-          console.error('Erro ao criar o usuário:', error);
+            setLoading(false)
+            console.error(error.message);
+            setMessage(error.message)
         }
 
       };
@@ -296,7 +307,7 @@ export default function FormDiarista() {
     const [loading, setLoading] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [cepError, setCepError] = useState("")
-    const [mask, setMask] = useState('999.999.999-99')
+    const [message, setMessage] = useState(null);
 
     const [genero, setGenero] = useState('');
     const [outroGenero, setOutroGenero] = useState('');
@@ -392,35 +403,40 @@ export default function FormDiarista() {
         "TO": "Tocantins"
       };
       
-      const handleCepChange = async (e) => {
-        const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
-        setCepError("")
-      
-        if (cep.length === 8) {
-          try {
-            setLoading(true);
-            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-            if (!response.data.erro) {
-              setValue("logradouro", response.data.logradouro);
-              setValue("bairro", response.data.bairro);
-              setValue("cidade", response.data.localidade);
-      
-              // Converter a sigla do estado para o nome completo
-              const nomeEstado = estados[response.data.uf];
-              setValue("estado", nomeEstado);
-      
-              setCepError("");
-            } else {
-              setCepError("CEP não encontrado");
-            }
-          } catch (error) {
-            console.error('Erro ao buscar o CEP:', error);
-            alert('Erro ao buscar o CEP.');
-          } finally {
-            setLoading(false);
-          }
+    const handleCepChange = async (e) => {
+    const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
+    setCepError("")
+    
+    if (cep.length === 8) {
+        try {
+        setLoading(true);
+        const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+        if (!response.data.erro) {
+            setValue("logradouro", response.data.logradouro);
+            setValue("bairro", response.data.bairro);
+            setValue("cidade", response.data.localidade);
+    
+            // Converter a sigla do estado para o nome completo
+            const nomeEstado = estados[response.data.uf];
+            setValue("estado", nomeEstado);
+    
+            setCepError("");
+        } else {
+            setCepError("CEP não encontrado");
         }
-      };
+        } catch (error) {
+        console.error('Erro ao buscar o CEP:', error);
+        alert('Erro ao buscar o CEP.');
+        } finally {
+        setLoading(false);
+        }
+    }
+    };
+
+    const removerMascara = (valor) => {
+        return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são números
+    };
+    
       
 
   return (
@@ -1064,15 +1080,13 @@ export default function FormDiarista() {
                     <input 
                     type="checkbox" 
                     id="termo" 
-
-                    // {...register("termo")} 
-
                     />
                     <label htmlFor="termo">Concordo com os termos de uso e contrato de serviço - <a href="#" className="text-des">Ver termos</a></label>
                 </div>
             </div>
-            <div className="mt-4 pl-9 pr-9 pb-9 ">
+            <div className="mt-4 pl-9 pr-9 pb-9 space-y-5">
                 <button type="submit" className="text-center w-full lg:w-1/2  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 opacity-50" id="buttonSubmit" disabled>{loading ? 'Criando conta...' : 'Cadastrar'}</button>
+                <p className="text-md text-error text-center lg:text-start">{message}</p>
             </div>
         </form>
 

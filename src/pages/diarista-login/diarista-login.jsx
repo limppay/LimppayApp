@@ -18,7 +18,7 @@ export default function DaristaLogin() {
         try {
             const { access_token, userId, urls } = await login(email, senha);
             if (!access_token) {
-                setError('Email ou senha inválidos.');
+                setError(err.message);
             } else {
                 localStorage.setItem('token', access_token);
                 localStorage.setItem('userId', userId);
@@ -26,7 +26,7 @@ export default function DaristaLogin() {
                 navigate("/area-diarista");
             }
         } catch (err) {
-            setError('Ocorreu um erro ao tentar fazer login. Tente novamente.');
+            setError(err.message);
             console.error(err);
         } finally {
             setLoading(false);
