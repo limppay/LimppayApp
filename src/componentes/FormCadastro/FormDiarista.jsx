@@ -156,9 +156,20 @@ export default function FormDiarista() {
         const telefoneSemMascara = removerMascara(data.telefone);
         const cepSemMascara = removerMascara(data.cep);
 
-        const dataNascimento = new Date(data.data).toISOString();  // Mantenha o formato completo ISO
-        console.log("Data convertida para ISO:", dataNascimento);
+        //Validação de maioridade
+        const today = new Date();
+        const birthDate = new Date(data.data); //Data de nascimento inserida
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+        const dayDifference = today.getDate() - birthDate.getDate();
 
+        if(age < 18 || (age === 18 && (monthDifference<0 || (monthDifference === 0 && dayDifference < 0)))){
+            setLoading(false);
+            setMessage("Você precisa ser maior de 18 anos para se cadastrar.");
+            return; //Cancela o envio se a idade for menor que 18 anos
+        }
+
+        const dataNascimento = birthDate.toISOString(); //Formatação da data
 
         console.log(data)
         const formData = new FormData()
