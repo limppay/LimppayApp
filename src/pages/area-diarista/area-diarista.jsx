@@ -66,6 +66,19 @@ const AreaDiarista = () => {
         },
     ]
 
+    const calcularIdade = (data) =>{
+        const hoje = new Date();
+        const nascimento = new Date(data);
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mes = hoje.getMonth() - nascimento.getMonth();
+
+        if(mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())){
+            idade--;
+        }
+
+        return idade;
+    };
+
     return (
         <div>
             <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
@@ -97,6 +110,10 @@ const AreaDiarista = () => {
                                     <div className="overflow-y-auto max-h-32">
                                         <p className='text-prim text-center'>
                                             {userInfo.sobre} 
+                                        </p>
+
+                                        <p className='text-prim text-center'>
+                                            {calcularIdade(userInfo.data)} anos
                                         </p>
                                     </div>
                                 </div>
