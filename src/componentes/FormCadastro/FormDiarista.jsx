@@ -49,6 +49,12 @@ export default function FormDiarista() {
         sobre: yup.string().trim().required("Sobre mim é obrigatório"),
         referencia:  yup.string(),
 
+        data: yup
+            .date()
+            .required("Data de nascimento é obrigatória")
+            .min(new Date(1900, 0, 1), "Data de nascimento inválida") //Define uma data mínima
+            .max(new Date(), "Data de nascimento não pode ser no futuro"), //Define que não pode ser uma data futura
+
         arquivoFoto: yup
             .mixed()
             .test("required", "Foto de perfil é obrigatório", (value) => {
@@ -150,6 +156,10 @@ export default function FormDiarista() {
         const telefoneSemMascara = removerMascara(data.telefone);
         const cepSemMascara = removerMascara(data.cep);
 
+        const dataNascimento = new Date(data.data).toISOString();  // Mantenha o formato completo ISO
+        console.log("Data convertida para ISO:", dataNascimento);
+
+
         console.log(data)
         const formData = new FormData()
         formData.append('name', data.name)
@@ -159,6 +169,8 @@ export default function FormDiarista() {
         formData.append('telefone', telefoneSemMascara)
 
         formData.append('email', data.email)
+
+        formData.append('data', dataNascimento)
 
         formData.append('cep', cepSemMascara)
 
@@ -667,6 +679,19 @@ export default function FormDiarista() {
                     {errors.estadoCivil && 
                     <span className="text-error opacity-75">{errors.estadoCivil?.message}</span>}           
                 </div>
+                
+                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                    <label htmlFor="data" className="text-prim">Data de Nascimento</label>
+                    <input
+                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter"
+                    id="data"
+                    type="date"
+                    {...register("data")}
+                    />
+                    {errors.data && 
+                    <span className="text-error opacity-75">{errors.data?.message}</span>}
+                </div>
+                
             </div>
             <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
                 <label htmlFor="banco" className="text-prim">Banco</label>
