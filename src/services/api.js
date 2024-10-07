@@ -25,7 +25,7 @@ export const createUser = async (userData) => {
 // Função para fazer login
 export const login = async (email, senha) => {
   try {
-    const response = await api.post('/auth/login', {
+    const response = await api.post('/auth/login-user', {
       email,
       senha,
     });
