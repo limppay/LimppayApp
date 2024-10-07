@@ -51,7 +51,12 @@ export default function FormDiarista() {
 
         data: yup
             .date()
+            .typeError('Data de nascimento inválida')
             .required("Data de nascimento é obrigatória")
+            .test('is-valid-date', 'Data deve ser uma data válida', (value) =>{
+                if(!value) return false; //se o valor for nulo ou indefinido
+                return !isNaN(value.getTime()); //Verifica se a data é válida
+            })
             .min(new Date(1900, 0, 1), "Data de nascimento inválida") //Define uma data mínima
             .max(new Date(), "Data de nascimento não pode ser no futuro"), //Define que não pode ser uma data futura
 
