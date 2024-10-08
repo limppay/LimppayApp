@@ -114,9 +114,11 @@ const CustomCalendar = () => {
   };
 
   const handleYearChange = (year) => {
-    setCurrentDate(new Date(year, currentDate.getMonth(), 1));
-    setShowYears(false);
-  };
+    setCurrentDate(new Date(year, 0, 1)); // Define a data atual para o primeiro dia do ano selecionado
+    setShowYears(false); // Esconde a visualização de anos
+    setShowMonths(true); // Mostra a visualização de meses
+};
+
 
   const handleMonthYearClick = () => {
     if (showMonths) {
@@ -130,47 +132,49 @@ const CustomCalendar = () => {
 
   const renderMonths = () => {
     const months = Array.from({ length: 12 }, (_, i) => (
-      <div
-        key={i}
-        onClick={() => handleMonthYearChange(i, currentDate.getFullYear())}
-        className="p-2 cursor-pointer hover:bg-gray-200 text-center"
-      >
-        {new Date(0, i).toLocaleString('default', { month: 'long' })}
-      </div>
+        <div
+            key={i}
+            onClick={() => handleMonthYearChange(i, currentDate.getFullYear())}
+            className="p-2 cursor-pointer text-center transition-all duration-100 border rounded-md border-trans transition-all duration-200  hover:border-solid hover:border-des"
+        >
+            {new Date(0, i).toLocaleString('default', { month: 'long' })}
+        </div>
     ));
 
     return (
-      <div className="grid grid-cols-3 gap-2 p-4">
-        {months}
-      </div>
+        <div className="grid grid-cols-3 gap-2 p-4">
+            {months}
+        </div>
     );
-  };
+};
 
-  const renderYears = () => {
+const renderYears = () => {
     const startYear = currentYear - 50 + currentYearPage * 16; // Ajusta a partir do ano atual e da página atual
     const endYear = startYear + 15;
 
     const years = [];
     for (let i = startYear; i <= endYear; i++) {
-      years.push(i);
+        years.push(i);
     }
 
     return (
-      <div className="p-4">
-        <div className="grid grid-cols-4 gap-2">
-          {years.map((year) => (
-            <div
-              key={year}
-              onClick={() => handleYearChange(year)}
-              className="p-2 cursor-pointer hover:bg-gray-200 text-center"
-            >
-              {year}
+        <div className="p-4">
+            <div className="grid grid-cols-4 gap-2">
+                {years.map((year) => (
+                    <div
+                        key={year}
+                        onClick={() => handleYearChange(year)}
+                        className="p-2 cursor-pointer text-center transition-all duration-100 border rounded-md border-trans transition-all duration-200  hover:border-solid hover:border-des"
+                    >
+                        {year}
+                    </div>
+                ))}
             </div>
-          ))}
         </div>
-      </div>
     );
-  };
+};
+
+
 
   // Título do calendário com base na visualização atual
   const getCalendarTitle = () => {
@@ -188,7 +192,7 @@ const CustomCalendar = () => {
   return (
     <div className="flex justify-center items-center h-screen pt-[10vh]">
       <div className="w-4/12 bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec">
-        <div className="flex justify-between items-center mb-4 p-3 border-b-2 border-desSec border-opacity-50">
+        <div className="flex justify-between items-center mb-4 p-3 border-b-2 border-desSec border-opacity-50 cursor-pointer">
           <button onClick={handlePrev} className="text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
