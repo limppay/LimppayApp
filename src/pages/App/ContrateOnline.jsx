@@ -3,8 +3,6 @@ import { HeaderApp, Logo } from '../../componentes/imports'
 import CustomDatePicker from '../../componentes/App/DatePicker'
 import ServiceSelection from '../../componentes/App/ServiceSelection'
 
-
-
 export default function ContrateOnline() {
     const buttons = [
         {link: "#quem-somos", text: "Quem somos"},

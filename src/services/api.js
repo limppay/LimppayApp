@@ -20,6 +20,23 @@ export const createUser = async (userData) => {
   }
 };
 
+// Função para criar o usuário e enviar arquivos
+export const createCliente = async (clienteData) => {
+  try {
+    const response = await api.post('/cliente', clienteData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
+
+    throw new Error(errorMessage)
+  }
+};
+
+
 // Função para fazer login
 export const login = async (email, senha) => {
   try {
