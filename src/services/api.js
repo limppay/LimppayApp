@@ -20,7 +20,7 @@ export const createUser = async (userData) => {
   }
 };
 
-// Função para criar o usuário e enviar arquivos
+// Função para criar o cliente e enviar arquivos
 export const createCliente = async (clienteData) => {
   try {
     const response = await api.post('/cliente', clienteData, {
@@ -36,11 +36,36 @@ export const createCliente = async (clienteData) => {
   }
 };
 
-
 // Função para fazer login
 export const login = async (email, senha) => {
   try {
     const response = await api.post('/auth/login-user', {
+      email,
+      senha,
+    });
+
+    const { access_token, userId, urls } = response.data; // Desestruturando corretamente
+
+    if (access_token) {
+      localStorage.setItem('token', access_token); // Armazenar o token
+      localStorage.setItem('userId', userId); // Armazenar o ID do usuário
+      localStorage.setItem('urls', JSON.stringify(urls))
+
+      return { access_token, userId, urls }; // Retornar o token e o ID do usuário
+    } else {
+      throw new Error('Token não encontrado na resposta.');
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
+
+    throw new Error(errorMessage)
+  }
+};
+
+// Função para fazer login como cliente
+export const loginCliente = async (email, senha) => {
+  try {
+    const response = await api.post('/auth/login-cliente', {
       email,
       senha,
     });
@@ -78,6 +103,23 @@ export const updateUser = async (id, userData) => {
     return false; // Retornar false em caso de erro
   }
 };
+
+// Função para atualizar o cliente
+export const updateCliente = async (id, clienteData) => {
+  try {
+    const response = await api.put(`/cliente/${id}`, clienteData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
+      },
+    });
+    return response.data; // Retornar os dados do usuário atualizado
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error.response?.data || error.message);
+    return false; // Retornar false em caso de erro
+  }
+};
+
 
 // Função para solicitar o link de redefinição de senha
 export const requestPasswordReset = async (email, cpfCnpj) => {
