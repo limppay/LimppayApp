@@ -11,7 +11,7 @@ export default function Contrate() {
                         </div>
                     </div>
                     <div>
-                        <a href="https://app.limppay.com/" className="contrate-online-btn">Contrate online</a>
+                        <a href="#" className="contrate-online-btn">Contrate online</a>
                     </div>
                 </div>
 
@@ -24,7 +24,7 @@ export default function Contrate() {
                         </div>
                     </div>
                     <div>
-                        <a href="https://limppay.com/seja-diarista/" className="seja-diarista-btn">Seja diarista</a>
+                        <a href="http://localhost:5173/seja-diarista" className="seja-diarista-btn">Seja diarista</a>
                     </div>
                 </div>
             </div>

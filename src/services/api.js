@@ -20,8 +20,6 @@ export const createUser = async (userData) => {
   }
 };
 
-
-
 // Função para fazer login
 export const login = async (email, senha) => {
   try {
@@ -64,7 +62,6 @@ export const updateUser = async (id, userData) => {
   }
 };
 
-
 // Função para solicitar o link de redefinição de senha
 export const requestPasswordReset = async (email, cpfCnpj) => {
   try {
@@ -79,7 +76,6 @@ export const requestPasswordReset = async (email, cpfCnpj) => {
     throw new Error(errorMessage); // Lançando o erro com a mensagem apropriada
   }
 };
-
 
 // Função para redefinir a senha
 export const resetPassword = async (token, newPassword) => {

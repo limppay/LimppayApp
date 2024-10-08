@@ -11,6 +11,7 @@ import DaristaLogin from './pages/diarista-login/diarista-login'
 import AreaDiarista from './pages/area-diarista/area-diarista'
 import ResetPassword from './pages/diarista-login/reset-password'
 import RequestResetPassword from './pages/diarista-login/request-reset-password'
+import ContrateOnline from './pages/App/ContrateOnline'
 
 // 3 - rotas
 const router = createBrowserRouter([
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
     {
       path: "area-diarista",
       element: <AreaDiarista/>
+    },
+    {
+      path: "contrate-online",
+      element: <ContrateOnline/>
     }
 ])
 
