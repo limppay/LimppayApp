@@ -1,8 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const CustomCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [showModal, setShowModal] = useState(false);
+  const [showMonths, setShowMonths] = useState(false);
+  const [showYears, setShowYears] = useState(false);
+  const [currentYearPage, setCurrentYearPage] = useState(0);
+
+  const currentYear = currentDate.getFullYear();
+
+  useEffect(() => {
+    const initialYearPage = Math.floor((currentYear - (currentYear - 50)) / 16);
+    setCurrentYearPage(initialYearPage);
+  }, [currentYear]);
 
   const renderDaysOfWeek = () => {
     const daysOfWeek = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -17,7 +26,6 @@ const CustomCalendar = () => {
     const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
     const prevMonthDays = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
 
-    // Adiciona dias do mês anterior
     for (let i = startDay - 1; i >= 0; i--) {
       days.push(
         <div key={`prev-${i}`} className="p-1 text-prim text-center items-center flex justify-center text-opacity-20">
@@ -26,7 +34,6 @@ const CustomCalendar = () => {
       );
     }
 
-    // Adiciona dias do mês atual
     for (let i = 1; i <= daysInMonth; i++) {
       const isSelected = currentDate.getDate() === i;
       days.push(
@@ -40,8 +47,7 @@ const CustomCalendar = () => {
       );
     }
 
-    // Adiciona dias do próximo mês
-    const remainingDays = 42 - days.length; // 42 = 7 dias * 6 semanas
+    const remainingDays = 42 - days.length;
     for (let i = 1; i <= remainingDays; i++) {
       days.push(
         <div key={`next-${i}`} className="p-1 text-prim text-center items-center flex justify-center text-opacity-20">
@@ -61,26 +67,116 @@ const CustomCalendar = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  const handleYearClick = () => {
-    setShowModal(true);
-  };
-
   const handleMonthYearChange = (month, year) => {
     setCurrentDate(new Date(year, month, 1));
-    setShowModal(false);
+    setShowMonths(false);
+    setShowYears(false);
+  };
+
+  const handleYearChange = (year) => {
+    setCurrentDate(new Date(year, currentDate.getMonth(), 1));
+    setShowYears(false);
+  };
+
+  const handleMonthYearClick = () => {
+    if (showMonths) {
+      setShowMonths(false);
+      setShowYears(true);
+    } else {
+      setShowMonths(!showMonths);
+      setShowYears(false);
+    }
+  };
+
+  const renderMonths = () => {
+    const months = Array.from({ length: 12 }, (_, i) => (
+      <div
+        key={i}
+        onClick={() => handleMonthYearChange(i, currentDate.getFullYear())}
+        className="p-2 cursor-pointer hover:bg-gray-200 text-center"
+      >
+        {new Date(0, i).toLocaleString('default', { month: 'long' })}
+      </div>
+    ));
+
+    return (
+      <div className="grid grid-cols-3 gap-2 p-4">
+        {months}
+      </div>
+    );
+  };
+
+  const renderYears = () => {
+    const startYear = currentYear - 50;
+    const endYear = currentYear + 50;
+
+    const years = [];
+    for (let i = startYear; i <= endYear; i++) {
+      years.push(i);
+    }
+
+    const startIndex = currentYearPage * 16;
+    const endIndex = startIndex + 16;
+
+    const paginatedYears = years.slice(startIndex, endIndex);
+
+    return (
+      <div className="p-4">
+        <div className="grid grid-cols-4 gap-2">
+          {paginatedYears.map((year) => (
+            <div
+              key={year}
+              onClick={() => handleYearChange(year)}
+              className="p-2 cursor-pointer hover:bg-gray-200 text-center"
+            >
+              {year}
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={() => setCurrentYearPage(prev => Math.max(prev - 1, 0))}
+            disabled={currentYearPage === 0}
+            className="text-blue-500"
+          >
+            Anterior
+          </button>
+          <button
+            onClick={() => setCurrentYearPage(prev => Math.min(prev + 1, Math.floor((years.length - 1) / 16)))}
+            disabled={currentYearPage >= Math.floor((years.length - 1) / 16)}
+            className="text-blue-500"
+          >
+            Próximo
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Título do calendário com base na visualização atual
+  const getCalendarTitle = () => {
+    if (showYears) {
+      const startYear = currentYear - 50 + currentYearPage * 16; // Primeiro ano exibido
+      const endYear = startYear + 15; // Último ano exibido
+      return `${startYear} - ${endYear}`;
+    } else {
+      return showMonths
+        ? `${new Date(currentDate).toLocaleString('default', { month: 'long' })} - ${currentDate.getFullYear()}`
+        : currentDate.getFullYear();
+    }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen pt-[10vh] ">
-      <div className="w-4/12 bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec ">
+    <div className="flex justify-center items-center h-screen pt-[10vh]">
+      <div className="w-4/12 bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec">
         <div className="flex justify-between items-center mb-4 p-3 border-b-2 border-desSec border-opacity-50">
           <button onClick={handlePrevMonth} className="text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
           </button>
-          <h2 className="text-lg font-semibold text-desSec" onClick={handleYearClick}>
-            {currentDate.toLocaleString('default', { month: 'long' })} de {currentDate.getFullYear()}
+          <h2 className="text-lg font-semibold text-desSec" onClick={handleMonthYearClick}>
+            {getCalendarTitle()}
           </h2>
           <button onClick={handleNextMonth} className="text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
@@ -89,41 +185,18 @@ const CustomCalendar = () => {
           </button>
         </div>
         <div className='pt-0 pr-5 pl-5'>
-          <div className="grid grid-cols-7">
-            {renderDaysOfWeek()}
-          </div>
-          <div className="grid grid-cols-7 mt-2">
-            {renderDays()}
-          </div>
+          {showYears ? renderYears() : showMonths ? renderMonths() : (
+            <>
+              <div className="grid grid-cols-7">
+                {renderDaysOfWeek()}
+              </div>
+              <div className="grid grid-cols-7 mt-2">
+                {renderDays()}
+              </div>
+            </>
+          )}
         </div>
       </div>
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded-lg">
-            <h3 className="text-lg font-semibold mb-4">Selecione o mês e o ano</h3>
-            <div className="flex justify-between mb-4">
-              <select
-                onChange={(e) => handleMonthYearChange(e.target.value, currentDate.getFullYear())}
-                value={currentDate.getMonth()}
-                className="border p-2 rounded-md"
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <option key={i} value={i}>
-                    {new Date(0, i).toLocaleString('default', { month: 'long' })}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                value={currentDate.getFullYear()}
-                onChange={(e) => handleMonthYearChange(currentDate.getMonth(), e.target.value)}
-                className="border p-2 rounded-md"
-              />
-            </div>
-            <button onClick={() => setShowModal(false)} className="bg-blue-500 text-white p-2 rounded-md">Fechar</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
