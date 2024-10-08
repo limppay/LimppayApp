@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 const CustomCalendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const today = new Date();
+  const [currentDate, setCurrentDate] = useState(today);
   const [showMonths, setShowMonths] = useState(false);
   const [showYears, setShowYears] = useState(false);
   const [currentYearPage, setCurrentYearPage] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(null); // Estado para armazenar a data selecionada
 
-  const currentYear = currentDate.getFullYear();
+  const currentYear = today.getFullYear();
 
   useEffect(() => {
     const initialYearPage = Math.floor((currentYear - (currentYear - 50)) / 16);
@@ -26,6 +28,7 @@ const CustomCalendar = () => {
     const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
     const prevMonthDays = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
 
+    // Renderizando os dias do mês anterior
     for (let i = startDay - 1; i >= 0; i--) {
       days.push(
         <div key={`prev-${i}`} className="p-1 text-prim text-center items-center flex justify-center text-opacity-20">
@@ -34,19 +37,36 @@ const CustomCalendar = () => {
       );
     }
 
+    // Renderizando os dias do mês atual
     for (let i = 1; i <= daysInMonth; i++) {
-      const isSelected = currentDate.getDate() === i;
+      const dateToCheck = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+      const isSelected = selectedDate && selectedDate.toDateString() === dateToCheck.toDateString(); // Verifica se a data está selecionada
+      const isDisabled = dateToCheck < today; // Bloqueia datas anteriores ao dia atual
+
       days.push(
         <div
           key={i}
-          onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), i))}
-          className={`m-[0.1rem] day text-center p-2 cursor-pointer border rounded-md border-trans transition-all duration-100 hover:border-solid text-ter hover:border-des ${isSelected ? 'bg-des text-white' : ''}`}
+          onClick={() => {
+            if (!isDisabled) {
+              // Alterna a seleção da data
+              if (isSelected) {
+                setSelectedDate(null); // Desseleciona a data
+              } else {
+                setSelectedDate(dateToCheck); // Seleciona a nova data
+              }
+            }
+          }}
+          className={`m-[0.1rem] day text-center p-2 cursor-pointer border rounded-md border-trans transition-all duration-100 
+            ${isSelected ? 'bg-des text-white' : ''} 
+            ${isDisabled ? 'cursor-not-allowed opacity-50' : ''} 
+            ${!isDisabled ? 'hover:border-des hover:border-solid' : ''}`} // Aplica hover apenas para datas habilitadas
         >
           {i}
         </div>
       );
     }
 
+    // Renderizando os dias do próximo mês
     const remainingDays = 42 - days.length;
     for (let i = 1; i <= remainingDays; i++) {
       days.push(
@@ -59,12 +79,32 @@ const CustomCalendar = () => {
     return days;
   };
 
-  const handlePrevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  const handlePrevYearPage = () => {
+    setCurrentYearPage((prev) => prev - 1);
   };
 
-  const handleNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  const handleNextYearPage = () => {
+    setCurrentYearPage((prev) => prev + 1);
+  };
+
+  const handlePrev = () => {
+    if (showYears) {
+      handlePrevYearPage();
+    } else if (showMonths) {
+      setCurrentDate(new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1)); // Retrocede um ano na visualização mensal
+    } else {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)); // Retrocede um mês na visualização diária
+    }
+  };
+
+  const handleNext = () => {
+    if (showYears) {
+      handleNextYearPage();
+    } else if (showMonths) {
+      setCurrentDate(new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1)); // Avança um ano na visualização mensal
+    } else {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)); // Avança um mês na visualização diária
+    }
   };
 
   const handleMonthYearChange = (month, year) => {
@@ -107,23 +147,18 @@ const CustomCalendar = () => {
   };
 
   const renderYears = () => {
-    const startYear = currentYear - 50;
-    const endYear = currentYear + 50;
+    const startYear = currentYear - 50 + currentYearPage * 16; // Ajusta a partir do ano atual e da página atual
+    const endYear = startYear + 15;
 
     const years = [];
     for (let i = startYear; i <= endYear; i++) {
       years.push(i);
     }
 
-    const startIndex = currentYearPage * 16;
-    const endIndex = startIndex + 16;
-
-    const paginatedYears = years.slice(startIndex, endIndex);
-
     return (
       <div className="p-4">
         <div className="grid grid-cols-4 gap-2">
-          {paginatedYears.map((year) => (
+          {years.map((year) => (
             <div
               key={year}
               onClick={() => handleYearChange(year)}
@@ -132,22 +167,6 @@ const CustomCalendar = () => {
               {year}
             </div>
           ))}
-        </div>
-        <div className="flex justify-between mt-4">
-          <button
-            onClick={() => setCurrentYearPage(prev => Math.max(prev - 1, 0))}
-            disabled={currentYearPage === 0}
-            className="text-blue-500"
-          >
-            Anterior
-          </button>
-          <button
-            onClick={() => setCurrentYearPage(prev => Math.min(prev + 1, Math.floor((years.length - 1) / 16)))}
-            disabled={currentYearPage >= Math.floor((years.length - 1) / 16)}
-            className="text-blue-500"
-          >
-            Próximo
-          </button>
         </div>
       </div>
     );
@@ -159,10 +178,10 @@ const CustomCalendar = () => {
       const startYear = currentYear - 50 + currentYearPage * 16; // Primeiro ano exibido
       const endYear = startYear + 15; // Último ano exibido
       return `${startYear} - ${endYear}`;
+    } else if (showMonths) {
+      return `${currentDate.getFullYear()}`; // Apenas o ano
     } else {
-      return showMonths
-        ? `${new Date(currentDate).toLocaleString('default', { month: 'long' })} - ${currentDate.getFullYear()}`
-        : currentDate.getFullYear();
+      return `${new Date(currentDate).toLocaleString('default', { month: 'long' })} de ${currentDate.getFullYear()}`;
     }
   };
 
@@ -170,7 +189,7 @@ const CustomCalendar = () => {
     <div className="flex justify-center items-center h-screen pt-[10vh]">
       <div className="w-4/12 bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec">
         <div className="flex justify-between items-center mb-4 p-3 border-b-2 border-desSec border-opacity-50">
-          <button onClick={handlePrevMonth} className="text-blue-500">
+          <button onClick={handlePrev} className="text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
@@ -178,24 +197,23 @@ const CustomCalendar = () => {
           <h2 className="text-lg font-semibold text-desSec" onClick={handleMonthYearClick}>
             {getCalendarTitle()}
           </h2>
-          <button onClick={handleNextMonth} className="text-blue-500">
+          <button onClick={handleNext} className="text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 19.5l7.5-7.5-7.5-7.5" />
             </svg>
           </button>
         </div>
-        <div className='pt-0 pr-5 pl-5'>
-          {showYears ? renderYears() : showMonths ? renderMonths() : (
-            <>
-              <div className="grid grid-cols-7">
-                {renderDaysOfWeek()}
-              </div>
-              <div className="grid grid-cols-7 mt-2">
-                {renderDays()}
-              </div>
-            </>
-          )}
-        </div>
+
+        {showMonths && renderMonths()}
+        {showYears && renderYears()}
+        {!showMonths && !showYears && (
+          <div>
+            <div className="grid grid-cols-7 gap-2">
+              {renderDaysOfWeek()}
+              {renderDays()}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
