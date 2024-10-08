@@ -46,7 +46,7 @@ export default function ClienteLogin() {
                         <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 text-desSec">
                             Entre na sua conta
                         </h2>
-                        <p className='text-prim'>Entre na sua conta e acesse a plataforma da Limppay!</p>
+                        <p className='text-prim'>Entre na sua conta e acesse seu perfil da Limppay! :D</p>
                     </div>
                     
                     <div className=" sm:mx-auto sm:w-full sm:max-w-sm">

@@ -581,7 +581,24 @@ export default function FormDiarista() {
                         <span className="text-error opacity-75">{errors.genero?.message}</span>
                     )}
                 </div>
-                
+
+                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                    <label htmlFor="EstadoCivil" className="text-prim">Estado Civil</label>
+                    <select  
+                    id="EstadoCivil"
+                    {...register("estadoCivil")}
+                    className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
+                        <option defaultValue='0' >Selecione</option>
+                        {EstadoCivil.map((options, index) => (
+                            <option key={index} value={options.value}>{options.text}</option>
+                        ))}
+                    </select>
+                    {errors.estadoCivil && 
+                    <span className="text-error opacity-75">{errors.estadoCivil?.message}</span>}           
+                </div>
+            </div>
+
+            <div>
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
                     <div className="flex gap-2 justify-between">
                         <label htmlFor="CpfCnpj" className="text-prim">
@@ -637,8 +654,6 @@ export default function FormDiarista() {
                     )}
                 </div>
 
-                
-            
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="rg" className="text-prim">RG</label>
                     <input
@@ -681,20 +696,7 @@ export default function FormDiarista() {
                     {errors.telefone && 
                     <span className="text-error opacity-75">{errors.telefone?.message}</span>}
                 </div>
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
-                    <label htmlFor="EstadoCivil" className="text-prim">Estado Civil</label>
-                    <select  
-                    id="EstadoCivil"
-                    {...register("estadoCivil")}
-                    className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
-                        <option defaultValue='0' >Selecione</option>
-                        {EstadoCivil.map((options, index) => (
-                            <option key={index} value={options.value}>{options.text}</option>
-                        ))}
-                    </select>
-                    {errors.estadoCivil && 
-                    <span className="text-error opacity-75">{errors.estadoCivil?.message}</span>}           
-                </div>
+                
                 
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
                     <label htmlFor="data" className="text-prim">Data de Nascimento</label>

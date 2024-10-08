@@ -112,10 +112,10 @@ const AreaDiarista = () => {
                                             {userInfo.sobre} 
                                         </p>
 
+                                    </div>
                                         <p className='text-prim text-center'>
                                             {calcularIdade(userInfo.data)} anos
                                         </p>
-                                    </div>
                                 </div>
                             </div>
                             <div className='flex flex-col shadow-md shadow-prim rounded-md text-center lg:w-8/12 '>
