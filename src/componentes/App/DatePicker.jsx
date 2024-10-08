@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CustomCalendar = () => {
   const today = new Date();
@@ -6,7 +7,7 @@ const CustomCalendar = () => {
   const [showMonths, setShowMonths] = useState(false);
   const [showYears, setShowYears] = useState(false);
   const [currentYearPage, setCurrentYearPage] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(null); // Estado para armazenar a data selecionada
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const currentYear = today.getFullYear();
 
@@ -27,8 +28,7 @@ const CustomCalendar = () => {
     const startDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
     const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
     const prevMonthDays = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
-
-    // Renderizando os dias do mês anterior
+  
     for (let i = startDay - 1; i >= 0; i--) {
       days.push(
         <div key={`prev-${i}`} className="p-1 text-prim text-center items-center flex justify-center text-opacity-20">
@@ -36,37 +36,33 @@ const CustomCalendar = () => {
         </div>
       );
     }
-
-    // Renderizando os dias do mês atual
+  
     for (let i = 1; i <= daysInMonth; i++) {
       const dateToCheck = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
-      const isSelected = selectedDate && selectedDate.toDateString() === dateToCheck.toDateString(); // Verifica se a data está selecionada
-      const isDisabled = dateToCheck < today; // Bloqueia datas anteriores ao dia atual
-
+      const isSelected = selectedDate && selectedDate.toDateString() === dateToCheck.toDateString();
+      const isDisabled = dateToCheck < today;
+  
       days.push(
         <div
           key={i}
           onClick={() => {
             if (!isDisabled) {
-              // Alterna a seleção da data
               if (isSelected) {
-                setSelectedDate(null); // Desseleciona a data
+                setSelectedDate(null);
               } else {
-                setSelectedDate(dateToCheck); // Seleciona a nova data
+                setSelectedDate(dateToCheck);
               }
             }
           }}
-          className={`m-[0.1rem] day text-center p-2 cursor-pointer border rounded-md border-trans transition-all duration-100 
-            ${isSelected ? 'bg-des text-white' : ''} 
-            ${isDisabled ? 'cursor-not-allowed opacity-50' : ''} 
-            ${!isDisabled ? 'hover:border-des hover:border-solid' : ''}`} // Aplica hover apenas para datas habilitadas
+          className={`m-[0.1rem] day text-center p-2 border rounded-md border-trans transition-all duration-300 transform 
+            ${isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-105 hover:border-des'}
+            ${isSelected ? 'bg-des text-white scale-100' : 'scale-95'}`}
         >
           {i}
         </div>
       );
     }
-
-    // Renderizando os dias do próximo mês
+  
     const remainingDays = 42 - days.length;
     for (let i = 1; i <= remainingDays; i++) {
       days.push(
@@ -75,9 +71,10 @@ const CustomCalendar = () => {
         </div>
       );
     }
-
+  
     return days;
   };
+  
 
   const handlePrevYearPage = () => {
     setCurrentYearPage((prev) => prev - 1);
@@ -91,9 +88,9 @@ const CustomCalendar = () => {
     if (showYears) {
       handlePrevYearPage();
     } else if (showMonths) {
-      setCurrentDate(new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1)); // Retrocede um ano na visualização mensal
+      setCurrentDate(new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1));
     } else {
-      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)); // Retrocede um mês na visualização diária
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
     }
   };
 
@@ -101,9 +98,9 @@ const CustomCalendar = () => {
     if (showYears) {
       handleNextYearPage();
     } else if (showMonths) {
-      setCurrentDate(new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1)); // Avança um ano na visualização mensal
+      setCurrentDate(new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1));
     } else {
-      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)); // Avança um mês na visualização diária
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
     }
   };
 
@@ -114,11 +111,10 @@ const CustomCalendar = () => {
   };
 
   const handleYearChange = (year) => {
-    setCurrentDate(new Date(year, 0, 1)); // Define a data atual para o primeiro dia do ano selecionado
-    setShowYears(false); // Esconde a visualização de anos
-    setShowMonths(true); // Mostra a visualização de meses
-};
-
+    setCurrentDate(new Date(year, 0, 1));
+    setShowYears(false);
+    setShowMonths(true);
+  };
 
   const handleMonthYearClick = () => {
     if (showMonths) {
@@ -132,66 +128,76 @@ const CustomCalendar = () => {
 
   const renderMonths = () => {
     const months = Array.from({ length: 12 }, (_, i) => (
-        <div
-            key={i}
-            onClick={() => handleMonthYearChange(i, currentDate.getFullYear())}
-            className="p-2 cursor-pointer text-center transition-all duration-100 border rounded-md border-trans transition-all duration-200  hover:border-solid hover:border-des"
-        >
-            {new Date(0, i).toLocaleString('default', { month: 'long' })}
-        </div>
+      <div
+        key={i}
+        onClick={() => handleMonthYearChange(i, currentDate.getFullYear())}
+        className="p-2 cursor-pointer text-center transition-all duration-300 transform scale-95 hover:scale-105 border rounded-md border-trans hover:border-des"
+      >
+        {new Date(0, i).toLocaleString('default', { month: 'long' })}
+      </div>
     ));
 
     return (
-        <div className="grid grid-cols-3 gap-2 p-4">
-            {months}
-        </div>
+      <div className="grid grid-cols-3 gap-2 p-4">
+        {months}
+      </div>
     );
-};
+  };
 
-const renderYears = () => {
-    const startYear = currentYear - 50 + currentYearPage * 16; // Ajusta a partir do ano atual e da página atual
+  const renderYears = () => {
+    const startYear = currentYear - 50 + currentYearPage * 16;
     const endYear = startYear + 15;
 
     const years = [];
     for (let i = startYear; i <= endYear; i++) {
-        years.push(i);
+      years.push(i);
     }
 
     return (
-        <div className="p-4">
-            <div className="grid grid-cols-4 gap-2">
-                {years.map((year) => (
-                    <div
-                        key={year}
-                        onClick={() => handleYearChange(year)}
-                        className="p-2 cursor-pointer text-center transition-all duration-100 border rounded-md border-trans transition-all duration-200  hover:border-solid hover:border-des"
-                    >
-                        {year}
-                    </div>
-                ))}
+      <div className="p-4">
+        <div className="grid grid-cols-4 gap-2">
+          {years.map((year) => (
+            <div
+              key={year}
+              onClick={() => handleYearChange(year)}
+              className="p-2 cursor-pointer text-center transition-all duration-300 transform scale-95 hover:scale-105 border rounded-md border-trans hover:border-des"
+            >
+              {year}
             </div>
+          ))}
         </div>
+      </div>
     );
-};
+  };
 
-
-
-  // Título do calendário com base na visualização atual
   const getCalendarTitle = () => {
     if (showYears) {
-      const startYear = currentYear - 50 + currentYearPage * 16; // Primeiro ano exibido
-      const endYear = startYear + 15; // Último ano exibido
+      const startYear = currentYear - 50 + currentYearPage * 16;
+      const endYear = startYear + 15;
       return `${startYear} - ${endYear}`;
     } else if (showMonths) {
-      return `${currentDate.getFullYear()}`; // Apenas o ano
+      return `${currentDate.getFullYear()}`;
     } else {
       return `${new Date(currentDate).toLocaleString('default', { month: 'long' })} de ${currentDate.getFullYear()}`;
     }
   };
 
+  const transitionVariants = {
+    enter: { opacity: 0, scale: 0.8 },
+    center: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.8 },
+  };
+
   return (
     <div className="flex justify-center items-center h-screen pt-[10vh]">
-      <div className="w-4/12 bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec">
+      <motion.div
+        className="w-4/12 bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec"
+        key={`${currentDate.toISOString()}-${currentYearPage}-${showMonths}-${showYears}`} // Key para reiniciar a animação
+        variants={transitionVariants}
+        initial="enter"
+        animate="center"
+        exit="exit"
+      >
         <div className="flex justify-between items-center mb-4 p-3 border-b-2 border-desSec border-opacity-50 cursor-pointer">
           <button onClick={handlePrev} className="text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
@@ -208,17 +214,48 @@ const renderYears = () => {
           </button>
         </div>
 
-        {showMonths && renderMonths()}
-        {showYears && renderYears()}
-        {!showMonths && !showYears && (
-          <div>
-            <div className="grid grid-cols-7 gap-2">
-              {renderDaysOfWeek()}
-              {renderDays()}
-            </div>
-          </div>
-        )}
-      </div>
+        <AnimatePresence>
+          {showYears && (
+            <motion.div
+              className="calendar-content"
+              key={`years-${currentYearPage}`} // Key para reiniciar a animação
+              variants={transitionVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+            >
+              {renderYears()}
+            </motion.div>
+          )}
+          {showMonths && (
+            <motion.div
+              className="calendar-content"
+              key={`months-${currentDate.getMonth()}`} // Key para reiniciar a animação
+              variants={transitionVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+            >
+              {renderMonths()}
+            </motion.div>
+          )}
+          {!showYears && !showMonths && (
+            <motion.div
+              className="calendar-content"
+              key={`days-${currentDate.getDate()}`} // Key para reiniciar a animação
+              variants={transitionVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+            >
+              <div className="grid grid-cols-7 gap-2 p-4">
+                {renderDaysOfWeek()}
+                {renderDays()}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 };
