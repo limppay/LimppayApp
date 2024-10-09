@@ -204,9 +204,18 @@ const CustomCalendar = () => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
           </button>
-          <h2 className="text-lg font-semibold text-desSec" onClick={handleMonthYearClick}>
+          <h2
+            className={`text-lg font-semibold text-desSec ${showYears ? 'cursor-default' : 'cursor-pointer'}`}
+            onClick={() => {
+              if (!showYears) { // Adiciona a condição para permitir clique apenas se não estiver na tela de anos
+                handleMonthYearClick();
+              }
+            }}
+          >
             {getCalendarTitle()}
           </h2>
+
+
           <button onClick={handleNext} className="text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 19.5l7.5-7.5-7.5-7.5" />
