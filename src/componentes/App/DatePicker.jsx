@@ -7,6 +7,9 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   const [showMonths, setShowMonths] = useState(false);
   const [showYears, setShowYears] = useState(false);
   const [currentYearPage, setCurrentYearPage] = useState(0);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedTimes, setSelectedTimes] = useState({}); // Para armazenar horários por data
+
 
   const currentYear = today.getFullYear();
 
@@ -21,6 +24,58 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       <div key={index} className="font-bold text-lg text-center text-desSec pb-2">{day}</div>
     ));
   };
+
+  const TimePickerPopup = ({ selectedDates, onClose, onConfirm }) => {
+    const [times, setTimes] = useState({});
+  
+    const handleTimeChange = (date, time) => {
+      setTimes(prev => ({ ...prev, [date]: time }));
+    };
+  
+    const handleConfirm = () => {
+      onConfirm(times);
+      onClose();
+    };
+
+    const transitionVariants = {
+      enter: { opacity: 0, scale: 0.8 },
+      center: { opacity: 1, scale: 1 },
+      exit: { opacity: 0, scale: 0.8 },
+    };
+  
+    return (
+      <motion.div
+        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+        initial="enter"
+        animate="center"
+        exit="exit"
+        variants={transitionVariants}
+      >
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-white p-4 rounded-md shadow-lg">
+          <h3 className="text-lg font-bold mb-2">Selecione os horários</h3>
+          {selectedDates.map(date => (
+            <div key={date.toString()} className="flex justify-between items-center mb-2">
+              <span>{date.toLocaleDateString()}</span>
+              <input
+                type="time"
+                onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)}
+                className="border p-1"
+              />
+            </div>
+          ))}
+          <div className="flex justify-end">
+            <button className="bg-des text-white py-1 px-2 rounded-md" onClick={handleConfirm}>
+              Confirmar
+            </button>
+            <button className="ml-2 text-red-500" onClick={onClose}>Cancelar</button>
+          </div>
+        </div>
+      </div>
+      </motion.div>
+    );
+  };
+  
 
   const renderDays = () => {
     const days = [];
@@ -241,15 +296,26 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
         )}
       </motion.div>
         <div className="flex justify-center mt-4">
-          <button
-            className={`bg-des text-white py-2 px-4 rounded-md ${selectedDates.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={selectedDates.length === 0}
-            onClick={() => onConfirmSelection(selectedDates)}
+        <button
+          className={`bg-des text-white py-2 px-4 rounded-md ${selectedDates.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={selectedDates.length === 0}
+          onClick={() => setShowTimePicker(true)} // Abre o pop-up
           >
             Confirmar Seleção
           </button>
-        </div>
-    </div>
+      </div>
+    {/* Renderização do Pop-Up */}
+    {showTimePicker && (
+      <TimePickerPopup
+        selectedDates={selectedDates}
+        onClose={() => setShowTimePicker(false)}
+        onConfirm={(times) => {
+          console.log(times); // Aqui você pode fazer o que precisar com os horários
+          setShowTimePicker(false);
+        }}
+      />
+    )}
+  </div>
   );
 };
 
