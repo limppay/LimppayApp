@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-const CustomCalendar = () => {
+const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSelection }) => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
   const [showMonths, setShowMonths] = useState(false);
   const [showYears, setShowYears] = useState(false);
   const [currentYearPage, setCurrentYearPage] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(null);
 
   const currentYear = today.getFullYear();
 
@@ -28,7 +27,8 @@ const CustomCalendar = () => {
     const startDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
     const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
     const prevMonthDays = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
-  
+
+    // Preencher dias do mês anterior
     for (let i = startDay - 1; i >= 0; i--) {
       days.push(
         <div key={`prev-${i}`} className="p-1 text-prim text-center items-center flex justify-center text-opacity-20">
@@ -36,21 +36,28 @@ const CustomCalendar = () => {
         </div>
       );
     }
-  
+
+    // Preencher dias do mês atual
     for (let i = 1; i <= daysInMonth; i++) {
       const dateToCheck = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
-      const isSelected = selectedDate && selectedDate.toDateString() === dateToCheck.toDateString();
+      const isSelected = selectedDates.some(date => date.toDateString() === dateToCheck.toDateString());
       const isDisabled = dateToCheck < today;
-  
+
       days.push(
         <div
           key={i}
           onClick={() => {
             if (!isDisabled) {
+              // Se a data já estiver selecionada, remove-a
               if (isSelected) {
-                setSelectedDate(null);
+                setSelectedDates(prev => prev.filter(date => date.toDateString() !== dateToCheck.toDateString()));
               } else {
-                setSelectedDate(dateToCheck);
+                // Adiciona a data somente se o número máximo de seleções não for atingido
+                if (selectedDates.length < maxSelection) {
+                  setSelectedDates(prev => [...prev, dateToCheck]);
+                }else{
+                  alert(`Você ultrapassou os limites de dias definidos: ${maxSelection}`)
+                }
               }
             }
           }}
@@ -62,7 +69,8 @@ const CustomCalendar = () => {
         </div>
       );
     }
-  
+
+    // Preencher dias do próximo mês
     const remainingDays = 42 - days.length;
     for (let i = 1; i <= remainingDays; i++) {
       days.push(
@@ -71,10 +79,9 @@ const CustomCalendar = () => {
         </div>
       );
     }
-  
+
     return days;
   };
-  
 
   const handlePrevYearPage = () => {
     setCurrentYearPage((prev) => prev - 1);
@@ -189,9 +196,9 @@ const CustomCalendar = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen pt-[10vh]">
+    <div className="flex flex-col items-center justify-center h-screen mt-[-90px]">
       <motion.div
-        className="w-4/12 bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec"
+        className="w-full sm:w-10/12 md:w-4/12 bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec"
         key={`${currentDate.toISOString()}-${currentYearPage}-${showMonths}-${showYears}`} // Key para reiniciar a animação
         variants={transitionVariants}
         initial="enter"
@@ -207,64 +214,39 @@ const CustomCalendar = () => {
           <h2
             className={`text-lg font-semibold text-desSec ${showYears ? 'cursor-default' : 'cursor-pointer'}`}
             onClick={() => {
-              if (!showYears) { // Adiciona a condição para permitir clique apenas se não estiver na tela de anos
+              if (!showYears) {
                 handleMonthYearClick();
               }
             }}
           >
             {getCalendarTitle()}
           </h2>
-
-
           <button onClick={handleNext} className="text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 19.5l7.5-7.5-7.5-7.5" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 19.5 15.75 12l-7.5-7.5" />
             </svg>
           </button>
         </div>
-
-        <AnimatePresence>
-          {showYears && (
-            <motion.div
-              className="calendar-content"
-              key={`years-${currentYearPage}`} // Key para reiniciar a animação
-              variants={transitionVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-            >
-              {renderYears()}
-            </motion.div>
-          )}
-          {showMonths && (
-            <motion.div
-              className="calendar-content"
-              key={`months-${currentDate.getMonth()}`} // Key para reiniciar a animação
-              variants={transitionVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-            >
-              {renderMonths()}
-            </motion.div>
-          )}
-          {!showYears && !showMonths && (
-            <motion.div
-              className="calendar-content"
-              key={`days-${currentDate.getDate()}`} // Key para reiniciar a animação
-              variants={transitionVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-            >
-              <div className="grid grid-cols-7 gap-2 p-4">
-                {renderDaysOfWeek()}
-                {renderDays()}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {showYears ? renderYears() : showMonths ? renderMonths() : (
+          <>
+            <div className="grid grid-cols-7">
+              {renderDaysOfWeek()}
+            </div>
+            <div className="grid grid-cols-7 gap-1">
+              {renderDays()}
+            </div>
+          </>
+        )}
       </motion.div>
+        <div className="flex justify-center mt-4">
+          <button
+            className={`bg-des text-white py-2 px-4 rounded-md ${selectedDates.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={selectedDates.length === 0}
+            onClick={() => onConfirmSelection(selectedDates)}
+          >
+            Confirmar Seleção
+          </button>
+        </div>
     </div>
   );
 };

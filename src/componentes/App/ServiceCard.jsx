@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, days, setDays }) => {
+const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, days, setDays, onProceed }) => {
   const incrementDays = () => {
     setDays(days + 1); // Aumentar o número de dias
   };
@@ -12,7 +12,9 @@ const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, day
 
   const handleProceed = (e) => {
     e.stopPropagation(); // Evitar que o clique feche o bloco
-    alert(`Você selecionou ${days} dias para o serviço ${title}.`); // Ação ao clicar em "Prosseguir"
+    if (days > 0) {
+      onProceed(); // Chamar a função de prosseguir passada como prop
+    }
   };
 
   return (
@@ -58,8 +60,9 @@ const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, day
             {/* Botão Prosseguir */}
             <div className='flex justify-end'>
               <button 
-                className="mt-4 bg-des text-white py-2 px-5 rounded-lg hover:bg-sec" 
+                className={`mt-4 bg-des text-white py-2 px-5 rounded-lg hover:bg-sec ${days === 0 ? 'opacity-85 cursor-not-allowed' : ''}`} 
                 onClick={handleProceed} // Aciona ao clicar em "Prosseguir"
+                disabled={days === 0} // Desativa o botão quando days é 0
               >
                 Prosseguir
               </button>
