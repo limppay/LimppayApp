@@ -19,17 +19,19 @@ const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, day
 
   return (
     <div 
-      className={`border rounded-lg p-4 cursor-pointer transition-all duration-300 ${isExpanded ? 'bg-desSec' : 'border-desSec'}`}
+      className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${isExpanded ? 'border-desSec bg-desSec' : 'border-desSec'}`}
       onClick={onClick} // Chama a função de clique passada como prop
     >
-      <div className="flex items-center">
-        <div className={`text-3xl mr-4 ${isExpanded ? 'text-white' : 'text-sec'}`}>
+      <div className="flex items-center flex-col gap-3">
+        <div className={`text-3xl flex gap-4 w-full ${isExpanded ? 'text-white' : 'text-sec'}`}>
           <i className={icon}></i>
-        </div>
-        <div>
           <h3 className={`text-lg font-semibold ${isExpanded ? 'text-white' : 'text-ter'}`}>{title}</h3>
-          <p className={`text-sm ${isExpanded ? 'text-white' : 'text-prim'}`}>{description}</p>
         </div>
+
+        <div>
+          <p className={`text-sm ${isExpanded ? 'text-white text-justify' : 'text-prim text-justify'}`}>{description}</p>
+        </div>
+
       </div>
 
       <AnimatePresence>
@@ -41,24 +43,24 @@ const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, day
             transition={{ duration: 0.2 }} // Duração da animação
             className="mt-4 overflow-hidden"
           >
-            <p className="text-lg font-semibold text-white">Valor R$ {value},00</p>
-            <div className="flex items-center mt-2 justify-between">
+            <p className="text-lg font-semibold text-white text-start ">Valor R$ {value},00</p>
+            <div className="flex items-center mt-2 justify-between border border-white p-2 rounded-md">
               <span className="text-white">Número de dias</span>
               <div className="bg-white text-prim flex justify-end rounded-lg px-4 py-1">
                 <button 
-                  className="text-des mr-2"
+                  className="text-des mr-4"
                   onClick={(e) => { e.stopPropagation(); decrementDays(); }} // Prevenir propagação do clique
                 >-</button>
                 <span>{days}</span>
                 <button 
-                  className="text-des ml-2"
+                  className="text-des ml-4"
                   onClick={(e) => { e.stopPropagation(); incrementDays(); }} // Prevenir propagação do clique
                 >+</button>
               </div>
             </div>
 
             {/* Botão Prosseguir */}
-            <div className='flex justify-end'>
+            <div className='flex justify-end  '>
               <button 
                 className={`mt-4 bg-des text-white py-2 px-5 rounded-lg hover:bg-sec ${days === 0 ? 'opacity-85 cursor-not-allowed' : ''}`} 
                 onClick={handleProceed} // Aciona ao clicar em "Prosseguir"

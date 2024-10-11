@@ -13,6 +13,8 @@ import { Dialog, DialogBackdrop, DialogPanel, Input } from '@headlessui/react'
 import {useNavigate } from 'react-router-dom';
 import { Logo } from "../imports.jsx"
 
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button} from "@nextui-org/react";
+
 /* 
 
     Atenção: Alguns techos de codigos abaixo foram comentados por motivos de testes.
@@ -342,11 +344,15 @@ export default function FormDiarista() {
 
     const[cpfCnpj, setcpfCnpj]=useState('')
     console.log(cpfCnpj)
-
     const inputRef = useRef(null)
     
     const watchCep = watch("cep");
     
+    const [selectedKeys, setSelectedKeys] = React.useState(new Set(["Limpeza"]));
+    const selectedValue = React.useMemo(
+        () => Array.from(selectedKeys).join(", ").replaceAll("_", ""),
+        [selectedKeys]
+    );
     
     // Handles
     const handleGeneroChange = (event) => {
@@ -767,7 +773,37 @@ export default function FormDiarista() {
             </div>
 
 
-            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col text-prim">
+            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col text-prim gap-3">
+                <p><b>Meus Serviços</b></p>
+                <div>
+                    <Dropdown>
+                        <DropdownTrigger>
+                            <Button variant="bordered" className="flex flex-wrap h-20 border border-bord">
+                                {Array.from(selectedKeys).map((key) => (
+                                    <span key={key} className="shadow-md text-prim rounded-md p-2" >{key}</span>
+                                ))}
+                            </Button>
+                        </DropdownTrigger>
+                        <DropdownMenu 
+                            aria-label="Multiple selection example"
+                            variant="flat"
+                            closeOnSelect={false}
+                            disallowEmptySelection
+                            selectionMode="multiple"
+                            selectedKeys={selectedKeys}
+                            onSelectionChange={setSelectedKeys}
+                            className="bg-white rounded-md border border-bord shadow-lg  gap-5 flex flex-col"
+                        >
+                            <DropdownItem key="Limpeza" className={`check-icon ${selectedKeys.has("Limpeza") ? "bg-des text-white  mt-2" : "mt-2"}`}>
+                                Limpeza 
+                            </DropdownItem>
+                            <DropdownItem key="Baba" className={`check-icon ${selectedKeys.has("Baba") ? "bg-des text-white mt-2" : "mt-2"}`}>Babá</DropdownItem>
+                            <DropdownItem key="Cozinheira" className={`check-icon ${selectedKeys.has("Cozinheira") ? "bg-des text-white mt-2" : "mt-2"}`}>Cozinheira</DropdownItem>
+                            <DropdownItem key="Eletricista" className={`check-icon ${selectedKeys.has("Eletricista") ? "bg-des text-white mt-2" : "mt-2"}`}>Eletricista</DropdownItem>
+                            <DropdownItem key="Encanador" className={`check-icon ${selectedKeys.has("Encanador") ? "bg-des text-white mt-2" : "mt-2"}`}>Encanador</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                </div>
                 <p><b>Dias disponíveis para trabalhar</b></p>
                 <div className="mt-2">
                     <input id="selectDays" type="button" value="Selecionar todos os dias" className="p-2 border border-bord rounded-md cursor-pointer"/>
@@ -846,7 +882,6 @@ export default function FormDiarista() {
                 </div>
              
             </div> 
-
 
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Endereço</h2>
@@ -969,8 +1004,6 @@ export default function FormDiarista() {
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Anexos</h2>
             </div>
-            
-            {/* O fluxo para salvar arquivos no banco de dados, ainda ta em andamento, por motivos de teste o mesmo foi desabilitado*/}
 
             <div className="mt-4 text-prim pr-9 pl-9">
                 <label htmlFor="docIdt">

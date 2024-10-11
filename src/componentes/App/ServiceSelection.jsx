@@ -39,7 +39,7 @@ const ServiceSelection = ({ onProceed, onDaysChange }) => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-4 pt-18">
+    <div className="bg-gray-50 min-h-screen">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl mx-auto">
         {/* Coluna principal */}
         <div className="lg:col-span-2">
@@ -49,14 +49,17 @@ const ServiceSelection = ({ onProceed, onDaysChange }) => {
             <div className="relative mb-4">
               <input
                 type="text"
+                id='searchQuery'
                 placeholder="Buscar profissional"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full border border-bord rounded-full px-4 py-2 text-prim"
+                className="focus:outline-prim w-full border border-bord rounded-full px-4 py-2 text-prim"
               />
-              <button className="absolute right-4 top-2 text-sec">
-                <i className="fas fa-search"></i>
-              </button>
+              <label htmlFor="searchQuery">
+                <button className="absolute right-4 top-2 text-sec">
+                  <i className="fas fa-search"></i>
+                </button>
+              </label>
             </div>
 
             <div className="max-h-80 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
@@ -81,11 +84,11 @@ const ServiceSelection = ({ onProceed, onDaysChange }) => {
             </div>
           </div>
 
-          <div className="mt-6 bg-white shadow-md rounded-lg p-4">
+          <div className="mt-6 bg-white shadow-md rounded-lg p-4 flex flex-col gap-5">
             <h3 className="text-center text-lg font-semibold text-prim mb-4">Não encontrou o que queria?</h3>
             <textarea
               placeholder="Escreva aqui e envie sua sugestão"
-              className="w-full border border-bord rounded-lg p-4 mb-4"
+              className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 focus:outline-ter text-prim w-full max-h-1"
               rows="3"
             ></textarea>
             <button className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec">

@@ -196,9 +196,9 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen mt-[-90px]">
+    <div className="flex flex-col pt-4 w-full md:w-9/12 lg:w-6/12">
       <motion.div
-        className="w-full sm:w-10/12 md:w-4/12 bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec"
+        className="w-full bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec lg:h-[60vh]"
         key={`${currentDate.toISOString()}-${currentYearPage}-${showMonths}-${showYears}`} // Key para reiniciar a animação
         variants={transitionVariants}
         initial="enter"
@@ -229,11 +229,13 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
         </div>
         {showYears ? renderYears() : showMonths ? renderMonths() : (
           <>
-            <div className="grid grid-cols-7">
-              {renderDaysOfWeek()}
-            </div>
-            <div className="grid grid-cols-7 gap-1">
-              {renderDays()}
+            <div className='lg:pb-12 lg:pt-0 p-2 overflow-hidden'>
+              <div className="grid grid-cols-7 overflow-hidden">
+                {renderDaysOfWeek()}
+              </div>
+              <div className="grid grid-cols-7 overflow-hidden">
+                {renderDays()}
+              </div>
             </div>
           </>
         )}
