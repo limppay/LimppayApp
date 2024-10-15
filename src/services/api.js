@@ -151,5 +151,28 @@ export const resetPassword = async (token, newPassword) => {
   }
 }
 
+//Função para pegar os prestadores disponiveis
+export const getDisponiveis = (dataServico, servico) => {
+  return api.get('/prestadores/disponiveis', {
+    params: {
+      data: dataServico,
+      servico: servico,
+    },
+  });
+};
+
+
+export const getUserProfile = async (cpfCnpj) => {
+  try {
+    const response = await api.get(`/users/profile/${cpfCnpj}`);
+    return response.data;
+    
+  } catch (error) {
+    console.error('Erro ao obter o perfil do usuário:', error); // Exibir erro no console
+    return false; // Retornar false em caso de erro
+  }
+};
+
+
 
 export default api;

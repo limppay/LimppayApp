@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import {Select, SelectSection, SelectItem} from "@nextui-org/select";
 
-const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSelection }) => {
+const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSelection, selectedTimes, setSelectedTimes }) => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
   const [showMonths, setShowMonths] = useState(false);
   const [showYears, setShowYears] = useState(false);
   const [currentYearPage, setCurrentYearPage] = useState(0);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const [selectedTimes, setSelectedTimes] = useState({}); // Para armazenar horários por data
-
-
   const currentYear = today.getFullYear();
 
   useEffect(() => {
@@ -42,33 +40,68 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       center: { opacity: 1, scale: 1 },
       exit: { opacity: 0, scale: 0.8 },
     };
-  
+
+    const horarios = [
+      {key: "07:00", label: "07:00", 'aria-label': "07:00"},
+      {key: "07:30", label: "07:30", 'aria-label': "07:30"},
+      {key: "08:00", label: "08:00", 'aria-label': "08:00"},
+      {key: "08:30", label: "08:30", 'aria-label': "08:30"},
+      {key: "09:00", label: "09:00", 'aria-label': "09:00"},
+      {key: "09:30", label: "09:30", 'aria-label': "09:30"},
+      {key: "10:00", label: "10:00", 'aria-label': "10:00"},
+      {key: "10:30", label: "10:30", 'aria-label': "10:30"},
+      {key: "11:00", label: "11:00", 'aria-label': "11:00"},
+      {key: "11:30", label: "11:30", 'aria-label': "11:30"},
+      {key: "12:00", label: "12:00", 'aria-label': "12:00"},
+      {key: "12:30", label: "12:30", 'aria-label': "12:30"},
+      {key: "13:00", label: "13:00", 'aria-label': "13:00"},
+      {key: "13:30", label: "13:30", 'aria-label': "13:30"},
+      {key: "14:00", label: "14:00", 'aria-label': "14:00"},
+      {key: "14:30", label: "14:30", 'aria-label': "14:30"},
+      {key: "15:00", label: "15:00", 'aria-label': "15:00"},
+      {key: "15:30", label: "15:30", 'aria-label': "15:30"},
+      {key: "16:00", label: "16:00", 'aria-label': "16:00"}
+    ];
+    
+    
     return (
       <motion.div
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+        className="fixed inset-0 flex items-center justify-center"
         initial="enter"
         animate="center"
         exit="exit"
         variants={transitionVariants}
       >
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="bg-white p-4 rounded-md shadow-lg">
-          <h3 className="text-lg font-bold mb-2">Selecione os horários</h3>
-          {selectedDates.map(date => (
-            <div key={date.toString()} className="flex justify-between items-center mb-2">
-              <span>{date.toLocaleDateString()}</span>
-              <input
-                type="time"
-                onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)}
-                className="border p-1"
-              />
-            </div>
-          ))}
-          <div className="flex justify-end">
-            <button className="bg-des text-white py-1 px-2 rounded-md" onClick={handleConfirm}>
+      <div className="fixed inset-0 flex items-center justify-center bg-prim bg-opacity-70 ">
+        <div className="bg-white p-4 rounded-lg shadow-lg flex w-9/12 lg:w-3/12 flex-col gap-5">
+          <h3 className="text-lg font-bold mb-2 text-desSec">Selecione os horários</h3>
+          <div className='overflow-y-auto max-h-[25vh]'>
+            {selectedDates.map(date => (
+              <div key={date.toString()} className="flex justify-between items-center mb-2 text-prim">
+                <span>{date.toLocaleDateString()}</span>
+
+                <Select
+                    id='horas'
+                    isRequired
+                    placeholder="--:--"
+                    className="w-5/12 text-prim "
+                    onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)}
+                    aria-label='horas'
+                  >
+                    {horarios.map((hora) => (
+                      <SelectItem key={hora.key} className='text-prim ' aria-label={hora.label}>
+                        {hora.label}
+                      </SelectItem>
+                    ))}
+                </Select>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end pt-5 gap-5">
+            <button className="ml-2 text-error text-opacity-75" onClick={onClose}>Cancelar</button>
+            <button className="bg-des text-white p-2 rounded-md" onClick={handleConfirm}>
               Confirmar
             </button>
-            <button className="ml-2 text-red-500" onClick={onClose}>Cancelar</button>
           </div>
         </div>
       </div>
@@ -284,7 +317,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
         </div>
         {showYears ? renderYears() : showMonths ? renderMonths() : (
           <>
-            <div className='lg:pb-12 lg:pt-0 p-2 overflow-hidden'>
+            <div className='lg:pt-0 p-2 overflow-hidden'>
               <div className="grid grid-cols-7 overflow-hidden">
                 {renderDaysOfWeek()}
               </div>
@@ -312,6 +345,8 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
         onConfirm={(times) => {
           console.log(times); // Aqui você pode fazer o que precisar com os horários
           setShowTimePicker(false);
+          setSelectedTimes(times);
+          onConfirmSelection();
         }}
       />
     )}

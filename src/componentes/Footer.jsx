@@ -17,7 +17,7 @@ export default function Footer() {
                 </div>
             </div>
             <div className="footer-bottom">
-                <p>&copy; Limppay 2023 – Todos os direitos reservados</p>
+                <p>&copy; Limppay 2024 – Todos os direitos reservados</p>
             </div>
         </footer>
     )

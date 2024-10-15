@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import ServiceCard from './ServiceCard';
 
-const ServiceSelection = ({ onProceed, onDaysChange }) => {
+const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange }) => {
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [days, setDays] = useState(0);
 
   const services = [
-    { icon: 'fas fa-baby', title: 'Babá', description: 'Cuida de bebês e crianças, garantindo segurança e bem-estar.', value: 180 },
+    { icon: 'fas fa-baby', title: 'Baba', description: 'Cuida de bebês e crianças, garantindo segurança e bem-estar.', value: 180 },
     { icon: 'fas fa-utensils', title: 'Cozinheira', description: 'Prepara refeições deliciosas para escritórios, consultórios e salas comerciais.', value: 150 },
     { icon: 'fas fa-bolt', title: 'Eletricista', description: 'Realiza manutenção preventiva e corretiva em instalações elétricas.', value: 140 },
     { icon: 'fas fa-wrench', title: 'Encanador', description: 'Resolve problemas hidráulicos em escritórios e salas comerciais.', value: 160 },
@@ -31,6 +31,7 @@ const ServiceSelection = ({ onProceed, onDaysChange }) => {
       setDays(0);
     }
     setSelectedServiceIndex(selectedServiceIndex === index ? null : index);
+    onServiceChange(services[index].title)
   };
 
   const handleProceed = () => {
