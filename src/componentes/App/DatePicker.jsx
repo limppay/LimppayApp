@@ -8,6 +8,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   const [showMonths, setShowMonths] = useState(false);
   const [showYears, setShowYears] = useState(false);
   const [currentYearPage, setCurrentYearPage] = useState(0);
+  const[isConfirmEnabled, setIsConfirmEnabled] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const currentYear = today.getFullYear();
 
@@ -15,6 +16,14 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     const initialYearPage = Math.floor((currentYear - (currentYear - 50)) / 16);
     setCurrentYearPage(initialYearPage);
   }, [currentYear]);
+
+  useEffect(() =>{
+    if(selectedDates.length === maxSelection){
+      setIsConfirmEnabled(true);
+    }else{
+      setIsConfirmEnabled(false);
+    }
+  }, [selectedDates, maxSelection])
 
   const renderDaysOfWeek = () => {
     const daysOfWeek = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -25,9 +34,18 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
 
   const TimePickerPopup = ({ selectedDates, onClose, onConfirm }) => {
     const [times, setTimes] = useState({});
+    const [isConfirmEnabled, setIsConfirmEnabled] = useState(false);
   
     const handleTimeChange = (date, time) => {
-      setTimes(prev => ({ ...prev, [date]: time }));
+      setTimes(prev => {
+        const updateTimes = { ...prev, [date]: time };
+
+        const allTimesFilled = selectedDates.every(date => updateTimes[date.toDateString()]);
+
+        setIsConfirmEnabled(allTimesFilled);
+
+        return updateTimes;
+      });
     };
   
     const handleConfirm = () => {
@@ -62,7 +80,6 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       {key: "15:30", label: "15:30", 'aria-label': "15:30"},
       {key: "16:00", label: "16:00", 'aria-label': "16:00"}
     ];
-    
     
     return (
       <motion.div
@@ -99,7 +116,11 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
           </div>
           <div className="flex justify-end pt-5 gap-5">
             <button className="ml-2 text-error text-opacity-75" onClick={onClose}>Cancelar</button>
-            <button className="bg-des text-white p-2 rounded-md" onClick={handleConfirm}>
+            <button 
+              className={`bg-des text-white p-2 rounded-md ${!isConfirmEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={handleConfirm}
+              disabled={!isConfirmEnabled} // Desativa o botão se não estiver habilitado
+            >
               Confirmar
             </button>
           </div>
@@ -330,9 +351,9 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       </motion.div>
         <div className="flex justify-center mt-4">
         <button
-          className={`bg-des text-white py-2 px-4 rounded-md ${selectedDates.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={selectedDates.length === 0}
-          onClick={() => setShowTimePicker(true)} // Abre o pop-up
+          className={`bg-des text-white p-2 rounded-md ${isConfirmEnabled ? '' : 'opacity-50 cursor-not-allowed'}`}
+          disabled={!isConfirmEnabled}
+          onClick={(onConfirmSelection) => setShowTimePicker(true)} // Abre o pop-up
           >
             Confirmar Seleção
           </button>
