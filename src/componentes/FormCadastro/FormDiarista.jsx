@@ -135,6 +135,14 @@ export default function FormDiarista() {
             const { dom, seg, ter, quart, qui, sex, sab } = this.parent
             return dom || seg || ter || quart || qui || sex || sab
         }),
+
+        // Servicos
+        limpeza: yup.boolean(),
+        baba: yup.boolean(),
+        cozinheira: yup.boolean(),
+        eletricista: yup.boolean(),
+        encanador: yup.boolean(),
+
     })
     .required()
     
@@ -218,6 +226,12 @@ export default function FormDiarista() {
         formData.append('qui', data.qui)
         formData.append('sex', data.sex)
         formData.append('sab', data.sab)
+
+        formData.append('limpeza', data.limpeza)
+        formData.append('baba', data.baba)
+        formData.append('cozinheira', data.cozinheira)
+        formData.append('eletricista', data.eletricista)
+        formData.append('encanador', data.encanador)
 
         formData.append('arquivoFoto', data.arquivoFoto);
         formData.append('arquivodt', data.arquivodt);
@@ -354,6 +368,13 @@ export default function FormDiarista() {
         () => Array.from(selectedKeys).join(", ").replaceAll("_", ""),
         [selectedKeys]
     );
+
+    const handleSelectionChange = (keys) => {
+        setSelectedKeys(keys);
+        keys.forEach((key) => {
+            setValue(key.toLowerCase(), true);
+        });
+    };
     
     // Handles
     const handleGeneroChange = (event) => {
@@ -792,8 +813,9 @@ export default function FormDiarista() {
                             disallowEmptySelection
                             selectionMode="multiple"
                             selectedKeys={selectedKeys}
-                            onSelectionChange={setSelectedKeys}
                             className="bg-white rounded-md border border-bord shadow-lg  gap-5 flex flex-col"
+                            onSelectionChange={handleSelectionChange}
+                            
                         >
                             <DropdownItem key="Limpeza" className={`check-icon ${selectedKeys.has("Limpeza") ? "bg-des text-white  mt-2" : "mt-2"}`}>
                                 Limpeza 
