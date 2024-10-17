@@ -9,7 +9,7 @@ export default function DuvidasFrequentes() {
         });
       
         // Função para adicionar duvidaos grandes no HTML
-        fetch('src/assets/duvidas.json')
+        fetch('/src/assets/duvidas.json')
           .then(response => response.json())
           .then(data => {
             paragraphs.forEach(p => {

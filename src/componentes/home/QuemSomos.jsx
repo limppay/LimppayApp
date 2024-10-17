@@ -9,7 +9,7 @@ export default function QuemSomos() {
         });
       
         // Função para adicionar textos grandes no HTML
-        fetch('src/assets/index.json')
+        fetch("/src/assets/index.json")
           .then(response => response.json())
           .then(data => {
             paragraphs.forEach(p => {
