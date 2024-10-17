@@ -7,6 +7,7 @@ import React, { useRef } from "react"
 import { createUser } from "../../services/api.js"
 import axios from "axios"
 import InputMask from "react-input-mask"
+import User from "../../assets/img/diarista-cadastro/user.png"
 
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, Input } from '@headlessui/react'
@@ -327,7 +328,7 @@ export default function FormDiarista() {
     ]
 
     // states
-    const [image, setImage] = useState("src/assets/img/diarista-cadastro/user.png")
+    const [image, setImage] = useState(User)
     const [fileNames, setFileNames] = useState({
         docIdt: "Arquivo não selecionado",
         docCpf: "Arquivo não selecionado",
