@@ -16,7 +16,7 @@ const AreaCliente = () => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/cliente/${userId}`, {
+                const response = await axios.get(`https://limppay-api-production.up.railway.app/cliente/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUserInfo(response.data);
