@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HeaderApp, Logo, Footer } from '../../componentes/imports';
+import {Logo, Footer } from '../../componentes/imports';
 import ServiceSelection from '../../componentes/App/ServiceSelection';
 import CustomCalendar from '../../componentes/App/DatePicker';
 import ProgressBar from '../../componentes/App/ProgressBar';
@@ -8,6 +8,7 @@ import {Avatar} from "@nextui-org/react";
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import Banner from "../../assets/img/App/limpando.png"
+import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 
 export default function ContrateOnline() {
     const buttons = [
@@ -151,7 +152,9 @@ export default function ContrateOnline() {
 
     return (
         <>
-            <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess} text1="Seja Bem-vindo!" text2="Entre ou cadastre-se" />
+
+            <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
+
             <main className="relative p-4 flex items-baseline lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
                 <div className='flex justify-center flex-col items-center text-center lg:w-8/12 md:w-8/12 shadow-lg pt-0 p-4 rounded-md'>
 
@@ -447,6 +450,7 @@ export default function ContrateOnline() {
                         </div>
                     </div>
             </main>
+
             <Footer/>
 
             
