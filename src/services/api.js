@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://limppay-api-production.up.railway.app'
 });
 
 // Função para criar o usuário e enviar arquivos

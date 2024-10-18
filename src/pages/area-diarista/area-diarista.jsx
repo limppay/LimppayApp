@@ -16,7 +16,7 @@ const AreaDiarista = () => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/users/${userId}`, {
+                const response = await axios.get(`https://limppay-api-production.up.railway.app/users/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUserInfo(response.data);

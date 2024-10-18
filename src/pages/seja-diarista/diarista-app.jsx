@@ -3,6 +3,7 @@ import '../../styles/index.css'
 import '../../styles/font.css'
 import '../../styles/duvidas.css'
 import "../../styles/footer.css"
+import Banner from "../../assets/img/seja-diarista/banner-02-1.jpg"
 
 export default function DiaristaApp() {
     const buttons = [
@@ -25,7 +26,7 @@ export default function DiaristaApp() {
             <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess} text1="Seja Bem-vindo!" text2="Entre ou cadastre-se"/>
             <main className='w-full flex flex-col items-center justify-center'>
 
-                <section className='pb-10 w-full items-center lg:md:sm:flex lg:md:sm:flex-col pt-28 md:pt-16 sm:pt-16 lg:pt-28 bg-[url(src/assets/img/seja-diarista/banner-02-1.jpg)] bg-cover bg-center '>                 
+            <section className='pb-10 w-full items-center lg:md:sm:flex lg:md:sm:flex-col pt-28 md:pt-16 sm:pt-16 lg:pt-28' style={{ backgroundImage: `url(${Banner})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>                 
                   <div className='lg:md:sm:flex lg:md:sm:items-baseline'>
                         <div className="p-5 lg:md:sm:flex lg:md:sm:justify-center lg:md:sm:w-full">
                             <div className='flex flex-col gap-5 p-2 text-center lg:md:sm:gap-8 lg:md:sm:flex lg:md:sm:w-8/12 lg:md:sm:text-center '>

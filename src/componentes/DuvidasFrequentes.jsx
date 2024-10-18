@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import JsonDuvidas from "../assets/duvidas.json"
 
 export default function DuvidasFrequentes() {
     useEffect(() => {
@@ -8,18 +9,13 @@ export default function DuvidasFrequentes() {
           paragrafo.setAttribute('data-index', index);
         });
       
-        // Função para adicionar duvidaos grandes no HTML
-        fetch('src/assets/duvidas.json')
-          .then(response => response.json())
-          .then(data => {
-            paragraphs.forEach(p => {
-              const index = p.getAttribute('data-index');
-              if (data[index] !== undefined) {
-                p.innerHTML = data[index];
-              }
-            });
-          })
-          .catch(error => console.error("Erro ao carregar JSON:", error));
+        // Função para adicionar duvidas grandes no HTML
+        paragraphs.forEach(p => {
+          const index = p.getAttribute('data-index');
+          if (JsonDuvidas[index] !== undefined) {
+            p.innerHTML = JsonDuvidas[index];
+          }
+        });
       
         // Função para a seção de dúvidas
         const spans = document.querySelectorAll(".painel-title");
@@ -39,7 +35,8 @@ export default function DuvidasFrequentes() {
             span.removeEventListener("click", handleClick);
           });
         };
-      }, []);
+    }, []);
+      
   return(
       <section className="duvidas-frequentes" id="duvidas">
           <div className="container-duvidas-frequentes">

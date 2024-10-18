@@ -7,6 +7,7 @@ import { getDisponiveis, getUserProfile } from '../../services/api';
 import {Avatar} from "@nextui-org/react";
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
+import Banner from "../../assets/img/App/limpando.png"
 
 export default function ContrateOnline() {
     const buttons = [
@@ -340,7 +341,7 @@ export default function ContrateOnline() {
                         <div className="bg-desSec text-white shadow-md rounded-lg p-12 flex flex-col items-center gap-10">
                             <h3 className="text-xl font-bold flex flex-wrap">Olá, agende um serviço conosco é fácil e rápido!</h3>
                             <img
-                            src="../src/assets/img/App/limpando.png"
+                            src={Banner}
                             alt="Ilustração de limpeza"
                             className="w-full mb-4"
                             />

@@ -1,26 +1,23 @@
 import React, { useEffect } from 'react';
+import SobreNos from "../../assets/index.json"
 
 export default function QuemSomos() {
+
     useEffect(() => {
-        // Função para adicionar um índice para cada parágrafo
-        const paragraphs = document.querySelectorAll(".text");
-        paragraphs.forEach((paragrafo, index) => {
-          paragrafo.setAttribute('data-index', index);
-        });
-      
-        // Função para adicionar textos grandes no HTML
-        fetch('src/assets/index.json')
-          .then(response => response.json())
-          .then(data => {
-            paragraphs.forEach(p => {
-              const index = p.getAttribute('data-index');
-              if (data[index] !== undefined) {
-                p.innerHTML = data[index];
-              }
-            });
-          })
-          .catch(error => console.error("Erro ao carregar JSON:", error));
-      }, []);
+      // Função para adicionar um índice para cada parágrafo
+      const paragraphs = document.querySelectorAll(".text");
+      paragraphs.forEach((paragrafo, index) => {
+        paragrafo.setAttribute('data-index', index);
+      });
+    
+      // Função para adicionar textos grandes no HTML
+      paragraphs.forEach(p => {
+        const index = p.getAttribute('data-index');
+        if (SobreNos[index] !== undefined) {
+          p.innerHTML = SobreNos[index];
+        }
+      });
+    }, []);
       
     return (
         <section className="quem-somos" id="quem-somos">

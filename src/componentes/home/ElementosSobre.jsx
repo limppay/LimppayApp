@@ -1,3 +1,9 @@
+import LocalServico from "../../assets/img/localeservico.png"
+import DataHora from "../../assets/img/datehora.png"
+import Profissional from "../../assets/img/profissional.png"
+import SolicitarServico from "../../assets/img/localeservico.png"
+
+
 export default function ElementosSobre() {
     return (
         <section className="elementos-sobre">
@@ -11,22 +17,22 @@ export default function ElementosSobre() {
 
                 <section className="informações">
                     <div className="info">
-                        <img src="src/assets/img/localeservico.png" alt="Local e serviço"/>
+                        <img src={LocalServico} alt="Local e serviço"/>
                         <h3>Local e serviços</h3>
                         <p>Casas, apartamentos, escritórios, consultórios e salas comerciais.</p>
                     </div>
                     <div className="info">
-                        <img src="src/assets/img/datehora.png" alt="Data e Hora"/>
+                        <img src={DataHora} alt="Data e Hora"/>
                         <h3>Data e hora</h3>
                         <p>Na hora e no momento mais conveniente para você.</p>
                     </div>
                     <div className="info">
-                        <img src="src/assets/img/profissional.png" alt="Selecione profissional"/>
+                        <img src={Profissional} alt="Selecione profissional"/>
                         <h3>Selecione profissional</h3>
                         <p>Escolha o profissional da sua preferência</p>
                     </div>
                     <div className="info">
-                        <img src="src/assets/img/localeservico.png" alt="Solicitação de serviço"/>
+                        <img src={SolicitarServico} alt="Solicitação de serviço"/>
                         <h3>Solicitação de serviço</h3>
                         <p>Confirme, efetue o pagamento e aguarde no local marcado.</p>
                     </div>
