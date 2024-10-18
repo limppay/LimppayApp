@@ -17,13 +17,13 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     setCurrentYearPage(initialYearPage);
   }, [currentYear]);
 
-  useEffect(() =>{
-    if(selectedDates.length === maxSelection){
-      setIsConfirmEnabled(true);
-    }else{
-      setIsConfirmEnabled(false);
+  useEffect(() => {
+    if (selectedDates.length === maxSelection) {
+        setIsConfirmEnabled(true);
+    } else {
+        setIsConfirmEnabled(false);
     }
-  }, [selectedDates, maxSelection])
+}, [selectedDates, maxSelection])
 
   const renderDaysOfWeek = () => {
     const daysOfWeek = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -35,18 +35,31 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   const TimePickerPopup = ({ selectedDates, onClose, onConfirm }) => {
     const [times, setTimes] = useState({});
     const [isConfirmEnabled, setIsConfirmEnabled] = useState(false);
+    const [selectedTimes, setSelectedTime] = useState('');
   
     const handleTimeChange = (date, time) => {
       setTimes(prev => {
-        const updateTimes = { ...prev, [date]: time };
-
-        const allTimesFilled = selectedDates.every(date => updateTimes[date.toDateString()]);
-
-        setIsConfirmEnabled(allTimesFilled);
-
-        return updateTimes;
+          const updateTimes = { ...prev, [date]: time }; // Atualiza o horário para a data específica
+      
+          // Verifica se todos os horários foram preenchidos
+          const allTimesFilled = selectedDates.every(date => updateTimes[date.toDateString()]);
+      
+          setIsConfirmEnabled(allTimesFilled);
+      
+          return updateTimes;
       });
+  };
+  
+
+    const handleSelectAllTimes = (time) => {
+      setTimes(selectedDates.reduce((acc, date) => {
+        acc[date.toDateString()] = time; // Atualiza o horário para cada data
+        return acc;
+      }, {}));
+      setIsConfirmEnabled(true); // Habilita o botão de confirmar se todos os horários foram preenchidos
     };
+    
+    
   
     const handleConfirm = () => {
       onConfirm(times);
@@ -92,6 +105,22 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       <div className="fixed inset-0 flex items-center justify-center bg-prim bg-opacity-70 ">
         <div className="bg-white p-4 rounded-lg shadow-lg flex w-9/12 lg:w-3/12 flex-col gap-5">
           <h3 className="text-lg font-bold mb-2 text-desSec">Selecione os horários</h3>
+
+            <Select
+                id='horasTodos'
+                placeholder="Selecione um horário para todos"
+                className="w-full text-prim"
+                onChange={(e) => handleSelectAllTimes(e.target.value)}
+                aria-label='horasTodos'
+              >
+                {horarios.map((hora) => (
+                  <SelectItem key={hora.key} className='text-prim' aria-label={hora.label}>
+                    {hora.label}
+                  </SelectItem>
+                ))}
+              </Select>
+
+
           <div className='overflow-y-auto max-h-[25vh]'>
             {selectedDates.map(date => (
               <div key={date.toString()} className="flex justify-between items-center mb-2 text-prim">
@@ -102,15 +131,16 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
                     isRequired
                     placeholder="--:--"
                     className="w-5/12 text-prim "
-                    onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)}
+                    onChange={(value) => handleTimeChange(date.toDateString(), value)} // Ajuste aqui
                     aria-label='horas'
-                  >
+                >
                     {horarios.map((hora) => (
-                      <SelectItem key={hora.key} className='text-prim ' aria-label={hora.label}>
-                        {hora.label}
-                      </SelectItem>
+                        <SelectItem key={hora.key} className='text-prim ' aria-label={hora.label}>
+                            {hora.label}
+                        </SelectItem>
                     ))}
                 </Select>
+
               </div>
             ))}
           </div>
