@@ -51,12 +51,7 @@ export default function ContrateOnline() {
         return providers[Math.floor(Math.random() * providers.length)];
     };
 
-
-    const handleProceed = () => {
-        console.log(selectedService)
-        console.log(selectedDates)
-        console.log(selectedTimes)
-        
+    const HandleSelectedRandomProvider = () => {
         if (!selectedProvider) {
             const randomProvider = selectRandomProvider();
             setSelectedProvider(randomProvider);
@@ -66,17 +61,27 @@ export default function ContrateOnline() {
         }
 
         setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
+    }
+
+
+    const handleProceed = () => {
+        console.log(selectedService)
+        console.log(selectedDates)
+        console.log(selectedTimes)
+        
+        setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
     };
 
     const handleStepClick = (index) => {
         if (index < currentStep) {
 
-            if ( index < 2) {
+            if ( index < 2 ) {
                 setSelectedProvider(null)
             }
 
             if ( index < 1 ) {
                 setSelectedDates([])
+                setSelectedProvider(null)
             }
 
             setCurrentStep(index);
@@ -406,7 +411,7 @@ export default function ContrateOnline() {
                                                     gap-2
                                                     w-full
                                                     "
-                                                    onClick={handleProceed}
+                                                    onClick={HandleSelectedRandomProvider}
                                                     
                                                 >
                                                     Selecione por mim e prosseguir
