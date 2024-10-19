@@ -432,6 +432,7 @@ export default function ContrateOnline() {
                             {user ? (
                                 <div>
                                     <h1>Cliente logado</h1>
+                                    {console.log(user.id, user.name)}
                                 </div>
                             ) : (
                                 <>

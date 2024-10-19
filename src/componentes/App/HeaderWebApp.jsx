@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import HeaderButton from '../HeaderButton';
 import ButtonAcess from '../home/ButtonAcess';
 import "../../styles/menu-hamburguer.css";
@@ -8,20 +8,31 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar } from "@nextui-org/react";
 
 export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
-  const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {});
-  const navigate = useNavigate();
-  const { user, setUser } = useUser();
+    const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {});
+    const navigate = useNavigate();
+    const { user, setUser  } = useUser();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId');
-    if (token && userId) {
-      fetchUserInfo(token, userId).then(data => {
-        setUser(data);
-        setUrls(JSON.parse(localStorage.getItem('urls')));
-      });
-    }
-  }, [user]);
+    const isFetched = useRef(false);  // Ref para controlar a execução do useEffect
+
+    useEffect(() => {
+        if (isFetched.current) return;  // Se já foi feito, não executa de novo
+
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('userId');
+
+        if (token && userId) {
+            fetchUserInfo(token, userId).then(data => {
+                if (data) {  // Verifica se obteve os dados corretamente
+                    setUser(data);  // Atualiza o contexto do usuário
+                    setUrls(JSON.parse(localStorage.getItem('urls')));  // Atualiza as URLs do usuário
+                    isFetched.current = true;  // Marca que a requisição foi feita com sucesso
+                }
+            }).catch(err => {
+                console.error('Erro ao buscar informações do usuário:', err);
+                isFetched.current = false;  // Reseta caso ocorra um erro
+            });
+        }
+    }, [user]);  // Dependência vazia para executar o efeito apenas uma vez
 
   const fetchUserInfo = async (token, userId) => {
     try {
