@@ -9,6 +9,8 @@ import {Avatar} from "@nextui-org/react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import Banner from "../../assets/img/App/limpando.png"
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
+import StepLoginCustomer from './StepLoginCustomer';
+import { useUser } from '../../context/UserProvider';
 
 export default function ContrateOnline() {
     const buttons = [
@@ -36,6 +38,8 @@ export default function ContrateOnline() {
     
     const [providers, setProviders] = useState([])
     const [open, setOpen] = useState(false)
+
+    const { user } = useUser();
 
     const handleServiceChange = (service) => {
         setSelectedService(service); // Atualiza o serviço selecionado
@@ -191,7 +195,7 @@ export default function ContrateOnline() {
                         </>
                     )}
 
-                    {currentStep == 2 && (
+                    {currentStep == 3 && (
                         <>
                             <div className='pt-5'>
                                 {providers.length === 0 ? (
@@ -222,9 +226,7 @@ export default function ContrateOnline() {
                                         {filteredProviders.length > 0 ? (
                                             filteredProviders.map((provider) => (
                                                 <>
-                                                
-                                                
-                                                
+                                            
                                                     <div key={provider.id} className='flex flex-col gap-3 '>
                                                         <div 
                                                         
@@ -425,12 +427,19 @@ export default function ContrateOnline() {
                         </>
                     )}
 
-                    {currentStep == 3 && (
+                    {currentStep == 2 && (
                         <>
-                            <h1>teste</h1>
-                        </>
+                            {user ? (
+                                <div>
+                                    <h1>Cliente logado</h1>
+                                </div>
+                            ) : (
+                                <>
+                                    <StepLoginCustomer/>
+                                </>
+                            )}
+                        </>                    
                     )}
-
                 </div>
                 {/* Cartão azul - Visível somente em telas grandes (desktop) */}
                     <div className="hidden lg:block pt-42 w-4/12">
