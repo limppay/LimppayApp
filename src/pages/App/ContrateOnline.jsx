@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {Logo, Footer } from '../../componentes/imports';
 import ServiceSelection from '../../componentes/App/ServiceSelection';
 import CustomCalendar from '../../componentes/App/DatePicker';
 import ProgressBar from '../../componentes/App/ProgressBar';
-import { getDisponiveis, getUserProfile } from '../../services/api';
-import {Avatar} from "@nextui-org/react";
+import { deleteEnderecosCliente, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
+import {Avatar, Spinner, spinner} from "@nextui-org/react";
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import Banner from "../../assets/img/App/limpando.png"
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 import StepLoginCustomer from './StepLoginCustomer';
 import { useUser } from '../../context/UserProvider';
+import DeleteIcon from '@mui/icons-material/Delete'
+
 
 export default function ContrateOnline() {
     const buttons = [
@@ -35,12 +37,47 @@ export default function ContrateOnline() {
     const [selectedDates, setSelectedDates] = useState([]); // Estado para armazenar a data selecionada
     const [selectedTimes, setSelectedTimes] = useState([]); // Estado para armazenar os horários selecionados
     const [selectedProvider, setSelectedProvider] = useState(null) // Estado para armazenar as informações do prestador selecionado
+    const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState([])
+
     
     const [providers, setProviders] = useState([])
     const [open, setOpen] = useState(false)
+    const [enderecosCliente, setEnderecosCliente] = useState([])
+    const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
 
     const { user } = useUser();
+    
+    const clienteId = localStorage.getItem('userId')
 
+    const HandleGetEnderecosCliente = async (id) => {
+        if (clienteId) {
+            setIsLoading(true);
+            try {
+                const GetEnderecosCliente = await getEnderecosCliente(id);
+                const GetEnderecoDefaultCliente = await getEnderecoDefaultCliente(id)
+
+                setEnderecosCliente(GetEnderecosCliente);
+                SetEnderecoDefaultCliente(GetEnderecoDefaultCliente)
+
+            } catch (error) {
+                console.error("Erro ao obter endereços: ", error);
+            } finally {
+                setIsLoading(false); // Garantindo que o loading será encerrado
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (!enderecosCliente.length && !enderecoDefaultCliente.length && clienteId) {
+            HandleGetEnderecosCliente(clienteId);
+        }
+    }, [enderecosCliente, clienteId]); // Chama a função ao montar o componente
+
+    console.log(enderecoDefaultCliente)
+    console.log(enderecosCliente)
+
+    
     const handleServiceChange = (service) => {
         setSelectedService(service); // Atualiza o serviço selecionado
         console.log(service)
@@ -98,6 +135,20 @@ export default function ContrateOnline() {
         setNumberOfDays(days); // Atualiza o número de dias selecionados
     };
 
+    const HandleDeleteEndereco = async (enderecoId) => {
+        try {
+            // Realiza a exclusão do endereço na API
+            const DeleteEndereco = await deleteEnderecosCliente(enderecoId);
+    
+            // Atualiza a lista de endereços removendo o endereço excluído
+            setEnderecosCliente(prevEnderecos => prevEnderecos.filter(endereco => endereco.id !== enderecoId));
+    
+            console.log(`Endereço ${enderecoId} excluído com sucesso!`);
+        } catch (error) {
+            console.error("Erro ao excluir o endereço: ", error);
+        }
+    };
+    
     
     //função que recebe as informações de data e serviço, para retorna os prestadores disponveis 
     const handleConfirmSelection = async () => {
@@ -128,9 +179,10 @@ export default function ContrateOnline() {
                 } else {
                     console.error('Nenhum prestador disponível encontrado');
                 }
-    
+                
                 setCurrentStep(currentStep + 1);
                 setShowCalendar(false);
+
             } else {
                 console.error('Nenhuma data selecionada');
             }
@@ -157,7 +209,13 @@ export default function ContrateOnline() {
 
         return idade;
     };
+
+    const formatarCep = (cep) => {
+        return cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2");
+    };
     
+
+
 
     return (
         <>
@@ -430,16 +488,84 @@ export default function ContrateOnline() {
                     {currentStep == 2 && (
                         <>
                             {user ? (
-                                <div>
-                                    <h1>Cliente logado</h1>
-                                    {console.log(user.id, user.name)}
-                                </div>
+                                isLoading ? (
+                                    <Spinner color='primary'/>
+                                ) : (
+                                    enderecoDefaultCliente.length > 0 ? ( 
+                                        <div className='grid lg:grid-cols-2
+                                        md:grid-cols-2
+                                        sm:grid-cols-2
+                                        items-center justify-center pt-5  gap-10'>
+                                            <div className={`border border-bord rounded-lg min-h-[32vh] max-h-[32vh] max-w-[30vh] min-w-[30vh] 
+                                            ${selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? 'border-sec' : 'hover:border-sec border-bord' }
+                                            `}
+                                            
+                                            onClick={() => {
+                                                setSelectedEnderecoCliente(enderecoDefaultCliente[0])
+                                                console.log(enderecoDefaultCliente[0].id)
+                                            }}
+                                            
+                                            
+                                            >
+                                                <div className='border-b border-bord p-3'>
+                                                    <h1>Selecionar endereço</h1>
+                                                </div>
+                                                <div className='p-5 text-start flex flex-col '>
+                                                    <h2 className='text-prim font-semibold pb-2'>Endereço principal</h2>
+                                                    <p>{enderecoDefaultCliente[0]?.logradouro}, {enderecoDefaultCliente[0]?.numero}</p> 
+                                                    <p>{enderecoDefaultCliente[0]?.complemento}</p> 
+                                                    <p>{enderecoDefaultCliente[0]?.bairro}</p> 
+                                                    <p>{enderecoDefaultCliente[0]?.cidade}, {enderecoDefaultCliente[0]?.estado} - {formatarCep(enderecoDefaultCliente[0]?.cep)} </p> 
+                                                </div>
+                                            </div>
+
+                                            {enderecosCliente.map((endereco) => (
+                                                <div key={endereco.id} className={`border border-bord rounded-lg min-h-[32vh] max-h-[32vh] max-w-[30vh] min-w-[30vh] 
+                                                ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec' : 'hover:border-sec border-bord' }
+                                                `}
+
+                                                onClick={() => {
+                                                    setSelectedEnderecoCliente(endereco)
+                                                    console.log(endereco.id)
+                                                }}
+
+
+                                                >
+                                                    <div className='border-b border-bord p-3'>
+                                                        <h1>Selecionar endereço</h1>
+                                                    </div>
+                                                    <div className='p-5 text-start flex flex-col '>
+                                                        <h2 className='text-prim font-semibold pb-2'>Local de serviço</h2>
+                                                        <p>{endereco?.logradouro}, {endereco?.numero}</p> 
+                                                        <p>{endereco?.complemento}</p> 
+                                                        <p>{endereco?.bairro}</p> 
+                                                        <p>{endereco?.cidade}, {endereco?.estado} - {formatarCep(endereco?.cep)} </p> 
+                                                        <div className='text-start pt-2'>
+                                                            <button
+                                                            onClick={() => (HandleDeleteEndereco(endereco.id))}
+                                                            >
+                                                                <DeleteIcon style={{ fontSize: 24, color: 'red' }} /> 
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+
+                                            <div className='p-5 border border-bord rounded-md min-h-[32vh] max-h-[32vh] flex items-center justify-center'>
+                                                <button className='p-2 bg-des rounded-md text-white'>Cadastrar novo endereço</button>
+                                            </div>
+
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <h1>Não foi possivel carregar os endereços, tente novamente.</h1>
+                                        </>
+                                    )
+                                )
                             ) : (
-                                <>
-                                    <StepLoginCustomer/>
-                                </>
+                                <StepLoginCustomer />
                             )}
-                        </>                    
+                        </>                 
                     )}
                 </div>
                 {/* Cartão azul - Visível somente em telas grandes (desktop) */}

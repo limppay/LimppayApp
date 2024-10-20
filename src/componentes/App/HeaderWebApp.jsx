@@ -73,6 +73,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('urls');
+    localStorage.removeItem('enderecosCliente')
     window.location.reload();
   };
 

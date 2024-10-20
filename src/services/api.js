@@ -120,7 +120,6 @@ export const updateCliente = async (id, clienteData) => {
   }
 };
 
-
 // Função para solicitar o link de redefinição de senha
 export const requestPasswordReset = async (email, cpfCnpj) => {
   try {
@@ -173,6 +172,63 @@ export const getUserProfile = async (cpfCnpj) => {
   }
 };
 
+
+export const getEnderecosCliente = async (clienteId) => {
+  try {
+    const response = await api.get(`/cliente/enderecos/${clienteId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error('Erro ao obter os endereços:', error.response?.data || error.message);
+    return false; // Retornar false em caso de erro
+  }
+};
+
+
+export const getEnderecoDefaultCliente = async (clienteId) => {
+  try {
+    const response = await api.get(`/cliente/enderecoDefault/${clienteId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error('Erro ao obter o endereco padrão do cliente:', error.response?.data || error.message);
+    return false; // Retornar false em caso de erro
+  }
+};
+
+export const deleteEnderecosCliente = async (enderecoId) => {
+  try {
+    const response = await api.delete(`/cliente/enderecos/${enderecoId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error('Erro ao deletar o endereco do cleinte:', error.response?.data || error.message);
+    return false; // Retornar false em caso de erro
+  }
+};
+
+export const CreateEnderecosCliente = async (enderecoData) => {
+  try {
+    const response = await api.delete('/cliente/enderecos', enderecoData, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error('Erro ao criar o endereco do cliente:', error.response?.data || error.message);
+    return false; // Retornar false em caso de erro
+  }
+};
 
 
 export default api;

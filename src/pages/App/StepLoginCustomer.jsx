@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { loginCliente } from '../../services/api';
+import { getEnderecosCliente, loginCliente } from '../../services/api';
 import { useUser } from '../../context/UserProvider';
 
 export default function StepLoginCustomer() {
@@ -8,21 +8,34 @@ export default function StepLoginCustomer() {
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const { access_token, userId, urls } = await loginCliente(email, senha);
+
+      // Obtendo os endereços do cliente
+      const enderecosCliente = await getEnderecosCliente(userId);
+      if (!enderecosCliente) {
+        setError('Erro ao buscar endereços do cliente');
+        return;
+      }
+
       if (!access_token) {
         setError('Erro ao fazer login');
       } else {
+
         localStorage.setItem('token', access_token);
         localStorage.setItem('userId', userId);
         localStorage.setItem('urls', JSON.stringify(urls));
-        setUser({ userId, urls });
+        localStorage.setItem('enderecosCliente', JSON.stringify(enderecosCliente));
 
+        setUser({ userId, urls, enderecos: enderecosCliente });
+
+        console.log(access_token)
+        console.log(enderecosCliente)
       }
     } catch (err) {
       setError('Erro ao fazer login');
