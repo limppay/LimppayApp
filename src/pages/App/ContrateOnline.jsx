@@ -3,7 +3,7 @@ import {Logo, Footer } from '../../componentes/imports';
 import ServiceSelection from '../../componentes/App/ServiceSelection';
 import CustomCalendar from '../../componentes/App/DatePicker';
 import ProgressBar from '../../componentes/App/ProgressBar';
-import { deleteEnderecosCliente, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
+import { CreateEnderecosCliente, deleteEnderecosCliente, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
 import {Avatar, Spinner, spinner} from "@nextui-org/react";
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
@@ -13,8 +13,135 @@ import StepLoginCustomer from './StepLoginCustomer';
 import { useUser } from '../../context/UserProvider';
 import DeleteIcon from '@mui/icons-material/Delete'
 
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup"
+
+import InputMask from "react-input-mask"
+import axios from 'axios';
+
 
 export default function ContrateOnline() {
+
+    const clienteId = localStorage.getItem('userId')
+
+    const schema = yup.object({
+        clienteId: yup.string().default(clienteId),
+        localServico: yup.string().required("Informe o nome do endereço").trim(),
+        cep: yup.string().required("Cep é obrigatório"),
+        logradouro: yup.string(),
+        numero: yup.string().required("Número é obrigatório").trim(),
+        complemento: yup.string(),
+        referencia: yup.string(),
+        bairro: yup.string(),
+        cidade: yup.string(),
+        estado: yup.string(),
+    })
+
+    const {
+        register,
+        handleSubmit,
+        trigger,
+        formState: { errors },
+        reset,
+        setValue, 
+        getValues,
+        setError, 
+        watch,
+        clearErrors
+        } = useForm({
+        resolver: yupResolver(schema),
+    })
+
+    const onSubmit = async (data) => {
+
+        console.log(data)
+
+        try {
+          const response = await CreateEnderecosCliente(data);
+          console.log("Endereço criado com sucesso!",response);
+
+          setEnderecosCliente((prevEnderecos) => [...prevEnderecos, response])
+
+          setOpenCreateAdress(false)
+
+
+        } catch (error) {
+            console.error(error.message);
+            setMessage(error.message)
+        }
+
+    }
+
+    console.log(errors)
+
+    const estados = {
+        "AC": "Acre",
+        "AL": "Alagoas",
+        "AP": "Amapá",
+        "AM": "Amazonas",
+        "BA": "Bahia",
+        "CE": "Ceará",
+        "DF": "Distrito Federal",
+        "ES": "Espírito Santo",
+        "GO": "Goiás",
+        "MA": "Maranhão",
+        "MT": "Mato Grosso",
+        "MS": "Mato Grosso do Sul",
+        "MG": "Minas Gerais",
+        "PA": "Pará",
+        "PB": "Paraíba",
+        "PR": "Paraná",
+        "PE": "Pernambuco",
+        "PI": "Piauí",
+        "RJ": "Rio de Janeiro",
+        "RN": "Rio Grande do Norte",
+        "RS": "Rio Grande do Sul",
+        "RO": "Rondônia",
+        "RR": "Roraima",
+        "SC": "Santa Catarina",
+        "SP": "São Paulo",
+        "SE": "Sergipe",
+        "TO": "Tocantins"
+    };
+      
+    const handleCepChange = async (e) => {
+        const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
+        setCepError("")
+        
+        if (cep.length === 8) {
+            try {
+
+                const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+
+                if (!response.data.erro) {
+                    setValue("logradouro", response.data.logradouro);
+                    setValue("bairro", response.data.bairro);
+                    setValue("cidade", response.data.localidade);
+            
+                    // Converter a sigla do estado para o nome completo
+                    const nomeEstado = estados[response.data.uf];
+                    setValue("estado", nomeEstado);
+            
+                    setCepError("");
+                } else {
+                    setCepError("CEP não encontrado");
+                }
+
+            } catch (error) {
+                console.error('Erro ao buscar o CEP:', error);
+                alert('Erro ao buscar o CEP.');
+            }
+        }
+    };
+
+    const removerMascara = (valor) => {
+        return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são números
+    };
+
+    const inputRef = useRef(null)
+
+
     const buttons = [
         { link: "#quem-somos", text: "Quem somos" },
         { link: "#duvidas", text: "Dúvidas" },
@@ -29,6 +156,7 @@ export default function ContrateOnline() {
         },
     ];
 
+    const [cepError, setCepError] = useState("")
     const [showCalendar, setShowCalendar] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [numberOfDays, setNumberOfDays] = useState(0); // Número de dias que o usuário selecionou
@@ -37,18 +165,18 @@ export default function ContrateOnline() {
     const [selectedDates, setSelectedDates] = useState([]); // Estado para armazenar a data selecionada
     const [selectedTimes, setSelectedTimes] = useState([]); // Estado para armazenar os horários selecionados
     const [selectedProvider, setSelectedProvider] = useState(null) // Estado para armazenar as informações do prestador selecionado
-    const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState([])
+    const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState(false)
 
     
     const [providers, setProviders] = useState([])
     const [open, setOpen] = useState(false)
+    const [openCreateAdress, setOpenCreateAdress] = useState(false)
     const [enderecosCliente, setEnderecosCliente] = useState([])
     const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])
     const [isLoading, setIsLoading] = useState(false)
 
     const { user } = useUser();
     
-    const clienteId = localStorage.getItem('userId')
 
     const HandleGetEnderecosCliente = async (id) => {
         if (clienteId) {
@@ -116,8 +244,11 @@ export default function ContrateOnline() {
     const handleStepClick = (index) => {
         if (index < currentStep) {
 
+
+
             if ( index < 2 ) {
                 setSelectedProvider(null)
+                setSelectedEnderecoCliente(null)
             }
 
             if ( index < 1 ) {
@@ -142,7 +273,8 @@ export default function ContrateOnline() {
     
             // Atualiza a lista de endereços removendo o endereço excluído
             setEnderecosCliente(prevEnderecos => prevEnderecos.filter(endereco => endereco.id !== enderecoId));
-    
+            setSelectedEnderecoCliente(null)
+            
             console.log(`Endereço ${enderecoId} excluído com sucesso!`);
         } catch (error) {
             console.error("Erro ao excluir o endereço: ", error);
@@ -222,8 +354,8 @@ export default function ContrateOnline() {
 
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
-            <main className="relative p-4 flex items-baseline lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
-                <div className='flex justify-center flex-col items-center text-center lg:w-8/12 md:w-8/12 shadow-lg pt-0 p-4 rounded-md'>
+            <main className="relative p-4 flex lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
+                <div className='flex justify-center flex-col items-center text-center min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-0 p-4 rounded-xl min-h-[60vh]'>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -251,6 +383,307 @@ export default function ContrateOnline() {
                             />
                         
                         </>
+                    )}
+
+                    {currentStep == 2 && (
+                        <>
+                            {user ? (
+                                isLoading ? (
+                                    <Spinner color='primary'/>
+                                ) : (
+                                    enderecoDefaultCliente.length > 0 ? ( 
+                                        <div>
+                                            <div className='grid lg:grid-cols-2
+                                            md:grid-cols-2
+                                            sm:grid-cols-2
+                                            pt-5 gap-10 overflow-auto max-h-[100vh] '>
+                                                <div className={`border border-bord rounded-lg min-h-[46vh] max-h-[46vh] max-w-[46vh] min-w-[46vh] 
+                                                ${selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? 'border-sec ' : 'hover:border-sec border-bord' }
+                                                `}
+                                                
+                                                onClick={() => {
+                                                    setSelectedEnderecoCliente(enderecoDefaultCliente[0])
+                                                    console.log(enderecoDefaultCliente[0].id)
+                                                }}
+                                                
+                                                
+                                                >
+                                                    <div className={`border-b border-bord p-3 ${selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? "border-sec" : "border-bord"}`}>
+                                                        <h1 className={` font-semibold ${selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? "text-sec" : "text-prim"} `}>{selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? "Serviço será feito aqui" : "Selecionar endereço"}</h1>
+                                                    </div>
+                                                    <div className='p-5 text-start flex flex-col text-prim'>
+                                                        <h2 className='text-prim font-semibold pb-2'>Endereço principal</h2>
+                                                        <p>{enderecoDefaultCliente[0]?.logradouro}, {enderecoDefaultCliente[0]?.numero}</p> 
+                                                        <p>{enderecoDefaultCliente[0]?.complemento}</p> 
+                                                        <p>{enderecoDefaultCliente[0]?.bairro}</p> 
+                                                        <p>{enderecoDefaultCliente[0]?.cidade}, {enderecoDefaultCliente[0]?.estado} - {formatarCep(enderecoDefaultCliente[0]?.cep)} </p> 
+                                                    </div>
+                                                </div>
+
+                                                {enderecosCliente.map((endereco) => (
+                                                    <div key={endereco.id} className={`border border-bord rounded-lg min-h-[46vh] max-h-[46vh] max-w-[46vh] min-w-[46vh] 
+                                                    ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec' : 'hover:border-sec border-bord' }
+                                                    `}
+
+                                                    onClick={() => {
+                                                        setSelectedEnderecoCliente(endereco)
+                                                        console.log(endereco.id)
+                                                    }}
+
+
+                                                    >
+                                                        <div className={`border-b border-bord p-3 ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "border-sec" : "border-bord"}`}>
+
+                                                            <h1 className={` font-semibold ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "text-sec" : "text-prim"} `}>{selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "Serviço será feito aqui" : "Selecionar endereço"}</h1>
+                                                        </div>
+                                                        <div className='p-5 text-start flex flex-col text-prim'>
+                                                            <h2 className='text-prim font-semibold pb-2'>{endereco?.localServico}</h2>
+                                                            <p>{endereco?.logradouro}, {endereco?.numero}</p> 
+                                                            <p>{endereco?.complemento}</p> 
+                                                            <p>{endereco?.bairro}</p> 
+                                                            <p>{endereco?.cidade}, {endereco?.estado} - {formatarCep(endereco?.cep)} </p> 
+                                                            <div className='text-start pt-2'>
+                                                                <button
+                                                                onClick={() => (HandleDeleteEndereco(endereco.id))}
+                                                                >
+                                                                    <DeleteIcon style={{ fontSize: 24, color: 'red' }} /> 
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+                                                <div className='p-5 border border-bord border-opacity-50 rounded-md min-h-[46vh] max-h-[46vh] max-w-[46vh] min-w-[46vh] flex items-center justify-center'>
+                                                    <button 
+                                                    className='p-2 bg-des rounded-md text-white text-sm'
+                                                    onClick={() => setOpenCreateAdress(true)}
+                                                    >Cadastrar novo endereço</button>
+                                                </div>
+
+                                                <Dialog open={openCreateAdress} onClose={() => setOpenCreateAdress(false)} className="relative z-10">
+                                                    <DialogBackdrop
+                                                        transition
+                                                        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+                                                    />
+                                                    <div className="fixed inset-0 z-10 p-5  overflow-y-auto bg-prim bg-opacity-50">
+                                                        <div className=" flex min-h-full items-center justify-center text-center sm:items-center ">
+                                                            <DialogPanel
+                                                                transition
+                                                                className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full"
+                                                            >
+                                                                <div className="bg-white pb-4 pt-5 ">
+                                                                    <div className="sm:flex sm:items-start flex-col">
+                                                                        <div className="text-center sm:mt-0 sm:text-left border-b border-bord w-full pb-4">
+                                                                            <DialogTitle as="h3" className="font-semibold text-desSec text-2xl text-center">
+                                                                                Cadastrar novo endereço
+                                                                            </DialogTitle>
+                                                                        </div>
+                                                                        
+                                                                        <form className="pt-0 flex flex-col gap-5 w-full bg-pri " 
+                                                                        onSubmit={handleSubmit(onSubmit)}
+                                                                        >
+                                                                            <div className='overflow-auto h-[65vh] lg:h-[55vh]'>
+                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                                        <label htmlFor="localServico" className="text-prim">Local do serviço</label>
+                                                                                        <input 
+                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                                        id="localServico" 
+                                                                                        type="text" 
+                                                                                        placeholder="nome do endereço" 
+                                                                                        {...register("localServico")}
+                                                                                        />
+                                                                                        {errors.localServico && 
+                                                                                        <span className="text-error opacity-75">{errors.localServico?.message}</span>}
+                                                                                    </div>
+                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                                        <label htmlFor="cep" className="text-prim">CEP</label>
+                                                                                        <InputMask 
+                                                                                        ref={inputRef}
+                                                                                        mask="99999-999"
+                                                                                        maskChar={null}
+                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                                        id="cep" 
+                                                                                        type="text" 
+                                                                                        placeholder="Somente números" 
+                                                                                        {...register("cep")}
+                                                                                        onChange={handleCepChange}
+                                                                                        />
+                                                                                        {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
+                                                                                    </div>
+                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                                        <label htmlFor="logradouro" className="text-prim">Logradouro</label>
+                                                                                        <input 
+                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                                        id="logradouro" 
+                                                                                        type="text" 
+                                                                                        placeholder="" 
+                                                                                        {...register("logradouro")}
+                                                                                        readOnly
+                                                                                        />
+                                                                                        {errors.logradouro && 
+                                                                                        <span className="text-error opacity-75">{errors.logradouro?.message}</span>}
+                                                                                    </div>
+                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                                        <label htmlFor="numero" className="text-prim">Número</label>
+                                                                                        <input 
+                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                                        id="numero" 
+                                                                                        type="text" 
+                                                                                        placeholder="" 
+                                                                                        {...register("numero")}
+                                                                                        />
+                                                                                        {errors.numero && 
+                                                                                        <span className="text-error opacity-75">{errors.numero?.message}</span>}
+                                                                                    </div>
+                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                                        <label htmlFor="complemento" className="text-prim">Complemento</label>
+                                                                                        <input 
+                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                                        id="complemento" 
+                                                                                        type="text" 
+                                                                                        placeholder="Casa, apt, bloco, etc"
+                                                                                        maxLength="100" 
+                                                                                        {...register("complemento")}
+                                                                                        />
+                                                                                        {errors.complemento && 
+                                                                                        <span className="text-error opacity-75">{errors.complemento?.message}</span>}
+                                                                                    </div>
+                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                                        <label htmlFor="pontoRef" className="text-prim">Ponto de Referência</label>
+                                                                                        <input 
+                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                                        id="pontoRef" 
+                                                                                        type="text" 
+                                                                                        placeholder="" 
+                                                                                        maxLength="150"
+                                                                                        {...register("referencia")}
+                                                                                        />
+                                                                                        {errors.pontoRef && 
+                                                                                        <span className="text-error opacity-75">{errors.referencia?.message}</span>}
+                                                                                    </div>
+                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                                        <label htmlFor="bairro" className="text-prim">Bairro</label>
+                                                                                        <input 
+                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                                        id="bairro" 
+                                                                                        type="text" 
+                                                                                        placeholder="" 
+                                                                                        {...register("bairro")}
+                                                                                        readOnly
+                                                                                        />
+                                                                                        {errors.bairro && 
+                                                                                        <span className="text-error opacity-75">{errors.bairro?.message}</span>}
+                                                                                    </div>
+
+                                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                                    <label htmlFor="cidade" className="text-prim">Cidade</label>
+                                                                                    <input 
+                                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                                    id="cidade" 
+                                                                                    type="text" 
+                                                                                    placeholder="" 
+                                                                                    {...register("cidade")}
+                                                                                    readOnly
+                                                                                    />
+                                                                                    {errors.cidade && 
+                                                                                    <span className="text-error opacity-75">{errors.cidade?.message}</span>}
+                                                                                </div>
+
+                                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                                    <label htmlFor="estado" className="text-prim">Estado</label>
+                                                                                    <input 
+                                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                                    id="estado" 
+                                                                                    type="text" 
+                                                                                    placeholder=""
+                                                                                    {...register("estado")}
+                                                                                    readOnly
+                                                                                    />
+                                                                                    {errors.estado && 
+                                                                                    <span className="text-error opacity-75">{errors.estado?.message}</span>}
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className=" px-4 py-3 sm:flex sm:px-6 flex justify-end gap-3 ">
+                                                                                <button
+                                                                                    data-autofocus
+                                                                                    onClick={() => setOpenCreateAdress(false)}
+                                                                                    className="inline-flex  justify-center rounded-md bg-white p-2 text-sm text-prim shadow-sm border sm:mt-0 sm:w-auto border-bord "
+                                                                                >
+                                                                                    Fechar
+                                                                                </button>
+                                                                                <button
+                                                                                    type="submit"
+                                                                                    data-autofocus
+                                                                                    className="p-2 rounded-md 
+                                                                                    text-center
+                                                                                    text-white 
+                                                                                    bg-des         
+                                                                                    hover:text-white transition-all
+                                                                                    duration-200
+                                                                                    hover:bg-sec hover:bg-opacity-75
+                                                                                    hover:border-trans
+                                                                                    flex 
+                                                                                    items-center
+                                                                                    justify-center
+                                                                                    text-sm
+                                                                                    gap-2"
+
+                                                                                    
+                                                                                >
+                                                                                    Cadastrar
+                                                                                </button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </DialogPanel>
+                                                        </div>
+                                                    </div>
+                                                </Dialog>
+                                            </div>
+                                            {selectedEnderecoCliente && (
+                                                <div className='flex justify-center pt-5 border-b border-bord'>
+                                                    <button
+                                                        type="button"
+                                                        data-autofocus
+                                                        className="p-2 rounded-md 
+                                                        text-center
+                                                        text-white 
+                                                        bg-des         
+                                                        hover:text-white transition-all
+                                                        duration-200
+                                                        hover:bg-sec hover:bg-opacity-75
+                                                        hover:border-trans
+                                                        flex 
+                                                        items-center
+                                                        justify-center
+                                                        text-sm
+                                                        gap-2
+                                                        w-full
+                                                        "
+                                                        onClick={handleProceed}
+                                                    >
+                                                        Selecionar e prosseguir
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                    ) : (
+                                        <>
+                                            <h1>Não foi possivel carregar os endereços, tente novamente.</h1>
+                                        </>
+                                    )
+
+                
+                                    
+                                )
+                            ) : (
+                                <StepLoginCustomer />
+                            )}
+                            
+                        </>                 
                     )}
 
                     {currentStep == 3 && (
@@ -484,93 +917,11 @@ export default function ContrateOnline() {
                             </div>
                         </>
                     )}
-
-                    {currentStep == 2 && (
-                        <>
-                            {user ? (
-                                isLoading ? (
-                                    <Spinner color='primary'/>
-                                ) : (
-                                    enderecoDefaultCliente.length > 0 ? ( 
-                                        <div className='grid lg:grid-cols-2
-                                        md:grid-cols-2
-                                        sm:grid-cols-2
-                                        items-center justify-center pt-5  gap-10'>
-                                            <div className={`border border-bord rounded-lg min-h-[32vh] max-h-[32vh] max-w-[30vh] min-w-[30vh] 
-                                            ${selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? 'border-sec' : 'hover:border-sec border-bord' }
-                                            `}
-                                            
-                                            onClick={() => {
-                                                setSelectedEnderecoCliente(enderecoDefaultCliente[0])
-                                                console.log(enderecoDefaultCliente[0].id)
-                                            }}
-                                            
-                                            
-                                            >
-                                                <div className='border-b border-bord p-3'>
-                                                    <h1>Selecionar endereço</h1>
-                                                </div>
-                                                <div className='p-5 text-start flex flex-col '>
-                                                    <h2 className='text-prim font-semibold pb-2'>Endereço principal</h2>
-                                                    <p>{enderecoDefaultCliente[0]?.logradouro}, {enderecoDefaultCliente[0]?.numero}</p> 
-                                                    <p>{enderecoDefaultCliente[0]?.complemento}</p> 
-                                                    <p>{enderecoDefaultCliente[0]?.bairro}</p> 
-                                                    <p>{enderecoDefaultCliente[0]?.cidade}, {enderecoDefaultCliente[0]?.estado} - {formatarCep(enderecoDefaultCliente[0]?.cep)} </p> 
-                                                </div>
-                                            </div>
-
-                                            {enderecosCliente.map((endereco) => (
-                                                <div key={endereco.id} className={`border border-bord rounded-lg min-h-[32vh] max-h-[32vh] max-w-[30vh] min-w-[30vh] 
-                                                ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec' : 'hover:border-sec border-bord' }
-                                                `}
-
-                                                onClick={() => {
-                                                    setSelectedEnderecoCliente(endereco)
-                                                    console.log(endereco.id)
-                                                }}
-
-
-                                                >
-                                                    <div className='border-b border-bord p-3'>
-                                                        <h1>Selecionar endereço</h1>
-                                                    </div>
-                                                    <div className='p-5 text-start flex flex-col '>
-                                                        <h2 className='text-prim font-semibold pb-2'>Local de serviço</h2>
-                                                        <p>{endereco?.logradouro}, {endereco?.numero}</p> 
-                                                        <p>{endereco?.complemento}</p> 
-                                                        <p>{endereco?.bairro}</p> 
-                                                        <p>{endereco?.cidade}, {endereco?.estado} - {formatarCep(endereco?.cep)} </p> 
-                                                        <div className='text-start pt-2'>
-                                                            <button
-                                                            onClick={() => (HandleDeleteEndereco(endereco.id))}
-                                                            >
-                                                                <DeleteIcon style={{ fontSize: 24, color: 'red' }} /> 
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-
-                                            <div className='p-5 border border-bord rounded-md min-h-[32vh] max-h-[32vh] flex items-center justify-center'>
-                                                <button className='p-2 bg-des rounded-md text-white'>Cadastrar novo endereço</button>
-                                            </div>
-
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <h1>Não foi possivel carregar os endereços, tente novamente.</h1>
-                                        </>
-                                    )
-                                )
-                            ) : (
-                                <StepLoginCustomer />
-                            )}
-                        </>                 
-                    )}
+                    
                 </div>
                 {/* Cartão azul - Visível somente em telas grandes (desktop) */}
-                    <div className="hidden lg:block pt-42 w-4/12">
-                        <div className="bg-desSec text-white shadow-md rounded-lg p-12 flex flex-col items-center gap-10">
+                    <div className="hidden lg:block pt-[3vh] w-4/12">
+                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg p-12 flex flex-col items-center gap-10">
                             <h3 className="text-xl font-bold flex flex-wrap">Olá, agende um serviço conosco é fácil e rápido!</h3>
                             <img
                             src={Banner}

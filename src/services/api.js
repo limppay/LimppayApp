@@ -218,7 +218,7 @@ export const deleteEnderecosCliente = async (enderecoId) => {
 
 export const CreateEnderecosCliente = async (enderecoData) => {
   try {
-    const response = await api.delete('/cliente/enderecos', enderecoData, {
+    const response = await api.post('/cliente/enderecos', enderecoData, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
       },

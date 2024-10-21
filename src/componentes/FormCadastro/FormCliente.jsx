@@ -15,8 +15,6 @@ import { Logo } from "../imports.jsx"
 
 import User from "../../assets/img/diarista-cadastro/user.png"
 
-
-
 export default function FormCliente() {
     const navigate = useNavigate();
     // schema de validações do form
@@ -272,9 +270,9 @@ export default function FormCliente() {
             ...prevFileNames,
           [name]: file ? file.name : "Arquivo não selecionado",
         }));
-      };
+    };
       
-      const estados = {
+    const estados = {
         "AC": "Acre",
         "AL": "Alagoas",
         "AP": "Amapá",
@@ -302,36 +300,36 @@ export default function FormCliente() {
         "SP": "São Paulo",
         "SE": "Sergipe",
         "TO": "Tocantins"
-      };
+    };
       
     const handleCepChange = async (e) => {
-    const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
-    setCepError("")
-    
-    if (cep.length === 8) {
-        try {
-        setLoading(true);
-        const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-        if (!response.data.erro) {
-            setValue("logradouro", response.data.logradouro);
-            setValue("bairro", response.data.bairro);
-            setValue("cidade", response.data.localidade);
-    
-            // Converter a sigla do estado para o nome completo
-            const nomeEstado = estados[response.data.uf];
-            setValue("estado", nomeEstado);
-    
-            setCepError("");
-        } else {
-            setCepError("CEP não encontrado");
+        const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
+        setCepError("")
+        
+        if (cep.length === 8) {
+            try {
+            setLoading(true);
+            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+            if (!response.data.erro) {
+                setValue("logradouro", response.data.logradouro);
+                setValue("bairro", response.data.bairro);
+                setValue("cidade", response.data.localidade);
+        
+                // Converter a sigla do estado para o nome completo
+                const nomeEstado = estados[response.data.uf];
+                setValue("estado", nomeEstado);
+        
+                setCepError("");
+            } else {
+                setCepError("CEP não encontrado");
+            }
+            } catch (error) {
+            console.error('Erro ao buscar o CEP:', error);
+            alert('Erro ao buscar o CEP.');
+            } finally {
+            setLoading(false);
+            }
         }
-        } catch (error) {
-        console.error('Erro ao buscar o CEP:', error);
-        alert('Erro ao buscar o CEP.');
-        } finally {
-        setLoading(false);
-        }
-    }
     };
 
     const removerMascara = (valor) => {

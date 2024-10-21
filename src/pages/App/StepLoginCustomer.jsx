@@ -46,14 +46,14 @@ export default function StepLoginCustomer() {
   };
 
   return (
-    <div className='flex flex-col p-10 w-full lg:w-5/12 bg-center bg-cover'>
-      <main className='flex flex-col gap-10 lg:shadow-none rounded-md p-5 bg-white'>
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+    <div className='flex flex-col w-full bg-center bg-cover'>
+      <main className='flex flex-col gap-10 lg:shadow-none rounded-md p-5 bg-white justify-center items-center'>
+        <div className="w-full flex flex-col">
           <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 text-desSec">
             Faça login para continuar
           </h2>
         </div>
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="w-full lg:w-1/2">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-ter">Email</label>
