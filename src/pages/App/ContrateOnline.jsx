@@ -412,7 +412,7 @@ export default function ContrateOnline() {
                                 isLoading ? (
                                     <Spinner color='primary'/>
                                 ) : (
-                                    enderecoDefaultCliente.length > 0 ? ( 
+                                    enderecoDefaultCliente ? ( 
                                         <div>
                                             <div className='grid lg:grid-cols-2
                                             md:grid-cols-2
