@@ -3,7 +3,7 @@ import {Logo, Footer } from '../../componentes/imports';
 import ServiceSelection from '../../componentes/App/ServiceSelection';
 import CustomCalendar from '../../componentes/App/DatePicker';
 import ProgressBar from '../../componentes/App/ProgressBar';
-import { CreateEnderecosCliente, deleteEnderecosCliente, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
+import { createAgendamento, CreateEnderecosCliente, deleteEnderecosCliente, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
 import {Avatar, Spinner, spinner} from "@nextui-org/react";
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
@@ -344,6 +344,36 @@ export default function ContrateOnline() {
     const formatarCep = (cep) => {
         return cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2");
     };
+
+    const HandleCreateAgendamento = async () => {
+   
+        const data = {
+            userId: selectedProvider.id,
+            clienteId: clienteId,
+            dataServico: new Date(selectedDates[0]).toISOString(),
+            Servico: selectedService,
+            horaServico: "08:30", // ainda falta ajustar o metodo de como pegamos os horariso
+            valorServico: 150.00, // falta ajustar para pegar o valor do serviço
+            observacao: "Limpeza geral" //ajustar para pegar a observação do cliente
+        };
+
+        console.log(data)
+
+        try {
+
+            const response = await createAgendamento(data)
+            console.log("Agendamento criado com sucesso!", response);
+            
+        } catch (error) {
+            console.error(error.message)
+            
+        }
+    }
+
+
+
+
+
     
     return (
         <>
@@ -967,7 +997,10 @@ export default function ContrateOnline() {
                                     text-sm
                                     gap-2
                                     w-full
-                                    ">
+                                    "
+                                    onClick={() => HandleCreateAgendamento()}
+
+                                    >
                                         Conferir e solicitar serviço
                                     </button>
                                 </div>

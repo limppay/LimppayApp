@@ -230,7 +230,17 @@ export const CreateEnderecosCliente = async (enderecoData) => {
   }
 };
 
+export const createAgendamento = async (agendamentoData) => {
+  try {
+    const response = await api.post('/agendamentos', agendamentoData)
+    
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
 
+    throw new Error(errorMessage)
+  }
+};
 
 
 export default api;
