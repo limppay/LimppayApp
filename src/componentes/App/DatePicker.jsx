@@ -178,36 +178,33 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
 
     // Preencher dias do mês atual
     for (let i = 1; i <= daysInMonth; i++) {
-      const dateToCheck = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
-      const isSelected = selectedDates.some(date => date.toDateString() === dateToCheck.toDateString());
-      const isDisabled = dateToCheck < today;
+  const dateToCheck = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+  const isSelected = selectedDates.some(date => date.toDateString() === dateToCheck.toDateString());
+  const isDisabled = dateToCheck < today;
 
-      days.push(
-        <div
-          key={i}
-          onClick={() => {
-            if (!isDisabled) {
-              // Se a data já estiver selecionada, remove-a
-              if (isSelected) {
-                setSelectedDates(prev => prev.filter(date => date.toDateString() !== dateToCheck.toDateString()));
-              } else {
-                // Adiciona a data somente se o número máximo de seleções não for atingido
-                if (selectedDates.length < maxSelection) {
-                  setSelectedDates(prev => [...prev, dateToCheck]);
-                }else{
-                  alert(`Você ultrapassou os limites de dias definidos: ${maxSelection}`)
-                }
-              }
-            }
-          }}
-          className={`m-[0.1rem] day text-center p-2 border rounded-md border-trans transition-all duration-300 transform 
-            ${isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-105 hover:border-des'}
-            ${isSelected ? 'bg-des text-white scale-100' : 'scale-95'}`}
-        >
-          {i}
-        </div>
-      );
-    }
+  days.push(
+    <div
+      key={i}
+      onClick={() => {
+        if (!isDisabled) {
+          // Se a data já estiver selecionada, remove-a
+          if (isSelected) {
+            setSelectedDates(prev => prev.filter(date => date.toDateString() !== dateToCheck.toDateString()));
+          } else {
+            // Adiciona a data sem limite de seleção
+            setSelectedDates(prev => [...prev, dateToCheck]);
+          }
+        }
+      }}
+      className={`m-[0.1rem] day text-center p-2 border rounded-md border-trans transition-all duration-300 transform 
+        ${isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-105 hover:border-des'}
+        ${isSelected ? 'bg-des text-white scale-100' : 'scale-95'}`}
+    >
+      {i}
+    </div>
+  );
+}
+
 
     // Preencher dias do próximo mês
     const remainingDays = 42 - days.length;
@@ -379,15 +376,16 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
           </>
         )}
       </motion.div>
-        <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-4">
         <button
-          className={`bg-des text-white p-2 rounded-md ${isConfirmEnabled ? '' : 'opacity-50 cursor-not-allowed'}`}
-          disabled={!isConfirmEnabled}
-          onClick={(onConfirmSelection) => setShowTimePicker(true)} // Abre o pop-up
-          >
-            Confirmar Seleção
-          </button>
+          className={`bg-des text-white p-2 rounded-md ${selectedDates.length ? '' : 'opacity-50 cursor-not-allowed'}`}
+          disabled={!selectedDates.length}
+          onClick={() => setShowTimePicker(true)} // Abre o pop-up
+        >
+          Confirmar Seleção
+        </button>
       </div>
+      
     {/* Renderização do Pop-Up */}
     {showTimePicker && (
       <TimePickerPopup
