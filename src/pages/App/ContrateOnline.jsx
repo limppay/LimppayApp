@@ -1010,7 +1010,57 @@ export default function ContrateOnline() {
                     
                 </div>
                 {/* Cartão azul - Visível somente em telas grandes (desktop) */}
+                {currentStep > 0 &&(
                     <div className="hidden lg:block pt-[3vh] w-4/12">
+                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg p-12 flex flex-col items-center gap-10">
+                            <h3 className="text-xl front-bold flex flex flex-wrap">Resumo da sua seleção</h3>
+
+                            {/* Exibe o serviço selecionado */}
+                            {selectedService?(
+                                <div className='w-full text-center'>
+                                    <p className='text-lg front-semibold'>Serviço Selecionado:</p>
+                                    <p className='text-base'>{selectedService}</p>
+                                </div>
+                            ):(
+                                <p className='text-base'>Nenhum serviço selecionado.</p>
+                            )}
+
+                            {/*Exibe as datas e horários selecionados */}
+                            {selectedDates.length > 0?(
+                                <div className='w-full text-center'>
+                                    <p className='text-lg font-semibold'> Data(s) e Horário(s) Selecionado(s):</p>
+                                    <ul>
+                                        {selectedDates.map((date, index)=>(
+                                            <li key={index}>
+                                                {/* Formata a data */}
+                                                <span>{new Date(date).toLocaleDateString()}</span>
+                                                {/*Exibe o horário correspondente à data */}
+                                                {selectedTimes[index] &&(
+                                                    <span> - {selectedTimes[index]}</span>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ):(
+                                <p className='text-base'> Nenhuma data e horário selecionados.</p>
+                            )}
+
+                            {/* Exibe o prestador selecionado*/}
+                            {selectedProvider?(
+                                <div className='w-full text-center'>
+                                    <p className='text-lg font-semibold'> Prestador Selecionado:</p>
+                                    <p className='text-base'>{selectedProvider.name}</p>
+                                    {/*Mostra o avatar do prestador */}
+                                    <Avatar src={selectedProvider.avatar?.avatarUrl} size="lg"/>
+                                </div>
+                            ):(
+                                <p className='text-base'>Nenhum prestador selecionado.</p>
+                            )}
+                             </div>
+                         </div> 
+                    )}
+                    {currentStep == 0 &&(<div className="hidden lg:block pt-[3vh] w-4/12">
                         <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg p-12 flex flex-col items-center gap-10">
                             <h3 className="text-xl font-bold flex flex-wrap">Olá, agende um serviço conosco é fácil e rápido!</h3>
                             <img
@@ -1029,8 +1079,10 @@ export default function ContrateOnline() {
                                     <i className="fas fa-tasks mr-2"></i> Em sequência, escolha as etapas.
                                 </li>
                             </ul>
-                        </div>
-                    </div>
+                            </div>
+                            </div>
+                        )}
+                      
             </main>
 
             <Footer/>
