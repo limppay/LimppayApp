@@ -166,6 +166,7 @@ export default function ContrateOnline() {
     const [selectedTimes, setSelectedTimes] = useState([]); // Estado para armazenar os horários selecionados
     const [selectedProvider, setSelectedProvider] = useState(null) // Estado para armazenar as informações do prestador selecionado
     const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState(false)
+    const [observacao, setObservacao ] = useState('')
 
     
     const [providers, setProviders] = useState([])
@@ -346,28 +347,33 @@ export default function ContrateOnline() {
     };
 
     const HandleCreateAgendamento = async () => {
-   
+
+        const FormDate = new Date(selectedDates[0]).toDateString(); // Converte a data para o formato legivel
+        const times = selectedTimes[FormDate]; // Acessa o valor correspondente no objeto
+        console.log(times)
+        console.log(observacao)
+    
         const data = {
             userId: selectedProvider.id,
             clienteId: clienteId,
-            dataServico: new Date(selectedDates[0]).toISOString(),
+            dataServico: new Date(selectedDates[0]).toDateString(),
             Servico: selectedService,
-            horaServico: "08:30", // ainda falta ajustar o metodo de como pegamos os horariso
+            horaServico: times,
             valorServico: 150.00, // falta ajustar para pegar o valor do serviço
-            observacao: "Limpeza geral" //ajustar para pegar a observação do cliente
+            observacao: observacao //ajustar para pegar a observação do cliente
         };
 
         console.log(data)
 
-        try {
+        // try {
 
-            const response = await createAgendamento(data)
-            console.log("Agendamento criado com sucesso!", response);
+        //     const response = await createAgendamento(data)
+        //     console.log("Agendamento criado com sucesso!", response);
             
-        } catch (error) {
-            console.error(error.message)
+        // } catch (error) {
+        //     console.error(error.message)
             
-        }
+        // }
     }
 
     return (
@@ -948,6 +954,8 @@ export default function ContrateOnline() {
                                     placeholder="Se necessário, deixe-nos uma observação"
                                     className="border rounded-md border-bord p-3 min-h-20 lg:min-h-50 focus:outline-ter text-prim w-full max-h-1"
                                     rows="3"
+                                    value={observacao}  // Valor vinculado ao estado
+                                    onChange={(e) => setObservacao(e.target.value)}  // Atualiza o estado quando o valor mudar
                                     ></textarea>
                                 </div>
                                 <div className='w-full flex flex-col gap-3'>
@@ -993,6 +1001,7 @@ export default function ContrateOnline() {
                                     gap-2
                                     w-full
                                     "
+                                    onClick={HandleCreateAgendamento}
 
                                     >
                                         Conferir e solicitar serviço

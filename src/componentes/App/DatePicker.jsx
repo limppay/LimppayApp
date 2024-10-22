@@ -37,9 +37,9 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     const [isConfirmEnabled, setIsConfirmEnabled] = useState(false);
     const [selectedTimes, setSelectedTime] = useState('');
   
-    const handleTimeChange = (date, time) => {
+    const handleTimeChange = (time) => {
       setTimes(prev => {
-          const updateTimes = { ...prev, [date]: time }; // Atualiza o horário para a data específica
+          const updateTimes = { ...prev, time }; // Atualiza o horário para a data específica
       
           // Verifica se todos os horários foram preenchidos
           const allTimesFilled = selectedDates.every(date => updateTimes[date.toDateString()]);
