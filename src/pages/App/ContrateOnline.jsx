@@ -1085,7 +1085,7 @@ export default function ContrateOnline() {
                              </div>
                          </div> 
                     )}
-                    {currentStep == 0 &&(<div className="hidden lg:block pt-[3vh] w-4/12">
+                    {currentStep == 0 &&(<div className="hidden lg:block pt-[9vh] w-4/12">
                         <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg p-12 flex flex-col items-center gap-10">
                             <h3 className="text-xl font-bold flex flex-wrap">Olá, agende um serviço conosco é fácil e rápido!</h3>
                             <img

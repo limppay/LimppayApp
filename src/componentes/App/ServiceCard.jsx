@@ -12,9 +12,8 @@ const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, day
 
   const handleProceed = (e) => {
     e.stopPropagation(); // Evitar que o clique feche o bloco
-    if (days > 0) {
       onProceed(); // Chamar a função de prosseguir passada como prop
-    }
+    
   };
 
   return (
@@ -34,42 +33,28 @@ const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, day
       </p>
 
       <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }} // Iniciar com opacidade 0 e altura 0
-            animate={{ opacity: 1, height: 'auto' }} // Aumentar opacidade e altura ao expandir
-            exit={{ opacity: 0, height: 0 }} // Reduzir opacidade e altura ao fechar
-            transition={{ duration: 0.2 }} // Duração da animação
-            className="mt-4 overflow-hidden"
-          >
-            <p className="text-lg font-semibold text-white text-start">Valor R$ {value},00</p>
-            <div className="flex items-center mt-2 justify-between border border-white p-2 rounded-md">
-              <span className="text-white">Número de dias</span>
-              <div className="bg-white text-prim flex items-center justify-between rounded-lg px-4 py-2">
-                <button 
-                  className="text-des mr-4 focus:outline-none"
-                  onClick={(e) => { e.stopPropagation(); decrementDays(); }} // Prevenir propagação do clique
-                >-</button>
-                <span className="mx-2">{days}</span>
-                <button 
-                  className="text-des ml-4 focus:outline-none"
-                  onClick={(e) => { e.stopPropagation(); incrementDays(); }} // Prevenir propagação do clique
-                >+</button>
-              </div>
-            </div>
+      {isExpanded && (
+      <motion.div
+        initial={{ opacity: 0, height: 0 }} // Iniciar com opacidade 0 e altura 0
+        animate={{ opacity: 1, height: 'auto' }} // Aumentar opacidade e altura ao expandir
+        exit={{ opacity: 0, height: 0 }} // Reduzir opacidade e altura ao fechar
+        transition={{ duration: 0.2 }} // Duração da animação
+        className="mt-4 overflow-hidden"
+      >
+        <p className="text-lg font-semibold text-white text-start">Valor R$ {value},00</p>
 
-            {/* Botão Prosseguir */}
-            <div className='flex justify-end'>
-              <button 
-                className={`mt-4 bg-des text-white py-2 px-5 rounded-lg hover:bg-sec transition-opacity duration-200 ${days === 0 ? 'opacity-50 cursor-not-allowed' : ''}`} 
-                onClick={handleProceed} // Aciona ao clicar em "Prosseguir"
-                disabled={days === 0} // Desativa o botão quando days é 0
-              >
-                Prosseguir
-              </button>
-            </div>
-          </motion.div>
-        )}
+        {/* Botão Prosseguir */}
+        <div className='flex justify-end'>
+          <button 
+            className="mt-4 bg-des text-white py-2 px-5 rounded-lg hover:bg-sec transition-opacity duration-200" 
+            onClick={handleProceed} // Aciona ao clicar em "Prosseguir"
+          >
+            Prosseguir
+          </button>
+        </div>
+      </motion.div>
+    )}
+
       </AnimatePresence>
     </div>
   );
