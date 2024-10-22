@@ -281,7 +281,6 @@ export default function ContrateOnline() {
         }
     };
     
-    
     //função que recebe as informações de data e serviço, para retorna os prestadores disponveis 
     const handleConfirmSelection = async () => {
         console.log('Datas selecionadas:', selectedDates);
@@ -346,16 +345,13 @@ export default function ContrateOnline() {
         return cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2");
     };
     
-
-
-
     return (
         <>
 
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
             <main className="relative p-4 flex lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
-                <div className='flex justify-center flex-col items-center text-center min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-0 p-4 rounded-xl min-h-[60vh]'>
+                <div className='flex  flex-col items-center text-center min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-0 p-4 rounded-xl min-h-[60vh]'>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -914,6 +910,67 @@ export default function ContrateOnline() {
                                         </div>
                                     </div>
                                 )}
+                            </div>
+                        </>
+                    )}
+
+                    {currentStep == 4 && (
+                        <>
+                            <div className='w-full flex flex-col gap-5 p-10 pl-20 pr-20 pt-5 shadow-md rounded-md pb-0'>
+                                <div className='w-full flex flex-col gap-3'>
+                                    <h2 className='text-desSec font-semibold text-xl'>Observação</h2>
+                                    <textarea
+                                    placeholder="Se necessário, deixe-nos uma observação"
+                                    className="border rounded-md border-bord p-3 min-h-20 lg:min-h-50 focus:outline-ter text-prim w-full max-h-1"
+                                    rows="3"
+                                    ></textarea>
+                                </div>
+                                <div className='w-full flex flex-col gap-3'>
+                                    <h2 className='text-desSec font-semibold text-xl'>Cupom de desconto</h2>
+                                    <div className='flex gap-5'>
+                                        <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' />
+                                        <button 
+                                        className="p-2 rounded-md 
+                                        text-center
+                                        text-white 
+                                        bg-des         
+                                        hover:text-white transition-all
+                                        duration-200
+                                        hover:bg-sec hover:bg-opacity-75
+                                        hover:border-trans
+                                        flex 
+                                        items-center
+                                        justify-center
+                                        text-sm
+                                        gap-2
+                                        w-4/12
+                                        "
+                                        >
+                                            Utilizar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className='w-full flex flex-col gap-5 pt-5 pb-5'>
+                                    <button 
+                                    className="
+                                    p-5 rounded-md 
+                                    text-center
+                                    text-white 
+                                    bg-sec         
+                                    hover:text-white transition-all
+                                    duration-200
+                                    hover:bg-sec hover:bg-opacity-75
+                                    hover:border-trans
+                                    flex 
+                                    items-center
+                                    justify-center
+                                    text-sm
+                                    gap-2
+                                    w-full
+                                    ">
+                                        Conferir e solicitar serviço
+                                    </button>
+                                </div>
                             </div>
                         </>
                     )}
