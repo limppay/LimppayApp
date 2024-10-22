@@ -370,11 +370,6 @@ export default function ContrateOnline() {
         }
     }
 
-
-
-
-
-    
     return (
         <>
 
@@ -998,7 +993,6 @@ export default function ContrateOnline() {
                                     gap-2
                                     w-full
                                     "
-                                    onClick={() => HandleCreateAgendamento()}
 
                                     >
                                         Conferir e solicitar serviço
@@ -1011,52 +1005,74 @@ export default function ContrateOnline() {
                 </div>
                 {/* Cartão azul - Visível somente em telas grandes (desktop) */}
                 {currentStep > 0 &&(
-                    <div className="hidden lg:block pt-[3vh] w-4/12">
-                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg p-12 flex flex-col items-center gap-10">
-                            <h3 className="text-xl front-bold flex flex flex-wrap">Resumo da sua seleção</h3>
+                    <div className="hidden lg:block pt-[4vh] w-5/12 ">
+                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pb-10  flex flex-col items-center gap-7">
+                            <div className='w-full flex justify-between items-center border-b p-12 pb-2 pt-16 pl-7 pr-7'>
+                                <h3 className="text-xl flex flex-wrap ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 font-semibold">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
 
-                            {/* Exibe o serviço selecionado */}
-                            {selectedService?(
-                                <div className='w-full text-center'>
-                                    <p className='text-lg front-semibold'>Serviço Selecionado:</p>
-                                    <p className='text-base'>{selectedService}</p>
-                                </div>
-                            ):(
-                                <p className='text-base'>Nenhum serviço selecionado.</p>
-                            )}
+                                    Resumo
+                                    
+                                </h3>
+                                <p className='text-lg ' >R$ 0,00</p>
 
-                            {/*Exibe as datas e horários selecionados */}
-                            {selectedDates.length > 0?(
-                                <div className='w-full text-center'>
-                                    <p className='text-lg font-semibold'> Data(s) e Horário(s) Selecionado(s):</p>
-                                    <ul>
-                                        {selectedDates.map((date, index)=>(
-                                            <li key={index}>
-                                                {/* Formata a data */}
-                                                <span>{new Date(date).toLocaleDateString()}</span>
-                                                {/*Exibe o horário correspondente à data */}
-                                                {selectedTimes[index] &&(
-                                                    <span> - {selectedTimes[index]}</span>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ):(
-                                <p className='text-base'> Nenhuma data e horário selecionados.</p>
-                            )}
+                            </div>
+                            <div className='flex flex-col gap-7 w-full pl-7 pr-7'>
+                                {selectedService?(
+                                    <div className='w-full flex flex-col  gap-2 justify-between'>
+                                        <p className='text-lg font-semibold'>Serviço selecionado:</p>
+                                        <p className='text-base'>{selectedService}</p>
+                                    </div>
+                                ):(
+                                    <div className='w-full flex flex-col  gap-2'>
+                                        <p className='text-lg font-semibold'>Serviço selecionado:</p>
+                                        <p className='text-base'>Nenhum serviço selecionado.</p>
+                                    </div>
+                                )}
 
-                            {/* Exibe o prestador selecionado*/}
-                            {selectedProvider?(
-                                <div className='w-full text-center'>
-                                    <p className='text-lg font-semibold'> Prestador Selecionado:</p>
-                                    <p className='text-base'>{selectedProvider.name}</p>
-                                    {/*Mostra o avatar do prestador */}
-                                    <Avatar src={selectedProvider.avatar?.avatarUrl} size="lg"/>
-                                </div>
-                            ):(
-                                <p className='text-base'>Nenhum prestador selecionado.</p>
-                            )}
+                                {/*Exibe as datas e horários selecionados */}
+                                {selectedDates.length > 0?(
+                                    <div className='w-full flex flex-col  gap-2 justify-between'>
+                                        <p className='text-md font-semibold'> Data(s) selecionado(s):</p>
+                                        <ul>
+                                            {selectedDates.map((date, index)=>(
+                                                <li key={index}>
+                                                    {/* Formata a data */}
+                                                    <span>{new Date(date).toLocaleDateString()}</span>
+                                                    {/*Exibe o horário correspondente à data */}
+                                                    {selectedTimes[index] &&(
+                                                        <span> - {selectedTimes[index]}</span>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ):(
+                                    <div className='w-full flex flex-col  gap-2'>
+                                        <p className='text-lg font-semibold'>Data(s) selecionada(o):</p>
+                                        <p className='text-base'>Nenhuma data selecionada</p>
+                                    </div>
+                                )}
+
+                                {/* Exibe o prestador selecionado*/}
+                                {selectedProvider?(
+                                    <div className='w-full flex flex-col  gap-2'>
+                                        <p className='text-md font-semibold'> Prestador selecionado:</p>
+                                        <div className='flex w-full items-center gap-2'>
+                                            <Avatar src={selectedProvider.avatar?.avatarUrl} size="md"/>
+                                            <p className='text-base'>{selectedProvider.name}</p>
+                                            {/*Mostra o avatar do prestador */}
+                                        </div>
+                                    </div>
+                                ):(
+                                    <div className='w-full flex flex-col  gap-2'>
+                                        <p className='text-lg font-semibold'>Prestador selecionado</p>
+                                        <p className='text-base'>Nenhum prestador selecionado.</p>
+                                    </div>
+                                )}
+                            </div>
                              </div>
                          </div> 
                     )}
