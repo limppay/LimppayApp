@@ -14,11 +14,17 @@ export default function Checkout() {
     if (location.pathname === '/contrate-online') {
       setAgendamentoData(null); // Limpa os dados se a rota for "contrate-online"
     }
-  }, [location.pathname, setAgendamentoData]);
+
+    if (!agendamentoData) {
+      return navigate('/contrate-online');
+    }
+
+  }, [location.pathname, setAgendamentoData, agendamentoData, navigate]);
 
   if (!agendamentoData) {
-    return <div>Nenhum agendamento encontrado. Volte para a página de contratação.</div>;
+    return null; // Retorna null para evitar renderização
   }
+
 
   return (
     <div>
