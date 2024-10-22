@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ServiceCard from './ServiceCard';
 
-const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange }) => {
+const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setServiceValue }) => {
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [days, setDays] = useState(0);
@@ -32,6 +32,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange }) => {
     }
     setSelectedServiceIndex(selectedServiceIndex === index ? null : index);
     onServiceChange(services[index].title)
+    setServiceValue(services[index].value)
   };
 
   const handleProceed = () => {
