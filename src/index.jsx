@@ -15,9 +15,10 @@ import ContrateOnline from './pages/App/ContrateOnline'
 import ClienteCadastro from './pages/cliente-cadastro/ClienteCadastro'
 import ClienteLogin from './pages/cliente-login/cliente-login'
 import AreaCliente from './pages/area-cliente/area-cliente'
+import Checkout from './pages/Checkout/Checkout'
 
 import { UserProvider } from './context/UserProvider'
-
+import { AgendamentoData } from './context/AgendamentoData'
 // 3 - rotas
 const router = createBrowserRouter([
     {
@@ -64,13 +65,19 @@ const router = createBrowserRouter([
     {
       path: "area-cliente",
       element: <AreaCliente/>
+    },
+    {
+      path: "checkout-pagamento",
+      element: <Checkout/>
     }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <UserProvider>
-      <RouterProvider router={router}/>
+      <AgendamentoData>
+        <RouterProvider router={router}/>
+      </AgendamentoData>
     </UserProvider>
   </React.StrictMode>,
 )

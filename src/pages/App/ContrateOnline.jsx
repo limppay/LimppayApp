@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {Logo, Footer } from '../../componentes/imports';
 import ServiceSelection from '../../componentes/App/ServiceSelection';
 import CustomCalendar from '../../componentes/App/DatePicker';
@@ -10,7 +11,10 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/re
 import Banner from "../../assets/img/App/limpando.png"
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 import StepLoginCustomer from './StepLoginCustomer';
+
 import { useUser } from '../../context/UserProvider';
+import { useAgendamentoData } from '../../context/AgendamentoData';
+
 import DeleteIcon from '@mui/icons-material/Delete'
 
 import { useForm } from "react-hook-form"
@@ -177,10 +181,11 @@ export default function ContrateOnline() {
     const [enderecosCliente, setEnderecosCliente] = useState([])
     const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+    const navigate = useNavigate();
 
     const { user } = useUser();
+    const { agendamentoData, setAgendamentoData } = useAgendamentoData()
     
-
     const HandleGetEnderecosCliente = async (id) => {
         if (clienteId) {
             setIsLoading(true);
@@ -372,7 +377,7 @@ export default function ContrateOnline() {
     }
 
     
-    const HandleCreateAgendamento = async () => {
+    const HandleNavigateCheckout = async () => {
         const FormDate = new Date(selectedDates[0]).toDateString(); // Converte a data para o formato legivel
         const times = selectedTimes[FormDate]; // Acessa o valor correspondente no objeto
         console.log(times)
@@ -389,18 +394,11 @@ export default function ContrateOnline() {
             observacao: observacao //ajustar para pegar a observação do cliente
         };
 
-        console.log(data)
-
-        // try {
-
-        //     const response = await createAgendamento(data)
-        //     console.log("Agendamento criado com sucesso!", response);
-            
-        // } catch (error) {
-        //     console.error(error.message)
-            
-        // }
+        await setAgendamentoData(data)
+        navigate("/checkout-pagamento")
     }
+
+    console.log("Dados enviados para checkout:",agendamentoData)
 
     return (
         <>
@@ -1029,7 +1027,7 @@ export default function ContrateOnline() {
                                     gap-2
                                     w-full
                                     "
-                                    onClick={HandleCreateAgendamento}
+                                    onClick={HandleNavigateCheckout}
 
                                     >
                                         Conferir e solicitar serviço
