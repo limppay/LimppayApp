@@ -14,6 +14,9 @@ import StepLoginCustomer from './StepLoginCustomer';
 
 import { useUser } from '../../context/UserProvider';
 import { useAgendamentoData } from '../../context/AgendamentoData';
+import { useSelectedProvider } from '../../context/SelectedProvider';
+import { useSelectedDates } from '../../context/SelectedDates';
+import { useSelectedTimes } from '../../context/SelectedTimes';
 
 import DeleteIcon from '@mui/icons-material/Delete'
 
@@ -168,13 +171,11 @@ export default function ContrateOnline() {
     const [selectedService, setSelectedService] = useState(''); // Estado para armazenar o serviço selecionado
     const [serviceValue, setServiceValue] = useState() // Estado para armazenar o valor do serviço
 
-    const [selectedDates, setSelectedDates] = useState([]); // Estado para armazenar a data selecionada
-    const [selectedTimes, setSelectedTimes] = useState([]); // Estado para armazenar os horários selecionados
-    const [selectedProvider, setSelectedProvider] = useState(null) // Estado para armazenar as informações do prestador selecionado
+    const {selectedTimes, setSelectedTimes} = useSelectedTimes([])
+
     const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState(false)
     const [observacao, setObservacao ] = useState('')
 
-    
     const [providers, setProviders] = useState([])
     const [open, setOpen] = useState(false)
     const [openCreateAdress, setOpenCreateAdress] = useState(false)
@@ -185,6 +186,8 @@ export default function ContrateOnline() {
 
     const { user } = useUser();
     const { agendamentoData, setAgendamentoData } = useAgendamentoData()
+    const { selectedProvider, setSelectedProvider } = useSelectedProvider()
+    const { selectedDates, setSelectedDates } = useSelectedDates([])
     
     const HandleGetEnderecosCliente = async (id) => {
         if (clienteId) {

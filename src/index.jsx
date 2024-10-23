@@ -19,7 +19,12 @@ import Checkout from './pages/Checkout/Checkout'
 
 import { UserProvider } from './context/UserProvider'
 import { AgendamentoData } from './context/AgendamentoData'
+import { SelectedProvider } from './context/SelectedProvider'
+import { SelectedDates } from './context/SelectedDates'
+import { SelectedTimes } from './context/SelectedTimes'
+
 // 3 - rotas
+
 const router = createBrowserRouter([
     {
       path: "/",
@@ -76,7 +81,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <UserProvider>
       <AgendamentoData>
-        <RouterProvider router={router}/>
+        <SelectedProvider>
+          <SelectedDates>
+            <SelectedTimes>
+              <RouterProvider router={router}/>
+            </SelectedTimes>
+          </SelectedDates>
+        </SelectedProvider>
       </AgendamentoData>
     </UserProvider>
   </React.StrictMode>,
