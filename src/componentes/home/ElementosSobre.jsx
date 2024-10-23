@@ -12,25 +12,25 @@ export default function ElementosSobre() {
                     <p className="text-lg text-prim">Com a LimpPay é rápido e completamente online.</p>
                 </div>
 
-                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-baseline">
+                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-baseline text-prim">
                     <div className="text-center">
                         <img src={LocalServico} alt="Local e serviço" className="mx-auto mb-4"/>
-                        <h3 className="text-xl font-semibold mb-2">Local e serviços</h3>
+                        <h3 className="text-xl font-semibold mb-2 text-ter">Local e serviços</h3>
                         <p>Casas, apartamentos, escritórios, consultórios e salas comerciais.</p>
                     </div>
                     <div className="text-center">
                         <img src={DataHora} alt="Data e Hora" className="mx-auto mb-4"/>
-                        <h3 className="text-xl font-semibold mb-2">Data e hora</h3>
+                        <h3 className="text-xl font-semibold mb-2 text-ter">Data e hora</h3>
                         <p>Na hora e no momento mais conveniente para você.</p>
                     </div>
                     <div className="text-center">
                         <img src={Profissional} alt="Selecione profissional" className="mx-auto mb-4"/>
-                        <h3 className="text-xl font-semibold mb-2">Selecione profissional</h3>
+                        <h3 className="text-xl font-semibold mb-2 text-ter">Selecione profissional</h3>
                         <p>Escolha o profissional da sua preferência</p>
                     </div>
                     <div className="text-center">
                         <img src={SolicitarServico} alt="Solicitação de serviço" className="mx-auto mb-4"/>
-                        <h3 className="text-xl font-semibold mb-2">Solicitação de serviço</h3>
+                        <h3 className="text-xl font-semibold mb-2 text-ter">Solicitação de serviço</h3>
                         <p>Confirme, efetue o pagamento e aguarde no local marcado.</p>
                     </div>
                 </section>
