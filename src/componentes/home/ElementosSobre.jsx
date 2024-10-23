@@ -5,7 +5,7 @@ import SolicitarServico from "../../assets/img/localeservico.png";
 
 export default function ElementosSobre() {
     return (
-        <section className="py-12 lg:p-24">
+        <section className="py-12 lg:p-24 lg:pb-0 lg:pt-5">
             <div className="container mx-auto">
                 <div className="text-center mb-8">
                     <h2 className="lg:text-3xl font-bold mb-4 text-desSec">Ter seus ambientes organizados<br/> e limpos nunca foi tão fácil.</h2>
