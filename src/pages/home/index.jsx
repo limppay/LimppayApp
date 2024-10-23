@@ -14,7 +14,6 @@ import DuvidasFrequentes from '../../componentes/DuvidasFrequentes.jsx';
 import NossosContatos from '../../componentes/home/NossosContatos.jsx';
 import Footer from '../../componentes/Footer.jsx';
 import logo from '../../assets/img/limppay-logo.png'
-import Banner from "../../assets/img/slide/1920x700-01.webp"
 
 export default function App() {
   const buttons = [
@@ -37,7 +36,7 @@ export default function App() {
     <div className="app">
       <HeaderApp img={logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
       <main>
-        <Slide href={Banner} alt="fale com a gente"/>
+        <Slide/>
         <ElementosSobre/>
         <Contrate/>
         <Servicos/>
