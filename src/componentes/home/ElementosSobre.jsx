@@ -5,11 +5,11 @@ import SolicitarServico from "../../assets/img/localeservico.png";
 
 export default function ElementosSobre() {
     return (
-        <section className="py-12">
+        <section className="py-12 lg:p-24">
             <div className="container mx-auto">
                 <div className="text-center mb-8">
-                    <h2 className="text-3xl font-bold mb-4 text-desSec">Ter seus ambientes organizados<br/> e limpos nunca foi tão fácil.</h2>
-                    <p className="text-lg text-prim">Com a LimpPay é rápido e completamente online.</p>
+                    <h2 className="lg:text-3xl font-bold mb-4 text-desSec">Ter seus ambientes organizados<br/> e limpos nunca foi tão fácil.</h2>
+                    <p className="lg:text-lg text-prim">Com a LimpPay é rápido e completamente online.</p>
                 </div>
 
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-baseline text-prim">

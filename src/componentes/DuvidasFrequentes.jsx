@@ -1,116 +1,53 @@
 import React, { useEffect } from 'react';
-import JsonDuvidas from "../assets/duvidas.json"
+
+import {Accordion, AccordionItem} from "@nextui-org/accordion";
 
 export default function DuvidasFrequentes() {
-    useEffect(() => {
-        // Função para adicionar um índice para cada parágrafo
-        const paragraphs = document.querySelectorAll(".duvida");
-        paragraphs.forEach((paragrafo, index) => {
-          paragrafo.setAttribute('data-index', index);
-        });
-      
-        // Função para adicionar duvidas grandes no HTML
-        paragraphs.forEach(p => {
-          const index = p.getAttribute('data-index');
-          if (JsonDuvidas[index] !== undefined) {
-            p.innerHTML = JsonDuvidas[index];
-          }
-        });
-      
-        // Função para a seção de dúvidas
-        const spans = document.querySelectorAll(".painel-title");
-        const toggleContents = [];
-        spans.forEach((span, index) => {
-          const handleClick = () => {
-            const duvida = document.querySelectorAll(".painel-content")[index];
-            duvida.classList.toggle("mostrar");
-          };
-          span.addEventListener("click", handleClick);
-          toggleContents.push({ span, handleClick });
-        });
-      
-        // Função de limpeza para remover event listeners
-        return () => {
-          toggleContents.forEach(({ span, handleClick }) => {
-            span.removeEventListener("click", handleClick);
-          });
-        };
-    }, []);
-      
+
   return(
-      <section className="duvidas-frequentes" id="duvidas">
-          <div className="container-duvidas-frequentes">
-              <div className="container-duvidas-frequentes-painel">
-                  <div className="container-duvidas-frequentes-title">
-                      <h2>Dúvidas frequentes</h2>
+      <section className='pt-10' >
+          <div className="p-10 pt-0 lg:p-56 lg:pt-0">
+              <div className="flex flex-col gap-4">
+                  <div className='text-center'>
+                      <h2 className='text-2xl text-desSec font-semibold'>Dúvidas frequentes</h2>
                   </div>
                   <div className="container-duvidas-frequentes-info">
-                      <p className="duvida"></p>
+                      <p className="text-prim text-justify">Este espaço é para tirar suas dúvidas conforme os tópicos abaixo que traz as perguntas mais frequentes feitas pelos nossos clientes. Se nossos tópicos não conseguiu atender você, nos envie um contato através de nosso e-mail: contato@limppay.com, ou pelo nosso Whatsapp.</p>
                   </div>
               </div>
-              <section className="paineis-duvida">
-                  <div className="container-painel-duvida">
-                      <div className="painel-title">
-                          <span>Como funciona o sistema da Limppay?</span>
-                          <span className="material-symbols-outlined">arrow_drop_down</span>
-                      </div>
-                      <div className="painel-content">
-                          <p className="duvida"></p>
-                          <p className="duvida"></p>
-                      </div>
-                      <div className="painel-title">
-                          <span>Qual o custo para fazer o uso da plataforma Limppay?</span>
-                          <span className="material-symbols-outlined">arrow_drop_down</span>
-                      </div>
-                      <div className="painel-content">
-                          <p className="duvida"></p>
-                      </div>
-                      <div className="painel-title">
-                          <span>Quem vai fazer o meu pagamento?</span>
-                          <span className="material-symbols-outlined">arrow_drop_down</span>
-                      </div>
-                      <div className="painel-content">
-                          <p className="duvida"></p>
-                      </div>
-                      <div className="painel-title">
-                          <span>Quais são as modalidades de limpeza?</span>
-                          <span className="material-symbols-outlined">arrow_drop_down</span>
-                      </div>
-                      <div className="painel-content">
-                          <p className="duvida"></p>
-                          <p className="duvida"></p>
-                          <p className="duvida"></p>
-                      </div>
-                      <div className="painel-title">
-                          <span>Quanto recebo pelas limpezas?</span>
-                          <span className="material-symbols-outlined">arrow_drop_down</span>
-                      </div>
-                      <div className="painel-content">
-                         <p className="duvida"></p>
-                      </div>
-                      <div className="painel-title">
-                          <span>O que eu preciso levar?</span>
-                          <span className="material-symbols-outlined">arrow_drop_down</span>
-                      </div>
-                      <div className="painel-content">
-                          <p className="duvida"></p>
-                          <p className="duvida"></p>
-                      </div>
-                      <div className="painel-title">
-                          <span>Qual o próximo passo após realizar o cadastro?</span>
-                          <span className="material-symbols-outlined">arrow_drop_down</span>
-                      </div>
-                      <div className="painel-content">
-                          <p className="duvida"></p>
-                      </div>
-                      <div className="painel-title">
-                          <span>Após me cadastrar, tenho obrigação de permanecer por um determinado período?</span>
-                          <span className="material-symbols-outlined">arrow_drop_down</span>
-                      </div>
-                      <div className="painel-content">
-                          <p className="duvida"></p>
-                      </div>
-                  </div>
+              <section className='text-prim text-md'>
+                <Accordion >
+                    <AccordionItem  key="1" aria-label="Accordion 1" title="Como funciona o sistema da Limppay?">
+                        Os clientes terão acesso a agenda que cada profissional liberar.<br/>
+                        Por exemplo, se o profissional liberar a agenda na sexta e no sábado, os clientes só poderão solicitar seus serviços nos dias liberados.<br/> 
+                        Todo esse controle e acesso é feito diretamente no login do profissional.
+                    </AccordionItem>
+                    <AccordionItem key="2" aria-label="Accordion 2" title="Qual o custo para fazer o uso da plataforma da Limppay?">
+                        Nenhum! A Limppay disponibiliza de forma gratuita toda a plataforma para que os profissionais de limpeza possam se cadastrar e iniciar sua jornada.
+                    </AccordionItem>
+                    <AccordionItem key="3" aria-label="Accordion 3" title="Quem vai fazer o meu pagamento?">
+                        Logo que o cliente efetua o pagamento o valor fica retido em uma plataforma de pagamentos online. Assim que seu serviço for finalizado, automaticamente o valor a receber será creditado na conta cadastrada pelo profissional de limpeza.
+                    </AccordionItem>
+
+                    <AccordionItem key="4" aria-label="Accordion 4" title="Quais são as modalidades de limpeza?">
+                        Temos duas modalidades, a Residencial e Empresarial <br />
+                        A residencial se divide em: Meia diária(4h), Diária (8h) e passar roupas. <br />
+                        Já na empresarial temos: 1 hora, 4 horas e diárias (8h)
+                    </AccordionItem>
+                    <AccordionItem key="5" aria-label="Accordion 5" title="Quanto recebo pelas limpezas?">
+                        O profissional recebe 75% do valor total do serviço
+                    </AccordionItem>
+                    <AccordionItem key="6" aria-label="Accordion 6" title="O que eu preciso levar?">
+                        A Limppay não exige que você, profissional de limpeza, tenha gastos com os materiais de limpeza. <br />
+                        Tanto o produto quanto as ferramentas de limpeza (vassoura, rodo, espanador, baldes, entre outros), serão de total responsabilidade do cliente, ele deverá fornecê-los.
+                    </AccordionItem>
+                    <AccordionItem key="7" aria-label="Accordion 7" title="Qual o próximo passo após realizar o cadastro?">
+                        Assim que fizer o seu cadastro, irá receber um e-mail confirmando sua inscrição. No momento estamos captando profissionais de limpeza, e assim que liberarmos o site para que os clientes possam se cadastrar, iremos avisá-los.
+                    </AccordionItem>
+                    <AccordionItem key="8" aria-label="Accordion 8" title="Após me cadastrar, tenho obrigação de permanecer por um determinado período?">
+                        Não. A Limppay dá a total liberdade para que nossos profissionais de limpeza optem por permanecer ou não em nossa plataforma. Porém é interessante avisar nossa equipe, para que possamos inativá-lo. Assim quando quiser retornar, poderá reativá-la ao invés de criar uma outra conta. Mantendo assim todas as avaliações, feedbacks e pontuações.
+                    </AccordionItem>
+                </Accordion>
               </section>
           </div>
       </section>
