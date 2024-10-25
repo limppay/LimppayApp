@@ -31,7 +31,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
 
     return (
         <>
-            <header className="pt-3 pb-3 shadow-md lg:pt-2 lg:pb-2 lg:pr-12 lg:pl-12 fixed w-full bg-white z-10">
+            <header className="pt-3 pb-3 shadow-md lg:pt-2 lg:pb-2 lg:pr-12 lg:pl-12 fixed w-full bg-white z-50 ">
                 <nav className="flex items-center justify-around px-2 lg:px-12">
                     <a href="/" className="block max-w-full">
                         <img src={img} alt={alt} className="w-8/12 lg:w-full" />
