@@ -9,7 +9,7 @@ import { Pagination, Autoplay } from 'swiper/modules';
 
 export default function Servicos() {
     return (
-        <section id="servicos" className="lg:pt-20 pt-10">
+        <section id="servicos" className="lg:pt-20 lg:pb-0 pt-10 pb-0">
             <Swiper
                 modules={[Pagination, Autoplay]}
                 spaceBetween={0} // Remove o espaçamento entre as imagens
