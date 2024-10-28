@@ -37,7 +37,6 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                         <img src={img} alt={alt} className="w-11/12 lg:w-5/12 md:w-5/12 sm:w-5/12" />
                     </a>
                     <div className="flex items-center gap-1">
-                        
                             <div className='hidden items-center lg:flex'>
                                 <ul className='flex'>
                                     {buttons.map((button, index) => (
@@ -53,7 +52,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
 
                             {/* botões de acesso */}
                             <div className='flex'>
-                                <ul className='flex'>
+                                <ul className='flex w-full gap-2'>
                                     {btnAcess.map((acess, index) => (
                                         <ButtonAcess 
                                         key={index} 

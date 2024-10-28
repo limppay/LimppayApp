@@ -138,7 +138,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                   </div>
                 ) : (
                   <>
-                    <ul className='flex'>
+                    <ul className='flex gap-2'>
                       {btnAcess.map((acess, index) => (
                         <ButtonAcess
                           key={index}

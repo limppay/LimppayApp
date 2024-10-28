@@ -41,10 +41,12 @@ export default function App() {
         <Contrate/>
         <div className='lg:p-12 pt-0'>
           <Servicos/>
-          <Sobre/>
+          
+        </div>
+        <div className='flex flex-col lg:flex-row'>
+          <QuemSomos/>
           <Contratar/>
         </div>
-        <QuemSomos/>
         <DuvidasFrequentes/>
         <NossosContatos/>
       </main>
