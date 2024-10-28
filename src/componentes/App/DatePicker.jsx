@@ -335,7 +335,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   };
 
   return (
-    <div className="flex flex-col pt-4 w-full md:w-9/12 lg:w-6/12">
+    <div className="flex flex-col justify-center items-center pt-4  md:w-9/12 lg:w-6/12">
       <motion.div
         className="w-full bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec lg:h-[60vh]"
         key={`${currentDate.toISOString()}-${currentYearPage}-${showMonths}-${showYears}`} // Key para reiniciar a animação

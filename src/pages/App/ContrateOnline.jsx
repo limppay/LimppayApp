@@ -409,7 +409,7 @@ export default function ContrateOnline() {
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
             <main className="relative p-4 flex lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
-                <div className='flex  flex-col items-center text-center min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-0 p-4 rounded-xl min-h-[60vh]'>
+                <div className='flex  flex-col items-center text-center min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -453,7 +453,9 @@ export default function ContrateOnline() {
                                             md:grid-cols-2
                                             sm:grid-cols-2
                                             pt-5 gap-10 overflow-auto max-h-[100vh] '>
-                                                <div className={`border border-bord rounded-lg min-h-[46vh] max-h-[46vh] max-w-[46vh] min-w-[46vh] 
+                                                <div className={`border border-bord rounded-lg lg:min-h-[46vh] lg:max-h-[46vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[38vh] max-w-[38vh]
+                                                
+                                                
                                                 ${selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? 'border-sec ' : 'hover:border-sec border-bord' }
                                                 `}
                                                 
@@ -477,7 +479,8 @@ export default function ContrateOnline() {
                                                 </div>
 
                                                 {enderecosCliente.map((endereco) => (
-                                                    <div key={endereco.id} className={`border border-bord rounded-lg min-h-[46vh] max-h-[46vh] max-w-[46vh] min-w-[46vh] 
+                                                    <div key={endereco.id} className={`border border-bord rounded-lg lg:min-h-[46vh] lg:max-h-[46vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[38vh] max-w-[38vh]
+
                                                     ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec' : 'hover:border-sec border-bord' }
                                                     `}
 
@@ -509,7 +512,9 @@ export default function ContrateOnline() {
                                                     </div>
                                                 ))}
 
-                                                <div className='p-5 border border-bord border-opacity-50 rounded-md min-h-[46vh] max-h-[46vh] max-w-[46vh] min-w-[46vh] flex items-center justify-center'>
+                                                <div className='p-5 border border-bord border-opacity-50  lg:min-h-[46vh] lg:max-h-[46vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[38vh] max-w-[38vh]
+                                                
+                                                flex items-center justify-center'>
                                                     <button 
                                                     className='p-2 bg-des rounded-md text-white text-sm'
                                                     onClick={() => setOpenCreateAdress(true)}
