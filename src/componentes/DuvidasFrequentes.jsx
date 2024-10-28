@@ -5,7 +5,7 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 export default function DuvidasFrequentes() {
 
   return(
-      <section className='pt-10 shadow-md' >
+      <section className='pt-10 shadow-md' id='duvidas' >
           <div className="p-10 pt-0 lg:p-56 lg:pt-0 lg:pb-10">
               <div className="flex flex-col gap-4">
                   <div className='text-center'>

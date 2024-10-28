@@ -20,7 +20,7 @@ export default function App() {
     {link: "#quem-somos", text: "Quem somos"},
     {link: "#servicos", text: "Serviços"},
     {link: "#duvidas", text: "Dúvidas"},
-    {link: "https://limppay.com/blog/", text: "Blog"},
+    {link: "#", text: "Blog"},
     {link: "#contatos", text: "Contato"},
   ]
 

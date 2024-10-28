@@ -3,7 +3,7 @@ import SejaDiarista from "../../assets/img/2.webp";
 
 export default function Contrate() {
     return (
-        <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0 shadow-md">
+        <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0 ">
             <div className="container mx-auto px-4 flex flex-col md:flex-row gap-10">
                 <div className="bg-white  rounded-lg overflow-hidden flex flex-col-reverse lg:flex-row items-center justify-center">
                     <div className="items-center justify-center">
@@ -17,12 +17,12 @@ export default function Contrate() {
                             <a href="/contrate-online" className="bg-des text-white px-4 py-2 rounded hover:bg-blue-600 transition">Contrate online</a>
                         </div>
                     </div>
-                    <img src={ContrateOnline} alt="contrate diarista" className=" lg:w-5/12 object-cover" />
+                    <img src={ContrateOnline} alt="contrate diarista" className=" lg:w-4/12 object-cover" />
                 </div>
             </div>
             <div className="container mx-auto px-4 flex flex-col md:flex-row gap-10">
                 <div className="bg-white  rounded-lg overflow-hidden flex flex-col lg:flex-row  items-center justify-center">
-                    <img src={SejaDiarista} alt="contrate diarista" className="lg:w-5/12 object-cover" />
+                    <img src={SejaDiarista} alt="contrate diarista" className="lg:w-4/12 object-cover" />
                     <div className="items-center justify-center">
                         <div className="p-4 flex flex-col">
                             <h3 className="text-xl font-semibold text-ter">Seja diarista</h3>
