@@ -37,29 +37,30 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     const [isConfirmEnabled, setIsConfirmEnabled] = useState(false);
     const [selectedTimes, setSelectedTime] = useState('');
   
-    const handleTimeChange = (time) => {
+    const handleTimeChange = (date, time) => {
       setTimes(prev => {
-          const updateTimes = { ...prev, time }; // Atualiza o horário para a data específica
-      
-          // Verifica se todos os horários foram preenchidos
-          const allTimesFilled = selectedDates.every(date => updateTimes[date.toDateString()]);
-      
-          setIsConfirmEnabled(allTimesFilled);
-      
-          return updateTimes;
+        const updatedTimes = { ...prev, [date]: time }; // Atualiza o horário para a data específica
+    
+        // Verifica se todos os horários foram preenchidos
+        const allTimesFilled = selectedDates.every(date => updatedTimes[date.toDateString()]);
+    
+        setIsConfirmEnabled(allTimesFilled);
+    
+        return updatedTimes;
       });
-  };
-  
-
-    const handleSelectAllTimes = (time) => {
-      setTimes(selectedDates.reduce((acc, date) => {
-        acc[date.toDateString()] = time; // Atualiza o horário para cada data
-        return acc;
-      }, {}));
-      setIsConfirmEnabled(true); // Habilita o botão de confirmar se todos os horários foram preenchidos
     };
     
-    
+  
+
+ const handleSelectAllTimes = (time) => {
+  const updatedTimes = selectedDates.reduce((acc, date) => {
+    acc[date.toDateString()] = time; // Atualiza o horário para cada data
+    return acc;
+  }, {});
+  
+  setTimes(updatedTimes); // Atualiza o estado dos horários para todas as datas
+  setIsConfirmEnabled(true); // Habilita o botão de confirmar se todos os horários forem preenchidos
+};   
   
     const handleConfirm = () => {
       onConfirm(times);
@@ -122,27 +123,29 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
 
 
           <div className='overflow-y-auto max-h-[25vh]'>
-            {selectedDates.map(date => (
-              <div key={date.toString()} className="flex justify-between items-center mb-2 text-prim">
-                <span>{date.toLocaleDateString()}</span>
+          {selectedDates.map(date => (
+            <div key={date.toString()} className="flex justify-between items-center mb-2 text-prim">
+              <span>{date.toLocaleDateString()}</span>
 
-                <Select
-                    id='horas'
-                    isRequired
-                    placeholder="--:--"
-                    className="w-5/12 text-prim "
-                    onChange={(value) => handleTimeChange(date.toDateString(), value)} // Ajuste aqui
-                    aria-label='horas'
-                >
-                    {horarios.map((hora) => (
-                        <SelectItem key={hora.key} className='text-prim ' aria-label={hora.label}>
-                            {hora.label}
-                        </SelectItem>
-                    ))}
-                </Select>
+              <Select
+                id='horas'
+                isRequired
+                placeholder="--:--"
+                className="w-5/12 text-prim"
+                value={times[date.toDateString()] || '--:--'} // Define o valor do select com base no estado
+                onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)} // Passa a data e o horário
+                aria-label='horas'
+              >
+                {horarios.map((hora) => (
+                  <SelectItem key={hora.key} className='text-prim' aria-label={hora.label}>
+                    {hora.label}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          ))}
 
-              </div>
-            ))}
+
           </div>
           <div className="flex justify-end pt-5 gap-5">
             <button className="ml-2 text-error text-opacity-75" onClick={onClose}>Cancelar</button>
@@ -385,7 +388,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
           Confirmar Seleção
         </button>
       </div>
-      
+
     {/* Renderização do Pop-Up */}
     {showTimePicker && (
       <TimePickerPopup
