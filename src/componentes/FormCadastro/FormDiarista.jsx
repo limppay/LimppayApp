@@ -74,8 +74,8 @@ export default function FormDiarista() {
                 return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
             })
             .test("fileType", "Formato de arquivo não suportado", (value) => {
-                return value && ['image/jpeg', 'image/png'].includes(value.type); // Limita os tipos permitidos
-        }),
+                return value && value.type.startsWith('image/'); // Aceita qualquer tipo de imagem
+            }),
 
         arquivodt: yup
             .mixed()
@@ -520,7 +520,7 @@ export default function FormDiarista() {
                         <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
                             <Avatar src={image} 
                                 alt="foto de perfil" 
-                                className="min-w-80 min-h-80 max-w-80 max-h-80 lg:min-w-60 lg:min-h-60 lg:max-w-60 lg:max-h-60 text-large"
+                                className="min-w-72 min-h-72 max-w-72 max-h-72 lg:min-w-60 lg:min-h-60 lg:max-w-60 lg:max-h-60 text-large"
                             />                  
                             <input 
                                 type="file" 
