@@ -8,7 +8,7 @@ export default function QuemSomos() {
         <div className="relative isolate overflow-hidden">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 flex ">
             <div className="mx-auto max-w-2xl lg:mx-0 flex flex-col justify-center items-center shadow-lg pt-10 p-5 lg:p-20 rounded-md">
-              <h2 className="text-desSec text-2xl font-semibold tracking-tight lg:text-5xl">Quem Somos</h2>
+              <h2 className="text-desSec text-4xl font-semibold tracking-tight lg:text-5xl">Quem Somos</h2>
               <div className='w-full text-md text-prim'>
                 <p className="mt-8 text-pretty text-justify">
                   A LimpPay é uma comunidade de serviços domésticos que compartilham o compromisso de fornecer a você um serviço excepcional.

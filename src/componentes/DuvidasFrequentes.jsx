@@ -9,7 +9,7 @@ export default function DuvidasFrequentes() {
           <div className="p-10 pt-0 lg:p-56 lg:pt-0 lg:pb-10">
               <div className="flex flex-col gap-4">
                   <div className='text-center'>
-                      <h2 className='lg:text-4xl text-2xl text-desSec font-semibold'>Dúvidas frequentes</h2>
+                      <h2 className='lg:text-4xl text-4xl text text-desSec font-semibold w-full'>Dúvidas frequentes</h2>
                   </div>
                   <div className="container-duvidas-frequentes-info">
                       <p className="text-prim text-justify">Este espaço é para tirar suas dúvidas conforme os tópicos abaixo que traz as perguntas mais frequentes feitas pelos nossos clientes. Se nossos tópicos não conseguiu atender você, nos envie um contato através de nosso e-mail: contato@limppay.com, ou pelo nosso Whatsapp.</p>

@@ -39,10 +39,10 @@ export default function App() {
         <Slide/>
         <ElementosSobre/>
         <Contrate/>
-        <div className='lg:p-12 pt-0 pb-0 lg:pb-0'>
+        <div className='lg:p-12 pt-0 pb-0 lg:pb-0 p-10'>
           <Servicos/>
         </div>
-        <div className='flex flex-col lg:flex-row'>
+        <div className='flex  flex-col-reverse lg:flex-row'>
           <QuemSomos/>
           <Contratar/>
         </div>
