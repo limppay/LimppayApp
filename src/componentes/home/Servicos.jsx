@@ -14,7 +14,7 @@ export default function Servicos() {
                         <p>Casas e apartamentos mais limpos e organizados</p>
                     </div>
                     <div className="pt-2">
-                        <a href="https://app.limppay.com/" className="p-2 rounded-md w-2/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75">Contrate online</a>
+                        <a href="/contrate-online" className="p-2 rounded-md w-2/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75">Contrate online</a>
                     </div>
                 </div>
                 <div className="flex flex-col justify-center text-center items-center gap-3" >
@@ -26,7 +26,7 @@ export default function Servicos() {
                         </div>
                     </div>
                     <div className="pt-2">
-                        <a href="https://app.limppay.com/" className="p-2 rounded-md w-2/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75">Contrate online</a>
+                        <a href="/contrate-online" className="p-2 rounded-md w-2/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75">Contrate online</a>
                     </div>
                 </div>
                 <div className="flex flex-col justify-center text-center items-center gap-3" >
@@ -38,7 +38,7 @@ export default function Servicos() {
                         </div>
                     </div>
                     <div className="pt-2">
-                        <a href="https://app.limppay.com/" className="p-2 rounded-md w-2/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75">Contrate online</a>
+                        <a href="/contrate-online" className="p-2 rounded-md w-2/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75">Contrate online</a>
                     </div>
                 </div>
             </div>
