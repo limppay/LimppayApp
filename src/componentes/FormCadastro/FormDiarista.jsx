@@ -8,6 +8,8 @@ import { createUser } from "../../services/api.js"
 import axios from "axios"
 import InputMask from "react-input-mask"
 import User from "../../assets/img/diarista-cadastro/user.png"
+import { Avatar } from "@nextui-org/react";
+import {Tooltip} from "@nextui-org/tooltip";
 
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, Input } from '@headlessui/react'
@@ -492,6 +494,16 @@ export default function FormDiarista() {
     const removerMascara = (valor) => {
         return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são números
     };
+
+    const [isOpenFoto, setIsOpenFoto] = useState(false);
+    const [isOpenBio, setIsOpenBio] = useState(false);
+    const [isOpenService, setIsOpenService] = useState(false);
+    const [isOpenDia, setIsOpenDia] = useState(false);
+
+    const handleToggleFoto = () => setIsOpenFoto(!isOpenFoto);
+    const handleToggleBio = () => setIsOpenBio(!isOpenBio);
+    const handleToggleService = () => setIsOpenService(!isOpenService);
+    const handleToggleDia = () => setIsOpenDia (!isOpenDia);
     
       
 
@@ -506,9 +518,9 @@ export default function FormDiarista() {
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col items-center">
                     <div className="flex flex-col justify-center items-center gap-2">
                         <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
-                            <img src={image} 
-                            alt="foto de perfil" 
-                            className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
+                            <Avatar src={image} 
+                                alt="foto de perfil" 
+                                className="min-w-80 min-h-80 max-w-80 max-h-80 lg:min-w-60 lg:min-h-60 lg:max-w-60 lg:max-h-60 text-large"
                             />                  
                             <input 
                                 type="file" 
@@ -523,19 +535,50 @@ export default function FormDiarista() {
                                   className="p-2 w-full hidden"
                             />                      
                         </label>
-                        <span className="text-prim">Foto de perfil</span>
+                        <div className="flex gap-2 items-center">
+                            <span className="text-prim">Foto de perfil</span>
+                            <Tooltip
+                            content="Recomendamos inserir uma foto com tamanho quadrado ou altura maior que a largura"
+                            isOpen={isOpenFoto}
+                            onOpenChange={setIsOpenFoto}
+                            size="md"
+                            radius="md"
+                            shadow="sm"
+                            placement="top"
+                            showArrow
+                            shouldFlip
+                            >
+                                <button type="button" onClick={handleToggleFoto} onMouseEnter={() => setIsOpenFoto(true)} onMouseLeave={() => setIsOpenFoto(false)} className="w-5 h-5 text-white bg-prim rounded-full">
+                                    ?
+                                </button>
+                            </Tooltip>
+                        </div>
                         {errors.arquivoFoto && (
                             <span className="text-error opacity-75">{errors.arquivoFoto.message}</span>
                         )}
-
-
                     </div>
                 </div>
 
 
-                
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col lg:mt-0 lg:w-1/2 lg:p-0 lg:mb-10 max-w-full">
-                    <label htmlFor="biografia" className="text-prim">Sobre mim</label>
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="biografia" className="text-prim">Sobre mim</label>
+                        <Tooltip
+                        content="Em poucas palavras fale sobre você, para que os contratantes possam te conhecer e escolhe-lo para o serviço"
+                        isOpen={isOpenBio}
+                        onOpenChange={setIsOpenBio}
+                        size="md"
+                        radius="md"
+                        shadow="sm"
+                        placement="top"
+                        showArrow
+                        shouldFlip
+                        >
+                            <button type="button" onClick={handleToggleBio} onMouseEnter={() => setIsOpenBio(true)} onMouseLeave={() => setIsOpenBio(false)} className="w-5 h-5 text-white bg-prim rounded-full">
+                                ?
+                            </button>
+                        </Tooltip>
+                    </div>
                     <textarea  
                     id="biografia"
                     {...register("sobre")} 
@@ -544,6 +587,7 @@ export default function FormDiarista() {
                         <span className="text-error opacity-75">{errors.sobre.message}</span>
                     )}
                 </div>
+
             </div>
             
 
@@ -796,7 +840,24 @@ export default function FormDiarista() {
 
 
             <div className="mt-4 p-9 pt-0 pb-0 flex flex-col text-prim gap-3">
-                <p><b>Meus Serviços</b></p>
+                <div className="flex items-center gap-2">
+                    <p><b>Meus Serviços</b></p>
+                    <Tooltip
+                    content="Escolha os serviços que você deseja prestar"
+                    isOpen={isOpenService}
+                    onOpenChange={setIsOpenService}
+                    size="md"
+                    radius="md"
+                    shadow="sm"
+                    placement="top"
+                    showArrow
+                    shouldFlip
+                    >
+                        <button type="button" onClick={handleToggleService} onMouseEnter={() => setIsOpenService(true)} onMouseLeave={() => setIsOpenService(false)} className="w-5 h-5 text-white bg-prim rounded-full">
+                            ?
+                        </button>
+                    </Tooltip>
+                </div>
                 <div>
                     <Dropdown>
                         <DropdownTrigger>
@@ -827,7 +888,24 @@ export default function FormDiarista() {
                         </DropdownMenu>
                     </Dropdown>
                 </div>
-                <p><b>Dias disponíveis para trabalhar</b></p>
+                <div className="flex items-center gap-2">
+                    <p><b>Dias disponíveis para trabalhar</b></p>
+                    <Tooltip
+                    content="Selecione apenas os dias em que você estará disponivel para trabalhar"
+                    isOpen={isOpenDia}
+                    onOpenChange={setIsOpenDia}
+                    size="md"
+                    radius="md"
+                    shadow="sm"
+                    placement="top"
+                    showArrow
+                    shouldFlip
+                    >
+                        <button type="button" onClick={handleToggleDia} onMouseEnter={() => setIsOpenDia(true)} onMouseLeave={() => setIsOpenDia(false)} className="w-5 h-5 text-white bg-prim rounded-full">
+                            ?
+                        </button>
+                    </Tooltip>
+                </div>
                 <div className="mt-2">
                     <input id="selectDays" type="button" value="Selecionar todos os dias" className="p-2 border border-bord rounded-md cursor-pointer"/>
                 </div>
