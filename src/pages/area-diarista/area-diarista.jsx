@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { HeaderApp, Logo,Footer} from '../../componentes/imports.jsx'
+import { HeaderApp, Logo, Footer, ModalQuemSomos, ModalDuvidas} from '../../componentes/imports.jsx'
 import User from "../../assets/img/diarista-cadastro/user.png"
 import EditUserModal from './EditUserModal.jsx';
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
+
 
 const AreaDiarista = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -12,6 +13,10 @@ const AreaDiarista = () => {
     const token = localStorage.getItem('token'); // Obter o token do localStorage
     // Recuperar as URLs e converter para objeto JSON
     const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {}); // Atualize o estado URLs aqui
+
+    const [OpenWho, SetOpenWho] = useState(false)
+    const [OpenDuvidas, SetOpenDuvidas] = useState(false)
+
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -52,18 +57,28 @@ const AreaDiarista = () => {
     const arquivoCPF = urls ? Object.values(urls)[2] : null; 
     const arquivoResidencia = urls ? Object.values(urls)[3] : null; 
     const arquivoCurriculo = urls ? Object.values(urls)[4] : null; 
-
+    
     const buttons = [
-        { link: "/", text: "Dúvidas"},
-        { link: "/", text: "Quem Somos"},
+        {
+            link: "#", 
+            text: "Dúvidas", 
+            OnClick: () => SetOpenDuvidas(true)
+        },
+        {
+            link: "#", 
+            text: "Quem Somos", 
+            Id: "OpenQuemSomos",
+            OnClick: () => SetOpenWho(true)
+        },
     ]
 
     const btnAcess = [
-        {   AcessPrim: "Suporte", 
+        {
+            AcessPrim: "Suporte", 
             AcessSec: "Sair",
-            LinkPrim: "cadastro-diarista",
-            LinkSec: "diarista-login",  
-        },
+            LinkPrim: "/",
+            LinkSec: "/",
+        }
     ]
 
     const calcularIdade = (data) =>{
@@ -368,6 +383,9 @@ const AreaDiarista = () => {
                     </>
                 )}
             </main>
+            <Footer/>
+            <ModalQuemSomos Open={OpenWho} SetOpen={() => SetOpenWho(!OpenWho)}/>
+            <ModalDuvidas OpenDuvidas={OpenDuvidas} SetOpenDuvidas={() => SetOpenDuvidas(!OpenDuvidas)}/>
         </div>
     );
 };

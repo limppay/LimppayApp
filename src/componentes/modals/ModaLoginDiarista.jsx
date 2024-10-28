@@ -140,7 +140,7 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
                 type="button"
                 data-autofocus
                 onClick={() => SetOpenLogin(false)}
-                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                className="p-2 rounded-md w-1/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75"
               >
                 Fechar
               </button>
