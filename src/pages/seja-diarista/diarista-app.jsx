@@ -23,7 +23,7 @@ export default function DiaristaApp() {
 
     return (
         <>
-            <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess} text1="Seja Bem-vindo!" text2="Entre ou cadastre-se"/>
+            <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
             <main className='w-full flex flex-col items-center justify-center'>
 
             <section className='pb-10 w-full items-center lg:md:sm:flex lg:md:sm:flex-col pt-28 md:pt-16 sm:pt-16 lg:pt-28' style={{ backgroundImage: `url(${Banner})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>                 

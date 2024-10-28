@@ -35,13 +35,15 @@ export default function App() {
   return (
     <div className="app">
       <HeaderApp img={logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
-      <main className='z-0 relative'>
+      <main className='z-0 relative pt-16'>
         <Slide/>
         <ElementosSobre/>
         <Contrate/>
-        <Servicos/>
-        <Sobre/>
-        <Contratar/>
+        <div className='lg:p-12 pt-0'>
+          <Servicos/>
+          <Sobre/>
+          <Contratar/>
+        </div>
         <QuemSomos/>
         <DuvidasFrequentes/>
         <NossosContatos/>

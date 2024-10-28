@@ -3,7 +3,7 @@ import SejaDiarista from "../../assets/img/2.webp";
 
 export default function Contrate() {
     return (
-        <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0 ">
+        <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0 shadow-md">
             <div className="container mx-auto px-4 flex flex-col md:flex-row gap-10">
                 <div className="bg-white  rounded-lg overflow-hidden flex flex-col-reverse lg:flex-row items-center justify-center">
                     <div className="items-center justify-center">

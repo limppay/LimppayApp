@@ -32,11 +32,11 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
     return (
         <>
             <header className="pt-3 pb-3 shadow-md lg:pt-2 lg:pb-2 lg:pr-12 lg:pl-12 fixed w-full bg-white z-50 ">
-                <nav className="flex items-center justify-around px-2 lg:px-12">
-                    <a href="/" className="block max-w-full">
-                        <img src={img} alt={alt} className="w-8/12 lg:w-full" />
+                <nav className="flex items-center justify-around lg:justify-between px-2 lg:px-12">
+                    <a href="/" className='w-3/12 sm:w-5/12 md:w-4/12 lg:w-3/12 lg:block '>
+                        <img src={img} alt={alt} className="w-11/12 lg:w-5/12 md:w-5/12 sm:w-5/12" />
                     </a>
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-1">
                         
                             <div className='hidden items-center lg:flex'>
                                 <ul className='flex'>
@@ -52,7 +52,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                             </div>
 
                             {/* botões de acesso */}
-                            <div className='text-center hidden lg:flex md:flex'>
+                            <div className='flex'>
                                 <ul className='flex'>
                                     {btnAcess.map((acess, index) => (
                                         <ButtonAcess 
@@ -67,14 +67,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                                     ))} 
                                 </ul>
                             </div>
-                   
-                        <div className="flex ml-5">
-                            <div className='text-sm'>
-                                <p className="text-ter"><strong>{text1}</strong></p>
-                                <p className='text-prim'>{text2}</p>
-                            </div>
-                        </div>
-                        <i className="fas fa-bars cursor-pointer text-2xl text-des ml-2  lg:hidden" id="hamburguerButton"></i>
+                        <i className="fas fa-bars cursor-pointer text-2xl text-des lg:hidden" id="hamburguerButton"></i>
                     </div>
                 </nav>
             </header>
@@ -92,22 +85,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                             ))}
                         </ul>
                     </div>
-                  
-                    <div>
-                        <ul className='flex flex-col text-center gap-3'>                         
-                            {btnAcess.map((acess, index) => (
-                                <ButtonAcess 
-                                key={index} 
-                                AcessPrim={acess.AcessPrim} 
-                                AcessSec={acess.AcessSec} 
-                                LinkPrim={acess.LinkPrim} 
-                                LinkSec={acess.LinkSec} 
-                                Class={acess.Class} 
-                                OnClickPrim={acess.OnClickPrim} 
-                                OnClickSec={acess.OnClickSec}/>
-                            ))} 
-                        </ul>
-                    </div>
+    
                 </div>
             </div>
         </>

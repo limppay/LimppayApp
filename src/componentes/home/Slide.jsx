@@ -8,7 +8,7 @@ import SlideStepTwo from '../../assets/img/slide/1920x700-02.webp';
 
 const Slide = () => {
   return (
-        <div className='pt-[11vh]'>
+        <div>
             <Swiper
             modules={[Pagination, Autoplay]}
             spaceBetween={0} // Remove o espaçamento entre as imagens
@@ -20,12 +20,12 @@ const Slide = () => {
             }}
             pagination={{ clickable: true }}
             >
-            <SwiperSlide>
-                <img src={SlideStepOne} alt="slide" />
-            </SwiperSlide>
-            <SwiperSlide>
-                <img src={SlideStepTwo} alt="slide" />
-            </SwiperSlide>
+                <SwiperSlide>
+                    <img src={SlideStepOne} alt="slide" />
+                </SwiperSlide>
+                <SwiperSlide>
+                    <img src={SlideStepTwo} alt="slide" />
+                </SwiperSlide>
             </Swiper>
 
         </div>
