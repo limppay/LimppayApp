@@ -12,7 +12,8 @@ import { useSelectedTimes } from '../../context/SelectedTimes';
 import { Avatar } from '@nextui-org/avatar';
 
 import { criarFaturaCartao, criarFaturaPix } from '../../services/api';
-import { obterTokenCartao } from '../../services/checkout';
+
+import { obterTokenCartao } from '../../services/iuguApi';
 
 import { useUser } from '../../context/UserProvider';
 
