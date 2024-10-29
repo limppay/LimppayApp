@@ -12,6 +12,7 @@ import { useSelectedTimes } from '../../context/SelectedTimes';
 import { Avatar } from '@nextui-org/avatar';
 
 import { criarFaturaCartao, criarFaturaPix } from '../../services/api';
+import { obterTokenCartao } from '../../services/checkout';
 
 import { useUser } from '../../context/UserProvider';
 
@@ -76,6 +77,8 @@ export default function Checkout() {
 
   const handleFinalizarCompra = async () => {
     try {
+      const token = await obterTokenCartao(dadosCartao)
+
       let response;
 
       if (metodoPagamento === 'credit_card') {
@@ -95,6 +98,7 @@ export default function Checkout() {
               name: dadosCartao.nome,
               cpf_cnpj: "08213350227"
             },
+            token,
             credit_card: {
               number: dadosCartao.numero, 
               verification_value: dadosCartao.cvc, 
@@ -104,12 +108,13 @@ export default function Checkout() {
             }
           }          
         );
-        console.log(response)
+        console.log('Fatura criada com sucesso:', response);
+        alert('Pagamento realizado com sucesso!');
       } 
 
     } catch (error) {
-      console.error(error);
-      alert('Ocorreu um erro ao processar o pagamento. Tente novamente.');
+      console.error('Erro no pagamento:', error);
+      alert('Erro ao processar o pagamento.');
     }
   };
 
