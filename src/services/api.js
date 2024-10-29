@@ -242,5 +242,24 @@ export const createAgendamento = async (agendamentoData) => {
   }
 };
 
+export const criarFaturaPix = async (dadosFatura) => {
+  try {
+    const response = await api.post('pagamentos/fatura/pix', dadosFatura);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao criar fatura PIX:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const criarFaturaCartao = async (dadosFatura) => {
+  try {
+    const response = await api.post('pagamentos/fatura/cartao', dadosFatura);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao criar fatura com cartão:', error.response?.data || error.message);
+    throw error;
+  }
+};
 
 export default api;

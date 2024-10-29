@@ -11,7 +11,7 @@ import { useSelectedTimes } from '../../context/SelectedTimes';
 
 import { Avatar } from '@nextui-org/avatar';
 
-import { gerarTokenCartao, criarFatura, criarFaturaPix } from '../../services/checkout';
+import { criarFaturaCartao, criarFaturaPix } from '../../services/api';
 
 export default function Checkout() {
   const { agendamentoData, setAgendamentoData } = useAgendamentoData();
@@ -29,42 +29,77 @@ export default function Checkout() {
       mesExpiracao: null,
       anoExpiracao: null,
   });
+
   const [email, setEmail] = useState('castrothiago6167@gmail.com');
   const [valorTotal, setValorTotal] = useState(100); // Exemplo de valor
   const [metodoPagamento, setMetodoPagamento] = useState('credit_card'); // Cartão de crédito padrão
   const [qrCodePix, setQrCodePix] = useState('');  // Estado para armazenar o QR Code PIX
   const [pixChave, setPixChave] = useState('');    // Estado para armazenar a chave PIX
 
-  const handleCheckout = async () => {
+  const handleFinalizarCompra = async () => {
     try {
-      let fatura;
-      
+      let response;
       if (metodoPagamento === 'credit_card') {
-            console.log(dadosCartao)
-            // 1. Gerar token do cartão
-            const tokenCartao = await gerarTokenCartao(dadosCartao);
-            console.log('Token do cartão gerado:', tokenCartao);
+        response = await criarFaturaCartao(
+          {
+            email: "castrothiago6167@gmail.com",
+            items: [
+              {
+                "description": "Testando api da iugu",
+                "quantity": 1,
+                "price_cents": 200
+              }
+            ],
+            payment_method: "credit_card",
+            due_date: "2024-12-31", 
+            payer: {
+              name: "Thiago Alves de Castro",
+              cpf_cnpj: "08213350227"
+            },
+            credit_card: {
+              number: "4111111111111111", 
+              verification_value: "123", 
+              expiration_month: "12", 
+              expiration_year: "2025",
+              holder_name: "Thiago Alves de Castro" 
+            }
+          }          
+        );
+        console.log(response)
+      } else {
+        response = await criarFaturaPix(
+          {
+            email: "castrothiago6167@gmail.com",
+            due_date: "2024-12-01",
+            items: [
+              {
+                "description": "Testando API de pagamento via pix da Iugu",
+                "quantity": 1,
+                "price_cents": 200
+              }
+            ],
+            payer: {
+              "cpf_cnpj": "08213350227",
+              "name": "Thiago Alves de Castro"
+            },
+            total: 1
+          }
+        );
+        console.log(response.pix.qrcode)
+        console.log(response.pix.qrcode_text)
+        setQrCodePix(response.pix.qrcode)
+        setPixChave(response.pix.qrcode_text)
 
-            // 2. Criar a fatura com o token do cartão
-            fatura = await criarFatura(tokenCartao, valorTotal, email);
-        } else if (metodoPagamento === 'pix') {
-            // Criar fatura para pagamento com PIX
-            fatura = await criarFaturaPix(valorTotal, email);
-            setQrCodePix(fatura.pix.qr_code);     // Define o QR Code retornado pela API
-            setPixChave(fatura.pix.pix_key);      // Define a chave PIX retornada pela API
-        }
-
-        console.log('Fatura criada:', fatura);
-
-        // Exibir detalhes do pagamento
-        alert('Fatura criada com sucesso!');
+      }
 
     } catch (error) {
-        console.error('Erro no checkout:', error);
-        alert('Erro ao processar o pagamento!');
+      console.error(error);
+      alert('Ocorreu um erro ao processar o pagamento. Tente novamente.');
     }
   };
 
+  console.log(pixChave)
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setDadosCartao({
@@ -133,7 +168,7 @@ export default function Checkout() {
       <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
       <main className="relative p-4 flex lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
-        <div className='flex flex-col p-10  min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl min-h-[60vh]'>
+        <div className='flex flex-col p-10  min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl min-h-[150vh]'>
           <div className="mb-6 flex flex-col">
             <div className='pb-2' >
               <h1 className='text-prim font-semibold text-lg'>Método de pagamento</h1>
@@ -287,7 +322,8 @@ export default function Checkout() {
                 gap-2
                 w-full
                 "
-                onClick={handleCheckout}
+                onClick={handleFinalizarCompra}
+
                 >
                   <i className="ion-locked mr-2"></i>Finalizar compra
                 </button>
@@ -301,7 +337,10 @@ export default function Checkout() {
                 <div>
                   <h3>Escaneie o QR Code para pagamento via PIX:</h3>
                   <img src={qrCodePix} alt="QR Code PIX" />
-                  <p>Ou use a chave PIX: {pixChave}</p>
+                  <p>Ou use a chave PIX</p>
+                  <div className='w-1/2'>
+                    <p className='text-sm flex flex-wrap max-w-[10vh]'>{pixChave}</p>
+                  </div>
                 </div>
               ) : (
                 <div className="mt-6">
@@ -321,7 +360,7 @@ export default function Checkout() {
                   gap-2
                   w-full
                   "
-                  onClick={handleCheckout}
+                  onClick={handleFinalizarCompra}
                   >
                     Gerar QR Code
                   </button>
