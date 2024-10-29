@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { Buffer } from 'buffer';
 
 // Configura a instância axios com a chave da API Iugu
 const iuguApi = axios.create({
-  baseURL: 'https://api.iugu.com/v1',
+  baseURL: '/api',
   headers: {
     Authorization: `Basic ${Buffer.from('5E355F52141F420D520B1984AFB5EEA867E5FFF4D791539E19C0C6E8A93B2384' + ':').toString('base64')}`,
   },
@@ -23,6 +24,7 @@ export const obterTokenCartao = async (dadosCartao) => {
           year: dadosCartao.anoExpiracao,
         },
       });
+      console.log(response.data)
       return response.data.id;  // Retorna o token do cartão
     } catch (error) {
       console.error('Erro ao obter token do cartão:', error.response?.data || error.message);

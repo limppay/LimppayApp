@@ -187,7 +187,6 @@ export const getEnderecosCliente = async (clienteId) => {
   }
 };
 
-
 export const getEnderecoDefaultCliente = async (clienteId) => {
   try {
     const response = await api.get(`/cliente/enderecoDefault/${clienteId}`, {

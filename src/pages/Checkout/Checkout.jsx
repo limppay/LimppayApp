@@ -11,7 +11,7 @@ import { useSelectedTimes } from '../../context/SelectedTimes';
 
 import { Avatar } from '@nextui-org/avatar';
 
-import { criarFaturaCartao, criarFaturaPix } from '../../services/api';
+import { createAgendamento, criarFaturaCartao, criarFaturaPix } from '../../services/api';
 
 import { obterTokenCartao } from '../../services/iuguApi';
 
@@ -39,6 +39,7 @@ export default function Checkout() {
   const [qrCodePix, setQrCodePix] = useState('');  // Estado para armazenar o QR Code PIX
   const [pixChave, setPixChave] = useState('');    // Estado para armazenar a chave PIX
   const [isLoading, setIsLoading] = useState(false)
+  const [isPayment, setIsPayment] = useState(false) 
 
   console.log(agendamentoData)
   const AgendamenteDataQtd = [agendamentoData]
@@ -109,6 +110,19 @@ export default function Checkout() {
             }
           }          
         );
+
+        const isCreateAgendamento = async () => {
+          try {
+            const response = await createAgendamento(agendamentoData)
+            console.log("Agendamento criado com sucesso!", response)
+            
+          } catch (error) {
+            console.log("Erro ao criar o agendamento", error)
+          }
+        }
+
+        isCreateAgendamento()
+        setIsPayment(true)
         console.log('Fatura criada com sucesso:', response);
         alert('Pagamento realizado com sucesso!');
       } 
@@ -120,6 +134,7 @@ export default function Checkout() {
   };
 
   console.log(pixChave)
+
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
