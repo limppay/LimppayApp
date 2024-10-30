@@ -35,7 +35,6 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   const TimePickerPopup = ({ selectedDates, onClose, onConfirm }) => {
     const [times, setTimes] = useState({});
     const [isConfirmEnabled, setIsConfirmEnabled] = useState(false);
-    const [selectedTimes, setSelectedTime] = useState('');
   
     const handleTimeChange = (date, time) => {
       setTimes(prev => {
@@ -45,22 +44,22 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
         const allTimesFilled = selectedDates.every(date => updatedTimes[date.toDateString()]);
     
         setIsConfirmEnabled(allTimesFilled);
-    
+
         return updatedTimes;
       });
     };
     
   
 
- const handleSelectAllTimes = (time) => {
-  const updatedTimes = selectedDates.reduce((acc, date) => {
-    acc[date.toDateString()] = time; // Atualiza o horário para cada data
-    return acc;
-  }, {});
-  
-  setTimes(updatedTimes); // Atualiza o estado dos horários para todas as datas
-  setIsConfirmEnabled(true); // Habilita o botão de confirmar se todos os horários forem preenchidos
-};   
+  const handleSelectAllTimes = (time) => {
+    const updatedAllTimes = selectedDates.reduce((acc, date) => {
+      acc[date.toDateString()] = time; // Atualiza o horário para cada data
+      return acc;
+    }, {});
+    
+    setTimes(updatedAllTimes)
+    setIsConfirmEnabled(true);
+  }   
   
     const handleConfirm = () => {
       onConfirm(times);
@@ -130,14 +129,14 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
               <Select
                 id='horas'
                 isRequired
-                placeholder="--:--"
+                placeholder={times[date.toDateString()] || "--:--" }
                 className="w-5/12 text-prim"
-                value={times[date.toDateString()] || '--:--'} // Define o valor do select com base no estado
-                onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)} // Passa a data e o horário
+                value={times[date.toDateString()] || "--:--"}
+                onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)} 
                 aria-label='horas'
               >
                 {horarios.map((hora) => (
-                  <SelectItem key={hora.key} className='text-prim' aria-label={hora.label}>
+                  <SelectItem key={hora.key} value={hora.key} className='text-prim' aria-label={hora.label}>
                     {hora.label}
                   </SelectItem>
                 ))}

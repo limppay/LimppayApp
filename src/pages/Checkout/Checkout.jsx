@@ -4,26 +4,51 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 import { Logo, Footer } from '../../componentes/imports';
 import CardLogoLimppay from "../../assets/img/limppay-icone-branco-card.svg"
-
 import { useSelectedProvider } from '../../context/SelectedProvider';
 import { useSelectedDates } from '../../context/SelectedDates';
 import { useSelectedTimes } from '../../context/SelectedTimes';
-
-import { Avatar } from '@nextui-org/avatar';
-
+import { Avatar } from '@nextui-org/avatar'
 import { createAgendamento, criarFaturaCartao, criarFaturaPix } from '../../services/api';
-
 import { obterTokenCartao } from '../../services/iuguApi';
-
 import { useUser } from '../../context/UserProvider';
+import { Input, Spinner } from '@nextui-org/react';
+import {Image} from "@nextui-org/image";
+import {Snippet} from "@nextui-org/snippet";
+
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup"
+
+'use client'
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 
 export default function Checkout() {
+  const schemaDadosCartao = yup.object({
+    numero: yup.number("Número do cartão é obrigatório.").required("Número do cartão é obrigatório.").typeError("Número do cartão dever ser um número válido."),
+    cvc: yup.number().required("Código de segurança é obrigatório."),
+    mesExpiracao: yup.number("somente numeros").required("Mês de expiração é obrigatório."),
+    anoExpiracao: yup.number("somente numeros").required("Ano de expiração é obrigatório"),
+    nome: yup.string().required("Nome é obrigatório.").trim()
+  })
+
+  const {
+      register,
+      handleSubmit,
+      formState: { errors },
+      reset
+      } = useForm({
+      resolver: yupResolver(schemaDadosCartao),
+  })
+
+  console.log(errors)
+
   const { agendamentoData, setAgendamentoData } = useAgendamentoData();
   const {selectedProvider} = useSelectedProvider()
   const {selectedDates} = useSelectedDates()
   const {selectedTimes} = useSelectedTimes()
   const navigate = useNavigate();
   const location = useLocation(); // Obtém a localização atual
+  const [isLoadingQrCode, setIsLoadingQrCode] = useState(false)
 
   const [dadosCartao, setDadosCartao] = useState({
       numero: null,
@@ -40,6 +65,7 @@ export default function Checkout() {
   const [pixChave, setPixChave] = useState('');    // Estado para armazenar a chave PIX
   const [isLoading, setIsLoading] = useState(false)
   const [isPayment, setIsPayment] = useState(false) 
+  const [isPaymentFinally, setIsPaymentFinally] = useState(false) 
 
   console.log(agendamentoData)
   const AgendamenteDataQtd = [agendamentoData]
@@ -77,9 +103,12 @@ export default function Checkout() {
     createPix()
   }
 
-  const handleFinalizarCompra = async () => {
+  const handleFinalizarCompra = async (data) => {
+    setIsPayment(true)
+    console.log(data)
+
     try {
-      const token = await obterTokenCartao(dadosCartao)
+      const token = await obterTokenCartao(data)
 
       let response;
 
@@ -97,16 +126,16 @@ export default function Checkout() {
             payment_method: "credit_card",
             due_date: "2024-12-31", 
             payer: {
-              name: dadosCartao.nome,
+              name: data.nome,
               cpf_cnpj: "08213350227"
             },
             token,
             credit_card: {
-              number: dadosCartao.numero, 
-              verification_value: dadosCartao.cvc, 
-              expiration_month: dadosCartao.mesExpiracao, 
-              expiration_year: dadosCartao.anoExpiracao,
-              holder_name: dadosCartao.nome 
+              number: data.numero, 
+              verification_value: data.cvc, 
+              expiration_month: data.mesExpiracao, 
+              expiration_year: data.anoExpiracao,
+              holder_name: data.nome 
             }
           }          
         );
@@ -118,18 +147,21 @@ export default function Checkout() {
             
           } catch (error) {
             console.log("Erro ao criar o agendamento", error)
+          } finally {
+            reset()
           }
         }
 
         isCreateAgendamento()
-        setIsPayment(true)
         console.log('Fatura criada com sucesso:', response);
-        alert('Pagamento realizado com sucesso!');
       } 
-
+      
     } catch (error) {
       console.error('Erro no pagamento:', error);
       alert('Erro ao processar o pagamento.');
+    } finally {
+      setIsPaymentFinally(true)
+      setIsPayment(false)
     }
   };
 
@@ -138,10 +170,10 @@ export default function Checkout() {
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setDadosCartao({
-        ...dadosCartao,
-        [name]: value,
-    });
+    setDadosCartao((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const buttons = [
@@ -199,12 +231,14 @@ export default function Checkout() {
     return null; // Não renderiza se os dados não estiverem disponíveis
   }
 
+  console.log(dadosCartao)
+
   return (
     <>
       <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
       <main className="relative p-4 flex lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
-        <div className='flex flex-col p-10  min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl min-h-[150vh]'>
+        <div className='flex flex-col p-10  min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl lg:min-h-[150vh] min-h-[90vh]'>
           <div className="mb-6 flex flex-col">
             <div className='pb-2' >
               <h1 className='text-prim font-semibold text-lg'>Método de pagamento</h1>
@@ -274,110 +308,149 @@ export default function Checkout() {
                 </div>
               </div>
 
-              <div className="mb-4">
-                <label htmlFor="cardholdername" className="block text-prim mb-2">Nome</label>
-                <input
-                  id="cardholdername"
-                  type="text"
-                  placeholder="Igual ao do cartão"
-                  className=" w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                  name='nome'
-                  value={dadosCartao.nome}
-                  onChange={handleInputChange}
-                />
-              </div>
+              <form onSubmit={handleSubmit(handleFinalizarCompra)}>
+                <div className="mb-4">
+                  <label htmlFor="cardholdername" className="block text-prim mb-2">Nome</label>
+                  <input
+                    id="cardholdername"
+                    name="nome"
+                    type="text"
+                    placeholder="Igual ao do cartão"
+                    className=" w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
+                    onChange={handleInputChange}
+                    {...register("nome")}
+                  />
+                  {errors.nome && 
+                    <span className="text-error opacity-75">{errors.nome?.message}</span>}
+                </div>
 
-              <div className="mb-4">
-                <label htmlFor="cardnumber" className="block text-prim mb-2">Número do cartão</label>
-                <input
-                  id="cardnumber"
-                  type="text"
-                  placeholder="8888-8888-8888-8888"
-                  className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                  maxLength="19"
-                  name='numero'
-                  value={dadosCartao.numero}
-                  onChange={handleInputChange}
-                />
-              </div>
+                <div className="mb-4">
+                  <label htmlFor="cardnumber" className="block text-prim mb-2">Número do cartão</label>
+                  <input
+                    id="cardnumber"
+                    placeholder="8888-8888-8888-8888"
+                    className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
+                    maxLength="19"
+                    {...register("numero")}
+                  />
+                  {errors.numero && 
+                    <span className="text-error opacity-75">{errors.numero?.message}</span>}
+                </div>
 
-              <div className="flex justify-between  mb-4">
-                <div className="w-1/2 pr-2">
-                  <label htmlFor="expiry-date" className="block text-prim mb-2">Validade</label>
-                  <div className="flex gap-2">
-
+                <div className="flex justify-between  mb-4">
+                  <div className="w-1/2 pr-2">
+                    <div className='flex gap-2'>
+                      <label htmlFor="expiry-date" className="block text-prim mb-2">Validade</label>
+                      {errors.mesExpiracao || errors.anoExpiracao ? 
+                          <span className="text-error opacity-75">*</span> : ""}
+                    </div>
+                    <div className="flex gap-2">
+                      <div>
+                        <input
+                          className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
+                          maxLength="2"
+                          placeholder="MM"
+                          {...register("mesExpiracao")}
+                        />
+                      </div>
+                      <div>
+                        <input
+                          className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
+                          maxLength="2"
+                          placeholder="YY"
+                          {...register("anoExpiracao")}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/2 pl-2">
+                    <div className='flex gap-2'>
+                      <label htmlFor="cvv" className="block text-prim mb-2">CVC</label>
+                      {errors.cvc && 
+                      <span className="text-error opacity-75">*</span>}
+                    </div>
                     <input
+                      maxLength="4"
+                      placeholder="123"
                       className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                      type="number"
-                      name="mesExpiracao"
-                      placeholder="MM"
-                      value={dadosCartao.mesExpiracao}
-                      onChange={handleInputChange}
-                    />
-
-                    <input
-                      className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                      type="number"
-                      name="anoExpiracao"
-                      maxLength="2"
-                      placeholder="YY"
-                      value={dadosCartao.anoExpiracao}
-                      onChange={handleInputChange}
-                    />
-
+                      {...register("cvc")}
+                      />
+                      
                   </div>
                 </div>
-                <div className="w-1/2 pl-2">
-                  <label htmlFor="cvv" className="block text-prim mb-2">CVC</label>
-                  <input
-                    type="number"
-                    maxLength="4"
-                    placeholder="123"
-                    className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                    name='cvc'
-                    value={dadosCartao.cvc}
-                    onChange={handleInputChange}
-                    />
-                </div>
-              </div>
 
-              <div className="mt-6">
-                <button 
-                className="p-2 rounded-md 
-                text-center
-                text-white 
-                bg-des         
-                hover:text-white transition-all
-                duration-200
-                hover:bg-sec hover:bg-opacity-75
-                hover:border-trans
-                flex 
-                items-center
-                justify-center
-                text-sm
-                gap-2
-                w-full
-                "
-                onClick={handleFinalizarCompra}
-                >
-                  <i className="ion-locked mr-2"></i>Finalizar compra
-                </button>
-              </div>
+                <div className="mt-6">
+                  <button 
+                  type='submit'
+                  className="p-2 rounded-md 
+                  text-center
+                  text-white 
+                  bg-des         
+                  hover:text-white transition-all
+                  duration-200
+                  hover:bg-sec hover:bg-opacity-75
+                  hover:border-trans
+                  flex 
+                  items-center
+                  justify-center
+                  text-sm
+                  gap-2
+                  w-full
+                  "
+                  >
+                    <i className="ion-locked mr-2"></i>Finalizar compra
+                  </button>
+                </div>
+              </form>
             </div>
           )}
 
           {metodoPagamento === 'pix' && (
-            <div className='flex justify-center w-full'>
-              {qrCodePix && (
-                <div>
-                  <h3>Escaneie o QR Code para pagamento via PIX:</h3>
-                  <img src={qrCodePix} alt="QR Code PIX" />
-                  <p>Ou use a chave PIX</p>
-                  <div className='w-1/2'>
-                    <p className='text-sm flex flex-wrap max-w-[10vh]'>{pixChave}</p>
+            <div className='flex justify-center w-full h-full'>
+              {qrCodePix ? (
+                <>
+                  <div className='flex flex-col min-h-full min-w-full items-center gap-5'>
+                    <div className='text-center flex flex-col justify-center items-center'>
+                      <h3 className='text-prim font-semibold'>Escaneie o QR Code para pagamento via PIX:</h3>
+                      <Image
+                        className='z-0'
+                        height={250}
+                        width={250}
+                        alt="QR Code Pix"
+                        src={qrCodePix}
+                      />
+                    </div>
+                    <div className='max-w-full flex flex-col gap-2'>
+                      <div className='flex justify-center items-center gap-2'>
+                        <p className='text-center text-prim font-semibold'>Ou use a chave PIX</p>
+                      </div>
+                      <div className='flex items-center gap-2 max-w-full'>
+                        <Snippet hideSymbol="true" 
+                          tooltipProps={{
+                            color: "default",
+                            content: "Copiar chave pix",
+                            disableAnimation: true,
+                            placement: "right",
+                            closeDelay: 0
+                          }} 
+                        >
+                          <div className='max-w-80 lg:max-w-xl'>
+                            <div className='p-2 flex flex-row overflow-x-scroll '>
+                              <p className='text-prim whitespace-nowrap '>{pixChave}</p>
+                            </div>
+                          </div>
+                        </Snippet>
+                      </div>
+                    </div>
                   </div>
+                </>                
+              ) : (
+                <div className='flex justify-center items-center w-full h-1/2 text-white'>
+                  <Spinner size='lg' />
                 </div>
               )}
+      
+      
             </div>
           )}
         </div>
@@ -474,6 +547,44 @@ export default function Checkout() {
         </div> 
       </main>
       <Footer/>
+      <Dialog open={isPayment} onClose={() => {}} className="relative z-10">
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+        />
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-prim bg-opacity-50">
+          <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+            <DialogPanel
+              transition
+              className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+            >
+              <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 flex flex-col justify-center items-center">
+                {isPaymentFinally ? (
+                  <>
+                    <div className='text-sec'>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-20">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className='text-prim font-semibold'>Pagamento realizado com sucesso!</h2>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className='text-white'>
+                      <Spinner size='lg'/>
+                    </div>
+                    <div>
+                      <h2 className='text-prim font-semibold'>Processando pagamento</h2>
+                    </div>
+                  </>
+                )}
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </>
   );
 }

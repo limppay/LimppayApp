@@ -7,6 +7,7 @@ import ProgressBar from '../../componentes/App/ProgressBar';
 import { createAgendamento, CreateEnderecosCliente, deleteEnderecosCliente, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
 import {Avatar, Spinner, spinner} from "@nextui-org/react";
 'use client'
+import {CircularProgress} from "@nextui-org/progress";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import Banner from "../../assets/img/App/limpando.png"
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
@@ -60,7 +61,9 @@ export default function ContrateOnline() {
         resolver: yupResolver(schema),
     })
 
+    // Criar endereço do cliente
     const onSubmit = async (data) => {
+        setIsCreatingAdress(true)
 
         console.log(data)
 
@@ -69,13 +72,14 @@ export default function ContrateOnline() {
           console.log("Endereço criado com sucesso!",response);
 
           setEnderecosCliente((prevEnderecos) => [...prevEnderecos, response])
-
-          setOpenCreateAdress(false)
-
-
+        
         } catch (error) {
             console.error(error.message);
             setMessage(error.message)
+            setIsCreatingAdress(false)
+        } finally {
+            setOpenCreateAdress(false)
+            setIsCreatingAdress(false)
         }
 
     }
@@ -170,18 +174,27 @@ export default function ContrateOnline() {
 
     const [selectedService, setSelectedService] = useState(''); // Estado para armazenar o serviço selecionado
     const [serviceValue, setServiceValue] = useState() // Estado para armazenar o valor do serviço
-
     const {selectedTimes, setSelectedTimes} = useSelectedTimes([])
 
-    const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState(false)
-    const [observacao, setObservacao ] = useState('')
+    const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])    
+    const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState(null)
 
+    useEffect(() => {
+        if (enderecoDefaultCliente.length > 0) {
+            setSelectedEnderecoCliente(enderecoDefaultCliente[0].id);
+        }
+    }, [enderecoDefaultCliente]);
+    
+    console.log("Endereço padrao foi selecionado",selectedEnderecoCliente);
+
+    const [observacao, setObservacao ] = useState('')
     const [providers, setProviders] = useState([])
     const [open, setOpen] = useState(false)
     const [openCreateAdress, setOpenCreateAdress] = useState(false)
     const [enderecosCliente, setEnderecosCliente] = useState([])
-    const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+    const [isCreatingAdress, setIsCreatingAdress] = useState(false)
+    const [isDeleteAdress, setIsDeleteAdress] = useState(false)
     const navigate = useNavigate();
 
     const { user } = useUser();
@@ -213,7 +226,7 @@ export default function ContrateOnline() {
         }
     }, [enderecosCliente, clienteId]); // Chama a função ao montar o componente
 
-    console.log(enderecoDefaultCliente)
+
     console.log(enderecosCliente)
 
     
@@ -281,16 +294,19 @@ export default function ContrateOnline() {
 
     const HandleDeleteEndereco = async (enderecoId) => {
         try {
+            setIsDeleteAdress(true)
             // Realiza a exclusão do endereço na API
             const DeleteEndereco = await deleteEnderecosCliente(enderecoId);
     
             // Atualiza a lista de endereços removendo o endereço excluído
             setEnderecosCliente(prevEnderecos => prevEnderecos.filter(endereco => endereco.id !== enderecoId));
-            setSelectedEnderecoCliente(null)
+            setSelectedEnderecoCliente(enderecoDefaultCliente[0].id)
             
             console.log(`Endereço ${enderecoId} excluído com sucesso!`);
         } catch (error) {
             console.error("Erro ao excluir o endereço: ", error);
+        } finally {
+            setIsDeleteAdress(false)
         }
     };
     
@@ -445,29 +461,51 @@ export default function ContrateOnline() {
                         <>
                             {user ? (
                                 isLoading ? (
-                                    <Spinner color='primary'/>
+                                    <div className='flex items-center justify-center h-80 text-prim'>
+                                        <Spinner size='lg' color='primary' label='Carregando endereços' />
+                                    </div>
                                 ) : (
-                                    enderecoDefaultCliente ? ( 
+                                    enderecoDefaultCliente && ( 
                                         <div>
                                             <div className='grid lg:grid-cols-2
                                             md:grid-cols-2
                                             sm:grid-cols-2
-                                            pt-5 gap-10 overflow-auto max-h-[100vh] '>
-                                                <div className={`border border-bord rounded-lg lg:min-h-[46vh] lg:max-h-[46vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[38vh] max-w-[38vh]
+                                            pt-5 gap-10 overflow-auto max-h-[100vh] 
+                                            pr-5 pl-5
+                                            '>
+                                                <div className={`border-2 border-bord rounded-lg lg:min-h-[50vh] lg:max-h-[50vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[36vh] max-h-[35vh] min-w-[35vh] max-w-[35vh]
                                                 
                                                 
-                                                ${selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? 'border-sec ' : 'hover:border-sec border-bord' }
+                                                ${
+                                                    enderecoDefaultCliente[0] ?
+                                                    selectedEnderecoCliente == enderecoDefaultCliente[0].id ? 'border-sec shadow-sm shadow-sec' : 'hover:border-sec border-bord' : "" }
                                                 `}
-                                                
+
                                                 onClick={() => {
-                                                    setSelectedEnderecoCliente(enderecoDefaultCliente[0])
+                                                    setSelectedEnderecoCliente(enderecoDefaultCliente[0].id)
                                                     console.log(enderecoDefaultCliente[0].id)
                                                 }}
-                                                
-                                                
+
                                                 >
-                                                    <div className={`border-b border-bord p-3 ${selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? "border-sec" : "border-bord"}`}>
-                                                        <h1 className={` font-semibold ${selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? "text-sec" : "text-prim"} `}>{selectedEnderecoCliente && selectedEnderecoCliente.id === enderecoDefaultCliente[0].id ? "Serviço será feito aqui" : "Selecionar endereço"}</h1>
+                                                    <div className={`border-b-2 border-bord p-3 
+                                                    ${
+                                                        enderecoDefaultCliente[0] ?
+                                                        selectedEnderecoCliente == enderecoDefaultCliente[0].id ? "border-sec" : "border-bord" : ""
+                                                        
+                                                    }`}>
+
+                                                        <h1 className={` font-semibold 
+                                                            ${
+                                                                enderecoDefaultCliente[0] ?
+                                                                selectedEnderecoCliente == enderecoDefaultCliente[0].id ? "text-sec" : "text-prim" : ""
+                                                            
+                                                            } `}
+                                                            
+                                                            >
+                                                                
+                                                            {enderecoDefaultCliente[0] ? selectedEnderecoCliente == enderecoDefaultCliente[0].id ? "Serviço será feito aqui" : "Selecionar endereço": ""}
+                                                        </h1>
+
                                                     </div>
                                                     <div className='p-5 text-start flex flex-col text-prim'>
                                                         <h2 className='text-prim font-semibold pb-2'>Endereço principal</h2>
@@ -479,10 +517,14 @@ export default function ContrateOnline() {
                                                 </div>
 
                                                 {enderecosCliente.map((endereco) => (
-                                                    <div key={endereco.id} className={`border border-bord rounded-lg lg:min-h-[46vh] lg:max-h-[46vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[38vh] max-w-[38vh]
+                                                    <div key={endereco.id} className={`border-2 border-bord rounded-lg lg:min-h-[50vh] lg:max-h-[50vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[35vh] max-w-[35vh] 
 
-                                                    ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec' : 'hover:border-sec border-bord' }
+                                                    ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec shadow-sm shadow-sec' : 'border-bord' }
+                                                    
+                                                    ${isDeleteAdress && selectedEnderecoCliente.id == endereco.id ? "border-none shadow-white" : "hover:border-sec"}
+
                                                     `}
+
 
                                                     onClick={() => {
                                                         setSelectedEnderecoCliente(endereco)
@@ -491,28 +533,36 @@ export default function ContrateOnline() {
 
 
                                                     >
-                                                        <div className={`border-b border-bord p-3 ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "border-sec" : "border-bord"}`}>
-
-                                                            <h1 className={` font-semibold ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "text-sec" : "text-prim"} `}>{selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "Serviço será feito aqui" : "Selecionar endereço"}</h1>
-                                                        </div>
-                                                        <div className='p-5 text-start flex flex-col text-prim'>
-                                                            <h2 className='text-prim font-semibold pb-2'>{endereco?.localServico}</h2>
-                                                            <p>{endereco?.logradouro}, {endereco?.numero}</p> 
-                                                            <p>{endereco?.complemento}</p> 
-                                                            <p>{endereco?.bairro}</p> 
-                                                            <p>{endereco?.cidade}, {endereco?.estado} - {formatarCep(endereco?.cep)} </p> 
-                                                            <div className='text-start pt-2'>
-                                                                <button
-                                                                onClick={() => (HandleDeleteEndereco(endereco.id))}
-                                                                >
-                                                                    <DeleteIcon style={{ fontSize: 24, color: 'red' }} /> 
-                                                                </button>
+                                                        {isDeleteAdress && selectedEnderecoCliente.id == endereco.id ? (
+                                                            <div className='rounded-md w-full h-full flex items-center justify-center  text-white'>
+                                                                <Spinner size='lg'/>
                                                             </div>
-                                                        </div>
+                                                        ) : (
+                                                            <>
+                                                                <div className={`border-b-2 border-bord p-3 ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "border-sec" : "border-bord"} `}>
+
+                                                                    <h1 className={` font-semibold ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "text-sec" : "text-prim"} `}>{selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "Serviço será feito aqui" : "Selecionar endereço"}</h1>
+                                                                </div>
+                                                                <div className='p-5 text-start flex flex-col text-prim'>
+                                                                    <h2 className='text-prim font-semibold pb-2'>{endereco?.localServico}</h2>
+                                                                    <p>{endereco?.logradouro}, {endereco?.numero}</p> 
+                                                                    <p>{endereco?.complemento}</p> 
+                                                                    <p>{endereco?.bairro}</p> 
+                                                                    <p>{endereco?.cidade}, {endereco?.estado} - {formatarCep(endereco?.cep)} </p> 
+                                                                    <div className='text-start pt-2'>
+                                                                        <button
+                                                                        onClick={() => (HandleDeleteEndereco(endereco.id))}
+                                                                        >
+                                                                            <DeleteIcon style={{ fontSize: 24, color: 'red' }} /> 
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 ))}
 
-                                                <div className='p-5 border border-bord border-opacity-50  lg:min-h-[46vh] lg:max-h-[46vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[38vh] max-w-[38vh]
+                                                <div className='rounded-md p-5 border-2 border-bord border-opacity-50  lg:min-h-[50vh] lg:max-h-[50vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[35vh] max-w-[35vh]
                                                 
                                                 flex items-center justify-center'>
                                                     <button 
@@ -532,16 +582,15 @@ export default function ContrateOnline() {
                                                                 transition
                                                                 className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full"
                                                             >
-                                                                <div className="bg-white pb-4 pt-5 ">
+                                                                <div className="bg-white pb-4 ">
                                                                     <div className="sm:flex sm:items-start flex-col">
-                                                                        <div className="text-center sm:mt-0 sm:text-left border-b border-bord w-full pb-4">
+                                                                        <div className="text-center sm:mt-0 sm:text-left border-b border-bord w-full pb-4 pt-5">
                                                                             <DialogTitle as="h3" className="font-semibold text-desSec text-2xl text-center">
                                                                                 Cadastrar novo endereço
                                                                             </DialogTitle>
                                                                         </div>
                                                                         
-                                                                        <form className="pt-0 flex flex-col gap-5 w-full bg-pri " 
-                                                                        onSubmit={handleSubmit(onSubmit)}
+                                                                        <form className="pt-0 flex flex-col gap-5 w-full bg-pri " onSubmit={handleSubmit(onSubmit)}
                                                                         >
                                                                             <div className='overflow-auto h-[65vh] lg:h-[55vh]'>
                                                                                     <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
@@ -667,6 +716,7 @@ export default function ContrateOnline() {
 
                                                                             <div className=" px-4 py-3 sm:flex sm:px-6 flex justify-end gap-3 ">
                                                                                 <button
+                                                                                    type='button'
                                                                                     data-autofocus
                                                                                     onClick={() => setOpenCreateAdress(false)}
                                                                                     className="inline-flex  justify-center rounded-md bg-white p-2 text-sm text-prim shadow-sm border sm:mt-0 sm:w-auto border-bord "
@@ -689,13 +739,16 @@ export default function ContrateOnline() {
                                                                                     justify-center
                                                                                     text-sm
                                                                                     gap-2"
-
-                                                                                    
                                                                                 >
                                                                                     Cadastrar
                                                                                 </button>
                                                                             </div>
                                                                         </form>
+                                                                        {isCreatingAdress && (
+                                                                            <div className='fixed bg-prim bg-opacity-30 w-full h-full flex items-center justify-center  text-white'>
+                                                                                <Spinner size='lg'/>
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </DialogPanel>
@@ -731,14 +784,7 @@ export default function ContrateOnline() {
                                             )}
                                         </div>
                                         
-                                    ) : (
-                                        <>
-                                            <h1>Não foi possivel carregar os endereços, tente novamente.</h1>
-                                        </>
-                                    )
-
-                
-                                    
+                                    )               
                                 )
                             ) : (
                                 <StepLoginCustomer />
