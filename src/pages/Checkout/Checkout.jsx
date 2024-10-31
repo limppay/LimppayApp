@@ -66,6 +66,7 @@ export default function Checkout() {
   const [isLoading, setIsLoading] = useState(false)
   const [isPayment, setIsPayment] = useState(false) 
   const [isPaymentFinally, setIsPaymentFinally] = useState(false) 
+  const [isPaymentFailed, setIsPaymentFailed] = useState(false)
 
   console.log(agendamentoData)
   const AgendamenteDataQtd = [agendamentoData]
@@ -104,64 +105,57 @@ export default function Checkout() {
   }
 
   const handleFinalizarCompra = async (data) => {
-    setIsPayment(true)
-    console.log(data)
+    setIsPaymentFailed(false);
+    setIsPaymentFinally(false);
+    setIsPayment(true);
 
+    console.log(data);
     try {
-      const token = await obterTokenCartao(data)
+        const token = await obterTokenCartao(data);
 
-      let response;
+        let response;
 
-      if (metodoPagamento === 'credit_card') {
-        response = await criarFaturaCartao(
-          {
-            email: user.email,
-            items: [
-              {
-                "description": "Fatura do seu pedido",
-                "quantity": AgendamenteDataQtd.length,
-                "price_cents": agendamentoData.valorServico * 100
-              }
-            ],
-            payment_method: "credit_card",
-            due_date: "2024-12-31", 
-            payer: {
-              name: data.nome,
-              cpf_cnpj: "08213350227"
-            },
-            token,
-            credit_card: {
-              number: data.numero, 
-              verification_value: data.cvc, 
-              expiration_month: data.mesExpiracao, 
-              expiration_year: data.anoExpiracao,
-              holder_name: data.nome 
-            }
-          }          
-        );
+        if (metodoPagamento === 'credit_card') {
+            response = await criarFaturaCartao({
+                email: user.email,
+                items: [
+                    {
+                        "description": "Fatura do seu pedido",
+                        "quantity": AgendamenteDataQtd.length,
+                        "price_cents": agendamentoData.valorServico * 100
+                    }
+                ],
+                payment_method: "credit_card",
+                due_date: "2024-12-31",
+                payer: {
+                    name: data.nome,
+                    cpf_cnpj: "08213350227"
+                },
+                token,
+                credit_card: {
+                    number: data.numero,
+                    verification_value: data.cvc,
+                    expiration_month: data.mesExpiracao,
+                    expiration_year: data.anoExpiracao,
+                    holder_name: data.nome
+                }
+            });
 
-        const isCreateAgendamento = async () => {
-          try {
-            const response = await createAgendamento(agendamentoData)
-            console.log("Agendamento criado com sucesso!", response)
-            
-          } catch (error) {
-            console.log("Erro ao criar o agendamento", error)
-          } finally {
-            reset()
-          }
+            console.log('Fatura criada com sucesso:', response);
         }
 
-        isCreateAgendamento()
-        console.log('Fatura criada com sucesso:', response);
-      } 
-      
     } catch (error) {
-      console.error('Erro no pagamento:', error);
-      alert('Erro ao processar o pagamento.');
+        console.error('Erro no pagamento:', error);
+        setIsPaymentFailed(true);
+
     } finally {
-      setIsPaymentFinally(true)
-      setIsPayment(false)
+      setIsPaymentFinally(true);
+      
+      setTimeout(() => {
+        navigate("/contrate-online")
+        setAgendamentoData(null)
+        setIsPayment(false);
+      }, 4000);
     }
   };
 
@@ -556,19 +550,44 @@ export default function Checkout() {
           <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
             <DialogPanel
               transition
-              className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+              className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 max-w-full"
             >
-              <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 flex flex-col justify-center items-center">
+              <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 flex flex-col justify-center items-center min-h-96 gap-5 w-96 lg:w-auto md:w-auto sm:w-auto">
                 {isPaymentFinally ? (
                   <>
-                    <div className='text-sec'>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-20">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h2 className='text-prim font-semibold'>Pagamento realizado com sucesso!</h2>
-                    </div>
+                    {isPaymentFailed ? (
+                      <>
+                        <div className='text-sec'>
+                          {/* icone aqui */}
+                          <svg width="100" height="100" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="red" strokeWidth="2"/>
+                            <line x1="8" y1="8" x2="16" y2="16" stroke="red" strokeWidth="2"/>
+                            <line x1="8" y1="16" x2="16" y2="8" stroke="red" strokeWidth="2"/>
+                          </svg>
+                        </div>
+                        <div className='text-center'>
+                          <p className='text-error'>｡•́︿•̀｡</p>
+                          <h2 className='text-error font-semibold text-xl'>Falha ao processar pagamento</h2>
+                          <p className='text-prim text-sm' >Não foi possível realizar o pagamento, tente novamente mais tarde ou entre em contato com o seu banco.</p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className='text-sec flex justify-center items-center gap-5'>
+                          <svg width="100" height="100" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="green" strokeWidth="2"/>
+                            <path d="M8 12l2 2 4-4" stroke="green" strokeWidth="2" fill="none"/>
+                          </svg>
+                        </div>
+                        <div className='text-center'>
+                          <p className='text-sec font-semibold '>＾▽＾</p>
+                          <h2 className='text-sec font-semibold text-xl'>Pagamento realizado com sucesso!</h2>
+                          <div>
+                            <p className='text-prim text-sm text-center' >Obrigado por agendar um serviço na Limppay, volte sempre! Para mais detalhes sobre seu agendamento, entre no seu perfil</p>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </>
                 ) : (
                   <>
