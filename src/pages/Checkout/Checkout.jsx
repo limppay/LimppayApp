@@ -112,6 +112,7 @@ export default function Checkout() {
     console.log(data);
     try {
         const token = await obterTokenCartao(data);
+        console.log(token)
 
         let response;
 
@@ -151,11 +152,11 @@ export default function Checkout() {
     } finally {
       setIsPaymentFinally(true);
       
-      setTimeout(() => {
-        navigate("/contrate-online")
-        setAgendamentoData(null)
-        setIsPayment(false);
-      }, 4000);
+      // setTimeout(() => {
+      //   navigate("/contrate-online")
+      //   setAgendamentoData(null)
+      //   setIsPayment(false);
+      // }, 4000);
     }
   };
 
