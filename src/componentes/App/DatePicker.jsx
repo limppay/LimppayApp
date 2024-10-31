@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import {Select, SelectSection, SelectItem} from "@nextui-org/select";
+import { Select, SelectSection, SelectItem } from "@nextui-org/select";
 
 const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSelection, selectedTimes, setSelectedTimes }) => {
   const today = new Date();
@@ -8,9 +8,17 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   const [showMonths, setShowMonths] = useState(false);
   const [showYears, setShowYears] = useState(false);
   const [currentYearPage, setCurrentYearPage] = useState(0);
-  const[isConfirmEnabled, setIsConfirmEnabled] = useState(false);
+  const [isConfirmEnabled, setIsConfirmEnabled] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const currentYear = today.getFullYear();
+
+  // Efeito para avançar para o próximo mês apenas no último dia do mês, executado uma única vez ao montar
+  useEffect(() => {
+    const isLastDayOfMonth = today.getDate() === new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    if (isLastDayOfMonth) {
+      setCurrentDate(new Date(today.getFullYear(), today.getMonth() + 1, 1));
+    }
+  }, []);  // Array de dependências vazio para rodar uma vez na montagem
 
   useEffect(() => {
     const initialYearPage = Math.floor((currentYear - (currentYear - 50)) / 16);
@@ -23,7 +31,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     } else {
         setIsConfirmEnabled(false);
     }
-}, [selectedDates, maxSelection])
+  }, [selectedDates, maxSelection]);
 
   const renderDaysOfWeek = () => {
     const daysOfWeek = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -31,6 +39,9 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       <div key={index} className="font-bold text-lg text-center text-desSec pb-2">{day}</div>
     ));
   };
+
+  // Restante do código permanece igual...
+
 
   const TimePickerPopup = ({ selectedDates, onClose, onConfirm }) => {
     const [times, setTimes] = useState({});
@@ -245,7 +256,17 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     } else if (showMonths) {
       setCurrentDate(new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1));
     } else {
-      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+      const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+      const todayDate = today.getDate();
+      const todayMonth = today.getMonth();
+      const todayYear = today.getFullYear();
+      const currentDateToCheck = new Date(currentDate.getFullYear(), currentDate.getMonth(), todayDate);
+  
+      if (currentDateToCheck.getMonth() === todayMonth && currentDateToCheck.getFullYear() === todayYear) {
+        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+      } else {
+        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+      }
     }
   };
 
