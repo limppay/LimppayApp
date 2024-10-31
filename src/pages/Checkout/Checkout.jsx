@@ -83,7 +83,7 @@ export default function Checkout() {
           {
             "description": "Testando API de pagamento via pix da Iugu",
             "quantity": AgendamenteDataQtd.length,
-            "price_cents": agendamentoData.valorServico * 100
+            "price_cents": 2 * 100
           }
         ],
         payer: {
@@ -122,7 +122,7 @@ export default function Checkout() {
                     {
                         "description": "Fatura do seu pedido",
                         "quantity": AgendamenteDataQtd.length,
-                        "price_cents": agendamentoData.valorServico * 100
+                        "price_cents": 2 * 100
                     }
                 ],
                 payment_method: "credit_card",
