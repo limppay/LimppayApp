@@ -11,6 +11,7 @@ export default {
     colors: {
       prim: "#777777",
       sec: "#53B852",
+      secsec: "#f9f9f9",
       ter: "#555555",
       des: "#F58634",
       desSec: "#00AFEF",

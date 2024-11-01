@@ -478,7 +478,7 @@ export default function ContrateOnline() {
                                                 
                                                 ${
                                                     enderecoDefaultCliente[0] ?
-                                                    selectedEnderecoCliente == enderecoDefaultCliente[0].id ? 'border-sec shadow-sm shadow-sec' : 'hover:border-sec border-bord' : "" }
+                                                    selectedEnderecoCliente == enderecoDefaultCliente[0].id ? 'border-sec shadow-sm shadow-sec bg-secsec' : 'hover:border-sec border-bord' : "" }
                                                 `}
 
                                                 onClick={() => {

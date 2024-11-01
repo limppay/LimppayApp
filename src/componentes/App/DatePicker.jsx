@@ -40,9 +40,6 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     ));
   };
 
-  // Restante do código permanece igual...
-
-
   const TimePickerPopup = ({ selectedDates, onClose, onConfirm }) => {
     const [times, setTimes] = useState({});
     const [isConfirmEnabled, setIsConfirmEnabled] = useState(false);
@@ -62,15 +59,16 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     
   
 
-  const handleSelectAllTimes = (time) => {
-    const updatedAllTimes = selectedDates.reduce((acc, date) => {
-      acc[date.toDateString()] = time; // Atualiza o horário para cada data
-      return acc;
-    }, {});
+    const handleSelectAllTimes = (time) => {
+      const updatedAllTimes = selectedDates.reduce((acc, date) => {
+        acc[date.toDateString()] = time; // Define o mesmo horário para cada data selecionada
+        return acc;
+      }, {});
     
-    setTimes(updatedAllTimes)
-    setIsConfirmEnabled(true);
-  }   
+      setTimes(updatedAllTimes); // Atualiza o estado com todos os horários preenchidos
+      setIsConfirmEnabled(true); // Habilita o botão de confirmação se necessário
+    };
+    
   
     const handleConfirm = () => {
       onConfirm(times);
@@ -116,7 +114,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       <div className="fixed inset-0 flex items-center justify-center bg-prim bg-opacity-70 ">
         <div className="bg-white p-4 rounded-lg shadow-lg flex w-9/12 lg:w-3/12 flex-col gap-5">
           <h3 className="text-lg font-bold mb-2 text-desSec">Selecione os horários</h3>
-
+                      
             <Select
                 id='horasTodos'
                 placeholder="Selecione um horário para todos"
@@ -138,20 +136,22 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
               <span>{date.toLocaleDateString()}</span>
 
               <Select
-                id='horas'
+                key={date.toString() + (times[date.toDateString()] || "")} // Força a re-renderização
+                id="horas"
                 isRequired
-                placeholder={times[date.toDateString()] || "--:--" }
+                placeholder={times[date.toDateString()] || "--:--"}
                 className="w-5/12 text-prim"
-                value={times[date.toDateString()] || "--:--"}
-                onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)} 
-                aria-label='horas'
+                value={times[date.toDateString()] || ""}
+                onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)}
+                aria-label="horas"
               >
                 {horarios.map((hora) => (
-                  <SelectItem key={hora.key} value={hora.key} className='text-prim' aria-label={hora.label}>
+                  <SelectItem key={hora.key} value={hora.key} className="text-prim" aria-label={hora.label}>
                     {hora.label}
                   </SelectItem>
                 ))}
               </Select>
+
             </div>
           ))}
 
