@@ -130,7 +130,7 @@ export default function Checkout() {
                 due_date: "2024-12-31",
                 payer: {
                     name: data.nome,
-                    cpf_cnpj: "02221589211",
+                    cpf_cnpj: "08213350227",
                 },
                 token,
                 credit_card: {
@@ -152,11 +152,11 @@ export default function Checkout() {
     } finally {
       setIsPaymentFinally(true);
       
-      // setTimeout(() => {
-      //   navigate("/contrate-online")
-      //   setAgendamentoData(null)
-      //   setIsPayment(false);
-      // }, 4000);
+      setTimeout(() => {
+        navigate("/area-diarista")
+        setAgendamentoData(null)
+        setIsPayment(false);
+      }, 4000);
     }
   };
 
