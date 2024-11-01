@@ -3,12 +3,15 @@ import { Logo } from '../../componentes/imports';
 import painel from "../../assets/img/banner-diarista.jpg";
 import { loginCliente } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserProvider';
 
 export default function ClienteLogin() {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const { setUser } = useUser();
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -23,6 +26,7 @@ export default function ClienteLogin() {
                 localStorage.setItem('token', access_token);
                 localStorage.setItem('userId', userId);
                 localStorage.setItem('urls', JSON.stringify(urls));
+                setUser({access_token, userId, urls})
                 navigate("/area-cliente");
             }
         } catch (err) {

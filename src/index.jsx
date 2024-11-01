@@ -16,6 +16,7 @@ import ClienteCadastro from './pages/cliente-cadastro/ClienteCadastro'
 import ClienteLogin from './pages/cliente-login/cliente-login'
 import AreaCliente from './pages/area-cliente/area-cliente'
 import Checkout from './pages/Checkout/Checkout'
+import ProtectedRoute from './routerProtect/ProtectedRouter'
 
 import { UserProvider } from './context/UserProvider'
 import { AgendamentoData } from './context/AgendamentoData'
@@ -69,7 +70,11 @@ const router = createBrowserRouter([
     },
     {
       path: "area-cliente",
-      element: <AreaCliente/>
+      element: (
+        <ProtectedRoute>
+          <AreaCliente/>
+        </ProtectedRoute>
+      ) 
     },
     {
       path: "checkout-pagamento",

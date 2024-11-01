@@ -12,6 +12,7 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/re
 import Banner from "../../assets/img/App/limpando.png"
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 import StepLoginCustomer from './StepLoginCustomer';
+import {ScrollShadow} from "@nextui-org/scroll-shadow";
 
 import { useUser } from '../../context/UserProvider';
 import { useAgendamentoData } from '../../context/AgendamentoData';
@@ -274,7 +275,6 @@ export default function ContrateOnline() {
 
             if ( index < 2 ) {
                 setSelectedProvider(null)
-                setSelectedEnderecoCliente(null)
             }
 
             if ( index < 1 ) {
@@ -461,8 +461,11 @@ export default function ContrateOnline() {
                         <>
                             {user ? (
                                 isLoading ? (
-                                    <div className='flex items-center justify-center h-80 text-prim'>
-                                        <Spinner size='lg' color='primary' label='Carregando endereços' />
+                                    <div className='flex flex-col items-center justify-center h-80'>
+                                        <div className="text-white">
+                                            <Spinner size='lg' color='primary' />
+                                        </div>
+                                        <p className='text-prim'>Carregando endereços</p>
                                     </div>
                                 ) : (
                                     enderecoDefaultCliente && ( 
@@ -472,13 +475,14 @@ export default function ContrateOnline() {
                                             sm:grid-cols-2
                                             pt-5 gap-10 overflow-auto max-h-[100vh] 
                                             pr-5 pl-5
+                                            scrollbar-hide
                                             '>
                                                 <div className={`border-2 border-bord rounded-lg lg:min-h-[50vh] lg:max-h-[50vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[36vh] max-h-[35vh] min-w-[35vh] max-w-[35vh]
                                                 
                                                 
                                                 ${
                                                     enderecoDefaultCliente[0] ?
-                                                    selectedEnderecoCliente == enderecoDefaultCliente[0].id ? 'border-sec shadow-sm shadow-sec bg-secsec' : 'hover:border-sec border-bord' : "" }
+                                                    selectedEnderecoCliente == enderecoDefaultCliente[0].id ? 'border-sec shadow-sm shadow-sec bg-secsec bg-opacity-20' : 'hover:border-sec border-bord' : "" }
                                                 `}
 
                                                 onClick={() => {
@@ -518,7 +522,6 @@ export default function ContrateOnline() {
 
                                                 {enderecosCliente.map((endereco) => (
                                                     <div key={endereco.id} className={`border-2 border-bord rounded-lg lg:min-h-[50vh] lg:max-h-[50vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[35vh] max-w-[35vh] 
-
                                                     ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec shadow-sm shadow-sec' : 'border-bord' }
                                                     
                                                     ${isDeleteAdress && selectedEnderecoCliente.id == endereco.id ? "border-none shadow-white" : "hover:border-sec"}
@@ -590,7 +593,9 @@ export default function ContrateOnline() {
                                                                             </DialogTitle>
                                                                         </div>
                                                                         
-                                                                        <form className="pt-0 flex flex-col gap-5 w-full bg-pri " onSubmit={handleSubmit(onSubmit)}
+                                                                        <form 
+                                                                        className={`transition-all duration-150 pt-0 flex flex-col gap-5 w-full ${isCreatingAdress ? "opacity-35" : ""}`} 
+                                                                        onSubmit={handleSubmit(onSubmit)}
                                                                         >
                                                                             <div className='overflow-auto h-[65vh] lg:h-[55vh]'>
                                                                                     <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
@@ -745,7 +750,7 @@ export default function ContrateOnline() {
                                                                             </div>
                                                                         </form>
                                                                         {isCreatingAdress && (
-                                                                            <div className='fixed bg-prim bg-opacity-30 w-full h-full flex items-center justify-center  text-white'>
+                                                                            <div className='fixed w-full h-full flex items-center justify-center  text-white'>
                                                                                 <Spinner size='lg'/>
                                                                             </div>
                                                                         )}

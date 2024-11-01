@@ -5,8 +5,11 @@ import User from "../../assets/img/diarista-cadastro/user.png"
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import EditClienteModal from './EditClienteModal.jsx';
 import { getEnderecoDefaultCliente } from '../../services/api.js';
+import HeaderWebApp from '../../componentes/App/HeaderWebApp.jsx';
+import { Spinner } from '@nextui-org/react';
 
 const AreaCliente = () => {
+    
     const [userInfo, setUserInfo] = useState(null);
     const[Open, SetOpen] = useState(false)
     const userId = localStorage.getItem('userId'); // Obter o ID do usuário do localStorage
@@ -101,14 +104,11 @@ const AreaCliente = () => {
     const buttons = [
         { link: "/", text: "Dúvidas"},
         { link: "/", text: "Quem Somos"},
+        { link: "/contrate-online", text: "Contrate Online"},
     ]
 
     const btnAcess = [
-        {   AcessPrim: "Contrate Online", 
-            AcessSec: "Sair",
-            LinkPrim: "contrate-online",
-            LinkSec: "login-cliente",  
-        },
+
     ]
 
     const calcularIdade = (data) =>{
@@ -126,7 +126,7 @@ const AreaCliente = () => {
 
     return (
         <div>
-            <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
+            <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
             <main className='flex flex-col  p-5 '>
                 {userInfo ? (
                     <>
@@ -396,8 +396,11 @@ const AreaCliente = () => {
                     </>                    
                 ) : (
                     <>
-                        <section className='flex justify-center h-[80vh]'>
-                            <LoadingSpinner/>
+                        <section className=' flex-col flex justify-center items-center h-[90vh] gap-4'>
+                            <div className='text-white'>
+                                <Spinner size='lg' />
+                            </div>
+                            <p className='text-prim text-center text-md'>Aguarde enquanto carregamos suas informações</p>
                         </section>
                     </>
                 )}
