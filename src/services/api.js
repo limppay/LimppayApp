@@ -114,6 +114,7 @@ export const updateCliente = async (id, clienteData) => {
       },
     });
     return response.data; // Retornar os dados do usuário atualizado
+    
   } catch (error) {
     console.error('Erro ao atualizar usuário:', error.response?.data || error.message);
     return false; // Retornar false em caso de erro

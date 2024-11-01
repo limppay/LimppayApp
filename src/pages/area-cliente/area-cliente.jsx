@@ -4,6 +4,7 @@ import { HeaderApp, Logo,Footer} from '../../componentes/imports.jsx'
 import User from "../../assets/img/diarista-cadastro/user.png"
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import EditClienteModal from './EditClienteModal.jsx';
+import { getEnderecoDefaultCliente } from '../../services/api.js';
 
 const AreaCliente = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -12,6 +13,7 @@ const AreaCliente = () => {
     const token = localStorage.getItem('token'); // Obter o token do localStorage
     // Recuperar as URLs e converter para objeto JSON
     const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {}); // Atualize o estado URLs aqui
+    const [adressDefault, setAdressDefault] = useState([])
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -19,16 +21,44 @@ const AreaCliente = () => {
                 const response = await axios.get(`https://limppay-api-production.up.railway.app/cliente/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                setUserInfo(response.data);
+                const enderecoDefault = await getEnderecoDefaultCliente(userId)
+
+                const endereco = {
+                    iD_Endereco: enderecoDefault[0].id,
+                    clienteId: enderecoDefault[0].clienteId,
+                    cep: enderecoDefault[0].cep,
+                    cidade: enderecoDefault[0].cidade,
+                    complemento: enderecoDefault[0].complemento,
+                    estado: enderecoDefault[0].estado,
+                    logradouro: enderecoDefault[0].logradouro,
+                    numero: enderecoDefault[0].numero,
+                    referencia: enderecoDefault[0].referencia,
+                    bairro: enderecoDefault[0].bairro
+                }
+
+                console.log(endereco)
+
+                setAdressDefault([endereco])
+                
+                const combineData = {
+                    ...response.data,
+                    ...endereco,
+                }
+                
+                setUserInfo(combineData);
+                
             } catch (error) {
                 console.error('Erro ao buscar informações do usuário:', error);
             }
         };
-
+        
         if (token && userId) {
             fetchUserInfo();
         }
     }, [token, userId]);
+    
+    console.log("Endereco padrao", adressDefault)
+    console.log("Dados combinados do cliente: ", userInfo)
 
 
     useEffect(() => {
@@ -37,13 +67,33 @@ const AreaCliente = () => {
     
 
     const handleUserUpdated = (updatedInfo) => {
-        setUserInfo(updatedInfo.updatedCliente)
-        // Atualize as URLs aqui também
-        const newUrls = updatedInfo.urls; // Supondo que a resposta inclui as novas URLs
+        const enderecoDefault = updatedInfo.updatedCliente.EnderecoDefault[0];
+    
+        const updatedUserInfo = {
+            ...userInfo,
+            ...updatedInfo.updatedCliente,
+            iD_Endereco: enderecoDefault.id,
+            clienteId: enderecoDefault.clienteId,
+            cep: enderecoDefault.cep,
+            cidade: enderecoDefault.cidade,
+            complemento: enderecoDefault.complemento,
+            estado: enderecoDefault.estado,
+            logradouro: enderecoDefault.logradouro,
+            numero: enderecoDefault.numero,
+            referencia: enderecoDefault.referencia,
+            bairro: enderecoDefault.bairro,
+        };
+    
+        // Remover a propriedade EnderecoDefault do objeto principal
+        delete updatedUserInfo.EnderecoDefault;
+    
+        setUserInfo(updatedUserInfo);
+    
+        const newUrls = updatedInfo.urls;
         localStorage.setItem('urls', JSON.stringify(newUrls));
-        setUrls(newUrls); // Atualiza o estado com as novas URLs
-
+        setUrls(newUrls);
     };
+    
 
     // Anexos
     const avatarUrl = urls ? Object.values(urls)[0] : null;

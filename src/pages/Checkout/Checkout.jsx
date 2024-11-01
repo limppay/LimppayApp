@@ -153,7 +153,7 @@ export default function Checkout() {
       setIsPaymentFinally(true);
       
       setTimeout(() => {
-        navigate("/area-diarista")
+        navigate("/area-cliente")
         setAgendamentoData(null)
         setIsPayment(false);
       }, 4000);

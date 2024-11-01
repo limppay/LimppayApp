@@ -12,6 +12,9 @@ import InputMask from "react-input-mask"
 
 const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
+  console.log("Edit modal", userInfo)
+  
+
   const schema = yup.object({
     // scheam do prisma na API
     name: yup.string().trim().required("O nome é obrigatório"),
@@ -104,8 +107,11 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
         const updatedCliente = await updateCliente(userId, formData)
 
         if (updatedCliente) {
+          
           console.log('Cliente atualizado com sucesso:', updatedCliente);
           setLoading(false)
+          const userInforUpdate = updatedCliente.EnderecoDefault
+          console.log("teste", userInforUpdate)
 
           const newUrls = updatedCliente.urls
           localStorage.setItem('urls', JSON.stringify(newUrls))
@@ -257,8 +263,6 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
       {text: "Viúvo(a)", value: 4},
       {text: "Separado(a)", value: 5},
   ]
-
-
 
     return (
       <Dialog open={Open} onClose={SetOpen} className="relative z-10">
