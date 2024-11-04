@@ -262,4 +262,20 @@ export const criarFaturaCartao = async (dadosFatura) => {
   }
 };
 
+export const getAgendamentos = async (id) => {
+  try {
+    const response = await api.get(`/agendamentos/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
+      },
+    });
+    return response.data; 
+    
+  } catch (error) {
+    console.error('Erro ao obter os agendamentos:', error.response?.data || error.message);
+    return false; // Retornar false em caso de erro
+  }
+
+}
+
 export default api;

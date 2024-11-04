@@ -142,6 +142,20 @@ export default function Checkout() {
                 }
             });
 
+            const isCreateAgendamento = async () => {
+              try {
+                const response = await createAgendamento(agendamentoData)
+                console.log("Agendamento criado com sucesso!", response)
+                
+              } catch (error) {
+                console.log("Erro ao criar o agendamento", error)
+              } finally {
+                reset()
+              }
+            }
+    
+            isCreateAgendamento()
+
             console.log('Fatura criada com sucesso:', response);
         }
 
