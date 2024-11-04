@@ -202,6 +202,16 @@ export default function ContrateOnline() {
     const { agendamentoData, setAgendamentoData } = useAgendamentoData()
     const { selectedProvider, setSelectedProvider } = useSelectedProvider()
     const { selectedDates, setSelectedDates } = useSelectedDates([])
+
+
+    // função para resetar o agendamento, toda vez que sair de checkout e voltar para contrate
+    useEffect(() => {
+        setAgendamentoData([]);
+        setSelectedProvider()
+        setSelectedDates([])
+        setSelectedTimes([])
+
+    }, [setAgendamentoData]);
     
     const HandleGetEnderecosCliente = async (id) => {
         if (clienteId) {

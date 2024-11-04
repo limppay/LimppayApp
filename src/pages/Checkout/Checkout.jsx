@@ -210,8 +210,7 @@ export default function Checkout() {
       setAgendamentoData(JSON.parse(storedData));
       setSelectedProvider(JSON.parse(selectedProvider));  
       setSelectedDates(JSON.parse(selectedDates))    
-      setSelectedTimes(JSON.parse(selectedTimes))    
-
+      setSelectedTimes(JSON.parse(selectedTimes))
     } else {
       navigate('/contrate-online');
     }
@@ -225,14 +224,16 @@ export default function Checkout() {
       localStorage.setItem('selectedProvider', JSON.stringify(selectedProvider));
       localStorage.setItem('selectedDates', JSON.stringify(selectedDates));
       localStorage.setItem('selectedTimes', JSON.stringify(selectedTimes));
+
     }
 
-
-  }, [agendamentoData]);
+  }, [agendamentoData, location.pathname, location, setAgendamentoData]);
 
   if (!agendamentoData) {
     return null; // Não renderiza se os dados não estiverem disponíveis
   }
+
+  
 
   console.log(dadosCartao)
 
