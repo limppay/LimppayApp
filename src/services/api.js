@@ -294,6 +294,15 @@ export const getAvaliacoes = async (id) => {
   }
 }
 
-
+export const createReview = async (reviews) => {
+  try {
+    const response = await api.post('reviews/', reviews);
+    
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao criar avaliação:', error.response?.data || error.message);
+    throw error;
+  }
+};
 
 export default api;
