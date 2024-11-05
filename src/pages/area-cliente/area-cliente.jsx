@@ -4,7 +4,7 @@ import { HeaderApp, Logo,Footer} from '../../componentes/imports.jsx'
 import User from "../../assets/img/diarista-cadastro/user.png"
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import EditClienteModal from './EditClienteModal.jsx';
-import { getAvaliacoes, getEnderecoDefaultCliente } from '../../services/api.js';
+import { createReview, getAvaliacoes, getEnderecoDefaultCliente } from '../../services/api.js';
 import HeaderWebApp from '../../componentes/App/HeaderWebApp.jsx';
 import { Avatar, Spinner } from '@nextui-org/react';
 import { getAgendamentos } from '../../services/api.js';
@@ -28,6 +28,82 @@ const AreaCliente = () => {
 
     const [openPerfil, setOpenPerfil] = useState(false)
     const [openDetalhes, setOpenDetalhes] = useState(false)
+
+    const [rating, setRating] = useState(0); // Estado para armazenar o valor da avaliação
+    // Função para atualizar a avaliação
+    const [prestadorId, setPrestadorId] = useState('')
+
+    const handleRating = (value) => {
+        setRating(value);
+    };
+    const [review, setReview] = useState(''); // Estado para armazenar o valor do textarea
+    // Função para atualizar o estado com o valor do textarea
+    const handleReviewChange = (event) => {
+        setReview(event.target.value);
+    };
+
+    function Star({ filled, onClick }) {
+        return (
+            <>
+                <div >
+                    <span
+                        onClick={onClick}
+                        className={`text-4xl cursor-pointer transition-colors ${
+                        filled ? 'text-des' : 'text-prim hover:text-des'
+                        }`}
+                    >
+                        ★
+                    </span>
+                </div>
+            </>
+        );
+    }
+
+    function StarReview({ filled }) {
+        return (
+            <span
+                className={`text-4xl ${
+                    filled ? 'text-des' : 'text-prim'
+                }`}
+            >
+                ★
+            </span>
+        );
+    }
+    
+
+ 
+
+
+    const handleCreateReview = async () => {
+        const reviewData = {
+            clientId: userId,
+            providerId: prestadorId,
+            stars: rating,
+            comment: review,
+        };
+
+        console.log("Avaliação", reviewData);
+        
+        try {
+            const response = await createReview(reviewData);
+            console.log(response);
+            setRating(0)
+            setReview('')
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            const avaliacoes = await getAvaliacoes(userId)
+            setAvaliacoes(avaliacoes)
+            setOpenDetalhes(false)
+
+        }
+    };
+
+
+
+    
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -297,7 +373,7 @@ const AreaCliente = () => {
                                                                                         Perfil Prestador
                                                                                     </DialogTitle>
                                                                                 </div>
-                                                                                {selectedAgendamento && ( // Renderiza as informações do provider selecionado
+                                                                                {selectedAgendamento && ( 
                                                                                     <div className="pt-0 flex flex-col gap-5 w-full bg-pri">
                                                                                         <div className='flex flex-col gap-2 justify-start'>
                                                                                             <div className="flex items-center space-x-10 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
@@ -382,6 +458,7 @@ const AreaCliente = () => {
                                                                 className='bg-des p-2 rounded-md text-white'
                                                                 onClick={() => {
                                                                     setSelectedAgendamento(agendamento)
+                                                                    setPrestadorId(agendamento.user.id)
                                                                     setOpenDetalhes(true)
                                                                 }}
                                                                 
@@ -434,24 +511,37 @@ const AreaCliente = () => {
                                                                                     </div> 
 
                                                                                     {selectedAgendamento.status === "Concluido" && (
-                                                                                        <div className='border-t-2 border-bord'>
+                                                                                        <div className='border-t-2 border-bord '>
                                                                                             <h2 className='font-semibold text-lg pt-5'>Avaliar Prestador</h2>
-                                                                                            <div>
+                                                                                            <label htmlFor="avaliacao">Conte-nos como foi o serviço desse prestador :D <br />
+                                                                                            Não se preocupe, sua avaliação é totalmente anônima</label>
+                                                                                            <div className='flex flex-col gap-3 pt-5'>
+                                                                                                <div className='flex justify-center gap-10'>
+                                                                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                                                                        <Star
+                                                                                                        key={star}
+                                                                                                        filled={star <= rating}
+                                                                                                        onClick={() => handleRating(star)}
+                                                                                                        />
+                                                                                                    ))}
+                                                                                                </div>
+                                                                                                <div className='flex flex-col gap-2'>
+                                                                                                    <textarea
+                                                                                                        placeholder="Avalie com suas palavras como foi o serviço desse prestador"
+                                                                                                        className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 focus:outline-ter text-prim w-full max-h-5"
+                                                                                                        rows="3"
+                                                                                                        id="avaliacao"
+                                                                                                        value={review}
+                                                                                                        onChange={handleReviewChange}
+                                                                                                    ></textarea>
 
-                                                                                            </div>
-                                                                                            <div className='flex flex-col gap-2'>
-                                                                                                <label htmlFor="avaliacao">Conte-nos como foi o serviço desse prestador :D</label>
-
-                                                                                                <textarea
-                                                                                                placeholder="Escreva aqui e envie sua sugestão"
-                                                                                                className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 focus:outline-ter text-prim w-full max-h-1"
-                                                                                                rows="3"
-                                                                                                id='avaliacao'
-                                                                                                ></textarea>
-
-                                                                                                <button className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec">
-                                                                                                    Enviar avaliação
-                                                                                                </button>
+                                                                                                    <button 
+                                                                                                    className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec transition-all"
+                                                                                                    onClick={handleCreateReview}
+                                                                                                    >
+                                                                                                        Enviar avaliação
+                                                                                                    </button>
+                                                                                                </div>
                                                                                             </div>
                                                                                             
                                                                                         </div>        
@@ -466,7 +556,7 @@ const AreaCliente = () => {
                                                                             type="button"
                                                                             data-autofocus
                                                                             onClick={() => setOpenDetalhes(false)}
-                                                                            className="p-2 rounded-md w-1/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75"
+                                                                            className="p-2 rounded-md w-1/4 max-w-full text-center bg-des text-white transition-all duration-150 hover:bg-sec "
                                                                         >
                                                                             Fechar
                                                                         </button>
@@ -494,37 +584,45 @@ const AreaCliente = () => {
                                 <div className='title p-5 pb-3 border-b border-bord w-full text-center'>
                                     <h1 className='text-ter text-lg'>Minhas Avaliações</h1>
                                 </div>
-                                {avaliacoes ? (
-                                    avaliacoes.map((avaliacao) => (
-                                        <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full'>
-                                            <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                                <div className='flex flex-col gap-2 items-center'
-                                                
-                                                >
-                                                    <Avatar 
-                                                    src={avaliacao.provider?.avatarUrl} 
-                                                    alt="avatarCliente"
-                                                    size='lg'
-                                                    />
-                                                    <h3 className='text-prim font-semibold'>{avaliacao.provider?.name}</h3>
-                                                </div>
-                                                <div className='flex flex-col w-full'>
-                                                    <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md w-full min-h-20">
-                                                        <p className='text-prim'>"{avaliacao?.comment}"</p>
+                                <div className='overflow-y-auto max-h-96'>
+                                    {avaliacoes ? (
+                                        avaliacoes.map((avaliacao) => (
+                                            
+                                            <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full'>
+                                                <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
+                                                    <div className='flex flex-col gap-2 items-center'
+                                                    
+                                                    >
+                                                        <Avatar 
+                                                        src={avaliacao.provider?.avatarUrl} 
+                                                        alt="avatarCliente"
+                                                        size='lg'
+                                                        />
+                                                        <h3 className='text-prim font-semibold'>{avaliacao.provider?.name}</h3>
                                                     </div>
-                                                    <div>
-                                                        {/* estrela */}
+                                                    <div className='flex flex-col w-full'>
+                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md w-full min-h-20">
+                                                            <p className='text-prim'>"{avaliacao?.comment}"</p>
+                                                        </div>
+                                                        <div className='flex justify-center gap-10'>
+                                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                                <StarReview
+                                                                key={star}
+                                                                filled={star <= avaliacao?.stars}
+                                                                />
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))
+                                        ))
 
-                                ) : (
-                                    <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
-                                        <p>Você não fez nenhuma avaliação.</p>
-                                    </div>
-                                )}
+                                    ) : (
+                                        <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
+                                            <p>Você não fez nenhuma avaliação.</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                             
                         </section>
