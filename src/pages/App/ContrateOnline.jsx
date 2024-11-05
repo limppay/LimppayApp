@@ -950,19 +950,15 @@ export default function ContrateOnline() {
                                                                 <div className=" flex min-h-full items-center justify-center text-center sm:items-center ">
                                                                     <DialogPanel
                                                                         transition
-                                                                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full"
+                                                                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full max-w-lg flex flex-col max-h-[160vh]"
                                                                     >
-                                                                        <div className="bg-white pb-4 pt-5 ">
+                                                                        <div className="bg-white pb-4 pt-0 ">
                                                                             <div className="sm:flex sm:items-start flex-col">
-                                                                                <div className="text-center sm:mt-0 sm:text-left border-b border-bord w-full pb-4">
-                                                                                    <DialogTitle as="h3" className="font-semibold text-desSec text-2xl text-center">
-                                                                                        Perfil Prestador
-                                                                                    </DialogTitle>
-                                                                                </div>
+                                                                                
                                                                                 {selectedProvider && ( // Renderiza as informações do provider selecionado
-                                                                                    <div className="pt-0 flex flex-col gap- w-full bg-pri">
+                                                                                    <div className="pt-0 flex flex-col  w-full bg-pri max-h-[70vh]">
                                                                                         <div className='flex flex-col gap-2 justify-start'>
-                                                                                            <div className="flex items-center space-x-10 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
+                                                                                            <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
                                                                                                 {/* Container do Avatar */}
                                                                                                 <div className="absolute">
                                                                                                     <Avatar src={selectedProvider.avatar.avatarUrl} size="lg"    
@@ -983,53 +979,56 @@ export default function ContrateOnline() {
                                                                                                 />
                                                                                             ))}
                                                                                         </div>
-                                                                                        <div className='p-5'>
-                                                                                            <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5'>
-                                                                                                <h1 className='text-prim font-semibold text-xl'>{selectedProvider.name}</h1>
-                                                                                                <p className='text-prim text-[0.8rem]'>
-                                                                                                    {calcularIdade(selectedProvider.data)} anos
-                                                                                                </p>
-                                                                                                <p className='text-[0.8rem] text-prim pb-2'>{selectedProvider.genero}</p>
-                                                                                                <div className='overflow-y-auto h-[18vh]'>
-                                                                                                    <p className='text-prim text-start pt-4'>{selectedProvider.sobre}</p>
+                                                                                        
+                                                                                        <div className='overflow-y-auto max-h-[80vh] '>
+                                                                                            <div className='p-5 pb-1'>
+                                                                                                <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
+                                                                                                    <h1 className='text-prim font-semibold text-xl'>{selectedProvider.name}</h1>
+                                                                                                    <p className='text-prim text-[0.8rem]'>
+                                                                                                        {calcularIdade(selectedProvider.data)} anos
+                                                                                                    </p>
+                                                                                                    <p className='text-[0.8rem] text-prim pb-2'>{selectedProvider.genero}</p>
+                                                                                                    <div className='overflow-y-auto lg:h-[20vh]'>
+                                                                                                        <p className='text-prim text-start pt-4 text-sm'>{selectedProvider.sobre}</p>
+                                                                                                    </div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                        </div>
-                                                                                        <div className='p-5'>
-                                                                                            <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
-                                                                                                <Accordion   >
-                                                                                                    <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${avaliacoes.length} )`} classNames={{title: 'text-prim text-md '}} >
-                                                                                                        <div className='flex flex-col gap-5 overflow-y-auto max-h-96'>
-                                                                                                            {avaliacoes && (
-                                                                                                                avaliacoes.length == 0 ? (
-                                                                                                                    <div className=' p-5 text-prim flex flex-col justify-center text-center'>
-                                                                                                                        <h3 className='font-semibold'>Sem avaliações</h3>
-                                                                                                                    </div>
-                                                                                                                    
-                                                                                                                ) : (
-                                                                                                                    avaliacoes.map((avaliacao) => (
-                                                                                                                        <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
-                                                                                                                            <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
-                                                                                                                                day: '2-digit',
-                                                                                                                                month: 'long',
-                                                                                                                                year: 'numeric'
-                                                                                                                            })}</h3>
-                                                                                                                            <p>"{avaliacao?.comment}"</p>
-                                                                                                                            <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
-                                                                                                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                                                                                                    <StarReview
-                                                                                                                                        key={star}
-                                                                                                                                        filled={star <= avaliacao.stars}
-                                                                                                                                    />
-                                                                                                                                ))}
-                                                                                                                            </div>
+                                                                                            <div className='p-5'>
+                                                                                                <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
+                                                                                                    <Accordion   >
+                                                                                                        <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${avaliacoes.length} )`} classNames={{title: 'text-prim text-md '}} >
+                                                                                                            <div className='flex flex-col gap-5 overflow-y-auto max-h-96'>
+                                                                                                                {avaliacoes && (
+                                                                                                                    avaliacoes.length == 0 ? (
+                                                                                                                        <div className=' p-5 text-prim flex flex-col justify-center text-center'>
+                                                                                                                            <h3 className='font-semibold'>Sem avaliações</h3>
                                                                                                                         </div>
-                                                                                                                    ))
-                                                                                                                )
-                                                                                                            )}
-                                                                                                        </div>
-                                                                                                    </AccordionItem>
-                                                                                                </Accordion>
+                                                                                                                        
+                                                                                                                    ) : (
+                                                                                                                        avaliacoes.map((avaliacao) => (
+                                                                                                                            <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
+                                                                                                                                <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
+                                                                                                                                    day: '2-digit',
+                                                                                                                                    month: 'long',
+                                                                                                                                    year: 'numeric'
+                                                                                                                                })}</h3>
+                                                                                                                                <p>"{avaliacao?.comment}"</p>
+                                                                                                                                <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
+                                                                                                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                                                                                                        <StarReview
+                                                                                                                                            key={star}
+                                                                                                                                            filled={star <= avaliacao.stars}
+                                                                                                                                        />
+                                                                                                                                    ))}
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        ))
+                                                                                                                    )
+                                                                                                                )}
+                                                                                                            </div>
+                                                                                                        </AccordionItem>
+                                                                                                    </Accordion>
+                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
