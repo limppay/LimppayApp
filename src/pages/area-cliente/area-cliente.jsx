@@ -4,7 +4,7 @@ import { HeaderApp, Logo,Footer} from '../../componentes/imports.jsx'
 import User from "../../assets/img/diarista-cadastro/user.png"
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import EditClienteModal from './EditClienteModal.jsx';
-import { getEnderecoDefaultCliente } from '../../services/api.js';
+import { getAvaliacoes, getEnderecoDefaultCliente } from '../../services/api.js';
 import HeaderWebApp from '../../componentes/App/HeaderWebApp.jsx';
 import { Avatar, Spinner } from '@nextui-org/react';
 import { getAgendamentos } from '../../services/api.js';
@@ -21,7 +21,11 @@ const AreaCliente = () => {
     const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {}); // Atualize o estado URLs aqui
     const [adressDefault, setAdressDefault] = useState([])
     const [agendamentos, setAgendamentos] = useState([])
+    const [avaliacoes, setAvaliacoes] = useState([])
+
     const [selectedAgendamento, setSelectedAgendamento] = useState([])
+    const [selectedAvaliacao, setSelectedAvaliacao] = useState([])
+
     const [openPerfil, setOpenPerfil] = useState(false)
     const [openDetalhes, setOpenDetalhes] = useState(false)
 
@@ -33,7 +37,10 @@ const AreaCliente = () => {
                 });
                 const enderecoDefault = await getEnderecoDefaultCliente(userId)
                 const agendamentos = await getAgendamentos(userId)
+                const avaliacoes = await getAvaliacoes(userId)
+
                 setAgendamentos(agendamentos)
+                setAvaliacoes(avaliacoes)
 
                 const endereco = {
                     iD_Endereco: enderecoDefault[0].id,
@@ -73,6 +80,7 @@ const AreaCliente = () => {
     console.log("Endereco padrao", adressDefault)
     console.log("Dados combinados do cliente: ", userInfo)
     console.log("Meus Agendamentos",agendamentos)
+    console.log("Minhas avaliaçoes",avaliacoes)
 
 
     useEffect(() => {
@@ -271,7 +279,7 @@ const AreaCliente = () => {
                                                         />
                                                         <h3 className='text-prim font-semibold flex flex-wrap text-center'>{agendamento.user.name}</h3>
                                                         
-                                                        <Dialog open={openPerfil} onClose={() => (setOpenPerfil(false), setSelectedAgendamento())} className="relative z-10">
+                                                        <Dialog open={openPerfil} onClose={() => (setOpenPerfil(false))} className="relative z-10">
                                                             <DialogBackdrop
                                                                 transition
                                                                 className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
@@ -352,128 +360,126 @@ const AreaCliente = () => {
                                                         </Dialog>
                                                     
                                                     </div>
-                                                    <div className='flex flex-col gap-2'>
-                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md text-ter">
-                                                            <p>
-                                                                {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
-                                                                    day: '2-digit',
-                                                                    month: 'long',
-                                                                    year: 'numeric'
-                                                                })}
-                                                            </p>
-                                                            <p>Subtotal: {formatarMoeda(agendamento.valorServico)}</p>
+                                                    <div className='flex flex-col lg:flex-row gap-5 items-start'>
+                                                        <div className='flex flex-col gap-2'>
+                                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md text-ter">
+                                                                <p>
+                                                                    {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
+                                                                        day: '2-digit',
+                                                                        month: 'long',
+                                                                        year: 'numeric'
+                                                                    })}
+                                                                </p>
+                                                                <p>Subtotal: {formatarMoeda(agendamento.valorServico)}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className='flex flex-col justify-between h-full gap-5 items-center'>
-                                                        <div>
-                                                            <p className={`${agendamento.status === 'Pendente' ? "text-des" : agendamento.status === "Andamento" ? "text-desSec" : agendamento.status === "Concluido" ? "text-sec" : ""}`}>{agendamento.status}</p>
-                                                        </div>
-                                                        <div>
-                                                            <button 
-                                                            className='bg-des p-2 rounded-md text-white'
-                                                            onClick={() => {
-                                                                setSelectedAgendamento(agendamento)
-                                                                setOpenDetalhes(true)
-                                                            }}
-                                                            
-                                                            >
-                                                                Detalhes
-                                                            
-                                                            </button>
-                                                        </div>
-                                                        <Dialog open={openDetalhes} onClose={() => setOpenDetalhes(false)} className="relative z-10">
-                                                            <DialogBackdrop
-                                                                transition
-                                                                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-                                                            />
-                                                            <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-prim bg-opacity-50">
-                                                                <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
-                                                                <DialogPanel
-                                                                    transition
-                                                                    className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+                                                        <div className='flex lg:flex-col justify-between h-full gap-5 items-center'>
+                                                            <div>
+                                                                <p className={`${agendamento.status === 'Pendente' ? "text-des" : agendamento.status === "Andamento" ? "text-desSec" : agendamento.status === "Concluido" ? "text-sec" : ""}`}>{agendamento.status}</p>
+                                                            </div>
+                                                            <div>
+                                                                <button 
+                                                                className='bg-des p-2 rounded-md text-white'
+                                                                onClick={() => {
+                                                                    setSelectedAgendamento(agendamento)
+                                                                    setOpenDetalhes(true)
+                                                                }}
+                                                                
                                                                 >
-                                                                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                                                    <div>
-                                                                        <div className="mt-3 text-center">
-                                                                        <DialogTitle as="h3" className="font-semibold  text-desSec text-2xl">
-                                                                            Detalhes do serviço
-                                                                        </DialogTitle>
-                                                                        <div className="mt-2">
-                                                                            <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
-                                                                                <p className='font-semibold border-t-2 pt-5 border-bord'>Agendamento feito dia {new Date(selectedAgendamento?.dataAgendamento).toLocaleDateString('pt-BR', {
-                                                                                    day: '2-digit',
-                                                                                    month: 'long',
-                                                                                    year: 'numeric'
-                                                                                })}</p>
-                                                                                <div className='text-justify flex flex-col gap-2'>
-                                                                                    <p><b>Endereço:</b> {selectedAgendamento?.enderecoCliente}</p>
-
-                                                                                    <p><b>Prestador:</b> {selectedAgendamento?.user?.name}</p>
-
-                                                                                    <p><b>Serviço:</b> {selectedAgendamento?.Servico}</p>
-
-                                                                                    <p><b>Observação</b> {selectedAgendamento?.observacao ? selectedAgendamento.observacao : "Nenhuma obervação."}</p>
-
-                                                                                    <p><b>Endereço:</b> {formatarMoeda(selectedAgendamento?.valorServico)}</p>
-
-                                                                                    <p><b>Data:</b> {new Date(selectedAgendamento?.dataServico).toLocaleDateString('pt-BR', {
+                                                                    Detalhes
+                                                                
+                                                                </button>
+                                                            </div>
+                                                            <Dialog open={openDetalhes} onClose={() => setOpenDetalhes(false)} className="relative z-10">
+                                                                <DialogBackdrop
+                                                                    transition
+                                                                    className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+                                                                />
+                                                                <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-prim bg-opacity-50">
+                                                                    <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+                                                                    <DialogPanel
+                                                                        transition
+                                                                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+                                                                    >
+                                                                        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                                                        <div>
+                                                                            <div className="mt-3 text-center">
+                                                                            <DialogTitle as="h3" className="font-semibold  text-desSec text-2xl">
+                                                                                Detalhes do serviço
+                                                                            </DialogTitle>
+                                                                            <div className="mt-2">
+                                                                                <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
+                                                                                    <p className='font-semibold border-t-2 pt-5 border-bord'>Agendamento feito dia {new Date(selectedAgendamento?.dataAgendamento).toLocaleDateString('pt-BR', {
                                                                                         day: '2-digit',
                                                                                         month: 'long',
                                                                                         year: 'numeric'
                                                                                     })}</p>
+                                                                                    <div className='text-justify flex flex-col gap-2'>
+                                                                                        <p><b>Endereço:</b> {selectedAgendamento?.enderecoCliente}</p>
 
-                                                                                </div> 
+                                                                                        <p><b>Prestador:</b> {selectedAgendamento?.user?.name}</p>
 
-                                                                                {selectedAgendamento.status === "Concluido" && (
-                                                                                    <div className='border-t-2 border-bord'>
-                                                                                        <h2 className='font-semibold text-lg pt-5'>Avaliar Prestador</h2>
-                                                                                        <div>
+                                                                                        <p><b>Serviço:</b> {selectedAgendamento?.Servico}</p>
 
-                                                                                        </div>
-                                                                                        <div className='flex flex-col gap-2'>
-                                                                                            <label htmlFor="avaliacao">Conte-nos como foi o serviço desse prestador :D</label>
+                                                                                        <p><b>Observação:</b> {selectedAgendamento?.observacao ? selectedAgendamento.observacao : "Nenhuma obervação."}</p>
 
-                                                                                            <textarea
-                                                                                            placeholder="Escreva aqui e envie sua sugestão"
-                                                                                            className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 focus:outline-ter text-prim w-full max-h-1"
-                                                                                            rows="3"
-                                                                                            id='avaliacao'
-                                                                                            ></textarea>
+                                                                                        <p><b>Endereço:</b> {formatarMoeda(selectedAgendamento?.valorServico)}</p>
 
-                                                                                            <button className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec">
-                                                                                                Enviar avaliação
-                                                                                            </button>
-                                                                                        </div>
-                                                                                        
-                                                                                    </div>        
-                                                                                )}                                                                              
+                                                                                        <p><b>Data:</b> {new Date(selectedAgendamento?.dataServico).toLocaleDateString('pt-BR', {
+                                                                                            day: '2-digit',
+                                                                                            month: 'long',
+                                                                                            year: 'numeric'
+                                                                                        })}</p>
+
+                                                                                    </div> 
+
+                                                                                    {selectedAgendamento.status === "Concluido" && (
+                                                                                        <div className='border-t-2 border-bord'>
+                                                                                            <h2 className='font-semibold text-lg pt-5'>Avaliar Prestador</h2>
+                                                                                            <div>
+
+                                                                                            </div>
+                                                                                            <div className='flex flex-col gap-2'>
+                                                                                                <label htmlFor="avaliacao">Conte-nos como foi o serviço desse prestador :D</label>
+
+                                                                                                <textarea
+                                                                                                placeholder="Escreva aqui e envie sua sugestão"
+                                                                                                className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 focus:outline-ter text-prim w-full max-h-1"
+                                                                                                rows="3"
+                                                                                                id='avaliacao'
+                                                                                                ></textarea>
+
+                                                                                                <button className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec">
+                                                                                                    Enviar avaliação
+                                                                                                </button>
+                                                                                            </div>
+                                                                                            
+                                                                                        </div>        
+                                                                                    )}                                                                              
+                                                                                </div>
+                                                                            </div>
                                                                             </div>
                                                                         </div>
                                                                         </div>
+                                                                        <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                                        <button
+                                                                            type="button"
+                                                                            data-autofocus
+                                                                            onClick={() => setOpenDetalhes(false)}
+                                                                            className="p-2 rounded-md w-1/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75"
+                                                                        >
+                                                                            Fechar
+                                                                        </button>
+                                                                        </div>
+                                                                    </DialogPanel>
                                                                     </div>
-                                                                    </div>
-                                                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                                    <button
-                                                                        type="button"
-                                                                        data-autofocus
-                                                                        onClick={() => setOpenDetalhes(false)}
-                                                                        className="p-2 rounded-md w-1/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75"
-                                                                    >
-                                                                        Fechar
-                                                                    </button>
-                                                                    </div>
-                                                                </DialogPanel>
                                                                 </div>
-                                                            </div>
-                                                        </Dialog>
+                                                            </Dialog>
 
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-
-
-
-
                                         ))
                                     ) : (
                                         <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
@@ -488,80 +494,37 @@ const AreaCliente = () => {
                                 <div className='title p-5 pb-3 border-b border-bord w-full text-center'>
                                     <h1 className='text-ter text-lg'>Minhas Avaliações</h1>
                                 </div>
-                                <div className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5'>
-                                    <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                        <div className='flex flex-col gap-2 items-center'>
-                                            <img 
-                                            src={User} 
-                                            alt="avatarCliente"
-                                            className=''
-                                             />
-                                            <h3>Cliente</h3>
-                                        </div>
-                                        <div>
-                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
+                                {avaliacoes ? (
+                                    avaliacoes.map((avaliacao) => (
+                                        <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full'>
+                                            <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
+                                                <div className='flex flex-col gap-2 items-center'
+                                                
+                                                >
+                                                    <Avatar 
+                                                    src={avaliacao.provider?.avatarUrl} 
+                                                    alt="avatarCliente"
+                                                    size='lg'
+                                                    />
+                                                    <h3 className='text-prim font-semibold'>{avaliacao.provider?.name}</h3>
+                                                </div>
+                                                <div className='flex flex-col w-full'>
+                                                    <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md w-full min-h-20">
+                                                        <p className='text-prim'>"{avaliacao?.comment}"</p>
+                                                    </div>
+                                                    <div>
+                                                        {/* estrela */}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                {/* estrela */}
-                                            </div>
                                         </div>
+                                    ))
+
+                                ) : (
+                                    <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
+                                        <p>Você não fez nenhuma avaliação.</p>
                                     </div>
-                                    <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                        <div className='flex flex-col gap-2 items-center'>
-                                            <img 
-                                            src={User} 
-                                            alt="avatarCliente"
-                                            className=''
-                                             />
-                                            <h3>Cliente</h3>
-                                        </div>
-                                        <div>
-                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
-                                            </div>
-                                            <div>
-                                                {/* estrela */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                        <div className='flex flex-col gap-2 items-center'>
-                                            <img 
-                                            src={User} 
-                                            alt="avatarCliente"
-                                            className=''
-                                             />
-                                            <h3>Cliente</h3>
-                                        </div>
-                                        <div>
-                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
-                                            </div>
-                                            <div>
-                                                {/* estrela */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                        <div className='flex flex-col gap-2 items-center'>
-                                            <img 
-                                            src={User} 
-                                            alt="avatarCliente"
-                                            className=''
-                                             />
-                                            <h3>Cliente</h3>
-                                        </div>
-                                        <div>
-                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
-                                            </div>
-                                            <div>
-                                                {/* estrela */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                )}
                             </div>
                             
                         </section>

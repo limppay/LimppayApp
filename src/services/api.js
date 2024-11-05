@@ -278,4 +278,22 @@ export const getAgendamentos = async (id) => {
 
 }
 
+export const getAvaliacoes = async (id) => {
+  try {
+    const response = await api.get(`/reviews/MadeReviewClient/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adicionando o token no cabeçalho
+      },
+    });
+
+    return response.data; 
+    
+  } catch (error) {
+    console.error('Erro ao obter as avaliações:', error.response?.data || error.message);
+    return false; // Retornar false em caso de erro
+  }
+}
+
+
+
 export default api;
