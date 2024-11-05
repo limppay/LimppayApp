@@ -14,7 +14,7 @@ export const obterTokenCartao = async (dadosCartao) => {
       const response = await iuguApi.post('/payment_token', {
         account_id: '2DB84A3C876E4C3CA1D8DB98C6425456',  // Defina o ID da sua conta aqui
         method: 'credit_card',
-        test: false,  // Defina como true no ambiente de desenvolvimento
+        test: true,  // Defina como true no ambiente de desenvolvimento
         data: {
           number: dadosCartao.numero,
           verification_value: dadosCartao.cvc,
