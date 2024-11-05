@@ -1001,25 +1001,31 @@ export default function ContrateOnline() {
                                                                                                     <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${avaliacoes.length} )`} classNames={{title: 'text-prim text-md '}} >
                                                                                                         <div className='flex flex-col gap-5 overflow-y-auto max-h-96'>
                                                                                                             {avaliacoes && (
-                                                                                                                avaliacoes.map((avaliacao) => (
-                                                                                                                    <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
-                                                                                                                        <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
-                                                                                                                            day: '2-digit',
-                                                                                                                            month: 'long',
-                                                                                                                            year: 'numeric'
-                                                                                                                        })}</h3>
-                                                                                                                        <p>"{avaliacao?.comment}"</p>
-                                                                                                                        <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
-                                                                                                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                                                                                                <StarReview
-                                                                                                                                    key={star}
-                                                                                                                                    filled={star <= avaliacao.stars}
-                                                                                                                                />
-                                                                                                                            ))}
-                                                                                                                        </div>
+                                                                                                                avaliacoes.length == 0 ? (
+                                                                                                                    <div className=' p-5 text-prim flex flex-col justify-center text-center'>
+                                                                                                                        <h3 className='font-semibold'>Sem avaliações</h3>
                                                                                                                     </div>
-                                                                                                                ))
-
+                                                                                                                    
+                                                                                                                ) : (
+                                                                                                                    avaliacoes.map((avaliacao) => (
+                                                                                                                        <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
+                                                                                                                            <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
+                                                                                                                                day: '2-digit',
+                                                                                                                                month: 'long',
+                                                                                                                                year: 'numeric'
+                                                                                                                            })}</h3>
+                                                                                                                            <p>"{avaliacao?.comment}"</p>
+                                                                                                                            <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
+                                                                                                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                                                                                                    <StarReview
+                                                                                                                                        key={star}
+                                                                                                                                        filled={star <= avaliacao.stars}
+                                                                                                                                    />
+                                                                                                                                ))}
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    ))
+                                                                                                                )
                                                                                                             )}
                                                                                                         </div>
                                                                                                     </AccordionItem>
