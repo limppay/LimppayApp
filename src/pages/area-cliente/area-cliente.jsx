@@ -423,7 +423,7 @@ const AreaCliente = () => {
 
                                                                                         <p><b>Observação:</b> {selectedAgendamento?.observacao ? selectedAgendamento.observacao : "Nenhuma obervação."}</p>
 
-                                                                                        <p><b>Endereço:</b> {formatarMoeda(selectedAgendamento?.valorServico)}</p>
+                                                                                        <p><b>Preço:</b> {formatarMoeda(selectedAgendamento?.valorServico)}</p>
 
                                                                                         <p><b>Data:</b> {new Date(selectedAgendamento?.dataServico).toLocaleDateString('pt-BR', {
                                                                                             day: '2-digit',
