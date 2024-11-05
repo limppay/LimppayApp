@@ -294,10 +294,26 @@ export const getAvaliacoes = async (id) => {
   }
 }
 
+export const getAvaliacoesByPrestador = async (id) => {
+  try {
+    const response = await api.get(`/reviews/provider/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+
+    return response.data; 
+    
+  } catch (error) {
+    console.error('Erro ao obter as avaliações:', error.response?.data || error.message);
+    return false;
+  }
+}
+
 export const createReview = async (reviews) => {
   try {
     const response = await api.post('reviews/', reviews);
-    
+
     return response.data;
   } catch (error) {
     console.error('Erro ao criar avaliação:', error.response?.data || error.message);

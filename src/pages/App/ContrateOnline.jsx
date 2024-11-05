@@ -4,7 +4,7 @@ import {Logo, Footer } from '../../componentes/imports';
 import ServiceSelection from '../../componentes/App/ServiceSelection';
 import CustomCalendar from '../../componentes/App/DatePicker';
 import ProgressBar from '../../componentes/App/ProgressBar';
-import { createAgendamento, CreateEnderecosCliente, deleteEnderecosCliente, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
+import { createAgendamento, CreateEnderecosCliente, deleteEnderecosCliente, getAvaliacoesByPrestador, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
 import {Avatar, Spinner, spinner} from "@nextui-org/react";
 'use client'
 import {CircularProgress} from "@nextui-org/progress";
@@ -29,6 +29,7 @@ import * as yup from "yup"
 import InputMask from "react-input-mask"
 import axios from 'axios';
 
+import {Accordion, AccordionItem} from "@nextui-org/accordion";
 
 export default function ContrateOnline() {
 
@@ -66,11 +67,11 @@ export default function ContrateOnline() {
     const onSubmit = async (data) => {
         setIsCreatingAdress(true)
 
-        console.log(data)
+        // console.log(data)
 
         try {
           const response = await CreateEnderecosCliente(data);
-          console.log("Endereço criado com sucesso!",response);
+          // console.log("Endereço criado com sucesso!",response);
 
           setEnderecosCliente((prevEnderecos) => [...prevEnderecos, response])
         
@@ -85,7 +86,7 @@ export default function ContrateOnline() {
 
     }
 
-    console.log(errors)
+    // console.log(errors)
 
     const estados = {
         "AC": "Acre",
@@ -186,7 +187,7 @@ export default function ContrateOnline() {
         }
     }, [enderecoDefaultCliente]);
     
-    console.log("Endereço padrao foi selecionado",selectedEnderecoCliente);
+    // console.log("Endereço padrao foi selecionado",selectedEnderecoCliente);
 
     const [observacao, setObservacao ] = useState('')
     const [providers, setProviders] = useState([])
@@ -202,6 +203,12 @@ export default function ContrateOnline() {
     const { agendamentoData, setAgendamentoData } = useAgendamentoData()
     const { selectedProvider, setSelectedProvider } = useSelectedProvider()
     const { selectedDates, setSelectedDates } = useSelectedDates([])
+
+    const [providerId, setProviderId] = useState("")
+    const [avaliacoes, setAvaliacoes] = useState([])
+    const [mediaStars, setMediaStars] = useState(0)
+    const [loadingReview, setLoadingReview] = useState(false)
+    console.log("Avaliacoes do prestador selecionado", avaliacoes)
 
 
     // função para resetar o agendamento, toda vez que sair de checkout e voltar para contrate
@@ -238,17 +245,17 @@ export default function ContrateOnline() {
     }, [enderecosCliente, clienteId]); // Chama a função ao montar o componente
 
 
-    console.log(enderecosCliente)
+    // console.log(enderecosCliente)
 
     
     const handleServiceChange = (service) => {
         setSelectedService(service); // Atualiza o serviço selecionado
-        console.log(service)
+        // console.log(service)
     };
 
     const handleTimeChange = (time) => {
         setSelectedTimes(time)
-        console.log(time)
+        // console.log(time)
     }
 
     const selectRandomProvider = () => {
@@ -259,9 +266,9 @@ export default function ContrateOnline() {
         if (!selectedProvider) {
             const randomProvider = selectRandomProvider();
             setSelectedProvider(randomProvider);
-            console.log(randomProvider); // Log do provedor selecionado aleatoriamente
+            // console.log(randomProvider); // Log do provedor selecionado aleatoriamente
         } else {
-            console.log(selectedProvider); // Log do provedor já selecionado
+            // console.log(selectedProvider); // Log do provedor já selecionado
         }
 
         setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
@@ -269,9 +276,9 @@ export default function ContrateOnline() {
 
 
     const handleProceed = () => {
-        console.log(selectedService)
-        console.log(selectedDates)
-        console.log(selectedTimes)
+        // console.log(selectedService)
+        // console.log(selectedDates)
+        // console.log(selectedTimes)
         
         setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
     };
@@ -312,7 +319,7 @@ export default function ContrateOnline() {
             setEnderecosCliente(prevEnderecos => prevEnderecos.filter(endereco => endereco.id !== enderecoId));
             setSelectedEnderecoCliente(enderecoDefaultCliente[0].id)
             
-            console.log(`Endereço ${enderecoId} excluído com sucesso!`);
+            // console.log(`Endereço ${enderecoId} excluído com sucesso!`);
         } catch (error) {
             console.error("Erro ao excluir o endereço: ", error);
         } finally {
@@ -322,13 +329,13 @@ export default function ContrateOnline() {
     
     //função que recebe as informações de data e serviço, para retorna os prestadores disponveis 
     const handleConfirmSelection = async () => {
-        console.log('Datas selecionadas:', selectedDates);
+        // console.log('Datas selecionadas:', selectedDates);
         try {
             if (selectedDates.length > 0) {
                 const formattedDate = selectedDates[0].toISOString().split('T')[0]; // Formata a data para YYYY-MM-DD
     
-                const response = await getDisponiveis(formattedDate, selectedService);
-                console.log("Resposta da API:", response.data);
+                const response = await getDisponiveis(formattedDate, selectedService)
+                // console.log("Resposta da API:", response.data);
                 
                 // Inicialmente, define os providers sem as URLs de avatar
                 setProviders(response.data);
@@ -344,7 +351,7 @@ export default function ContrateOnline() {
     
                     setProviders(updatedProviders); // Atualiza o estado com os providers incluindo seus avatares
 
-                    console.log(updatedProviders);
+                    // console.log(updatedProviders);
 
                 } else {
                     console.error('Nenhum prestador disponível encontrado');
@@ -360,6 +367,36 @@ export default function ContrateOnline() {
             console.error('Erro ao buscar prestadores disponíveis:', error);
         }
     };
+
+    const handleObterAvaliacoes = async () => {
+        setLoadingReview(true) // Indica que as avaliações estão sendo carregadas
+        
+        setAvaliacoes([])
+        setAvaliacoes([]) // Limpa as avaliações para o novo provider
+        setMediaStars()
+    
+        try {
+            const avaliacoes = await getAvaliacoesByPrestador(providerId)
+            setAvaliacoes(avaliacoes)
+            const totalStars = avaliacoes.reduce((acc, avaliacao) => acc + avaliacao.stars, 0);
+            const averageStars = totalStars / avaliacoes.length;
+            setMediaStars(averageStars)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoadingReview(false) // Termina o carregamento
+        }
+    }
+
+    // UseEffect para carregar as avaliações quando providerId mudar
+    useEffect(() => {
+        if (providerId) {
+            handleObterAvaliacoes()
+
+        }
+    }, [providerId])
+    
+    console.log("Média das estrelas:", mediaStars);
 
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -384,10 +421,10 @@ export default function ContrateOnline() {
         return cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2");
     };
 
-    console.log(serviceValue)
+    // console.log(serviceValue)
 
     const sumValueService = (serviceValue * selectedDates.length)
-    console.log(sumValueService)
+    // console.log(sumValueService)
 
     const formatarMoeda = (valor) => {
         return new Intl.NumberFormat('pt-BR', { 
@@ -401,7 +438,7 @@ export default function ContrateOnline() {
             const formateDate = new Date(date).toDateString()
             const times = selectedTimes[formateDate]
 
-            console.log(times)
+            // console.log(times)
         })
     }
 
@@ -409,8 +446,8 @@ export default function ContrateOnline() {
     const HandleNavigateCheckout = async () => {
         const FormDate = new Date(selectedDates[0]).toDateString(); // Converte a data para o formato legivel
         const times = selectedTimes[FormDate]; // Acessa o valor correspondente no objeto
-        console.log(times)
-        console.log(observacao)
+        // console.log(times)
+        // console.log(observacao)
 
     
         const data = {
@@ -427,7 +464,22 @@ export default function ContrateOnline() {
         navigate("/checkout-pagamento")
     }
 
-    console.log("Dados enviados para checkout:",agendamentoData)
+    // console.log("Dados enviados para checkout:",agendamentoData)
+
+    function StarReview({ filled }) {
+        return (
+            <span
+                className={`text-4xl ${
+                    filled ? 'text-des' : 'text-prim'
+                }`}
+            >
+                ★
+            </span>
+        );
+    }
+
+    // Calculando a média das estrelas
+
 
     return (
         <>
@@ -497,7 +549,7 @@ export default function ContrateOnline() {
 
                                                 onClick={() => {
                                                     setSelectedEnderecoCliente(enderecoDefaultCliente[0].id)
-                                                    console.log(enderecoDefaultCliente[0].id)
+                                                    // console.log(enderecoDefaultCliente[0].id)
                                                 }}
 
                                                 >
@@ -541,7 +593,7 @@ export default function ContrateOnline() {
 
                                                     onClick={() => {
                                                         setSelectedEnderecoCliente(endereco)
-                                                        console.log(endereco.id)
+                                                        // console.log(endereco.id)
                                                     }}
 
 
@@ -849,7 +901,7 @@ export default function ContrateOnline() {
                                                         
                                                         onClick={() => {
                                                             setSelectedProvider(provider); // Armazena o provider selecionado
-                                                            console.log(provider.id);
+                                                            // console.log(provider.id);
                                                         }}
 
                                                         >
@@ -877,9 +929,10 @@ export default function ContrateOnline() {
                                                                 '
 
                                                                 onClick={() => {
-                                                                    setSelectedProvider(provider); // Armazena o provider selecionado
-                                                                    setOpen(true); // Abre o modal
-                                                                }}                                                            
+                                                                    setSelectedProvider(provider)
+                                                                    setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
+                                                                    setOpen(true)
+                                                                }}                                                         
                                                                 
                                                                 >
                                                                     <i className="fa-solid fa-star" ></i>
@@ -907,7 +960,7 @@ export default function ContrateOnline() {
                                                                                     </DialogTitle>
                                                                                 </div>
                                                                                 {selectedProvider && ( // Renderiza as informações do provider selecionado
-                                                                                    <div className="pt-0 flex flex-col gap-5 w-full bg-pri">
+                                                                                    <div className="pt-0 flex flex-col gap- w-full bg-pri">
                                                                                         <div className='flex flex-col gap-2 justify-start'>
                                                                                             <div className="flex items-center space-x-10 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
                                                                                                 {/* Container do Avatar */}
@@ -919,7 +972,16 @@ export default function ContrateOnline() {
                                                                                                     "
                                                                                                     />
                                                                                                 </div>
+                                                                                                
                                                                                             </div>
+                                                                                        </div>
+                                                                                        <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
+                                                                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                                                                <StarReview
+                                                                                                    key={star}
+                                                                                                    filled={star <= mediaStars}
+                                                                                                />
+                                                                                            ))}
                                                                                         </div>
                                                                                         <div className='p-5'>
                                                                                             <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5'>
@@ -931,6 +993,37 @@ export default function ContrateOnline() {
                                                                                                 <div className='overflow-y-auto h-[18vh]'>
                                                                                                     <p className='text-prim text-start pt-4'>{selectedProvider.sobre}</p>
                                                                                                 </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div className='p-5'>
+                                                                                            <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
+                                                                                                <Accordion   >
+                                                                                                    <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${avaliacoes.length} )`} classNames={{title: 'text-prim text-md '}} >
+                                                                                                        <div className='flex flex-col gap-5 overflow-y-auto max-h-96'>
+                                                                                                            {avaliacoes && (
+                                                                                                                avaliacoes.map((avaliacao) => (
+                                                                                                                    <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
+                                                                                                                        <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
+                                                                                                                            day: '2-digit',
+                                                                                                                            month: 'long',
+                                                                                                                            year: 'numeric'
+                                                                                                                        })}</h3>
+                                                                                                                        <p>"{avaliacao?.comment}"</p>
+                                                                                                                        <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
+                                                                                                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                                                                                                <StarReview
+                                                                                                                                    key={star}
+                                                                                                                                    filled={star <= avaliacao.stars}
+                                                                                                                                />
+                                                                                                                            ))}
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                ))
+
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                    </AccordionItem>
+                                                                                                </Accordion>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
