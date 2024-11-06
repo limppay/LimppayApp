@@ -168,6 +168,11 @@ export default function Checkout() {
       
       setTimeout(() => {
         navigate("/area-cliente")
+        localStorage.removeItem('agendamentoData');
+        localStorage.removeItem('selectedProvider');
+        localStorage.removeItem('selectedDates');
+        localStorage.removeItem('selectedTimes');
+
         setAgendamentoData(null)
         setIsPayment(false);
       }, 4000);

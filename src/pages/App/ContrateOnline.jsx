@@ -276,6 +276,8 @@ export default function ContrateOnline() {
         setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
     }
 
+    
+
 
     const handleProceed = async () => {
         
@@ -337,7 +339,7 @@ export default function ContrateOnline() {
 
             if ( index < 1 ) {
                 setSelectedDates([])
-                setSelectedProvider(null)
+                setSelectedProvider([])
             }
 
             setCurrentStep(index);
@@ -464,6 +466,11 @@ export default function ContrateOnline() {
             observacao: observacao,
             ...(selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id })
         };
+
+        localStorage.setItem('agendamentoData', JSON.stringify(agendamentoData));
+        localStorage.setItem('selectedProvider', JSON.stringify(selectedProvider));
+        localStorage.setItem('selectedDates', JSON.stringify(selectedDates));
+        localStorage.setItem('selectedTimes', JSON.stringify(selectedTimes));
         
         await setAgendamentoData(data)
         navigate("/checkout-pagamento")
@@ -495,7 +502,7 @@ export default function ContrateOnline() {
                     {currentStep == 0 && (
                         <>
                             <ServiceSelection 
-                                onProceed={handleProceed} 
+                                onProceed={handleConfirmSelection} 
                                 onDaysChange={handleDaysChange} // Passa a função de atualizar os dias
                                 onServiceChange={handleServiceChange} // Passa a função de atualizar o serviço
                                 setServiceValue={setServiceValue}
@@ -912,7 +919,7 @@ export default function ContrateOnline() {
                                                         >
                                                             <div>
                                                                 <Avatar 
-                                                                src={provider.avatar.avatarUrl}
+                                                                src={provider?.avatar?.avatarUrl}
                                                                 size="lg"
                                                                 />
                                                             </div>
@@ -966,7 +973,7 @@ export default function ContrateOnline() {
                                                                                             <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
                                                                                                 {/* Container do Avatar */}
                                                                                                 <div className="absolute">
-                                                                                                    <Avatar src={selectedProvider.avatar.avatarUrl} size="lg"    
+                                                                                                    <Avatar src={selectedProvider?.avatar?.avatarUrl} size="lg"    
                                                                                                     className="w-24 h-24 text-large
                                                                                                     border-white
                                                                                                     border-5
@@ -1066,7 +1073,7 @@ export default function ContrateOnline() {
                                                                                 text-sm
                                                                                 gap-2"
 
-                                                                                onClick={handleProceed}
+                                                                                onClick={handleConfirmSelection}
                                                                                 
                                                                             >
                                                                                 Selecionar e prosseguir
@@ -1105,7 +1112,7 @@ export default function ContrateOnline() {
                                                     gap-2
                                                     w-full
                                                     "
-                                                    onClick={handleProceed}
+                                                    onClick={handleConfirmSelection}
                                                     
                                                 >
                                                     Selecionar e prosseguir
@@ -1335,4 +1342,5 @@ export default function ContrateOnline() {
             
         </>
     );
+    
 }
