@@ -440,7 +440,7 @@ const AreaCliente = () => {
                                                         <div className='flex flex-col gap-2'>
                                                             <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md text-ter">
                                                                 <p>
-                                                                    {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
+                                                                    {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
                                                                         day: '2-digit',
                                                                         month: 'long',
                                                                         year: 'numeric'
@@ -449,6 +449,7 @@ const AreaCliente = () => {
                                                                 <p>Subtotal: {formatarMoeda(agendamento.valorServico)}</p>
                                                             </div>
                                                         </div>
+
                                                         <div className='flex lg:flex-col justify-between h-full gap-5 items-center'>
                                                             <div>
                                                                 <p className={`${agendamento.status === 'Pendente' ? "text-des" : agendamento.status === "Andamento" ? "text-desSec" : agendamento.status === "Concluido" ? "text-sec" : ""}`}>{agendamento.status}</p>

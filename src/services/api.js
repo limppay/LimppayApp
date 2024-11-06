@@ -152,11 +152,13 @@ export const resetPassword = async (token, newPassword) => {
 }
 
 //Função para pegar os prestadores disponiveis
-export const getDisponiveis = (dataServico, servico) => {
+export const getDisponiveis = (dataServico, servico, cidade, estado) => {
   return api.get('/prestadores/disponiveis', {
     params: {
       data: dataServico,
       servico: servico,
+      cidade: cidade,
+      estado: estado
     },
   });
 };

@@ -67,11 +67,11 @@ export default function ContrateOnline() {
     const onSubmit = async (data) => {
         setIsCreatingAdress(true)
 
-        // console.log(data)
+        // // console.log(data)
 
         try {
           const response = await CreateEnderecosCliente(data);
-          // console.log("Endereço criado com sucesso!",response);
+          // // console.log("Endereço criado com sucesso!",response);
 
           setEnderecosCliente((prevEnderecos) => [...prevEnderecos, response])
         
@@ -86,7 +86,7 @@ export default function ContrateOnline() {
 
     }
 
-    // console.log(errors)
+    // // console.log(errors)
 
     const estados = {
         "AC": "Acre",
@@ -184,10 +184,12 @@ export default function ContrateOnline() {
     useEffect(() => {
         if (enderecoDefaultCliente.length > 0) {
             setSelectedEnderecoCliente(enderecoDefaultCliente[0].id);
+            setEstado(enderecoDefaultCliente[0].estado)
+            setCidade(enderecoDefaultCliente[0].cidade)
         }
     }, [enderecoDefaultCliente]);
     
-    // console.log("Endereço padrao foi selecionado",selectedEnderecoCliente);
+    // // console.log("Endereço padrao foi selecionado",selectedEnderecoCliente);
 
     const [observacao, setObservacao ] = useState('')
     const [providers, setProviders] = useState([])
@@ -198,17 +200,20 @@ export default function ContrateOnline() {
     const [isCreatingAdress, setIsCreatingAdress] = useState(false)
     const [isDeleteAdress, setIsDeleteAdress] = useState(false)
     const navigate = useNavigate();
+    const [cidade, setCidade] = useState("")
+    const [estado, setEstado] = useState("")
 
     const { user } = useUser();
     const { agendamentoData, setAgendamentoData } = useAgendamentoData()
     const { selectedProvider, setSelectedProvider } = useSelectedProvider()
     const { selectedDates, setSelectedDates } = useSelectedDates([])
+    
 
     const [providerId, setProviderId] = useState("")
     const [avaliacoes, setAvaliacoes] = useState([])
     const [mediaStars, setMediaStars] = useState(0)
     const [loadingReview, setLoadingReview] = useState(false)
-    console.log("Avaliacoes do prestador selecionado", avaliacoes)
+    // console.log("Avaliacoes do prestador selecionado", avaliacoes)
 
 
     // função para resetar o agendamento, toda vez que sair de checkout e voltar para contrate
@@ -244,18 +249,15 @@ export default function ContrateOnline() {
         }
     }, [enderecosCliente, clienteId]); // Chama a função ao montar o componente
 
-
-    // console.log(enderecosCliente)
-
     
     const handleServiceChange = (service) => {
         setSelectedService(service); // Atualiza o serviço selecionado
-        // console.log(service)
+        // // console.log(service)
     };
 
     const handleTimeChange = (time) => {
         setSelectedTimes(time)
-        // console.log(time)
+        // // console.log(time)
     }
 
     const selectRandomProvider = () => {
@@ -266,21 +268,55 @@ export default function ContrateOnline() {
         if (!selectedProvider) {
             const randomProvider = selectRandomProvider();
             setSelectedProvider(randomProvider);
-            // console.log(randomProvider); // Log do provedor selecionado aleatoriamente
+            // // console.log(randomProvider); // Log do provedor selecionado aleatoriamente
         } else {
-            // console.log(selectedProvider); // Log do provedor já selecionado
+            // // console.log(selectedProvider); // Log do provedor já selecionado
         }
 
         setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
     }
 
 
-    const handleProceed = () => {
-        // console.log(selectedService)
-        // console.log(selectedDates)
-        // console.log(selectedTimes)
+    const handleProceed = async () => {
         
-        setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
+        console.log("Local do cliente", cidade, estado)
+        
+        try {
+            if (selectedDates.length > 0) {
+                const formattedDate = selectedDates[0].toISOString().split('T')[0]; // Formata a data para YYYY-MM-DD
+                
+                const response = await getDisponiveis(formattedDate, selectedService, cidade, estado)
+                console.log("Resposta da API:", response.data);
+                
+                // Inicialmente, define os providers sem as URLs de avatar
+                setProviders(response.data);
+                
+                if (response.data.length > 0) {
+                    // Loop para buscar as URLs de avatar de cada prestador e atualizar o estado
+                    const updatedProviders = await Promise.all(
+                        response.data.map(async (provider) => {
+                            const avatar = await getUserProfile(provider.cpfCnpj); // Obtenha a URL do avatar
+                            return { ...provider, avatar }; // Retorna o objeto provider com o avatar incluído
+                        })
+                    );
+    
+                    setProviders(updatedProviders); // Atualiza o estado com os providers incluindo seus avatares
+
+                    console.log(updatedProviders);
+
+                } else {
+                    console.error('Nenhum prestador disponível encontrado');
+                }
+                
+            } else {
+                console.error('Nenhuma data selecionada');
+            }
+        } catch (error) {
+            console.error('Erro ao buscar prestadores disponíveis:', error);
+        } finally {
+            setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
+        }
+
     };
 
     const handleStepClick = (index) => {
@@ -288,10 +324,15 @@ export default function ContrateOnline() {
 
             if ( index < 2 ) {
                 setSelectedTimes(null)
+                setSelectedEnderecoCliente(enderecoDefaultCliente[0]?.id)
+                setEstado(enderecoDefaultCliente[0]?.estado)
+                setCidade(enderecoDefaultCliente[0]?.cidade)
             }
+            
 
-            if ( index < 2 ) {
+            if ( index < 3 ) {
                 setSelectedProvider(null)
+                setProviders([])
             }
 
             if ( index < 1 ) {
@@ -319,7 +360,7 @@ export default function ContrateOnline() {
             setEnderecosCliente(prevEnderecos => prevEnderecos.filter(endereco => endereco.id !== enderecoId));
             setSelectedEnderecoCliente(enderecoDefaultCliente[0].id)
             
-            // console.log(`Endereço ${enderecoId} excluído com sucesso!`);
+            // // console.log(`Endereço ${enderecoId} excluído com sucesso!`);
         } catch (error) {
             console.error("Erro ao excluir o endereço: ", error);
         } finally {
@@ -329,43 +370,10 @@ export default function ContrateOnline() {
     
     //função que recebe as informações de data e serviço, para retorna os prestadores disponveis 
     const handleConfirmSelection = async () => {
-        // console.log('Datas selecionadas:', selectedDates);
-        try {
-            if (selectedDates.length > 0) {
-                const formattedDate = selectedDates[0].toISOString().split('T')[0]; // Formata a data para YYYY-MM-DD
-    
-                const response = await getDisponiveis(formattedDate, selectedService)
-                // console.log("Resposta da API:", response.data);
-                
-                // Inicialmente, define os providers sem as URLs de avatar
-                setProviders(response.data);
-    
-                if (response.data.length > 0) {
-                    // Loop para buscar as URLs de avatar de cada prestador e atualizar o estado
-                    const updatedProviders = await Promise.all(
-                        response.data.map(async (provider) => {
-                            const avatar = await getUserProfile(provider.cpfCnpj); // Obtenha a URL do avatar
-                            return { ...provider, avatar }; // Retorna o objeto provider com o avatar incluído
-                        })
-                    );
-    
-                    setProviders(updatedProviders); // Atualiza o estado com os providers incluindo seus avatares
+        // // console.log('Datas selecionadas:', selectedDates);
+        setCurrentStep(currentStep + 1);
+        setShowCalendar(false);
 
-                    // console.log(updatedProviders);
-
-                } else {
-                    console.error('Nenhum prestador disponível encontrado');
-                }
-                
-                setCurrentStep(currentStep + 1);
-                setShowCalendar(false);
-
-            } else {
-                console.error('Nenhuma data selecionada');
-            }
-        } catch (error) {
-            console.error('Erro ao buscar prestadores disponíveis:', error);
-        }
     };
 
     const handleObterAvaliacoes = async () => {
@@ -382,7 +390,7 @@ export default function ContrateOnline() {
             const averageStars = totalStars / avaliacoes.length;
             setMediaStars(averageStars)
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         } finally {
             setLoadingReview(false) // Termina o carregamento
         }
@@ -396,7 +404,6 @@ export default function ContrateOnline() {
         }
     }, [providerId])
     
-    console.log("Média das estrelas:", mediaStars);
 
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -421,10 +428,7 @@ export default function ContrateOnline() {
         return cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2");
     };
 
-    // console.log(serviceValue)
-
     const sumValueService = (serviceValue * selectedDates.length)
-    // console.log(sumValueService)
 
     const formatarMoeda = (valor) => {
         return new Intl.NumberFormat('pt-BR', { 
@@ -438,7 +442,7 @@ export default function ContrateOnline() {
             const formateDate = new Date(date).toDateString()
             const times = selectedTimes[formateDate]
 
-            // console.log(times)
+            // // console.log(times)
         })
     }
 
@@ -446,8 +450,8 @@ export default function ContrateOnline() {
     const HandleNavigateCheckout = async () => {
         const FormDate = new Date(selectedDates[0]).toDateString(); // Converte a data para o formato legivel
         const times = selectedTimes[FormDate]; // Acessa o valor correspondente no objeto
-        // console.log(times)
-        // console.log(observacao)
+        // // console.log(times)
+        // // console.log(observacao)
 
     
         const data = {
@@ -456,15 +460,14 @@ export default function ContrateOnline() {
             dataServico: new Date(selectedDates[0]).toDateString(),
             Servico: selectedService,
             horaServico: times,
-            valorServico: sumValueService, // falta ajustar para pegar o valor do serviço
-            observacao: observacao //ajustar para pegar a observação do cliente
+            valorServico: sumValueService,
+            observacao: observacao,
+            ...(selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id })
         };
-
+        
         await setAgendamentoData(data)
         navigate("/checkout-pagamento")
     }
-
-    // console.log("Dados enviados para checkout:",agendamentoData)
 
     function StarReview({ filled }) {
         return (
@@ -477,8 +480,6 @@ export default function ContrateOnline() {
             </span>
         );
     }
-
-    // Calculando a média das estrelas
 
 
     return (
@@ -550,6 +551,8 @@ export default function ContrateOnline() {
                                                 onClick={() => {
                                                     setSelectedEnderecoCliente(enderecoDefaultCliente[0].id)
                                                     // console.log(enderecoDefaultCliente[0].id)
+                                                    setCidade(enderecoDefaultCliente[0].cidade)
+                                                    setEstado(enderecoDefaultCliente[0].estado)
                                                 }}
 
                                                 >
@@ -593,7 +596,9 @@ export default function ContrateOnline() {
 
                                                     onClick={() => {
                                                         setSelectedEnderecoCliente(endereco)
-                                                        // console.log(endereco.id)
+                                                        console.log(endereco.id, endereco.cidade, endereco.estado)
+                                                        setCidade(endereco.cidade)
+                                                        setEstado(endereco.estado)
                                                     }}
 
 
@@ -901,7 +906,7 @@ export default function ContrateOnline() {
                                                         
                                                         onClick={() => {
                                                             setSelectedProvider(provider); // Armazena o provider selecionado
-                                                            // console.log(provider.id);
+                                                            // // console.log(provider.id);
                                                         }}
 
                                                         >
@@ -997,7 +1002,7 @@ export default function ContrateOnline() {
                                                                                                 <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
                                                                                                     <Accordion   >
                                                                                                         <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${avaliacoes.length} )`} classNames={{title: 'text-prim text-md '}} >
-                                                                                                            <div className='flex flex-col gap-5 overflow-y-auto max-h-96'>
+                                                                                                            <div className='flex flex-col gap-5'>
                                                                                                                 {avaliacoes && (
                                                                                                                     avaliacoes.length == 0 ? (
                                                                                                                         <div className=' p-5 text-prim flex flex-col justify-center text-center'>
@@ -1013,7 +1018,7 @@ export default function ContrateOnline() {
                                                                                                                                     year: 'numeric'
                                                                                                                                 })}</h3>
                                                                                                                                 <p>"{avaliacao?.comment}"</p>
-                                                                                                                                <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
+                                                                                                                                <div className='flex justify-start items-center gap-2 pr-5 pt-2'>
                                                                                                                                     {[1, 2, 3, 4, 5].map((star) => (
                                                                                                                                         <StarReview
                                                                                                                                             key={star}
