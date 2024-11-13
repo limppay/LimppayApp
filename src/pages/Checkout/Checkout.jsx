@@ -109,7 +109,8 @@ export default function Checkout() {
     setIsPaymentFinally(false);
     setIsPayment(true);
 
-    console.log(data);
+    console.log("Dados do cartao recebido: ", data);
+
     try {
         const token = await obterTokenCartao(data);
         console.log(token)
