@@ -34,7 +34,10 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 export default function ContrateOnline() {
 
     const prestadorId = localStorage.getItem("prestadorId");
-    const clienteId = localStorage.getItem("clienteId");
+
+    const clienteId = localStorage.getItem("userId");
+
+    console.log("Id do cliente: ", clienteId)
 
     if (prestadorId && clienteId) {
         console.warn("Conflito: Dois logins abertos detectados!");
@@ -540,6 +543,10 @@ export default function ContrateOnline() {
             </span>
         );
     }
+
+    console.log("usuario do cliente: ", user)
+    console.log("Endereco padrão do cliente: ", enderecoDefaultCliente)
+    console.log("Enderecos  do cliente: ", enderecosCliente)
 
 
     return (
