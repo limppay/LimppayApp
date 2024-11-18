@@ -70,6 +70,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
   const HandleExitUser = () => {
     setUser(null);
     setUrls({});
+    localStorage.removeItem('status')
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('urls');

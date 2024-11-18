@@ -141,6 +141,8 @@ const AreaCliente = () => {
                 }
                 
                 setUserInfo(combineData);
+                const status = localStorage.setItem("status", response.data.ativa)
+
                 
             } catch (error) {
                 console.error('Erro ao buscar informações do usuário:', error);
@@ -151,6 +153,9 @@ const AreaCliente = () => {
             fetchUserInfo();
         }
     }, [token, userId]);
+
+    const status = localStorage.getItem("status")
+    console.log("Status da conta: ", status)
 
     
     console.log("Endereco padrao", adressDefault)
@@ -452,7 +457,7 @@ const AreaCliente = () => {
 
                                                         <div className='flex lg:flex-col justify-between h-full gap-5 items-center'>
                                                             <div>
-                                                                <p className={`${agendamento.status === 'Agendado' ? "text-Des" : agendamento.status === "Iniciado" ? "text-desSec" : agendamento.status === "Cancelado" ? "text-error" : agendamento.status === "Realizado" ? "text-sec" : ""}`}>{agendamento.status}</p>
+                                                                <p className={`${agendamento.status === 'Agendado' ? "text-des" : agendamento.status === "Iniciado" ? "text-desSec" : agendamento.status === "Cancelado" ? "text-error" : agendamento.status === "Realizado" ? "text-sec" : ""}`}>{agendamento.status}</p>
                                                             </div>
                                                             <div>
                                                                 <button 

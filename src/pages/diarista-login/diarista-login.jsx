@@ -20,9 +20,9 @@ export default function DaristaLogin() {
             if (!access_token) {
                 setError(err.message);
             } else {
-                localStorage.setItem('token', access_token);
-                localStorage.setItem('userId', userId);
-                localStorage.setItem('urls', JSON.stringify(urls));
+                localStorage.setItem('token_prestador', access_token);
+                localStorage.setItem('prestadorId', userId);
+                localStorage.setItem('urls_prestador', JSON.stringify(urls));
                 navigate("/area-diarista");
             }
         } catch (err) {

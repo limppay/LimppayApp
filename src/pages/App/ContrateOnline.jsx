@@ -33,7 +33,19 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 
 export default function ContrateOnline() {
 
-    const clienteId = localStorage.getItem('userId')
+    const prestadorId = localStorage.getItem("prestadorId");
+    const clienteId = localStorage.getItem("clienteId");
+
+    if (prestadorId && clienteId) {
+        console.warn("Conflito: Dois logins abertos detectados!");
+        // Defina a lógica para lidar com conflitos, como redirecionar o usuário.
+        
+    }
+
+    if (prestadorId) {
+        console.log("Existe um login aberto como prestador.");
+        localStorage.clear()
+    }
 
     const schema = yup.object({
         clienteId: yup.string().default(clienteId),
@@ -207,6 +219,47 @@ export default function ContrateOnline() {
     const { agendamentoData, setAgendamentoData } = useAgendamentoData()
     const { selectedProvider, setSelectedProvider } = useSelectedProvider()
     const { selectedDates, setSelectedDates } = useSelectedDates([])
+
+    const status = localStorage.getItem("status")
+    const ativo = user?.ativa
+    console.log(ativo)
+    console.log("Status da conta: ", status)
+
+    if(status == "false" || ativo == "false") {
+        return (
+        <>
+            <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
+            <main className="w-screen h-screen bg-neutral-900 flex justify-center items-center">
+            <div className="flex flex-col justify-center items-center">
+                <div className="text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-28">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                    <h1 className="text-neutral-500 font-semibold text-xl">Não foi possível continuar</h1>
+                    <p className="text-neutral-500">Sua conta foi desativada, entre em contato com o suporte</p>
+                </div>
+
+            </div>
+            </main>
+        </>
+        )
+    }
+
+
+    
+    useEffect(() => {
+
+        if(status == "false" || ativo == "false") {
+            console.log("sua conta esta desativada, entre em contato com o suporte")
+            return 
+            
+        }
+
+        
+    }, [selectedService, setSelectedService, currentStep, user])
+
     
 
     const [providerId, setProviderId] = useState("")

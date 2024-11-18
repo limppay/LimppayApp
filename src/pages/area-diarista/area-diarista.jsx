@@ -9,10 +9,10 @@ import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 const AreaDiarista = () => {
     const [userInfo, setUserInfo] = useState(null);
     const[Open, SetOpen] = useState(false)
-    const userId = localStorage.getItem('userId'); // Obter o ID do usuário do localStorage
-    const token = localStorage.getItem('token'); // Obter o token do localStorage
+    const userId = localStorage.getItem('prestadorId'); // Obter o ID do usuário do localStorage
+    const token = localStorage.getItem('token_prestador'); // Obter o token do localStorage
     // Recuperar as URLs e converter para objeto JSON
-    const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {}); // Atualize o estado URLs aqui
+    const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls_prestador')) || {}); // Atualize o estado URLs aqui
 
     const [OpenWho, SetOpenWho] = useState(false)
     const [OpenDuvidas, SetOpenDuvidas] = useState(false)
@@ -75,7 +75,7 @@ const AreaDiarista = () => {
     const btnAcess = [
         {
             AcessPrim: "Suporte", 
-            AcessSec: "Sair",
+            AcessSec: "Sair", 
             LinkPrim: "/",
             LinkSec: "/",
         }
