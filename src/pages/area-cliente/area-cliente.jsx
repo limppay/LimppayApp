@@ -12,7 +12,7 @@ import { getAgendamentos } from '../../services/api.js';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 
 const AreaCliente = () => {
-    
+
     const [userInfo, setUserInfo] = useState(null);
     const[Open, SetOpen] = useState(false)
     const userId = localStorage.getItem('userId'); // Obter o ID do usuário do localStorage
@@ -41,6 +41,42 @@ const AreaCliente = () => {
     const handleReviewChange = (event) => {
         setReview(event.target.value);
     };
+
+    // Calcular o número total de pedidos
+    const totalPedidos = agendamentos ? agendamentos.length : 0;
+
+    // Calcular o prestador mais solicitado
+    const prestadorMaisSolicitado = () => {
+        const prestadoresCount = {};
+
+        agendamentos.forEach((agendamento) => {
+            const prestadorId = agendamento.user.id;
+            prestadoresCount[prestadorId] = (prestadoresCount[prestadorId] || 0) + 1;
+        });
+
+        // Encontrar o prestador mais solicitado
+        const prestadorIdMaisSolicitado = Object.keys(prestadoresCount).reduce((a, b) =>
+            prestadoresCount[a] > prestadoresCount[b] ? a : b
+        );
+
+        const prestador = agendamentos.find((agendamento) => agendamento.user.id === prestadorIdMaisSolicitado);
+        return prestador ? prestador.user.name : "Nenhum prestador solicitado";
+    };
+    
+     // Calcular o gasto mensal
+     const gastoMensal = () => {
+        const hoje = new Date();
+        const mesAtual = hoje.getMonth();  // 0 = Janeiro, 1 = Fevereiro, ..., 11 = Dezembro
+
+        const totalGasto = agendamentos
+            .filter((agendamento) => new Date(agendamento.dataServico).getMonth() === mesAtual)
+            .reduce((total, agendamento) => total + parseFloat(agendamento.valorServico), 0);
+
+        return formatarMoeda(totalGasto);
+    };
+    
+
+    
 
     function Star({ filled, onClick }) {
         return (
@@ -233,6 +269,7 @@ const AreaCliente = () => {
             <main className='flex flex-col  p-5 '>
                 {userInfo ? (
                     <>
+                        
                         <section className='pt-14 lg:pt-24 lg:flex justify-between w-full gap-1 '>
                             <div className='flex flex-col gap-5 text-center max-w-50 min-w-72 min-h-60  p-5 rounded-md  lg:w-4/12 lg:h-full'>
                                 <div className="flex flex-col justify-center items-center gap-2">
@@ -263,63 +300,30 @@ const AreaCliente = () => {
                                 </div>
                             </div>
                             <div className='flex flex-col shadow-md shadow-prim rounded-md text-center lg:w-8/12 '>
-                                <div className='bg-desSec text-white p-5 rounded-b-none rounded-md lg:hidden'>
-                                    <h1 className='text-xl'>Minhas Informações</h1>
+                            <div className='dashboard p-5  rounded-md mb-6'>
+                            <div className='flex flex-col lg:flex-row gap-5 mt-4'>
+                                {/* Número total de pedidos */}
+                                <div className='flex-1 p-4 border-l-4 border-des rounded-md border'>
+                                    <h3 className='font-semibold text-lg text-prim'>Número Total de Pedidos</h3>
+                                    <p className='text-2xl text-des'>{totalPedidos}</p>
                                 </div>
-                                <div className='p-5 flex gap-10 flex-col lg:gap-7'>
-                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                        <div className='lg:w-3/12'>
-                                            <p className='flex items-start text-ter lg:text-sm'>Nome Completo</p>
-                                        </div>
-                                        <div>
-                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.name}</p>
-                                        </div>
-                                    </div>
-                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                        <div className='w-3/12'>
-                                            <p className='flex items-start text-ter lg:text-sm'>Email</p>
-                                        </div>
-                                        <div className='flex'>
-                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.email}</p>
-                                        </div>
-                                    </div>
-                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                        <div className='w-3/12'>
-                                            <p className='flex items-start text-ter lg:text-sm'>Telefones</p>
-                                        </div>
-                                        <div>
-                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.telefone_1}</p>
-                                        </div>
-                                        <div>
-                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.telefone_2}</p>
-                                        </div>
-                                    </div>
-                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                        <div className='w-3/12'>
-                                            <p className='flex items-start text-ter lg:text-sm'>Estado</p>
-                                        </div>
-                                        <div>
-                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.estado}</p>
-                                        </div>
-                                    </div>
-                                    <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                        <div className='w-3/12'>
-                                            <p className='flex items-start text-ter lg:text-sm'>Cidade</p>
-                                        </div>
-                                        <div>
-                                            <p className='flex items-start text-prim lg:text-sm'>{userInfo.cidade}</p>
-                                        </div>
-                                    </div>
-                                    <div className='border-b border-bord p-2 flex flex-col  gap-2 lg:flex-row lg:p-0'>
-                                        <div className='w-3/12'>
-                                            <p className='flex items-start text-ter lg:text-sm'>Endereço</p>
-                                        </div>
-                                        <div>
-                                            <p className='text-start text-prim lg:text-sm '>{userInfo.logradouro + ", " +  userInfo.numero + ", " + userInfo.bairro + ", " + userInfo.cep}</p>
-                                        </div>
-                                    </div>
+                                
+                                {/* Prestador mais solicitado */}
+                                <div className='flex-1 p-4 border-l-4 border-sec rounded-md border'>
+                                    <h3 className='font-semibold text-lg text-prim'>Prestador Mais Solicitado</h3>
+                                    <p className='text-2xl text-sec'>{prestadorMaisSolicitado}</p>
+                                </div>
+                                
+                                {/* Gasto mensal com os pedidos */}
+                                <div className='flex-1 p-4 border-l-4 border-desSec rounded-md border'>
+                                    <h3 className='font-semibold text-lg text-prim'>Gasto Mensal com Pedidos</h3>
+                                    <p className='text-2xl text-desSec'>{gastoMensal}</p>
+                                </div>
+                            </div>
+                        </div>
+                                    
 
-                                </div>
+                                
                                 {/* Modal de edição */}
                                 <EditClienteModal 
                                     Open={Open}
