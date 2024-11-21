@@ -177,6 +177,8 @@ const AreaCliente = () => {
                 }
                 
                 setUserInfo(combineData);
+                const status = localStorage.setItem("status", response.data.ativa)
+
                 
             } catch (error) {
                 console.error('Erro ao buscar informações do usuário:', error);
@@ -187,6 +189,9 @@ const AreaCliente = () => {
             fetchUserInfo();
         }
     }, [token, userId]);
+
+    const status = localStorage.getItem("status")
+    console.log("Status da conta: ", status)
 
     
     console.log("Endereco padrao", adressDefault)
@@ -456,7 +461,7 @@ const AreaCliente = () => {
 
                                                         <div className='flex lg:flex-col justify-between h-full gap-5 items-center'>
                                                             <div>
-                                                                <p className={`${agendamento.status === 'Pendente' ? "text-des" : agendamento.status === "Andamento" ? "text-desSec" : agendamento.status === "Concluido" ? "text-sec" : ""}`}>{agendamento.status}</p>
+                                                                <p className={`${agendamento.status === 'Agendado' ? "text-Des" : agendamento.status === "Iniciado" ? "text-desSec" : agendamento.status === "Cancelado" ? "text-error" : agendamento.status === "Realizado" ? "text-sec" : ""}`}>{agendamento.status}</p>
                                                             </div>
                                                             <div>
                                                                 <button 
@@ -515,7 +520,7 @@ const AreaCliente = () => {
 
                                                                                     </div> 
 
-                                                                                    {selectedAgendamento.status === "Concluido" && (
+                                                                                    {selectedAgendamento.status === "Realizado" && (
                                                                                         <div className='border-t-2 border-bord '>
                                                                                             <h2 className='font-semibold text-lg pt-5'>Avaliar Prestador</h2>
                                                                                             <label htmlFor="avaliacao">Conte-nos como foi o serviço desse prestador :D <br />

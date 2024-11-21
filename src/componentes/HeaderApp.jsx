@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import HeaderButton from "./HeaderButton";
 import ButtonAcess from './home/ButtonAcess';
 import "../styles/menu-hamburguer.css";
+import {Button} from "@nextui-org/react";
 
 export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2,  }) {
     useEffect(() => {
@@ -38,14 +39,21 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                     </a>
                     <div className="flex items-center gap-1">
                             <div className='hidden items-center lg:flex'>
-                                <ul className='flex'>
+                                <ul className='flex gap-2'>
                                     {buttons.map((button, index) => (
-                                        <HeaderButton 
-                                        key={index} 
-                                        link={button.link} 
-                                        text={button.text} 
-                                        OnClick={button.OnClick}
-                                        />
+                                        <>
+                                            
+                                            <a href={button.link} key={index}>
+                                                <Button
+                                                    onClick={button.OnClick}
+                                                    className='bg-white text-center text-prim border border-trans hover:border-bord hover:text-sec'
+                                                >
+                                                    {button.text}
+                                                </Button>
+                                            </a>
+
+                                        
+                                        </>
                                     ))}
                                 </ul>
                             </div>
@@ -54,18 +62,37 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                             <div className='flex'>
                                 <ul className='flex w-full gap-2'>
                                     {btnAcess.map((acess, index) => (
-                                        <ButtonAcess 
-                                        key={index} 
-                                        AcessPrim={acess.AcessPrim} 
-                                        AcessSec={acess.AcessSec} 
-                                        LinkPrim={acess.LinkPrim} 
-                                        LinkSec={acess.LinkSec} 
-                                        Class={acess.Class} 
-                                        OnClickPrim={acess.OnClickPrim} 
-                                        OnClickSec={acess.OnClickSec}/>
+                                        <>
+                                           <a href={acess.LinkPrim} key={index}>
+                                                <Button
+                                                    
+                                                    onClick={acess.OnClickPrim}
+                                                    className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white'
+                                                    
+                                                    
+                                                    
+                                                >
+                                                    {acess.AcessPrim}
+                                                </Button>
+                                           </a>
+
+                                            <a href={acess.LinkSec} key={index}>
+                                                <Button
+                                                    onClick={acess.OnClickSec}
+                                                    className='bg-des hover:bg-sec text-white'
+                                                >
+                                                    {acess.AcessSec}
+                                                </Button>                                            
+                                            
+                                            </a> 
+
+                                        </>
+
+                                        
                                     ))} 
                                 </ul>
                             </div>
+
                         <i className="fas fa-bars cursor-pointer text-2xl text-des lg:hidden" id="hamburguerButton"></i>
                     </div>
                 </nav>
