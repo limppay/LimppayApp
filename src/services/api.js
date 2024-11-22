@@ -323,4 +323,15 @@ export const createReview = async (reviews) => {
   }
 };
 
+export const findAllServicos = async () => {
+  try {
+    const response = await api.get('/servicos')
+    return response.data
+
+  } catch (error) {
+    console.error('Erro ao encontrar os servicos:', error.response?.data || error.message);
+    return false; // Retornar false em caso de erro
+  }
+}
+
 export default api;
