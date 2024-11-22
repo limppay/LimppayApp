@@ -1,26 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ServiceCard from './ServiceCard';
+import { findAllServicos } from '../../services/api';
 
 const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setServiceValue }) => {
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [days, setDays] = useState(0);
+  const [servicos, setServicos] = useState([])
+  const [loading, setLoading] = useState(false)
 
-  const services = [
-    { icon: 'fas fa-baby', title: 'Baba', description: 'Cuida de bebês e crianças, garantindo segurança e bem-estar.', value: 180 },
-    { icon: 'fas fa-utensils', title: 'Cozinheira', description: 'Prepara refeições deliciosas para escritórios, consultórios e salas comerciais.', value: 150 },
-    { icon: 'fas fa-bolt', title: 'Eletricista', description: 'Realiza manutenção preventiva e corretiva em instalações elétricas.', value: 140 },
-    { icon: 'fas fa-wrench', title: 'Encanador', description: 'Resolve problemas hidráulicos em escritórios e salas comerciais.', value: 160 },
-    { icon: 'fas fa-seedling', title: 'Jardinagem', description: 'Cuida de jardins em casas e apartamentos, mantendo-os sempre bonitos.' },
-    { icon: 'fas fa-building', title: 'Limpeza empresarial', description: 'Serviço de limpeza para escritórios, consultórios e salas comerciais.', value: 140 },
-    { icon: 'fas fa-broom', title: 'Limpeza pós-obra', description: 'Limpeza especializada para ambientes após obras e reformas.' },
-    { icon: 'fas fa-home', title: 'Limpeza residencial', description: 'Limpeza completa para casas e apartamentos.', value: 140 },
-    { icon: 'fas fa-couch', title: 'Montador de móveis', description: 'Montagem de móveis com precisão e cuidado.' },
-    { icon: 'fas fa-tshirt', title: 'Passar roupas', description: 'Passa roupas, deixando-as impecáveis e prontas para uso.' },
-    { icon: 'fas fa-tools', title: 'Pedreiro', description: 'Serviços de construção e reparo para casas e apartamentos.' },
-    { icon: 'fas fa-paint-roller', title: 'Pintor', description: 'Pintura de alta qualidade para escritórios e salas comerciais.' },
-    { icon: 'fas fa-glass-martini', title: 'Vidraceiro', description: 'Instalação e reparo de vidros para escritórios, consultórios e salas comerciais.' }
-  ];
+    // função para fazer as requisições
+    useEffect(() => {
+      setLoading(true)
+  
+      const handleGetServicos = async () => {
+        try {
+  
+          const response = await findAllServicos()
+          console.log("Servicos", response)
+  
+          setServicos(response)
+          setLoading(false)
+    
+        } catch (error) {
+          console.log(error)
+  
+        } 
+  
+      }
+  
+      handleGetServicos()
+  
+    }, [])
+
+  const services = servicos
+  .filter((servico) => servico.status === true) // Filtra apenas os com status true
+  .map((servico) => ({
+    // icon: 'fas fa-baby',
+    title: servico.nome,
+    description: servico.descricao,
+    value: servico.valorDiaria
+  }));
+  
+    
 
   const filteredServices = services.filter(service =>
     service.title.toLowerCase().includes(searchQuery.toLowerCase())
