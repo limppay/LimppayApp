@@ -8,6 +8,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   const [days, setDays] = useState(0);
   const [servicos, setServicos] = useState([])
   const [loading, setLoading] = useState(false)
+  
 
     // função para fazer as requisições
     useEffect(() => {
