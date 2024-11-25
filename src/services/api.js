@@ -7,18 +7,36 @@ const api = axios.create({
 // Função para criar o usuário e enviar arquivos
 export const createUser = async (userData) => {
   try {
-    const response = await api.post('/users', userData, {
+    const response = await api.post('/users/create-step-one', userData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
     return response.data;
+
   } catch (error) {
     const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
 
     throw new Error(errorMessage)
   }
 };
+
+export const CreateStepTwo = async (id, userData) => {
+  try {
+    const response = await api.post(`/users/create-step-two/${id}`, userData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
+
+    throw new Error(errorMessage)
+  }
+}
 
 // Função para criar o cliente e enviar arquivos
 export const createCliente = async (clienteData) => {

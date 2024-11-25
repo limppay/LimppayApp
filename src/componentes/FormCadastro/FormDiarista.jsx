@@ -43,87 +43,37 @@ export default function FormDiarista() {
         estado: yup.string().typeError(""),
         cpfCnpj: yup.string().trim().required("O CPF é obrigatório").min(11, "Digite um CPF válido"),
         rg: yup.string().trim().required("O RG é obrigatório"),
-        banco: yup.number().required("Banco é obrigatório").typeError("Banco é obrigatório"),
-        agencia:  yup.string().trim().required("Agência é obrigatório").matches(/^\d+$/, 'Apenas números'),
-        conta:  yup.string().trim().required("Conta é obrigatório").matches(/^\d+$/, 'Apenas números'),
-        pix: yup.string().trim().required("Pix é obrigatório"),
+        
 
         senha: yup.string().trim().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
+        
         confirmarSenha: yup.string().trim().required("Confirme sua senha").oneOf([yup.ref("senha")], "As senhas devem ser iguais"),
 
         sobre: yup.string().trim().required("Sobre mim é obrigatório"),
         referencia:  yup.string(),
 
         data: yup
-            .date()
-            .typeError('Data de nascimento inválida')
-            .required("Data de nascimento é obrigatória")
-            .test('is-valid-date', 'Data deve ser uma data válida', (value) =>{
-                if(!value) return false; //se o valor for nulo ou indefinido
-                return !isNaN(value.getTime()); //Verifica se a data é válida
-            })
-            .min(new Date(1900, 0, 1), "Data de nascimento inválida") //Define uma data mínima
-            .max(new Date(), "Data de nascimento não pode ser no futuro"), //Define que não pode ser uma data futura
-
-        arquivoFoto: yup
-            .mixed()
-            .test("required", "Foto de perfil é obrigatório", (value) => {
-                return value instanceof File; // Verifica se o valor é um arquivo
-            })
-            .test("fileSize", "O arquivo é muito grande", (value) => {
-                return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
-            })
-            .test("fileType", "Formato de arquivo não suportado", (value) => {
-                return value && value.type.startsWith('image/'); // Aceita qualquer tipo de imagem
-            }),
-
-        arquivodt: yup
-            .mixed()
-            .test("required", "A Identidade é obrigatória", (value) => {
-            return value instanceof File; // Verifica se o valor é um arquivo
-            })
-            .test("fileSize", "O arquivo é muito grande", (value) => {
-            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
-            })
-            .test("fileType", "Formato de arquivo não suportado", (value) => {
-            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
-            }),
-
-        arquivoCpf: yup
-            .mixed()
-            .test("required", "CPF é obrigatório", (value) => {
-            return value instanceof File; // Verifica se o valor é um arquivo
-            })
-            .test("fileSize", "O arquivo é muito grande", (value) => {
-            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
-            })
-            .test("fileType", "Formato de arquivo não suportado", (value) => {
-            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
-            }),
-
-        arquivoResidencia: yup
-            .mixed()
-            .test("required", "Comprovante de Residência é obrigatório", (value) => {
-            return value instanceof File; // Verifica se o valor é um arquivo
-            })
-            .test("fileSize", "O arquivo é muito grande", (value) => {
-            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
-            })
-            .test("fileType", "Formato de arquivo não suportado", (value) => {
-            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
-            }),
+        .date()
+        .typeError('Data de nascimento inválida')
+        .required("Data de nascimento é obrigatória")
+        .test('is-valid-date', 'Data deve ser uma data válida', (value) =>{
+            if(!value) return false; //se o valor for nulo ou indefinido
+            return !isNaN(value.getTime()); //Verifica se a data é válida
+        })
+        .min(new Date(1900, 0, 1), "Data de nascimento inválida") //Define uma data mínima
+        .max(new Date(), "Data de nascimento não pode ser no futuro"), //Define que não pode ser uma data futura
 
         arquivoCurriculo: yup
-            .mixed()
-            .test("required", "Curriculo é obrigatório", (value) => {
-            return value instanceof File; // Verifica se o valor é um arquivo
-            })
-            .test("fileSize", "O arquivo é muito grande", (value) => {
-            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
-            })
-            .test("fileType", "Formato de arquivo não suportado", (value) => {
-            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
-            }),
+        .mixed()
+        .test("required", "Curriculo é obrigatório", (value) => {
+        return value instanceof File; // Verifica se o valor é um arquivo
+        })
+        .test("fileSize", "O arquivo é muito grande", (value) => {
+        return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+        })
+        .test("fileType", "Formato de arquivo não suportado", (value) => {
+        return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
+        }),
 
         // Dias da semana 
         dom: yup.boolean(),
@@ -211,12 +161,8 @@ export default function FormDiarista() {
         formData.append('estado', data.estado)
 
         formData.append('cpfCnpj', cpfCnpjSemMascara)
-
         formData.append('rg', data.rg)
-        formData.append('banco', data.banco)
-        formData.append('agencia', data.agencia)
-        formData.append('conta', data.conta)
-        formData.append('pix', data.pix)
+
         formData.append('senha', data.senha)
         formData.append('sobre', data.sobre)
         formData.append('referencia', data.referencia)
@@ -235,10 +181,6 @@ export default function FormDiarista() {
         formData.append('eletricista', data.eletricista)
         formData.append('encanador', data.encanador)
 
-        formData.append('arquivoFoto', data.arquivoFoto);
-        formData.append('arquivodt', data.arquivodt);
-        formData.append('arquivoCpf', data.arquivoCpf);
-        formData.append('arquivoResidencia', data.arquivoResidencia);
         formData.append('arquivoCurriculo', data.arquivoCurriculo);
 
         try {
@@ -514,53 +456,8 @@ export default function FormDiarista() {
                 <h2 className="text-2xl text-desSec">Dados pessoais</h2>
             </div>
             
-            <div className="lg:flex lg:items-center lg:justify-around">
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col items-center">
-                    <div className="flex flex-col justify-center items-center gap-2">
-                        <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
-                            <Avatar src={image} 
-                                alt="foto de perfil" 
-                                className="min-w-72 min-h-72 max-w-72 max-h-72 lg:min-w-60 lg:min-h-60 lg:max-w-60 lg:max-h-60 text-large"
-                            />                  
-                            <input 
-                                type="file" 
-                                id="fotoPerfil"
-                                accept="image/*"
-                                {...register("arquivoFoto")}
-                                onChange={(e) => {
-                                    const file = e.target.files[0]; // Pega o arquivo selecionado
-                                    handleImageChange(e); // Exibe a imagem
-                                    setValue("arquivoFoto", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
-                                  }}
-                                  className="p-2 w-full hidden"
-                            />                      
-                        </label>
-                        <div className="flex gap-2 items-center">
-                            <span className="text-prim">Foto de perfil</span>
-                            <Tooltip
-                            content="Recomendamos inserir uma foto com tamanho quadrado ou altura maior que a largura"
-                            isOpen={isOpenFoto}
-                            onOpenChange={setIsOpenFoto}
-                            size="md"
-                            radius="md"
-                            shadow="sm"
-                            placement="top"
-                            showArrow
-                            shouldFlip
-                            >
-                                <button type="button" onClick={handleToggleFoto} onMouseEnter={() => setIsOpenFoto(true)} onMouseLeave={() => setIsOpenFoto(false)} className="w-5 h-5 text-white bg-prim rounded-full">
-                                    ?
-                                </button>
-                            </Tooltip>
-                        </div>
-                        {errors.arquivoFoto && (
-                            <span className="text-error opacity-75">{errors.arquivoFoto.message}</span>
-                        )}
-                    </div>
-                </div>
-
-
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col lg:mt-0 lg:w-1/2 lg:p-0 lg:mb-10 max-w-full">
+            <div className="lg:grid lg:grid-cols-2 pl-9 pt-7 ">
+                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col lg:mt-0 lg:p-0  max-w-full ">
                     <div className="flex items-center gap-2">
                         <label htmlFor="biografia" className="text-prim">Sobre mim</label>
                         <Tooltip
@@ -582,92 +479,92 @@ export default function FormDiarista() {
                     <textarea  
                     id="biografia"
                     {...register("sobre")} 
-                    className="border rounded-md border-bord p-3 pt-1 pb-1 min-h-20 lg:min-h-40 focus:outline-ter text-prim lg:max-w-full max-h-1"></textarea>
+                    className="border rounded-md border-bord p-3 pt-1 pb-1 min-h-[30vh] lg:max-h-[30vh] lg:min-h-30 focus:outline-ter text-prim lg:max-w-full  h-full"></textarea>
                     {errors.sobre && (
                         <span className="text-error opacity-75">{errors.sobre.message}</span>
                     )}
                 </div>
+                <div>
+                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                        <label htmlFor="name" className="text-prim">Nome</label>
+                        <input 
+                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                        id="name"
+                        type="text" 
+                        placeholder="Nome completo" 
+                        {...register("name")}
+                        
+                        />
+                        { errors.name &&
+                        <span className="text-error opacity-75">{errors.name?.message}</span>}
+                    </div>
 
-            </div>
-            
+                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                        <div className="flex gap-2 justify-between">
+                            <label htmlFor="Genero" className="text-prim">Gênero</label>
 
-            <div className="lg:flex">
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="name" className="text-prim">Nome</label>
-                    <input 
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="name"
-                    type="text" 
-                    placeholder="Nome completo" 
-                    {...register("name")}
-                    
-                    />
-                    { errors.name &&
-                    <span className="text-error opacity-75">{errors.name?.message}</span>}
-                </div>
-
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
-                    <div className="flex gap-2 justify-between">
-                        <label htmlFor="Genero" className="text-prim">Gênero</label>
-
+                            {genero === 'Outro' ? (
+                                <>
+                                    <p onClick={voltarParaSelect} className="cursor-pointer text-prim">Voltar para seleção</p>
+                                </>
+                            ) : (
+                                <span>
+                                    
+                                </span>
+                            )}
+                        </div>
+                        
                         {genero === 'Outro' ? (
                             <>
-                                <p onClick={voltarParaSelect} className="cursor-pointer text-prim">Voltar para seleção</p>
+                                <input
+                                type="text"
+                                id="outroGenero"
+                                name="outroGenero"
+                                value={outroGenero}
+                                onChange={handleOutroGeneroChange}
+                                required
+                                placeholder="Especifique seu gênero"
+                                className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim"
+                                />
                             </>
                         ) : (
-                            <span>
-                                
-                            </span>
+                            <select
+                            id="Genero"
+                            value={genero}
+                            onChange={handleGeneroChange}
+                            required
+                            className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim w-full">
+                                <option value="">Selecione</option>
+                                {Genero.map((options, index) => (
+                                    <option key={index} value={options.text}>{options.text}</option>
+                                ))}                            
+                            </select>
+                        )}
+
+
+                        {errors.genero && (
+                            <span className="text-error opacity-75">{errors.genero?.message}</span>
                         )}
                     </div>
-                    
-                    {genero === 'Outro' ? (
-                        <>
-                            <input
-                            type="text"
-                            id="outroGenero"
-                            name="outroGenero"
-                            value={outroGenero}
-                            onChange={handleOutroGeneroChange}
-                            required
-                            placeholder="Especifique seu gênero"
-                            className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim"
-                            />
-                        </>
-                    ) : (
-                        <select
-                        id="Genero"
-                        value={genero}
-                        onChange={handleGeneroChange}
-                        required
-                        className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim w-full">
-                            <option value="">Selecione</option>
-                            {Genero.map((options, index) => (
-                                <option key={index} value={options.text}>{options.text}</option>
-                            ))}                            
+
+                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                        <label htmlFor="EstadoCivil" className="text-prim">Estado Civil</label>
+                        <select  
+                        id="EstadoCivil"
+                        {...register("estadoCivil")}
+                        className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
+                            <option defaultValue='0' >Selecione</option>
+                            {EstadoCivil.map((options, index) => (
+                                <option key={index} value={options.value}>{options.text}</option>
+                            ))}
                         </select>
-                    )}
+                        {errors.estadoCivil && 
+                        <span className="text-error opacity-75">{errors.estadoCivil?.message}</span>}           
+                    </div>
 
-
-                    {errors.genero && (
-                        <span className="text-error opacity-75">{errors.genero?.message}</span>
-                    )}
                 </div>
 
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
-                    <label htmlFor="EstadoCivil" className="text-prim">Estado Civil</label>
-                    <select  
-                    id="EstadoCivil"
-                    {...register("estadoCivil")}
-                    className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
-                        <option defaultValue='0' >Selecione</option>
-                        {EstadoCivil.map((options, index) => (
-                            <option key={index} value={options.value}>{options.text}</option>
-                        ))}
-                    </select>
-                    {errors.estadoCivil && 
-                    <span className="text-error opacity-75">{errors.estadoCivil?.message}</span>}           
-                </div>
+
             </div>
 
             <div>
@@ -783,61 +680,10 @@ export default function FormDiarista() {
                 </div>
                 
             </div>
-            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
-                <label htmlFor="banco" className="text-prim">Banco</label>
-                <select  
-                id="banco"
-                {...register("banco")}
-                className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
-                    <option value="" >Selecione</option>
-                    {Banco.map((options, index) => (
-                        <option key={index} value={options.value}>{options.text}</option>
-                    ))}
-                </select>
-                {errors.banco && 
-                <span className="text-error opacity-75">{errors.banco?.message}</span>}           
-            </div>
-            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                <label htmlFor="agencia" className="text-prim">Agência</label>
-                <input 
-                className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                id="agencia" 
-                type="text" 
-                placeholder="Somente números" 
-                {...register("agencia")}
-                />
-                {errors.agencia && 
-                <span className="text-error opacity-75">{errors.agencia?.message}</span>}
-            </div>
-            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                <label htmlFor="conta" className="text-prim">Conta</label>
-                <input 
-                className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                id="conta" 
-                type="text" 
-                placeholder="Somente números" 
-                {...register("conta")}
-                />
-                {errors.conta && 
-                <span className="text-error opacity-75">{errors.conta?.message}</span>}
-
-            </div>
-            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                <label htmlFor="pix" className="text-prim">Pix</label>
-                <input 
-                className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                id="pix" 
-                type="text" 
-                placeholder="Digite sua chave pix" 
-                {...register("pix")}
-                />
-                {errors.pix && 
-                <span className="text-error opacity-75">{errors.pix?.message}</span>}
-            </div>
+            
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h3 className="text-xl text-desSec">Disponibilidade e serviços</h3>
             </div>
-
 
             <div className="mt-4 p-9 pt-0 pb-0 flex flex-col text-prim gap-3">
                 <div className="flex items-center gap-2">
@@ -1104,92 +950,6 @@ export default function FormDiarista() {
             
             <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
                 <h2 className="text-2xl text-desSec">Anexos</h2>
-            </div>
-
-            <div className="mt-4 text-prim pr-9 pl-9">
-                <label htmlFor="docIdt">
-                    RG ou CNH
-                    <span className="ml-2">(Frente e verso)</span>
-                    <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
-                        <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
-                            <p>Selecione o arquivo</p>
-                            <input 
-                            type="file" 
-                            name="docIdt"
-                            id="docIdt"  
-                            accept="application/pdf, image/*" 
-                            className=" p-2 w-full hidden" 
-                            onChange={(e) => {
-                                const file = e.target.files[0]; // Pega o arquivo selecionado
-                                handleNameChange(e); // Exibe o nome do arquivo
-                                setValue("arquivodt", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
-                              }}/>
-                        </div>
-                        <div className="flex  overflow-hidden lg:text-start">
-                            <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docIdt}</span>
-                        </div>
-                    </div>           
-                </label>
-                {errors.arquivodt && 
-                <span className="text-error opacity-75">{errors.arquivodt?.message}</span>}       
-            </div>
-
-            <div className="mt-4 text-prim pr-9 pl-9">
-                <label htmlFor="docCpf">
-                    CPF
-                    <span className="ml-2">(Frente e verso)</span>
-                    <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
-                        <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
-                            <p>Selecione o arquivo</p>
-                            <input 
-                            type="file" 
-                            name="docCpf" 
-                            id="docCpf"  
-                            accept="application/pdf, image/*" 
-                            className=" p-2 w-full hidden" 
-                            onChange={(e) => {
-                                const file = e.target.files[0]; // Pega o arquivo selecionado
-                                handleNameChange(e); // Exibe o nome do arquivo
-                                setValue("arquivoCpf", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
-                              }}/>
-                        </div>
-                        <div className="flex  overflow-hidden lg:text-start">
-                            <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docCpf}</span>
-                        </div>
-                    </div>           
-                </label> 
-                {errors.arquivoCpf && (
-                    <span className="text-error opacity-75">{errors.arquivoCpf.message}</span>
-                )}      
-            </div>
-
-            <div className="mt-4 text-prim pr-9 pl-9">
-                <label htmlFor="docResidencia">
-                    Comprovante de residência
-                    <span className="ml-2"></span>
-                    <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
-                        <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
-                            <p>Selecione o arquivo</p>
-                            <input 
-                            type="file" 
-                            name="docResidencia" 
-                            id="docResidencia"  
-                            accept="application/pdf, image/*" 
-                            className=" p-2 w-full hidden" 
-                            onChange={(e) => {
-                                const file = e.target.files[0]; // Pega o arquivo selecionado
-                                handleNameChange(e); // Exibe o nome do arquivo
-                                setValue("arquivoResidencia", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
-                              }}/>
-                        </div>
-                        <div className="flex  overflow-hidden lg:text-start">
-                            <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docResidencia}</span>
-                        </div>
-                    </div>           
-                </label>  
-                {errors.arquivoResidencia && (
-                    <span className="text-error opacity-75">{errors.arquivoResidencia.message}</span>
-                )}      
             </div>
 
             <div className="mt-4 text-prim pr-9 pl-9">
