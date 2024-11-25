@@ -18,11 +18,6 @@ import { Logo } from "../imports.jsx"
 
 import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button} from "@nextui-org/react";
 
-/* 
-
-    Atenção: Alguns techos de codigos abaixo foram comentados por motivos de testes.
-
-*/
 
 export default function FormDiarista() {
     const navigate = useNavigate();

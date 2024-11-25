@@ -23,7 +23,7 @@ export const createUser = async (userData) => {
 
 export const CreateStepTwo = async (id, userData) => {
   try {
-    const response = await api.post(`/users/create-step-two/${id}`, userData, {
+    const response = await api.patch(`/users/update-step-two/${id}`, userData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
