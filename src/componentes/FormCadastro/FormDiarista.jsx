@@ -4,7 +4,7 @@ import * as yup from "yup"
 import {useEffect} from 'react'
 import { useState} from "react"
 import React, { useRef } from "react"
-import { createUser } from "../../services/api.js"
+import { createUser, findAllServicos } from "../../services/api.js"
 import axios from "axios"
 import InputMask from "react-input-mask"
 import User from "../../assets/img/diarista-cadastro/user.png"
@@ -20,12 +20,29 @@ import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button} from "@ne
 
 
 export default function FormDiarista() {
+    const [servicos, setServicos] = useState([])
+    const [selectedServices, setSelectedServices] = useState([])
+    const toggleService = (id) => {
+        if (selectedServices.includes(id)) {
+            // Remove se já estiver selecionado
+            setSelectedServices(selectedServices.filter((service) => service !== id));
+        } else {
+            // Adiciona à lista
+            setSelectedServices([...selectedServices, id]);
+        }
+    };
+
+    const [required, setRequired] = useState("")
+    
+
     const navigate = useNavigate();
     // schema de validações do form
     const schema = yup.object({
         // scheam do prisma na API
         name: yup.string().trim().required("O nome é obrigatório"),
+
         genero: yup.string(),
+
         estadoCivil: yup.number().required("Estado civil é obrigatório").typeError("Estado Civil é obrigatório"),
         telefone: yup.string().trim().required("Telefone é obrigatório"),
         email: yup.string().trim().required("E-mail é obrigatório").email("Email inválido."),
@@ -83,12 +100,7 @@ export default function FormDiarista() {
             return dom || seg || ter || quart || qui || sex || sab
         }),
 
-        // Servicos
-        limpeza: yup.boolean(),
-        baba: yup.boolean(),
-        cozinheira: yup.boolean(),
-        eletricista: yup.boolean(),
-        encanador: yup.boolean(),
+        servicosSelecionados: yup.array().required("Selecione um servico")
 
     })
     .required()
@@ -108,12 +120,28 @@ export default function FormDiarista() {
         } = useForm({
         resolver: yupResolver(schema),
     })
+
+    const WatchGenero = watch("genero")
+    console.log("Genero: ", WatchGenero)
+
+    useEffect(() => {
+        if (selectedServices) {
+          reset({
+            servicosSelecionados: selectedServices,
+            genero: WatchGenero
+          });
+
+        }
+      }, [selectedServices, reset]);
     
 
     // onSubmit do Forms
     const onSubmit = async (data) => {
+
+        console.log(data.genero)
         setLoading(true)
         setMessage(null)
+        setRequired(null)
 
         const cpfCnpjSemMascara = removerMascara(data.cpfCnpj);
         const telefoneSemMascara = removerMascara(data.telefone);
@@ -170,31 +198,31 @@ export default function FormDiarista() {
         formData.append('sex', data.sex)
         formData.append('sab', data.sab)
 
-        formData.append('limpeza', data.limpeza)
-        formData.append('baba', data.baba)
-        formData.append('cozinheira', data.cozinheira)
-        formData.append('eletricista', data.eletricista)
-        formData.append('encanador', data.encanador)
+        formData.append('servicosSelecionados', JSON.stringify(selectedServices) )
 
         formData.append('arquivoCurriculo', data.arquivoCurriculo);
-
+        
+        console.log(formData)
         try {
-          const response = await createUser(formData);
-          reset()
+            
+            const response = await createUser(formData);
+            reset()
 
-          console.log('Usuário criado com sucesso:', response.data);
-          setModalIsOpen(true)
-          setLoading(false)
-          
+            console.log('Usuário criado com sucesso:', response.data);
+            setModalIsOpen(true)
+
         } catch (error) {
             setLoading(false)
             console.error(error.message);
             setMessage(error.message)
+        } finally {
+            setLoading(false)
         }
 
       };
 
     console.log(errors)
+    console.log(required)
 
     const closeModal = () => {
         setModalIsOpen(false)
@@ -301,8 +329,32 @@ export default function FormDiarista() {
     const inputRef = useRef(null)
     
     const watchCep = watch("cep");
+
+    // função para fazer as requisições
+    useEffect(() => {
+
+        const handleGetServicos = async () => {
+        try {
+            const response = await findAllServicos()
+            console.log("Servicos", response)
+
+            setServicos(response)
     
+        } catch (error) {
+            console.log(error)
+
+        } 
+
+        }
+
+        handleGetServicos()
+
+    }, [])
+
+    console.log("state",servicos)
+
     const [selectedKeys, setSelectedKeys] = React.useState(new Set(["Limpeza"]));
+
     const selectedValue = React.useMemo(
         () => Array.from(selectedKeys).join(", ").replaceAll("_", ""),
         [selectedKeys]
@@ -314,6 +366,7 @@ export default function FormDiarista() {
             setValue(key.toLowerCase(), true);
         });
     };
+    
     
     // Handles
     const handleGeneroChange = (event) => {
@@ -336,6 +389,8 @@ export default function FormDiarista() {
         setOutroGenero('');
         setValue('genero', ''); // Reseta o valor no React Hook Form
       };
+
+
 
       const handleCpfCnpjChange = (event)=>{
         const value = event.target.value;
@@ -441,9 +496,8 @@ export default function FormDiarista() {
     const handleToggleBio = () => setIsOpenBio(!isOpenBio);
     const handleToggleService = () => setIsOpenService(!isOpenService);
     const handleToggleDia = () => setIsOpenDia (!isOpenDia);
-    
-      
 
+    console.log("Serviços selecionados: ", selectedServices)
   return (
     <>
         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
@@ -451,7 +505,7 @@ export default function FormDiarista() {
                 <h2 className="text-2xl text-desSec">Dados pessoais</h2>
             </div>
             
-            <div className="lg:grid lg:grid-cols-2 pl-9 pt-7 ">
+            <div className="lg:grid lg:grid-cols-2 lg:pl-9 pt-7 ">
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col lg:mt-0 lg:p-0  max-w-full ">
                     <div className="flex items-center gap-2">
                         <label htmlFor="biografia" className="text-prim">Sobre mim</label>
@@ -699,36 +753,33 @@ export default function FormDiarista() {
                         </button>
                     </Tooltip>
                 </div>
-                <div>
-                    <Dropdown>
-                        <DropdownTrigger>
-                            <Button variant="bordered" className="flex flex-wrap h-20 border border-bord">
-                                {Array.from(selectedKeys).map((key) => (
-                                    <span key={key} className="shadow-md text-prim rounded-md p-2" >{key}</span>
-                                ))}
-                            </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu 
-                            aria-label="Multiple selection example"
-                            variant="flat"
-                            closeOnSelect={false}
-                            disallowEmptySelection
-                            selectionMode="multiple"
-                            selectedKeys={selectedKeys}
-                            className="bg-white rounded-md border border-bord shadow-lg  gap-5 flex flex-col"
-                            onSelectionChange={handleSelectionChange}
-                            
-                        >
-                            <DropdownItem key="Limpeza" className={`check-icon ${selectedKeys.has("Limpeza") ? "bg-des text-white  mt-2" : "mt-2"}`}>
-                                Limpeza 
-                            </DropdownItem>
-                            <DropdownItem key="Baba" className={`check-icon ${selectedKeys.has("Baba") ? "bg-des text-white mt-2" : "mt-2"}`}>Babá</DropdownItem>
-                            <DropdownItem key="Cozinheira" className={`check-icon ${selectedKeys.has("Cozinheira") ? "bg-des text-white mt-2" : "mt-2"}`}>Cozinheira</DropdownItem>
-                            <DropdownItem key="Eletricista" className={`check-icon ${selectedKeys.has("Eletricista") ? "bg-des text-white mt-2" : "mt-2"}`}>Eletricista</DropdownItem>
-                            <DropdownItem key="Encanador" className={`check-icon ${selectedKeys.has("Encanador") ? "bg-des text-white mt-2" : "mt-2"}`}>Encanador</DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
+
+                <div className="w-full ">
+                    <div className="overflow-y-auto max-h-[31vh] lg:p-2 grid grid-cols-1 gap-5 lg:grid-cols-5 items-center lg:gap-5">
+                        {servicos
+                        .filter((servico) => servico.status)
+                        .map((servico) => (
+                            <div key={servico.id} className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id={`servico-${servico.id}`}
+                                    value={servico.id}
+                                    checked={selectedServices.includes(servico.id)}
+                                    onChange={() => toggleService(servico.id)}
+                                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                />
+                                <label
+                                    htmlFor={`servico-${servico.id}`}
+                                    className="ml-2 block text-sm text-gray-900"
+                                >
+                                    {servico.nome}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
                 </div>
+                    
+
                 <div className="flex items-center gap-2">
                     <p><b>Dias disponíveis para trabalhar</b></p>
                     <Tooltip
@@ -1019,6 +1070,7 @@ export default function FormDiarista() {
             <div className="mt-4 pl-9 pr-9 pb-9 space-y-5">
                 <button type="submit" className="text-center w-full lg:w-1/2  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 opacity-50" id="buttonSubmit" disabled>{loading ? 'Criando conta...' : 'Cadastrar'}</button>
                 <p className="text-md text-error text-center lg:text-start">{message}</p>
+                <p className="text-md text-error text-center lg:text-start">{required}</p>
             </div>
         </form>
 
