@@ -6,10 +6,11 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [days, setDays] = useState(0);
+
   const [servicos, setServicos] = useState([])
+
   const [loading, setLoading] = useState(false)
   
-
     // função para fazer as requisições
     useEffect(() => {
       setLoading(true)
@@ -38,7 +39,9 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   .filter((servico) => servico.status === true) // Filtra apenas os com status true
   .map((servico) => ({
     // icon: 'fas fa-baby',
+    id: servico.id,
     title: servico.nome,
+
     description: servico.descricao,
     value: servico.valorDiaria
   }));
@@ -53,15 +56,19 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
     if (selectedServiceIndex !== index) {
       setDays(0);
     }
+
     setSelectedServiceIndex(selectedServiceIndex === index ? null : index);
-    onServiceChange(services[index].title)
+    onServiceChange(services[index].title, services[index].id)
     setServiceValue(services[index].value)
+    
   };
 
   const handleProceed = () => {
     onDaysChange(days); // Chama a função para atualizar o número de dias no componente pai
     onProceed(); // Prossegue para a próxima etapa
   };
+
+  console.log("Servicos filtrados: ", filteredServices)
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -97,7 +104,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
                     description={service.description}
                     value={service.value}
                     isExpanded={selectedServiceIndex === index}
-                    onClick={() => handleServiceClick(index)}
+                    onClick={() => handleServiceClick(index, service?.id)}
                     days={days}
                     setDays={setDays}
                     onProceed={handleProceed} // Passa a função onProceed para o ServiceCard

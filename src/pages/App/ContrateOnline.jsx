@@ -190,6 +190,7 @@ export default function ContrateOnline() {
     const [numberOfDays, setNumberOfDays] = useState(0); // Número de dias que o usuário selecionou
 
     const [selectedService, setSelectedService] = useState(''); // Estado para armazenar o serviço selecionado
+    const [servicoId, setServicoId] = useState("")
     const [serviceValue, setServiceValue] = useState() // Estado para armazenar o valor do serviço
     const {selectedTimes, setSelectedTimes} = useSelectedTimes([])
 
@@ -306,9 +307,11 @@ export default function ContrateOnline() {
     }, [enderecosCliente, clienteId]); // Chama a função ao montar o componente
 
     
-    const handleServiceChange = (service) => {
+    const handleServiceChange = (service, id) => {
         setSelectedService(service); // Atualiza o serviço selecionado
-        // // console.log(service)
+        setServicoId(id)
+
+        console.log(service, id)
     };
 
     const handleTimeChange = (time) => {
@@ -333,17 +336,16 @@ export default function ContrateOnline() {
     }
 
     
-
-
     const handleProceed = async () => {
         
-        console.log("Local do cliente", cidade, estado)
+        console.log("Local do cliente", cidade, estado, selectedService)
         
         try {
             if (selectedDates.length > 0) {
                 const formattedDate = selectedDates[0].toISOString().split('T')[0]; // Formata a data para YYYY-MM-DD
                 
-                const response = await getDisponiveis(formattedDate, selectedService, cidade, estado)
+                const response = await getDisponiveis(formattedDate, servicoId, cidade, estado)
+
                 console.log("Resposta da API:", response.data);
                 
                 // Inicialmente, define os providers sem as URLs de avatar
@@ -515,6 +517,7 @@ export default function ContrateOnline() {
         const data = {
             userId: selectedProvider.id,
             clienteId: clienteId,
+            servicoId: servicoId,
             dataServico: new Date(selectedDates[0]).toDateString(),
             Servico: selectedService,
             horaServico: times,
@@ -544,9 +547,8 @@ export default function ContrateOnline() {
         );
     }
 
-    console.log("usuario do cliente: ", user)
-    console.log("Endereco padrão do cliente: ", enderecoDefaultCliente)
-    console.log("Enderecos  do cliente: ", enderecosCliente)
+    console.log("Servico selecionado: ", selectedService)
+
 
 
     return (
