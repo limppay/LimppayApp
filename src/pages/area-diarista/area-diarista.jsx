@@ -65,13 +65,20 @@ const AreaDiarista = () => {
 
     };
 
-    // Anexos
-    const avatarUrl = urls ? Object.values(urls)[0] : null;
+    const presignedUrls = urls || {};
+  
+    const getArquivoUrl = (tipo) => {
+        // Encontra o arquivo com a chave que inclui o tipo especificado
+        return Object.entries(presignedUrls).find(([key]) => key.includes(tipo))?.[1] || null;
+    };
     
-    const arquivoIdentidade = urls ? Object.values(urls)[1] : null; 
-    const arquivoCPF = urls ? Object.values(urls)[2] : null; 
-    const arquivoResidencia = urls ? Object.values(urls)[3] : null; 
-    const arquivoCurriculo = urls ? Object.values(urls)[4] : null; 
+    // Selecionar os arquivos dinamicamente
+    const avatarUrl = getArquivoUrl('arquivoFoto');
+    
+    const arquivoIdentidade = getArquivoUrl('arquivodt');
+    const arquivoCPF = getArquivoUrl('arquivoCpf');
+    const arquivoResidencia = getArquivoUrl('arquivoResidencia');
+    const arquivoCurriculo = getArquivoUrl('arquivoCurriculo');
     
     const buttons = [
         {
