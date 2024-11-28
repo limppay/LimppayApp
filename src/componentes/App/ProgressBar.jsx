@@ -5,7 +5,7 @@ const ProgressBar = ({ currentStep, onStepClick }) => {
     const steps = ['', '', '', '', '']; // Os passos não têm nomes
 
     return (
-        <div className="pt-24 lg:pt-28 flex items-center justify-center mb-1 gap-5">
+        <div className="pt-20 sm:pt-24 xl:pt-24  flex items-center justify-center mb-1 gap-5">
             {steps.map((step, index) => (
                 <div key={index} className="flex flex-col items-center relative">
                     {/* Círculo do passo */}

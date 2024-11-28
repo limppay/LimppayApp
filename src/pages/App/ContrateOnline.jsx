@@ -553,11 +553,11 @@ export default function ContrateOnline() {
 
     return (
         <>
-
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
-            <main className="relative p-4 flex lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
-                <div className='flex  flex-col items-center text-center min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
+            <main className="relative p-4 flex justify-center md:justify-around lg:justify-around ">
+                
+                <div className='flex flex-col items-center text-center min-w-[10vh] sm:max-w-[80vh] lg:min-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -1279,11 +1279,12 @@ export default function ContrateOnline() {
                     )}
                     
                 </div>
+
                 {/* Cartão azul - Visível somente em telas grandes (desktop) */}
-                {currentStep > 0 &&(
-                    <div className="hidden lg:block pt-[4vh] w-5/12 ">
-                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pb-10  flex flex-col items-center gap-7">
-                            <div className='w-full flex justify-between items-center border-b p-12 pb-2 pt-16 pl-7 pr-7'>
+                {currentStep > 0 && (
+                    <div className="hidden lg:block ">
+                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pb-10 flex flex-col items-center gap-7">
+                            <div className='w-full flex justify-between items-center border-b p-12 pt-0 pb-2 lg:pt-16 pl-7 pr-7'>
                                 <h3 className="text-xl flex flex-wrap ">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 font-semibold">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
@@ -1374,13 +1375,15 @@ export default function ContrateOnline() {
                              </div>
                          </div> 
                     )}
-                    {currentStep == 0 &&(<div className="hidden lg:block pt-[9vh] w-4/12">
-                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg p-12 flex flex-col items-center gap-10">
+                    
+                {currentStep == 0 &&(
+                    <div className="hidden md:block lg:block  lg:pt-[5vh] ">
+                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pt-[12vh] md:pt-[13vh] lg:pt-[10vh] p-4 flex flex-col items-center gap-10 max-w-[50vh] xl:max-w-[60vh] text-justify min-h-[80vh] ">
                             <h3 className="text-xl font-bold flex flex-wrap">Olá, agende um serviço conosco é fácil e rápido!</h3>
                             <img
                             src={Banner}
                             alt="Ilustração de limpeza"
-                            className="w-full mb-4"
+                            className="xl:w-[50vh] mb-4"
                             />
                             <ul className="text-sm">
                                 <li className="mb-2">
@@ -1393,9 +1396,9 @@ export default function ContrateOnline() {
                                     <i className="fas fa-tasks mr-2"></i> Em sequência, escolha as etapas.
                                 </li>
                             </ul>
-                            </div>
-                            </div>
-                        )}
+                        </div>
+                    </div>
+                )}
                       
             </main>
 

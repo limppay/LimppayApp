@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ServiceCard from './ServiceCard';
 import { findAllServicos } from '../../services/api';
+import { Spinner } from '@nextui-org/react';
 
 const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setServiceValue }) => {
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
@@ -47,7 +48,6 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   }));
   
     
-
   const filteredServices = services.filter(service =>
     service.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -71,11 +71,11 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   console.log("Servicos filtrados: ", filteredServices)
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen w-full h-full ">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl mx-auto">
         {/* Coluna principal */}
         <div className="lg:col-span-2">
-          <div className="bg-white shadow-md rounded-lg p-4">
+          <div className="bg-white sm:shadow-md rounded-lg p-4 w-full">
             <h2 className="text-center text-xl font-semibold text-desSec mb-4">Escolha o serviço</h2>
 
             <div className="relative mb-4">
@@ -94,8 +94,13 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
               </label>
             </div>
 
-            <div className="max-h-80 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-              {filteredServices.length > 0 ? (
+            <div className={`max-h-80 overflow-y-auto grid grid-cols-1  lg:grid-cols-2  gap-4 min-h-[35vh] ${loading ? "items-center" : ""} `}>
+              {loading ? (
+                <div className='col-span-2 text-white min-w-[20vh] '>
+                  <Spinner size='lg' />
+
+                </div>
+              ) : filteredServices.length > 0 ? (
                 filteredServices.map((service, index) => (
                   <ServiceCard
                     key={index}
@@ -114,6 +119,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
                 <p className="text-center text-prim">Nenhum serviço encontrado.</p>
               )}
             </div>
+
           </div>
 
           <div className="mt-6 bg-white shadow-md rounded-lg p-4 flex flex-col gap-5">
@@ -127,6 +133,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
               Enviar sugestão
             </button>
           </div>
+
         </div>
       </div>
     </div>
