@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@nextui-org/react';
 
 const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, days, setDays, onProceed }) => {
   const incrementDays = () => {
@@ -45,12 +46,12 @@ const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, day
 
         {/* Botão Prosseguir */}
         <div className='flex justify-end'>
-          <button 
+          <Button 
             className="mt-4 bg-des text-white py-2 px-5 rounded-lg hover:bg-sec transition-opacity duration-200" 
             onClick={handleProceed} // Aciona ao clicar em "Prosseguir"
           >
             Prosseguir
-          </button>
+          </Button>
         </div>
       </motion.div>
     )}

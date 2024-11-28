@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Select, SelectSection, SelectItem } from "@nextui-org/select";
 
+import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
+import { Button } from '@nextui-org/react';
+
 const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSelection, selectedTimes, setSelectedTimes }) => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
@@ -11,6 +14,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   const [isConfirmEnabled, setIsConfirmEnabled] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const currentYear = today.getFullYear();
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
   // Efeito para avançar para o próximo mês apenas no último dia do mês, executado uma única vez ao montar
   useEffect(() => {
@@ -41,6 +45,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   };
 
   const TimePickerPopup = ({ selectedDates, onClose, onConfirm }) => {
+
     const [times, setTimes] = useState({});
     const [isConfirmEnabled, setIsConfirmEnabled] = useState(false);
   
@@ -57,8 +62,6 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       });
     };
     
-  
-
     const handleSelectAllTimes = (time) => {
       const updatedAllTimes = selectedDates.reduce((acc, date) => {
         acc[date.toDateString()] = time; // Define o mesmo horário para cada data selecionada
@@ -75,11 +78,6 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       onClose();
     };
 
-    const transitionVariants = {
-      enter: { opacity: 0, scale: 0.8 },
-      center: { opacity: 1, scale: 1 },
-      exit: { opacity: 0, scale: 0.8 },
-    };
 
     const horarios = [
       {key: "07:00", label: "07:00", 'aria-label': "07:00"},
@@ -104,76 +102,81 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     ];
     
     return (
-      <motion.div
-        className="fixed inset-0 flex items-center justify-center"
-        initial="enter"
-        animate="center"
-        exit="exit"
-        variants={transitionVariants}
-      >
-      <div className="fixed inset-0 flex items-center justify-center bg-prim bg-opacity-70 ">
-        <div className="bg-white p-4 rounded-lg shadow-lg flex w-9/12 lg:w-3/12 flex-col gap-5">
-          <h3 className="text-lg font-bold mb-2 text-desSec">Selecione os horários</h3>
-                      
-            <Select
-                id='horasTodos'
-                placeholder="Selecione um horário para todos"
-                className="w-full text-prim"
-                onChange={(e) => handleSelectAllTimes(e.target.value)}
-                aria-label='horasTodos'
-              >
-                {horarios.map((hora) => (
-                  <SelectItem key={hora.key} className='text-prim' aria-label={hora.label}>
-                    {hora.label}
-                  </SelectItem>
-                ))}
-              </Select>
-
-
-          <div className='overflow-y-auto max-h-[25vh]'>
-          {selectedDates.map(date => (
-            <div key={date.toString()} className="flex justify-between items-center mb-2 text-prim">
-              <span>{date.toLocaleDateString()}</span>
+      <Modal 
+      backdrop="opaque" 
+      isOpen={showTimePicker} 
+      onOpenChange={setShowTimePicker}
+      classNames={{
+        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20"
+      }}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1 text-desSec">Selecione os horários</ModalHeader>
+            <ModalBody>
 
               <Select
-                key={date.toString() + (times[date.toDateString()] || "")} // Força a re-renderização
-                id="horas"
-                isRequired
-                placeholder={times[date.toDateString()] || "--:--"}
-                className="w-5/12 text-prim"
-                value={times[date.toDateString()] || ""}
-                onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)}
-                aria-label="horas"
-              >
-                {horarios.map((hora) => (
-                  <SelectItem key={hora.key} value={hora.key} className="text-prim" aria-label={hora.label}>
-                    {hora.label}
-                  </SelectItem>
-                ))}
-              </Select>
-
-            </div>
-          ))}
+                  id='horasTodos'
+                  placeholder="Selecione um horário para todos"
+                  className="w-full text-prim"
+                  onChange={(e) => handleSelectAllTimes(e.target.value)}
+                  aria-label='horasTodos'
+                >
+                  {horarios.map((hora) => (
+                    <SelectItem key={hora.key} className='text-prim' aria-label={hora.label}>
+                      {hora.label}
+                    </SelectItem>
+                  ))}
+                </Select>
 
 
-          </div>
-          <div className="flex justify-end pt-5 gap-5">
-            <button className="ml-2 text-error text-opacity-75" onClick={onClose}>Cancelar</button>
-            <button 
-              className={`bg-des text-white p-2 rounded-md ${!isConfirmEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-              onClick={handleConfirm}
-              disabled={!isConfirmEnabled} // Desativa o botão se não estiver habilitado
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      </div>
-      </motion.div>
+              <div className='overflow-y-auto max-h-[50vh]'>
+              {selectedDates.map(date => (
+                <div key={date.toString()} className="flex justify-between items-center mb-2 text-prim">
+                  <span>{date.toLocaleDateString()}</span>
+
+                  <Select
+                    key={date.toString() + (times[date.toDateString()] || "")} // Força a re-renderização
+                    id="horas"
+                    isRequired
+                    placeholder={times[date.toDateString()] || "--:--"}
+                    className="w-5/12 text-prim"
+                    value={times[date.toDateString()] || ""}
+                    onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)}
+                    aria-label="horas"
+                  >
+                    {horarios.map((hora) => (
+                      <SelectItem key={hora.key} value={hora.key} className="text-prim" aria-label={hora.label}>
+                        {hora.label}
+                      </SelectItem>
+                    ))}
+                  </Select>
+
+                </div>
+              ))}
+
+
+              </div>
+  
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Cancelar
+              </Button>
+              <Button className='bg-desSec text-white' onPress={handleConfirm} isDisabled={!isConfirmEnabled}>
+                Confirmar
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+
+
     );
   };
   
-
   const renderDays = () => {
     const days = [];
     const startDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
@@ -355,7 +358,8 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   };
 
   return (
-    <div className="flex flex-col justify-center items-center pt-4 w-10/12 md:w-9/12 lg:w-6/12">
+    <div className="flex flex-col justify-center items-center pt-4 w-[50vh] md:w-11/12 lg:w-7/12 xl:w-6/12">
+      
       <motion.div
         className="w-full bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec lg:h-[60vh]"
         key={`${currentDate.toISOString()}-${currentYearPage}-${showMonths}-${showYears}`} // Key para reiniciar a animação
@@ -399,14 +403,15 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
           </>
         )}
       </motion.div>
+
       <div className="flex justify-center mt-4">
-        <button
+        <Button
           className={`bg-des text-white p-2 rounded-md ${selectedDates.length ? '' : 'opacity-50 cursor-not-allowed'}`}
-          disabled={!selectedDates.length}
+          isDisabled={!selectedDates.length}
           onClick={() => setShowTimePicker(true)} // Abre o pop-up
         >
           Confirmar Seleção
-        </button>
+        </Button>
       </div>
 
     {/* Renderização do Pop-Up */}
@@ -422,6 +427,8 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
         }}
       />
     )}
+
+  
   </div>
   );
 };

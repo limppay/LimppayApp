@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ServiceCard from './ServiceCard';
 import { findAllServicos } from '../../services/api';
 import { Spinner } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
 
 const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setServiceValue }) => {
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
@@ -129,9 +130,9 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
               className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 focus:outline-ter text-prim w-full max-h-1"
               rows="3"
             ></textarea>
-            <button className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec">
+            <Button className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec">
               Enviar sugestão
-            </button>
+            </Button>
           </div>
 
         </div>
