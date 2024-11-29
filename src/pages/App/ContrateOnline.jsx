@@ -561,7 +561,7 @@ export default function ContrateOnline() {
 
             <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 ">
                 
-                <div className='flex flex-col items-center text-center min-w-[50vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
+                <div className='flex flex-col items-center text-center min-w-[45vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -606,14 +606,15 @@ export default function ContrateOnline() {
                                 ) : (
                                     enderecoDefaultCliente && ( 
                                         <div>
-                                            <div className='grid lg:grid-cols-2 sm:w-[80vh] lg:w-full
+                                            <div className='grid lg:grid-cols-2 min-w-[35vh] max-w-[45vh] sm:min-w-[100vh] sm:max-w-[80vh] sm:w-[80vh] lg:w-full
                                             md:grid-cols-2
                                             sm:grid-cols-2
-                                            pt-5 gap-10 overflow-auto max-h-[100vh] 
+                                            pt-5 gap-10 overflow-auto max-h-[60vh] sm:max-h-[100vh] 
                                             pr-5 pl-5
                                             scrollbar-hide
+                                            justify-items-center
                                             '>
-                                                <div className={`xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh] min-h-[40vh] max-h-[40vh] min-w-[40vh] max-w-[40vh] border-2 border-bord rounded-lg lg:min-h-[40vh] lg:max-h-[40vh] lg:max-w-[40vh] lg:min-w-[40vh] transition-all
+                                                <div className={`xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh]  border-2 border-bord rounded-lg lg:min-h-[40vh] lg:max-h-[40vh] lg:max-w-[40vh] lg:min-w-[40vh] transition-all min-h-[35vh] max-h-[40vh] min-w-[30vh] max-w-[40vh] 
                                                 
                                                 
                                                 ${
@@ -659,9 +660,9 @@ export default function ContrateOnline() {
                                                 </div>
 
                                                 {enderecosCliente.map((endereco) => (
-                                                    <div key={endereco.id} className={`xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh] min-h-[45vh]  min-w-[40vh] max-w-[40vh] border-2 border-bord rounded-lg transition-all
+                                                    <div key={endereco.id} className={`xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh]  border-2 border-bord rounded-lg transition-all
                                                     lg:min-h-[40vh] lg:max-h-[40vh] lg:max-w-[40vh] lg:min-w-[40vh]
-
+                                                    min-h-[35vh] max-h-[45vh] min-w-[30vh] max-w-[40vh]
 
                                                     ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec shadow-sm shadow-sec' : 'border-bord' }
                                                     
@@ -708,7 +709,7 @@ export default function ContrateOnline() {
                                                     </div>
                                                 ))}
 
-                                                <div className='xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh] min-h-[40vh] max-h-[40vh] min-w-[40vh] max-w-[40vh] border-2 border-bord rounded-lg lg:min-h-[40vh] lg:max-h-[40vh] lg:max-w-[40vh] lg:min-w-[40vh]  transition all
+                                                <div className='xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh]  border-2 border-bord rounded-lg lg:min-h-[40vh] lg:max-h-[40vh] lg:max-w-[40vh] lg:min-w-[40vh] transition all min-h-[35vh] max-h-[45vh] min-w-[34vh] max-w-[40vh]
                                                 
                                                 flex items-center justify-center'>
                                                     <button 
@@ -931,7 +932,7 @@ export default function ContrateOnline() {
                                         <h1 className='text-desSec'>Não há prestadores disponíveis nessa data ou serviço :/</h1>
                                     </div>
                                 ) : (
-                                    <div className='flex flex-col gap-2'>
+                                    <div className='flex flex-col gap-3'>
 
                                         <div>
                                             <h1 className='text-desSec text-lg font-semibold'>Selecione o prestador</h1>
@@ -953,78 +954,84 @@ export default function ContrateOnline() {
                                             </label>
                                         </div>
 
-                                        <div className={`grid ${filteredProviders.length > 0 ? "xl:grid-cols-3         xl:  lg:grid-cols-2  grid-cols-1 min-h-[30vh]  max-h-[30vh] overflow-y-auto " : "grid-none"} items-center pt-3 gap-5`}>
-                                        {filteredProviders.length > 0 ? (
-                                            filteredProviders.map((provider) => (
-                                                <>
-                                            
-                                                    <div key={provider.id} className='flex flex-col gap-3 '>
-                                                        <div 
-                                                        
-                                                        className={`flex gap-3 p-2 items-center cursor-pointer transition-all duration-200
-                                                        border rounded-lg 
-                                                        ${selectedProvider && selectedProvider.id === provider.id ? ' border-sec' : 'hover:border-sec border-trans'}`}
-                                                        
-                                                        onClick={() => {
-                                                            setSelectedProvider(provider); // Armazena o provider selecionado
-                                                            // // console.log(provider.id);
-                                                        }}
+                                        <div className='flex flex-col justify-between h-[55vh]'>
+                                            <div className={`grid ${filteredProviders.length > 0 ? "xl:grid-cols-3        lg:grid-cols-2  grid-cols-1 min-h-[20vh] max-h-[35vh] overflow-y-auto min-w-[40vh] max-w-[45vh] sm:min-w-[80vh] sm:max-w-[100vh]  " : "grid-none"}  pt-3 gap-10`}>
+                                            {filteredProviders.length > 0 ? (
+                                                filteredProviders.map((provider) => (
+                                                    <>
+                                                
+                                                        <div key={provider.id} className='flex flex-col gap-3 '>
+                                                            <div 
+                                                            className={`flex gap-3 p-2 items-center cursor-pointer transition-all duration-200
+                                                            border rounded-lg 
+                                                            ${selectedProvider && selectedProvider.id === provider.id ? ' border-sec' : 'hover:border-sec border-trans'}`}
+                                                            
+                                                            onClick={() => {
+                                                                setSelectedProvider(provider); // Armazena o provider selecionado
+                                                                // // console.log(provider.id);
+                                                            }}
 
-                                                        >
-                                                            <div>
-                                                                <Avatar 
-                                                                src={provider?.avatar?.avatarUrl}
-                                                                size="lg"
-                                                                />
-                                                            </div>
-                                                            <div className='flex justify-start flex-col w-full'>
-                                                                <p className='
-                                                                text-prim
-                                                                text-start
-                                                                '>{provider.name}</p>
-                                                                <button className='p-1 rounded-md w-full max-w-full text-center
-                                                                text-sec 
-                                                                border-sec
-                                                                border
-                                                                hover:text-white transition-all hover:bg-sec hover:bg-opacity-75
-                                                                hover:border-trans
-                                                                flex 
-                                                                items-center
-                                                                justify-center
-                                                                gap-2
-                                                                '
+                                                            >
+                                                                <div>
+                                                                    <Avatar 
+                                                                    src={provider?.avatar?.avatarUrl}
+                                                                    size="lg"
+                                                                    />
+                                                                </div>
 
-                                                                onClick={() => {
-                                                                    setSelectedProvider(provider)
-                                                                    setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
-                                                                    setOpen(true)
-                                                                }}                                                         
-                                                                
-                                                                >
-                                                                    <i className="fa-solid fa-star" ></i>
-                                                                    Perfil
-                                                                </button>
-                                                            </div>
-                                                        </div>
+                                                                <div className='flex justify-start flex-col w-full'>
+                                                                    <p className='
+                                                                    text-prim
+                                                                    text-start
+                                                                    '>{provider.name}</p>
+                                                                    <button className='p-1 rounded-md w-full max-w-full text-center
+                                                                    text-sec 
+                                                                    border-sec
+                                                                    border
+                                                                    hover:text-white transition-all hover:bg-sec hover:bg-opacity-75
+                                                                    hover:border-trans
+                                                                    flex 
+                                                                    items-center
+                                                                    justify-center
+                                                                    gap-2
+                                                                    '
 
-                                                        <Dialog open={open} onClose={() => setOpen(false)} className="relative z-10">
-                                                            <DialogBackdrop
-                                                                transition
-                                                                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-                                                            />
-                                                            <div className="fixed inset-0 z-10 p-5  overflow-y-auto bg-prim bg-opacity-50">
-                                                                <div className=" flex min-h-full items-center justify-center text-center sm:items-center ">
-                                                                    <DialogPanel
-                                                                        transition
-                                                                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full max-w-lg flex flex-col max-h-[160vh]"
+                                                                    onClick={() => {
+                                                                        setSelectedProvider(provider)
+                                                                        setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
+                                                                        setOpen(true)
+                                                                    }}                                                         
+                                                                    
                                                                     >
-                                                                        <div className="bg-white pb-4 pt-0 ">
+                                                                        <i className="fa-solid fa-star" ></i>
+                                                                        Perfil
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <Modal 
+                                                                backdrop="opaque" 
+                                                                isOpen={open} 
+                                                                onOpenChange={setOpen}
+                                                                placement='center'
+                                                                classNames={{
+                                                                    backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 "
+                                                                }}
+                                                            >
+                                                                <ModalContent>
+                                                                    {(onClose) => (
+                                                                    <>
+                                                                        <ModalHeader className="flex flex-col gap-1 p-0 text-desSec"></ModalHeader>
+                                                                        <ModalBody className='p-0'>
+
+                                                                        <div className="bg-white pb-4 pt-0 p-0 ">
                                                                             <div className="sm:flex sm:items-start flex-col">
                                                                                 
                                                                                 {selectedProvider && ( // Renderiza as informações do provider selecionado
-                                                                                    <div className="pt-0 flex flex-col  w-full bg-pri max-h-[70vh]">
+                                                                                    <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[70vh]">
                                                                                         <div className='flex flex-col gap-2 justify-start'>
-                                                                                            <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
+                                                                                            <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
                                                                                                 {/* Container do Avatar */}
                                                                                                 <div className="absolute">
                                                                                                     <Avatar src={selectedProvider?.avatar?.avatarUrl} size="lg"    
@@ -1037,6 +1044,7 @@ export default function ContrateOnline() {
                                                                                                 
                                                                                             </div>
                                                                                         </div>
+
                                                                                         <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
                                                                                             {[1, 2, 3, 4, 5].map((star) => (
                                                                                                 <StarReview
@@ -1099,105 +1107,93 @@ export default function ContrateOnline() {
                                                                                         </div>
                                                                                     </div>
                                                                                 )}
+
                                                                             </div>
                                                                         </div>
-                                                                        <div className=" px-4 py-3 sm:flex sm:px-6 flex justify-end gap-3 border-t border-bord">
-                                                                            <button
-                                                                                type="button"
-                                                                                data-autofocus
-                                                                                onClick={() => setOpen(false)}
-                                                                                className="inline-flex  justify-center rounded-md bg-white p-2 text-sm text-prim shadow-sm border sm:mt-0 sm:w-auto border-bord "
-                                                                            >
-                                                                                Fechar
-                                                                            </button>
-                                                                            <button
-                                                                                type="button"
-                                                                                data-autofocus
-                                                                                className="p-2 rounded-md 
-                                                                                text-center
-                                                                                text-white 
-                                                                                bg-des         
-                                                                                hover:text-white transition-all
-                                                                                duration-200
-                                                                                hover:bg-sec hover:bg-opacity-75
-                                                                                hover:border-trans
-                                                                                flex 
-                                                                                items-center
-                                                                                justify-center
-                                                                                text-sm
-                                                                                gap-2"
+                                                                                                                        
 
-                                                                                onClick={handleConfirmSelection}
-                                                                                
-                                                                            >
-                                                                                Selecionar e prosseguir
-                                                                            </button>
-                                                                        </div>
-                                                                    </DialogPanel>
-                                                                </div>
-                                                            </div>
-                                                        </Dialog>
-                                                    </div>
-                                                </>                                                
-                                            ))
-                                        ) : (
-                                            <>
-                                                <p className="text-prim">Nenhum prestador encontrado.</p>
-                                            </>
-                                        )}
-                                        </div>
-                                        <div className='flex justify-center pt-5 border-b border-bord'>
-                                            {selectedProvider ? (
-                                                <button
-                                                    type="button"
-                                                    data-autofocus
-                                                    className="p-2 rounded-md 
-                                                    text-center
-                                                    text-white 
-                                                    bg-des         
-                                                    hover:text-white transition-all
-                                                    duration-200
-                                                    hover:bg-sec hover:bg-opacity-75
-                                                    hover:border-trans
-                                                    flex 
-                                                    items-center
-                                                    justify-center
-                                                    text-sm
-                                                    gap-2
-                                                    w-full
-                                                    "
-                                                    onClick={handleConfirmSelection}
-                                                    
-                                                >
-                                                    Selecionar e prosseguir
-                                                </button>
-                                            ) : ( 
-                                                <button
-                                                    type="button"
-                                                    data-autofocus
-                                                    className="p-2 rounded-md 
-                                                    text-center
-                                                    text-white 
-                                                    bg-des         
-                                                    hover:text-white transition-all
-                                                    duration-200
-                                                    hover:bg-sec hover:bg-opacity-75
-                                                    hover:border-trans
-                                                    flex 
-                                                    items-center
-                                                    justify-center
-                                                    text-sm
-                                                    gap-2
-                                                    w-full
-                                                    "
-                                                    onClick={HandleSelectedRandomProvider}
-                                                    
-                                                >
-                                                    Selecione por mim e prosseguir
-                                                </button>
-                                                
+                                                            
+                                                                        </ModalBody>
+                                                                        <ModalFooter>
+                                                                        <Button color="danger" variant="light" onPress={onClose}>
+                                                                            Fechar
+                                                                        </Button>
+                                                                        <Button className='bg-desSec text-white' onPress={handleConfirmSelection}  >
+                                                                            Selecionar e prosseguir
+                                                                        </Button>
+                                                                        </ModalFooter>
+                                                                    </>
+                                                                    )}
+                                                                </ModalContent>
+                                                            </Modal>
+
+
+                                                        </div>
+                                                        
+                                                    </>                                                
+                                                ))
+                                            ) : (
+                                                <>
+                                                    <p className="text-prim">Nenhum prestador encontrado.</p>
+                                                </>
                                             )}
+                                            </div>
+
+                                            <div className='flex justify-center pt-5 border-b border-bord'>
+                                                {selectedProvider ? (
+                                                    <button
+                                                        type="button"
+                                                        data-autofocus
+                                                        className="p-2 rounded-md 
+                                                        text-center
+                                                        text-white 
+                                                        bg-des         
+                                                        hover:text-white transition-all
+                                                        duration-200
+                                                        hover:bg-sec hover:bg-opacity-75
+                                                        hover:border-trans
+                                                        flex 
+                                                        items-center
+                                                        justify-center
+                                                        text-sm
+                                                        gap-2
+                                                        w-full
+                                                        "
+                                                        onClick={handleConfirmSelection}
+                                                        
+                                                    >
+                                                        Selecionar e prosseguir
+                                                    </button>
+                                                ) : ( 
+                                                    <button
+                                                        type="button"
+                                                        data-autofocus
+                                                        className="p-2 rounded-md 
+                                                        text-center
+                                                        text-white 
+                                                        bg-des         
+                                                        hover:text-white transition-all
+                                                        duration-200
+                                                        hover:bg-sec hover:bg-opacity-75
+                                                        hover:border-trans
+                                                        flex 
+                                                        items-center
+                                                        justify-center
+                                                        text-sm
+                                                        gap-2
+                                                        w-full
+                                                        "
+                                                        onClick={HandleSelectedRandomProvider}
+                                                        
+                                                    >
+                                                        Selecione por mim e prosseguir
+                                                    </button>
+                                                    
+                                                )}
+                                            </div>
+
                                         </div>
+
                                     </div>
                                 )}
                             </div>
@@ -1206,44 +1202,49 @@ export default function ContrateOnline() {
 
                     {currentStep == 4 && (
                         <>
-                            <div className='w-full flex flex-col gap-5 p-10 pl-20 pr-20 pt-5 shadow-md rounded-md pb-0'>
-                                <div className='w-full flex flex-col gap-3'>
-                                    <h2 className='text-desSec font-semibold text-xl'>Observação</h2>
-                                    <textarea
-                                    placeholder="Se necessário, deixe-nos uma observação"
-                                    className="border rounded-md border-bord p-3 min-h-20 lg:min-h-50 focus:outline-ter text-prim w-full max-h-1"
-                                    rows="3"
-                                    value={observacao}  // Valor vinculado ao estado
-                                    onChange={(e) => setObservacao(e.target.value)}  // Atualiza o estado quando o valor mudar
-                                    ></textarea>
-                                </div>
-                                <div className='w-full flex flex-col gap-3'>
-                                    <h2 className='text-desSec font-semibold text-xl'>Cupom de desconto</h2>
-                                    <div className='flex gap-5'>
-                                        <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' />
-                                        <button 
-                                        className="p-2 rounded-md 
-                                        text-center
-                                        text-white 
-                                        bg-des         
-                                        hover:text-white transition-all
-                                        duration-200
-                                        hover:bg-sec hover:bg-opacity-75
-                                        hover:border-trans
-                                        flex 
-                                        items-center
-                                        justify-center
-                                        text-sm
-                                        gap-2
-                                        w-4/12
-                                        "
-                                        >
-                                            Utilizar
-                                        </button>
+                            <div className='w-full flex flex-col justify-between p-2 gap-5 sm:p-10 sm:pl-20 sm:pr-20 pt-5 shadow-md rounded-md pb-0 h-[60vh]'>
+                                <div className='flex flex-col gap-14'>
+                                    <div className='w-full flex flex-col gap-3'>
+                                        <h2 className='text-desSec font-semibold text-xl'>Observação</h2>
+                                        <textarea
+                                        placeholder="Se necessário, deixe-nos uma observação"
+                                        className="border rounded-md border-bord p-3 min-h-20 lg:min-h-50 focus:outline-ter text-prim w-full max-h-1"
+                                        rows="3"
+                                        value={observacao}  // Valor vinculado ao estado
+                                        onChange={(e) => setObservacao(e.target.value)}  // Atualiza o estado quando o valor mudar
+                                        ></textarea>
                                     </div>
+                                    
+                                    <div className='w-full flex flex-col gap-3'>
+                                        <h2 className='text-desSec font-semibold text-xl'>Cupom de desconto</h2>
+                                        <div className='flex gap-5'>
+                                            <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' />
+                                            <Button 
+                                            className="p-2 rounded-md 
+                                            text-center
+                                            text-white 
+                                            bg-des         
+                                            hover:text-white transition-all
+                                            duration-200
+                                            hover:bg-sec hover:bg-opacity-75
+                                            hover:border-trans
+                                            flex 
+                                            items-center
+                                            justify-center
+                                            text-sm
+                                            gap-2
+                                            w-4/12
+                                            "
+                                            >
+                                                Utilizar
+                                            </Button>
+                                        </div>
+                                    </div>
+
                                 </div>
+
                                 <div className='w-full flex flex-col gap-5 pt-5 pb-5'>
-                                    <button 
+                                    <Button 
                                     className="
                                     p-5 rounded-md 
                                     text-center
@@ -1264,8 +1265,9 @@ export default function ContrateOnline() {
 
                                     >
                                         Conferir e solicitar serviço
-                                    </button>
+                                    </Button>
                                 </div>
+
                             </div>
                         </>
                     )}
