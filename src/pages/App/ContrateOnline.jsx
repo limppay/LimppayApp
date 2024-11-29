@@ -561,7 +561,7 @@ export default function ContrateOnline() {
 
             <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 ">
                 
-                <div className='flex flex-col items-center text-center min-w-[55vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
+                <div className='flex flex-col items-center text-center min-w-[50vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -1366,7 +1366,7 @@ export default function ContrateOnline() {
                                 </div>
                             </div>
                          </div> 
-                    )}
+                )}
                     
                 {currentStep == 0 &&(
                     <div className="hidden md:block lg:block  lg:pt-[5vh] ">
