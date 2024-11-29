@@ -195,6 +195,7 @@ export default function ContrateOnline() {
     const [selectedService, setSelectedService] = useState(''); // Estado para armazenar o serviço selecionado
     const [servicoId, setServicoId] = useState("")
     const [serviceValue, setServiceValue] = useState() // Estado para armazenar o valor do serviço
+    
     const {selectedTimes, setSelectedTimes} = useSelectedTimes([])
 
     const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])    
