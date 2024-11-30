@@ -6,6 +6,7 @@ import axios from "axios";
 import { useUser } from '../../context/UserProvider';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from "@nextui-org/react";
+import {Button} from "@nextui-org/react";
 
 export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
     const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {});
@@ -87,23 +88,31 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
   return (
     <>
       <header className="pt-3 pb-3 shadow-md lg:pt-2 lg:pb-2 lg:pr-12 lg:pl-12 fixed w-full bg-white z-10">
-        <nav className="flex items-center justify-around lg:justify-between px-2 lg:px-12">
+        <nav className={`flex items-center  lg:justify-between px-2 lg:px-12 ${user ? "gap-14" : "gap-5"}`}>
           <a href="/" className='w-3/12 sm:w-5/12 md:w-4/12 lg:w-3/12 lg:block '>
-            <img src={img} alt={alt} className="w-11/12 lg:w-5/12 md:w-5/12 sm:w-5/12" />
+            <img src={img} alt={alt} className="w-11/12 2xl:w-[16vh] lg:w-5/12 md:w-5/12 sm:w-5/12" />
           </a>
           <div className="flex items-center">
             <div className='hidden items-center lg:flex'>
-              <ul className='flex'>
-                {buttons.map((button, index) => (
-                  <HeaderButton
-                    key={index}
-                    link={button.link}
-                    text={button.text}
-                    OnClick={button.OnClick}
-                  />
-                ))}
-              </ul>
+                  <ul className='flex gap-2'>
+                      {buttons.map((button, index) => (
+                          <>
+                              
+                              <a href={button.link} key={index}>
+                                  <Button
+                                      onClick={button.OnClick}
+                                      className='bg-white text-center text-prim border border-trans hover:border-bord hover:text-sec'
+                                  >
+                                      {button.text}
+                                  </Button>
+                              </a>
+
+                          
+                          </>
+                      ))}
+                  </ul>
             </div>
+            
             {/* botões de acesso */}
             <div className='flex  items-center gap-2'>
               <div className='text-center flex justify-center items-center '>
@@ -120,8 +129,9 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                       <span className='text-prim font-semibold'>Olá, {user.name}</span>
                     </div>
                     <div>
-                      <button
+                      <Button
                         className='
+                        bg-white
                         lg:p-2
                         p-2
                         text-sm
@@ -130,32 +140,51 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                         lg:text-md
                         border
                         border-error
-                        rounded-md text-error'
+                        rounded-md text-error
+                        '
                         onClick={HandleExitUser}
                       >
                         Sair
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ) : (
                   <>
-                    <ul className='flex gap-2'>
-                      {btnAcess.map((acess, index) => (
-                        <ButtonAcess
-                          key={index}
-                          AcessPrim={acess.AcessPrim}
-                          AcessSec={acess.AcessSec}
-                          LinkPrim={acess.LinkPrim}
-                          LinkSec={acess.LinkSec}
-                          Class={acess.Class}
-                          OnClickPrim={acess.OnClickPrim}
-                          OnClickSec={acess.OnClickSec} />
-                      ))}
+                    <ul className='flex w-full gap-2'>
+                        {btnAcess.map((acess, index) => (
+                            <>
+                                <a href={acess.LinkPrim} key={index}>
+                                    <Button
+                                        
+                                        onClick={acess.OnClickPrim}
+                                        className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white'
+                                        
+                                        
+                                        
+                                    >
+                                        {acess.AcessPrim}
+                                    </Button>
+                                </a>
+
+                                <a href={acess.LinkSec} key={index}>
+                                    <Button
+                                        onClick={acess.OnClickSec}
+                                        className='bg-des hover:bg-sec text-white'
+                                    >
+                                        {acess.AcessSec}
+                                    </Button>                                            
+                                
+                                </a> 
+
+                            </>
+
+                            
+                        ))} 
                     </ul>
                   </>
                 )}
               </div>
-              <i className="fas fa-bars cursor-pointer text-2xl text-des ml-2 lg:hidden" id="hamburguerButton"></i>
+              <i className="fas fa-bars cursor-pointer text-2xl text-des  lg:hidden" id="hamburguerButton"></i>
             </div>
           </div>
         </nav>
