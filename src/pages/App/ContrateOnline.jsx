@@ -13,6 +13,7 @@ import Banner from "../../assets/img/App/limpando.png"
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 import StepLoginCustomer from './StepLoginCustomer';
 import {ScrollShadow} from "@nextui-org/scroll-shadow";
+import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
 
 import { useUser } from '../../context/UserProvider';
 import { useAgendamentoData } from '../../context/AgendamentoData';
@@ -30,6 +31,7 @@ import InputMask from "react-input-mask"
 import axios from 'axios';
 
 import {Accordion, AccordionItem} from "@nextui-org/accordion";
+import { Button } from '@nextui-org/react';
 
 export default function ContrateOnline() {
 
@@ -187,10 +189,13 @@ export default function ContrateOnline() {
     const [cepError, setCepError] = useState("")
     const [showCalendar, setShowCalendar] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
+    const [isLoading, setIsLoading] = useState(false)
     const [numberOfDays, setNumberOfDays] = useState(0); // Número de dias que o usuário selecionou
 
     const [selectedService, setSelectedService] = useState(''); // Estado para armazenar o serviço selecionado
+    const [servicoId, setServicoId] = useState("")
     const [serviceValue, setServiceValue] = useState() // Estado para armazenar o valor do serviço
+    
     const {selectedTimes, setSelectedTimes} = useSelectedTimes([])
 
     const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])    
@@ -211,12 +216,12 @@ export default function ContrateOnline() {
     const [open, setOpen] = useState(false)
     const [openCreateAdress, setOpenCreateAdress] = useState(false)
     const [enderecosCliente, setEnderecosCliente] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
     const [isCreatingAdress, setIsCreatingAdress] = useState(false)
     const [isDeleteAdress, setIsDeleteAdress] = useState(false)
     const navigate = useNavigate();
     const [cidade, setCidade] = useState("")
     const [estado, setEstado] = useState("")
+    const [finding, setFinding] = useState(false)
 
     const { user } = useUser();
     const { agendamentoData, setAgendamentoData } = useAgendamentoData()
@@ -306,9 +311,11 @@ export default function ContrateOnline() {
     }, [enderecosCliente, clienteId]); // Chama a função ao montar o componente
 
     
-    const handleServiceChange = (service) => {
+    const handleServiceChange = (service, id) => {
         setSelectedService(service); // Atualiza o serviço selecionado
-        // // console.log(service)
+        setServicoId(id)
+
+        console.log(service, id)
     };
 
     const handleTimeChange = (time) => {
@@ -332,18 +339,17 @@ export default function ContrateOnline() {
         setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
     }
 
-    
-
-
     const handleProceed = async () => {
+        setFinding(true)
         
-        console.log("Local do cliente", cidade, estado)
+        console.log("Local do cliente", cidade, estado, selectedService)
         
         try {
             if (selectedDates.length > 0) {
                 const formattedDate = selectedDates[0].toISOString().split('T')[0]; // Formata a data para YYYY-MM-DD
                 
-                const response = await getDisponiveis(formattedDate, selectedService, cidade, estado)
+                const response = await getDisponiveis(formattedDate, servicoId, cidade, estado)
+
                 console.log("Resposta da API:", response.data);
                 
                 // Inicialmente, define os providers sem as URLs de avatar
@@ -372,6 +378,7 @@ export default function ContrateOnline() {
         } catch (error) {
             console.error('Erro ao buscar prestadores disponíveis:', error);
         } finally {
+            setFinding(false)
             setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
         }
 
@@ -515,6 +522,7 @@ export default function ContrateOnline() {
         const data = {
             userId: selectedProvider.id,
             clienteId: clienteId,
+            servicoId: servicoId,
             dataServico: new Date(selectedDates[0]).toDateString(),
             Servico: selectedService,
             horaServico: times,
@@ -544,18 +552,17 @@ export default function ContrateOnline() {
         );
     }
 
-    console.log("usuario do cliente: ", user)
-    console.log("Endereco padrão do cliente: ", enderecoDefaultCliente)
-    console.log("Enderecos  do cliente: ", enderecosCliente)
+    console.log("Servico selecionado: ", selectedService)
+
 
 
     return (
         <>
-
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
-            <main className="relative p-4 flex lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
-                <div className='flex  flex-col items-center text-center min-w-[50vh] max-w-[50vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
+            <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 ">
+                
+                <div className='flex flex-col items-center text-center min-w-[45vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -600,14 +607,15 @@ export default function ContrateOnline() {
                                 ) : (
                                     enderecoDefaultCliente && ( 
                                         <div>
-                                            <div className='grid lg:grid-cols-2
+                                            <div className='grid lg:grid-cols-2 min-w-[35vh] max-w-[45vh] sm:min-w-[100vh] sm:max-w-[80vh] sm:w-[80vh] lg:w-full
                                             md:grid-cols-2
                                             sm:grid-cols-2
-                                            pt-5 gap-10 overflow-auto max-h-[100vh] 
+                                            pt-5 gap-10 overflow-auto max-h-[60vh] sm:max-h-[100vh] 
                                             pr-5 pl-5
                                             scrollbar-hide
+                                            justify-items-center
                                             '>
-                                                <div className={`border-2 border-bord rounded-lg lg:min-h-[50vh] lg:max-h-[50vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[36vh] max-h-[35vh] min-w-[35vh] max-w-[35vh]
+                                                <div className={`xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh]  border-2 border-bord rounded-lg lg:min-h-[40vh] lg:max-h-[40vh] lg:max-w-[40vh] lg:min-w-[40vh] transition-all min-h-[35vh] max-h-[40vh] min-w-[30vh] max-w-[40vh] 
                                                 
                                                 
                                                 ${
@@ -653,7 +661,10 @@ export default function ContrateOnline() {
                                                 </div>
 
                                                 {enderecosCliente.map((endereco) => (
-                                                    <div key={endereco.id} className={`border-2 border-bord rounded-lg lg:min-h-[50vh] lg:max-h-[50vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[35vh] max-w-[35vh] 
+                                                    <div key={endereco.id} className={`xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh]  border-2 border-bord rounded-lg transition-all
+                                                    lg:min-h-[40vh] lg:max-h-[40vh] lg:max-w-[40vh] lg:min-w-[40vh]
+                                                    min-h-[35vh] max-h-[45vh] min-w-[30vh] max-w-[40vh]
+
                                                     ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec shadow-sm shadow-sec' : 'border-bord' }
                                                     
                                                     ${isDeleteAdress && selectedEnderecoCliente.id == endereco.id ? "border-none shadow-white" : "hover:border-sec"}
@@ -699,7 +710,7 @@ export default function ContrateOnline() {
                                                     </div>
                                                 ))}
 
-                                                <div className='rounded-md p-5 border-2 border-bord border-opacity-50  lg:min-h-[50vh] lg:max-h-[50vh] lg:max-w-[46vh] lg:min-w-[46vh] min-h-[35vh] max-h-[35vh] min-w-[35vh] max-w-[35vh]
+                                                <div className='xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh]  border-2 border-bord rounded-lg lg:min-h-[40vh] lg:max-h-[40vh] lg:max-w-[40vh] lg:min-w-[40vh] transition all min-h-[35vh] max-h-[45vh] min-w-[34vh] max-w-[40vh]
                                                 
                                                 flex items-center justify-center'>
                                                     <button 
@@ -708,196 +719,178 @@ export default function ContrateOnline() {
                                                     >Cadastrar novo endereço</button>
                                                 </div>
 
-                                                <Dialog open={openCreateAdress} onClose={() => setOpenCreateAdress(false)} className="relative z-10">
-                                                    <DialogBackdrop
-                                                        transition
-                                                        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-                                                    />
-                                                    <div className="fixed inset-0 z-10 p-5  overflow-y-auto bg-prim bg-opacity-50">
-                                                        <div className=" flex min-h-full items-center justify-center text-center sm:items-center ">
-                                                            <DialogPanel
-                                                                transition
-                                                                className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full"
-                                                            >
-                                                                <div className="bg-white pb-4 ">
-                                                                    <div className="sm:flex sm:items-start flex-col">
-                                                                        <div className="text-center sm:mt-0 sm:text-left border-b border-bord w-full pb-4 pt-5">
-                                                                            <DialogTitle as="h3" className="font-semibold text-desSec text-2xl text-center">
-                                                                                Cadastrar novo endereço
-                                                                            </DialogTitle>
-                                                                        </div>
-                                                                        
-                                                                        <form 
-                                                                        className={`transition-all duration-150 pt-0 flex flex-col gap-5 w-full ${isCreatingAdress ? "opacity-35" : ""}`} 
-                                                                        onSubmit={handleSubmit(onSubmit)}
-                                                                        >
-                                                                            <div className='overflow-auto h-[65vh] lg:h-[55vh]'>
-                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                                        <label htmlFor="localServico" className="text-prim">Local do serviço</label>
-                                                                                        <input 
-                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                                        id="localServico" 
-                                                                                        type="text" 
-                                                                                        placeholder="nome do endereço" 
-                                                                                        {...register("localServico")}
-                                                                                        />
-                                                                                        {errors.localServico && 
-                                                                                        <span className="text-error opacity-75">{errors.localServico?.message}</span>}
-                                                                                    </div>
-                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                                        <label htmlFor="cep" className="text-prim">CEP</label>
-                                                                                        <InputMask 
-                                                                                        ref={inputRef}
-                                                                                        mask="99999-999"
-                                                                                        maskChar={null}
-                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                                        id="cep" 
-                                                                                        type="text" 
-                                                                                        placeholder="Somente números" 
-                                                                                        {...register("cep")}
-                                                                                        onChange={handleCepChange}
-                                                                                        />
-                                                                                        {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
-                                                                                    </div>
-                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                                        <label htmlFor="logradouro" className="text-prim">Logradouro</label>
-                                                                                        <input 
-                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                                        id="logradouro" 
-                                                                                        type="text" 
-                                                                                        placeholder="" 
-                                                                                        {...register("logradouro")}
-                                                                                        readOnly
-                                                                                        />
-                                                                                        {errors.logradouro && 
-                                                                                        <span className="text-error opacity-75">{errors.logradouro?.message}</span>}
-                                                                                    </div>
-                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                                        <label htmlFor="numero" className="text-prim">Número</label>
-                                                                                        <input 
-                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                                        id="numero" 
-                                                                                        type="text" 
-                                                                                        placeholder="" 
-                                                                                        {...register("numero")}
-                                                                                        />
-                                                                                        {errors.numero && 
-                                                                                        <span className="text-error opacity-75">{errors.numero?.message}</span>}
-                                                                                    </div>
-                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                                        <label htmlFor="complemento" className="text-prim">Complemento</label>
-                                                                                        <input 
-                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                                        id="complemento" 
-                                                                                        type="text" 
-                                                                                        placeholder="Casa, apt, bloco, etc"
-                                                                                        maxLength="100" 
-                                                                                        {...register("complemento")}
-                                                                                        />
-                                                                                        {errors.complemento && 
-                                                                                        <span className="text-error opacity-75">{errors.complemento?.message}</span>}
-                                                                                    </div>
-                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                                        <label htmlFor="pontoRef" className="text-prim">Ponto de Referência</label>
-                                                                                        <input 
-                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                                        id="pontoRef" 
-                                                                                        type="text" 
-                                                                                        placeholder="" 
-                                                                                        maxLength="150"
-                                                                                        {...register("referencia")}
-                                                                                        />
-                                                                                        {errors.pontoRef && 
-                                                                                        <span className="text-error opacity-75">{errors.referencia?.message}</span>}
-                                                                                    </div>
-                                                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                                        <label htmlFor="bairro" className="text-prim">Bairro</label>
-                                                                                        <input 
-                                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                                        id="bairro" 
-                                                                                        type="text" 
-                                                                                        placeholder="" 
-                                                                                        {...register("bairro")}
-                                                                                        readOnly
-                                                                                        />
-                                                                                        {errors.bairro && 
-                                                                                        <span className="text-error opacity-75">{errors.bairro?.message}</span>}
-                                                                                    </div>
 
-                                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                                    <label htmlFor="cidade" className="text-prim">Cidade</label>
-                                                                                    <input 
-                                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                                    id="cidade" 
-                                                                                    type="text" 
-                                                                                    placeholder="" 
-                                                                                    {...register("cidade")}
-                                                                                    readOnly
-                                                                                    />
-                                                                                    {errors.cidade && 
-                                                                                    <span className="text-error opacity-75">{errors.cidade?.message}</span>}
-                                                                                </div>
+                                                <Modal 
+                                                backdrop="opaque" 
+                                                isOpen={openCreateAdress} 
+                                                onOpenChange={setOpenCreateAdress}
+                                                placement='center'
+                                                classNames={{
+                                                    backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20"
+                                                }}
+                                                >
+                                                <ModalContent>
+                                                    {(onClose) => (
+                                                    <>
+                                                        <ModalHeader className="flex flex-col gap-1 text-desSec">Cadastrar novo endereço</ModalHeader>
+                                                        <ModalBody>
 
-                                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                                    <label htmlFor="estado" className="text-prim">Estado</label>
-                                                                                    <input 
-                                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                                    id="estado" 
-                                                                                    type="text" 
-                                                                                    placeholder=""
-                                                                                    {...register("estado")}
-                                                                                    readOnly
-                                                                                    />
-                                                                                    {errors.estado && 
-                                                                                    <span className="text-error opacity-75">{errors.estado?.message}</span>}
-                                                                                </div>
-                                                                            </div>
-
-                                                                            <div className=" px-4 py-3 sm:flex sm:px-6 flex justify-end gap-3 ">
-                                                                                <button
-                                                                                    type='button'
-                                                                                    data-autofocus
-                                                                                    onClick={() => setOpenCreateAdress(false)}
-                                                                                    className="inline-flex  justify-center rounded-md bg-white p-2 text-sm text-prim shadow-sm border sm:mt-0 sm:w-auto border-bord "
-                                                                                >
-                                                                                    Fechar
-                                                                                </button>
-                                                                                <button
-                                                                                    type="submit"
-                                                                                    data-autofocus
-                                                                                    className="p-2 rounded-md 
-                                                                                    text-center
-                                                                                    text-white 
-                                                                                    bg-des         
-                                                                                    hover:text-white transition-all
-                                                                                    duration-200
-                                                                                    hover:bg-sec hover:bg-opacity-75
-                                                                                    hover:border-trans
-                                                                                    flex 
-                                                                                    items-center
-                                                                                    justify-center
-                                                                                    text-sm
-                                                                                    gap-2"
-                                                                                >
-                                                                                    Cadastrar
-                                                                                </button>
-                                                                            </div>
-                                                                        </form>
-                                                                        {isCreatingAdress && (
-                                                                            <div className='fixed w-full h-full flex items-center justify-center  text-white'>
-                                                                                <Spinner size='lg'/>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
+                                                        <form 
+                                                        className={`max-h-screen transition-all duration-150 pt-0 flex flex-col gap-5 w-full ${isCreatingAdress ? "opacity-35" : ""}`} 
+                                                        onSubmit={handleSubmit(onSubmit)}
+                                                        >
+                                                            <div className='overflow-auto h-[65vh] lg:h-[55vh]'>
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="localServico" className="text-prim">Local do serviço</label>
+                                                                    <input 
+                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                    id="localServico" 
+                                                                    type="text" 
+                                                                    placeholder="nome do endereço" 
+                                                                    {...register("localServico")}
+                                                                    />
+                                                                    {errors.localServico && 
+                                                                    <span className="text-error opacity-75">{errors.localServico?.message}</span>}
                                                                 </div>
-                                                            </DialogPanel>
-                                                        </div>
-                                                    </div>
-                                                </Dialog>
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="cep" className="text-prim">CEP</label>
+                                                                    <InputMask 
+                                                                    ref={inputRef}
+                                                                    mask="99999-999"
+                                                                    maskChar={null}
+                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                    id="cep" 
+                                                                    type="text" 
+                                                                    placeholder="Somente números" 
+                                                                    {...register("cep")}
+                                                                    onChange={handleCepChange}
+                                                                    />
+                                                                    {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
+                                                                </div>
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="logradouro" className="text-prim">Logradouro</label>
+                                                                    <input 
+                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                    id="logradouro" 
+                                                                    type="text" 
+                                                                    placeholder="" 
+                                                                    {...register("logradouro")}
+                                                                    readOnly
+                                                                    />
+                                                                    {errors.logradouro && 
+                                                                    <span className="text-error opacity-75">{errors.logradouro?.message}</span>}
+                                                                </div>
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="numero" className="text-prim">Número</label>
+                                                                    <input 
+                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                    id="numero" 
+                                                                    type="text" 
+                                                                    placeholder="" 
+                                                                    {...register("numero")}
+                                                                    />
+                                                                    {errors.numero && 
+                                                                    <span className="text-error opacity-75">{errors.numero?.message}</span>}
+                                                                </div>
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="complemento" className="text-prim">Complemento</label>
+                                                                    <input 
+                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                    id="complemento" 
+                                                                    type="text" 
+                                                                    placeholder="Casa, apt, bloco, etc"
+                                                                    maxLength="100" 
+                                                                    {...register("complemento")}
+                                                                    />
+                                                                    {errors.complemento && 
+                                                                    <span className="text-error opacity-75">{errors.complemento?.message}</span>}
+                                                                </div>
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="pontoRef" className="text-prim">Ponto de Referência</label>
+                                                                    <input 
+                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                    id="pontoRef" 
+                                                                    type="text" 
+                                                                    placeholder="" 
+                                                                    maxLength="150"
+                                                                    {...register("referencia")}
+                                                                    />
+                                                                    {errors.pontoRef && 
+                                                                    <span className="text-error opacity-75">{errors.referencia?.message}</span>}
+                                                                </div>
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="bairro" className="text-prim">Bairro</label>
+                                                                    <input 
+                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                    id="bairro" 
+                                                                    type="text" 
+                                                                    placeholder="" 
+                                                                    {...register("bairro")}
+                                                                    readOnly
+                                                                    />
+                                                                    {errors.bairro && 
+                                                                    <span className="text-error opacity-75">{errors.bairro?.message}</span>}
+                                                                </div>
+
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="cidade" className="text-prim">Cidade</label>
+                                                                    <input 
+                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                    id="cidade" 
+                                                                    type="text" 
+                                                                    placeholder="" 
+                                                                    {...register("cidade")}
+                                                                    readOnly
+                                                                    />
+                                                                    {errors.cidade && 
+                                                                    <span className="text-error opacity-75">{errors.cidade?.message}</span>}
+                                                                </div>
+
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="estado" className="text-prim">Estado</label>
+                                                                    <input 
+                                                                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                                    id="estado" 
+                                                                    type="text" 
+                                                                    placeholder=""
+                                                                    {...register("estado")}
+                                                                    readOnly
+                                                                    />
+                                                                    {errors.estado && 
+                                                                    <span className="text-error opacity-75">{errors.estado?.message}</span>}
+                                                                </div>
+                                                            </div>
+
+                                                            
+                                                            <ModalFooter className='bg-none shadow-none'>
+                                                                <Button color="danger" variant="light" onPress={onClose} isDisabled={isCreatingAdress} >
+                                                                    Cancelar
+                                                                </Button>
+                                                                <Button className='bg-desSec text-white' type='submit' isDisabled={isCreatingAdress} >
+                                                                    Confirmar
+                                                                </Button>
+                                                            </ModalFooter>
+                                                            {isCreatingAdress && (
+                                                                <div className='fixed text-white flex h-[60vh] w-[45vh] sm:h-[60vh] sm:w-[55vh] '>
+                                                                    <Spinner size='lg' className='w-full'/>
+                                                                </div>
+                                                            )}
+                                                        </form>
+                                                        
+
+                                                        
+                                            
+                                                        </ModalBody>
+                                                    </>
+                                                    )}
+                                                </ModalContent>
+                                                </Modal>
+
+ 
                                             </div>
                                             {selectedEnderecoCliente && (
                                                 <div className='flex justify-center pt-5 border-b border-bord'>
-                                                    <button
+                                                    <Button
                                                         type="button"
                                                         data-autofocus
                                                         className="p-2 rounded-md 
@@ -917,8 +910,8 @@ export default function ContrateOnline() {
                                                         "
                                                         onClick={handleProceed}
                                                     >
-                                                        Selecionar e prosseguir
-                                                    </button>
+                                                       {finding ? <Spinner /> : "Selecionar e prosseguir"}  
+                                                    </Button>
                                                 </div>
                                             )}
                                         </div>
@@ -940,10 +933,12 @@ export default function ContrateOnline() {
                                         <h1 className='text-desSec'>Não há prestadores disponíveis nessa data ou serviço :/</h1>
                                     </div>
                                 ) : (
-                                    <div className='flex flex-col gap-2'>
+                                    <div className='flex flex-col gap-3'>
+
                                         <div>
                                             <h1 className='text-desSec text-lg font-semibold'>Selecione o prestador</h1>
                                         </div>
+
                                         <div className="relative">
                                             <input
                                                 type="text"
@@ -959,78 +954,85 @@ export default function ContrateOnline() {
                                                 </button>
                                             </label>
                                         </div>
-                                        <div className={`grid ${filteredProviders.length > 0 ? "lg:grid-cols-3 grid-cols-2" : "grid-none"} items-center pt-3 gap-5`}>
-                                        {filteredProviders.length > 0 ? (
-                                            filteredProviders.map((provider) => (
-                                                <>
-                                            
-                                                    <div key={provider.id} className='flex flex-col gap-3 '>
-                                                        <div 
-                                                        
-                                                        className={`flex gap-3 p-2 items-center cursor-pointer transition-all duration-200
-                                                        border rounded-lg 
-                                                        ${selectedProvider && selectedProvider.id === provider.id ? ' border-sec' : 'hover:border-sec border-trans'}`}
-                                                        
-                                                        onClick={() => {
-                                                            setSelectedProvider(provider); // Armazena o provider selecionado
-                                                            // // console.log(provider.id);
-                                                        }}
 
-                                                        >
-                                                            <div>
-                                                                <Avatar 
-                                                                src={provider?.avatar?.avatarUrl}
-                                                                size="lg"
-                                                                />
-                                                            </div>
-                                                            <div className='flex justify-start flex-col w-full'>
-                                                                <p className='
-                                                                text-prim
-                                                                text-start
-                                                                '>{provider.name}</p>
-                                                                <button className='p-1 rounded-md w-full max-w-full text-center
-                                                                text-sec 
-                                                                border-sec
-                                                                border
-                                                                hover:text-white transition-all hover:bg-sec hover:bg-opacity-75
-                                                                hover:border-trans
-                                                                flex 
-                                                                items-center
-                                                                justify-center
-                                                                gap-2
-                                                                '
+                                        <div className='flex flex-col justify-between h-[55vh]'>
+                                            <div className={`grid ${filteredProviders.length > 0 ? "xl:grid-cols-3        lg:grid-cols-2  grid-cols-1 min-h-[20vh] max-h-[35vh] overflow-y-auto min-w-[40vh] max-w-[45vh] sm:min-w-[80vh] sm:max-w-[100vh]  " : "grid-none"}  pt-3 gap-10`}>
+                                            {filteredProviders.length > 0 ? (
+                                                filteredProviders.map((provider) => (
+                                                    <>
+                                                
+                                                        <div key={provider.id} className='flex flex-col gap-3 '>
+                                                            <div 
+                                                            className={`flex gap-3 p-2 items-center cursor-pointer transition-all duration-200
+                                                            border rounded-lg 
+                                                            ${selectedProvider && selectedProvider.id === provider.id ? ' border-sec' : 'hover:border-sec border-trans'}`}
+                                                            
+                                                            onClick={() => {
+                                                                setSelectedProvider(provider); // Armazena o provider selecionado
+                                                                // // console.log(provider.id);
+                                                            }}
 
-                                                                onClick={() => {
-                                                                    setSelectedProvider(provider)
-                                                                    setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
-                                                                    setOpen(true)
-                                                                }}                                                         
-                                                                
-                                                                >
-                                                                    <i className="fa-solid fa-star" ></i>
-                                                                    Perfil
-                                                                </button>
-                                                            </div>
-                                                        </div>
+                                                            >
+                                                                <div>
+                                                                    <Avatar 
+                                                                    src={provider?.avatar?.avatarUrl}
+                                                                    size="lg"
+                                                                    />
+                                                                </div>
 
-                                                        <Dialog open={open} onClose={() => setOpen(false)} className="relative z-10">
-                                                            <DialogBackdrop
-                                                                transition
-                                                                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-                                                            />
-                                                            <div className="fixed inset-0 z-10 p-5  overflow-y-auto bg-prim bg-opacity-50">
-                                                                <div className=" flex min-h-full items-center justify-center text-center sm:items-center ">
-                                                                    <DialogPanel
-                                                                        transition
-                                                                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full max-w-lg flex flex-col max-h-[160vh]"
+                                                                <div className='flex justify-start flex-col w-full'>
+                                                                    <p className='
+                                                                    text-prim
+                                                                    text-start
+                                                                    '>{provider.name}</p>
+                                                                    <button className='p-1 rounded-md w-full max-w-full text-center
+                                                                    text-sec 
+                                                                    border-sec
+                                                                    border
+                                                                    hover:text-white transition-all hover:bg-sec hover:bg-opacity-75
+                                                                    hover:border-trans
+                                                                    flex 
+                                                                    items-center
+                                                                    justify-center
+                                                                    gap-2
+                                                                    '
+
+                                                                    onClick={() => {
+                                                                        setSelectedProvider(provider)
+                                                                        setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
+                                                                        setOpen(true)
+                                                                    }}                                                         
+                                                                    
                                                                     >
-                                                                        <div className="bg-white pb-4 pt-0 ">
+                                                                        <i className="fa-solid fa-star" ></i>
+                                                                        Perfil
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <Modal 
+                                                                backdrop="opaque" 
+                                                                isOpen={open} 
+                                                                onOpenChange={setOpen}
+                                                                placement='center'
+                                                                classNames={{
+                                                                    backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 "
+                                                                }}
+                                                            >
+                                                                <ModalContent>
+                                                                    {(onClose) => (
+                                                                    <>
+                                                                        <ModalHeader className="flex flex-col gap-1 p-0 text-desSec"></ModalHeader>
+                                                                        <ModalBody className='p-0'>
+
+                                                                        <div className="bg-white pb-4 pt-0 p-0 ">
                                                                             <div className="sm:flex sm:items-start flex-col">
                                                                                 
                                                                                 {selectedProvider && ( // Renderiza as informações do provider selecionado
-                                                                                    <div className="pt-0 flex flex-col  w-full bg-pri max-h-[70vh]">
+                                                                                    <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[70vh]">
                                                                                         <div className='flex flex-col gap-2 justify-start'>
-                                                                                            <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
+                                                                                            <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
                                                                                                 {/* Container do Avatar */}
                                                                                                 <div className="absolute">
                                                                                                     <Avatar src={selectedProvider?.avatar?.avatarUrl} size="lg"    
@@ -1043,6 +1045,7 @@ export default function ContrateOnline() {
                                                                                                 
                                                                                             </div>
                                                                                         </div>
+
                                                                                         <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
                                                                                             {[1, 2, 3, 4, 5].map((star) => (
                                                                                                 <StarReview
@@ -1105,105 +1108,93 @@ export default function ContrateOnline() {
                                                                                         </div>
                                                                                     </div>
                                                                                 )}
+
                                                                             </div>
                                                                         </div>
-                                                                        <div className=" px-4 py-3 sm:flex sm:px-6 flex justify-end gap-3 border-t border-bord">
-                                                                            <button
-                                                                                type="button"
-                                                                                data-autofocus
-                                                                                onClick={() => setOpen(false)}
-                                                                                className="inline-flex  justify-center rounded-md bg-white p-2 text-sm text-prim shadow-sm border sm:mt-0 sm:w-auto border-bord "
-                                                                            >
-                                                                                Fechar
-                                                                            </button>
-                                                                            <button
-                                                                                type="button"
-                                                                                data-autofocus
-                                                                                className="p-2 rounded-md 
-                                                                                text-center
-                                                                                text-white 
-                                                                                bg-des         
-                                                                                hover:text-white transition-all
-                                                                                duration-200
-                                                                                hover:bg-sec hover:bg-opacity-75
-                                                                                hover:border-trans
-                                                                                flex 
-                                                                                items-center
-                                                                                justify-center
-                                                                                text-sm
-                                                                                gap-2"
+                                                                                                                        
 
-                                                                                onClick={handleConfirmSelection}
-                                                                                
-                                                                            >
-                                                                                Selecionar e prosseguir
-                                                                            </button>
-                                                                        </div>
-                                                                    </DialogPanel>
-                                                                </div>
-                                                            </div>
-                                                        </Dialog>
-                                                    </div>
-                                                </>                                                
-                                            ))
-                                        ) : (
-                                            <>
-                                                <p className="text-prim">Nenhum prestador encontrado.</p>
-                                            </>
-                                        )}
-                                        </div>
-                                        <div className='flex justify-center pt-5 border-b border-bord'>
-                                            {selectedProvider ? (
-                                                <button
-                                                    type="button"
-                                                    data-autofocus
-                                                    className="p-2 rounded-md 
-                                                    text-center
-                                                    text-white 
-                                                    bg-des         
-                                                    hover:text-white transition-all
-                                                    duration-200
-                                                    hover:bg-sec hover:bg-opacity-75
-                                                    hover:border-trans
-                                                    flex 
-                                                    items-center
-                                                    justify-center
-                                                    text-sm
-                                                    gap-2
-                                                    w-full
-                                                    "
-                                                    onClick={handleConfirmSelection}
-                                                    
-                                                >
-                                                    Selecionar e prosseguir
-                                                </button>
-                                            ) : ( 
-                                                <button
-                                                    type="button"
-                                                    data-autofocus
-                                                    className="p-2 rounded-md 
-                                                    text-center
-                                                    text-white 
-                                                    bg-des         
-                                                    hover:text-white transition-all
-                                                    duration-200
-                                                    hover:bg-sec hover:bg-opacity-75
-                                                    hover:border-trans
-                                                    flex 
-                                                    items-center
-                                                    justify-center
-                                                    text-sm
-                                                    gap-2
-                                                    w-full
-                                                    "
-                                                    onClick={HandleSelectedRandomProvider}
-                                                    
-                                                >
-                                                    Selecione por mim e prosseguir
-                                                </button>
-                                                
+                                                            
+                                                                        </ModalBody>
+                                                                        <ModalFooter>
+                                                                        <Button color="danger" variant="light" onPress={onClose}>
+                                                                            Fechar
+                                                                        </Button>
+                                                                        <Button className='bg-desSec text-white' onPress={handleConfirmSelection}  >
+                                                                            Selecionar e prosseguir
+                                                                        </Button>
+                                                                        </ModalFooter>
+                                                                    </>
+                                                                    )}
+                                                                </ModalContent>
+                                                            </Modal>
+
+
+                                                        </div>
+                                                        
+                                                    </>                                                
+                                                ))
+                                            ) : (
+                                                <>
+                                                    <p className="text-prim">Nenhum prestador encontrado.</p>
+                                                </>
                                             )}
+                                            </div>
+
+                                            <div className='flex justify-center pt-5 border-b border-bord'>
+                                                {selectedProvider ? (
+                                                    <button
+                                                        type="button"
+                                                        data-autofocus
+                                                        className="p-2 rounded-md 
+                                                        text-center
+                                                        text-white 
+                                                        bg-des         
+                                                        hover:text-white transition-all
+                                                        duration-200
+                                                        hover:bg-sec hover:bg-opacity-75
+                                                        hover:border-trans
+                                                        flex 
+                                                        items-center
+                                                        justify-center
+                                                        text-sm
+                                                        gap-2
+                                                        w-full
+                                                        "
+                                                        onClick={handleConfirmSelection}
+                                                        
+                                                    >
+                                                        Selecionar e prosseguir
+                                                    </button>
+                                                ) : ( 
+                                                    <button
+                                                        type="button"
+                                                        data-autofocus
+                                                        className="p-2 rounded-md 
+                                                        text-center
+                                                        text-white 
+                                                        bg-des         
+                                                        hover:text-white transition-all
+                                                        duration-200
+                                                        hover:bg-sec hover:bg-opacity-75
+                                                        hover:border-trans
+                                                        flex 
+                                                        items-center
+                                                        justify-center
+                                                        text-sm
+                                                        gap-2
+                                                        w-full
+                                                        "
+                                                        onClick={HandleSelectedRandomProvider}
+                                                        
+                                                    >
+                                                        Selecione por mim e prosseguir
+                                                    </button>
+                                                    
+                                                )}
+                                            </div>
+
                                         </div>
+
                                     </div>
                                 )}
                             </div>
@@ -1212,44 +1203,49 @@ export default function ContrateOnline() {
 
                     {currentStep == 4 && (
                         <>
-                            <div className='w-full flex flex-col gap-5 p-10 pl-20 pr-20 pt-5 shadow-md rounded-md pb-0'>
-                                <div className='w-full flex flex-col gap-3'>
-                                    <h2 className='text-desSec font-semibold text-xl'>Observação</h2>
-                                    <textarea
-                                    placeholder="Se necessário, deixe-nos uma observação"
-                                    className="border rounded-md border-bord p-3 min-h-20 lg:min-h-50 focus:outline-ter text-prim w-full max-h-1"
-                                    rows="3"
-                                    value={observacao}  // Valor vinculado ao estado
-                                    onChange={(e) => setObservacao(e.target.value)}  // Atualiza o estado quando o valor mudar
-                                    ></textarea>
-                                </div>
-                                <div className='w-full flex flex-col gap-3'>
-                                    <h2 className='text-desSec font-semibold text-xl'>Cupom de desconto</h2>
-                                    <div className='flex gap-5'>
-                                        <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' />
-                                        <button 
-                                        className="p-2 rounded-md 
-                                        text-center
-                                        text-white 
-                                        bg-des         
-                                        hover:text-white transition-all
-                                        duration-200
-                                        hover:bg-sec hover:bg-opacity-75
-                                        hover:border-trans
-                                        flex 
-                                        items-center
-                                        justify-center
-                                        text-sm
-                                        gap-2
-                                        w-4/12
-                                        "
-                                        >
-                                            Utilizar
-                                        </button>
+                            <div className='w-full flex flex-col justify-between p-2 gap-5 sm:p-10 sm:pl-20 sm:pr-20 pt-5 shadow-md rounded-md pb-0 h-[60vh]'>
+                                <div className='flex flex-col gap-14'>
+                                    <div className='w-full flex flex-col gap-3'>
+                                        <h2 className='text-desSec font-semibold text-xl'>Observação</h2>
+                                        <textarea
+                                        placeholder="Se necessário, deixe-nos uma observação"
+                                        className="border rounded-md border-bord p-3 min-h-20 lg:min-h-50 focus:outline-ter text-prim w-full max-h-1"
+                                        rows="3"
+                                        value={observacao}  // Valor vinculado ao estado
+                                        onChange={(e) => setObservacao(e.target.value)}  // Atualiza o estado quando o valor mudar
+                                        ></textarea>
                                     </div>
+                                    
+                                    <div className='w-full flex flex-col gap-3'>
+                                        <h2 className='text-desSec font-semibold text-xl'>Cupom de desconto</h2>
+                                        <div className='flex gap-5'>
+                                            <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' />
+                                            <Button 
+                                            className="p-2 rounded-md 
+                                            text-center
+                                            text-white 
+                                            bg-des         
+                                            hover:text-white transition-all
+                                            duration-200
+                                            hover:bg-sec hover:bg-opacity-75
+                                            hover:border-trans
+                                            flex 
+                                            items-center
+                                            justify-center
+                                            text-sm
+                                            gap-2
+                                            w-4/12
+                                            "
+                                            >
+                                                Utilizar
+                                            </Button>
+                                        </div>
+                                    </div>
+
                                 </div>
+
                                 <div className='w-full flex flex-col gap-5 pt-5 pb-5'>
-                                    <button 
+                                    <Button 
                                     className="
                                     p-5 rounded-md 
                                     text-center
@@ -1270,18 +1266,20 @@ export default function ContrateOnline() {
 
                                     >
                                         Conferir e solicitar serviço
-                                    </button>
+                                    </Button>
                                 </div>
+
                             </div>
                         </>
                     )}
                     
                 </div>
+
                 {/* Cartão azul - Visível somente em telas grandes (desktop) */}
-                {currentStep > 0 &&(
-                    <div className="hidden lg:block pt-[4vh] w-5/12 ">
-                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pb-10  flex flex-col items-center gap-7">
-                            <div className='w-full flex justify-between items-center border-b p-12 pb-2 pt-16 pl-7 pr-7'>
+                {currentStep > 0 && (
+                    <div className="hidden md:block lg:block  lg:pt-[5vh] ">
+                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pt-[12vh] md:pt-[13vh] lg:pt-[0vh] xl:pt-[0vh] p-4 flex flex-col items-center gap-10 max-w-[50vh] xl:max-w-[60vh] xl:min-w-[60vh] text-justify min-h-[80vh] ">
+                            <div className='w-full flex justify-between items-center border-b p-12 pt-0 pb-2 lg:pt-12 xl:pt-16 pl-7 pr-7'>
                                 <h3 className="text-xl flex flex-wrap ">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 font-semibold">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
@@ -1369,16 +1367,18 @@ export default function ContrateOnline() {
                                     )}
 
                                 </div>
-                             </div>
+                            </div>
                          </div> 
-                    )}
-                    {currentStep == 0 &&(<div className="hidden lg:block pt-[9vh] w-4/12">
-                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg p-12 flex flex-col items-center gap-10">
+                )}
+                    
+                {currentStep == 0 &&(
+                    <div className="hidden md:block lg:block  lg:pt-[5vh] ">
+                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pt-[12vh] md:pt-[13vh] lg:pt-[10vh] p-4 flex flex-col items-center gap-10 max-w-[50vh] xl:max-w-[60vh] text-justify min-h-[80vh] ">
                             <h3 className="text-xl font-bold flex flex-wrap">Olá, agende um serviço conosco é fácil e rápido!</h3>
                             <img
                             src={Banner}
                             alt="Ilustração de limpeza"
-                            className="w-full mb-4"
+                            className="xl:w-[50vh] mb-4"
                             />
                             <ul className="text-sm">
                                 <li className="mb-2">
@@ -1391,9 +1391,9 @@ export default function ContrateOnline() {
                                     <i className="fas fa-tasks mr-2"></i> Em sequência, escolha as etapas.
                                 </li>
                             </ul>
-                            </div>
-                            </div>
-                        )}
+                        </div>
+                    </div>
+                )}
                       
             </main>
 

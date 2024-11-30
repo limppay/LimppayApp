@@ -5,6 +5,7 @@ import "../styles/menu-hamburguer.css";
 import {Button} from "@nextui-org/react";
 
 export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2,  }) {
+    
     useEffect(() => {
         const hamburguerButton = document.getElementById("hamburguerButton");
         const mobileMenu = document.getElementById("mobileMenu");
@@ -37,61 +38,61 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                     <a href="/" className='w-3/12 sm:w-5/12 md:w-4/12 lg:w-3/12 lg:block '>
                         <img src={img} alt={alt} className="w-11/12 2xl:w-[16vh] lg:w-5/12 md:w-5/12 sm:w-5/12" />
                     </a>
-                    <div className="flex items-center gap-1">
-                            <div className='hidden items-center lg:flex'>
-                                <ul className='flex gap-2'>
-                                    {buttons.map((button, index) => (
-                                        <>
-                                            
-                                            <a href={button.link} key={index}>
-                                                <Button
-                                                    onClick={button.OnClick}
-                                                    className='bg-white text-center text-prim border border-trans hover:border-bord hover:text-sec'
-                                                >
-                                                    {button.text}
-                                                </Button>
-                                            </a>
-
+                    <div className="flex items-center gap-3">
+                        <div className='hidden items-center lg:flex'>
+                            <ul className='flex gap-2'>
+                                {buttons.map((button, index) => (
+                                    <>
                                         
-                                        </>
-                                    ))}
-                                </ul>
-                            </div>
+                                        <a href={button.link} key={index}>
+                                            <Button
+                                                onClick={button.OnClick}
+                                                className='bg-white text-center text-prim border border-trans hover:border-bord hover:text-sec'
+                                            >
+                                                {button.text}
+                                            </Button>
+                                        </a>
 
-                            {/* botões de acesso */}
-                            <div className='flex'>
-                                <ul className='flex w-full gap-2'>
-                                    {btnAcess.map((acess, index) => (
-                                        <>
-                                           <a href={acess.LinkPrim} key={index}>
-                                                <Button
-                                                    
-                                                    onClick={acess.OnClickPrim}
-                                                    className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white'
-                                                    
-                                                    
-                                                    
-                                                >
-                                                    {acess.AcessPrim}
-                                                </Button>
-                                           </a>
+                                    
+                                    </>
+                                ))}
+                            </ul>
+                        </div>
 
-                                            <a href={acess.LinkSec} key={index}>
-                                                <Button
-                                                    onClick={acess.OnClickSec}
-                                                    className='bg-des hover:bg-sec text-white'
-                                                >
-                                                    {acess.AcessSec}
-                                                </Button>                                            
-                                            
-                                            </a> 
+                        {/* botões de acesso */}
+                        <div className='flex'>
+                            <ul className='flex w-full gap-2'>
+                                {btnAcess.map((acess, index) => (
+                                    <>
+                                        <a href={acess.LinkPrim} key={index}>
+                                            <Button
+                                                
+                                                onClick={acess.OnClickPrim}
+                                                className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white'
+                                                
+                                                
+                                                
+                                            >
+                                                {acess.AcessPrim}
+                                            </Button>
+                                        </a>
 
-                                        </>
-
+                                        <a href={acess.LinkSec} key={index}>
+                                            <Button
+                                                onClick={acess.OnClickSec}
+                                                className='bg-des hover:bg-sec text-white'
+                                            >
+                                                {acess.AcessSec}
+                                            </Button>                                            
                                         
-                                    ))} 
-                                </ul>
-                            </div>
+                                        </a> 
+
+                                    </>
+
+                                    
+                                ))} 
+                            </ul>
+                        </div>
 
                         <i className="fas fa-bars cursor-pointer text-2xl text-des lg:hidden" id="hamburguerButton"></i>
                     </div>
