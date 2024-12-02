@@ -525,8 +525,15 @@ const AreaDiarista = () => {
                                         isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[13vh] xl:max-w-[13vh] 2xl:min-w-[10vh] 2xl:max-w-[10vh] "
                                         }`}>
 
-                                            <div className=" hidden border-b border-desSec lg:flex items-center justify-between pt-2 pb-2 ">
-                                                <Button className="bg- text-desSec" onClick={toggleSidebar} >
+                                            <div className=" hidden border-b border-des lg:flex items-center justify-between pt-2 pb-2 p-4 ">
+                                                <Avatar
+                                                src={avatarUrl}
+                                                className={`${isOpen ? "" : ""} cursor-pointer`}
+                                                onClick={() => setScreenSelected("perfil")}
+                                                />
+
+
+                                                <Button className="bg- text-des" onClick={toggleSidebar} >
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
                                                 </svg>
@@ -536,8 +543,8 @@ const AreaDiarista = () => {
                                             <div className='flex flex-row lg:grid gap-5 pt-5 p-2 '>
                                                 <div>
                                                     <Button
-                                                    className='w-full border border-desSec bg-trans text-desSec text-start '
-                                                    onClick={() => setScreenSelected("inicial")}
+                                                    className='w-full border border-des bg-trans text-des text-start '
+                                                    onClick={() => setScreenSelected("perfil")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
@@ -551,7 +558,7 @@ const AreaDiarista = () => {
 
                                                 <div>
                                                     <Button
-                                                    className='w-full border border-desSec bg-trans text-desSec'
+                                                    className='w-full border border-des bg-trans text-des'
                                                     onClick={() => setScreenSelected("pedidos")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -565,7 +572,7 @@ const AreaDiarista = () => {
 
                                                 <div>
                                                     <Button
-                                                    className='w-full border border-desSec bg-trans text-desSec'
+                                                    className='w-full border border-des bg-trans text-des'
                                                     onClick={() => setScreenSelected("avaliacoes")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -580,7 +587,7 @@ const AreaDiarista = () => {
 
                                                 <div>
                                                     <Button
-                                                    className='w-full border border-desSec bg-trans text-desSec'
+                                                    className='w-full border border-des bg-trans text-des'
                                                     onClick={() => setScreenSelected("painel")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -595,11 +602,9 @@ const AreaDiarista = () => {
 
                                             </div>
                                                 
-
                                         </div>
-
                                         
-                                        {screenSelected == "inicial" && (
+                                        {screenSelected == "perfil" && (
                                             <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
 
                                                 <div className='lg:flex flex-col max-w-50 min-w-72 min-h-60 p-10 pt-5 w-full 
@@ -858,9 +863,7 @@ const AreaDiarista = () => {
 
                                                         </div>
                                                         
-
                                                     </div>
-                                                    
                                                 </div>
                                                 
                                             </section>
@@ -869,7 +872,6 @@ const AreaDiarista = () => {
                                        
                                     </div>
 
-                                
                                     <EditUserModal 
                                         Open={Open}
                                         SetOpen={() => SetOpen(false)} 
