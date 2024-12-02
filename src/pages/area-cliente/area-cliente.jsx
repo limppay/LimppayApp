@@ -232,8 +232,6 @@ const AreaCliente = () => {
         }
     };
 
-
-
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
@@ -1334,7 +1332,6 @@ const AreaCliente = () => {
                                 </section>
                             )}
 
-                                                        
                         </div>
                         
                     </>       

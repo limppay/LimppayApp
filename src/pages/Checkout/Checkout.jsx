@@ -72,22 +72,29 @@ export default function Checkout() {
   const AgendamenteDataQtd = [agendamentoData]
   console.log(AgendamenteDataQtd.length)
 
+  function calcularDataValidade(diasParaVencer, dataInicial = new Date()) {
+    const data = new Date(dataInicial); // Cria uma cópia da data inicial
+    data.setDate(data.getDate() + diasParaVencer); // Adiciona os dias
+    return data.toISOString().split('T')[0]; // Retorna a data no formato YYYY-MM-DD
+  }
+  
+
   const createPix = async () => {
     if(isLoading) return
 
     const response = await criarFaturaPix(
       {
         email: user.email,
-        due_date: "2024-12-01",
+        due_date: calcularDataValidade(1),
         items: [
           {
-            "description": "Testando API de pagamento via pix da Iugu",
+            "description": agendamentoData.observacao === "" ? "Diaria" : agendamentoData.observacao,
             "quantity": AgendamenteDataQtd.length,
-            "price_cents": 2 * 100
+            "price_cents": agendamentoData.valorServico * 100
           }
         ],
         payer: {
-          "cpf_cnpj": "08213350227",
+          "cpf_cnpj": user.cpfCnpj,
           "name": user.name
         },
       }
