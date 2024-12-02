@@ -11,7 +11,7 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { CreateStepTwo, getAgendamentos } from '../../services/api.js';
+import { CreateStepTwo, getAgendamentos, getAvaliacoesByPrestador } from '../../services/api.js';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
@@ -58,8 +58,11 @@ const AreaDiarista = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const agendamentos = await getAgendamentos(userId)
+                const avaliacoes = await getAvaliacoesByPrestador(userId)
+                console.log("Avaliações: ", avaliacoes)
                 console.log(agendamentos)
 
+                setAvaliacoes(avaliacoes)
                 setAgendamentos(agendamentos)
                 setUserInfo(response.data)
             } catch (error) {
@@ -303,6 +306,18 @@ const AreaDiarista = () => {
         setIsOpen(!isOpen);
     };
 
+    function StarReview({ filled }) {
+        return (
+            <span
+                className={`text-4xl ${
+                    filled ? 'text-des' : 'text-prim'
+                }`}
+            >
+                ★
+            </span>
+        );
+    }
+
     const fullName = userInfo?.name?.trim()
     const firstName = fullName?.split(' ')[0]
     const status = userInfo?.ativa
@@ -538,10 +553,10 @@ const AreaDiarista = () => {
                                     <div className='flex flex-col lg:flex-row h-screen'>
                                         {/* menu lateral */}
                                         <div className={` lg:flex flex-col pt-[7vh] min-h-[15vh]  lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
-                                        isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[13vh] xl:max-w-[13vh] 2xl:min-w-[10vh] 2xl:max-w-[10vh] "
+                                        isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[15vh] xl:max-w-[15vh] 2xl:min-w-[12vh] 2xl:max-w-[12vh] "
                                         }`}>
 
-                                            <div className=" hidden border-b border-des lg:flex items-center justify-between pt-2 pb-2 p-4 ">
+                                            <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
                                                 <Avatar
                                                 src={avatarUrl}
                                                 className={`${isOpen ? "" : ""} cursor-pointer`}
@@ -549,7 +564,7 @@ const AreaDiarista = () => {
                                                 />
 
 
-                                                <Button className="bg- text-des" onClick={toggleSidebar} >
+                                                <Button className="bg- text-des justify-end" onClick={toggleSidebar} >
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
                                                 </svg>
@@ -559,7 +574,7 @@ const AreaDiarista = () => {
                                             <div className='flex flex-row lg:grid gap-5 pt-5 p-2 '>
                                                 <div>
                                                     <Button
-                                                    className='w-full border border-des bg-trans text-des text-start '
+                                                    className='w-full border shadow-md bg-trans text-des justify-start '
                                                     onClick={() => setScreenSelected("perfil")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -574,7 +589,7 @@ const AreaDiarista = () => {
 
                                                 <div>
                                                     <Button
-                                                    className='w-full border border-des bg-trans text-des'
+                                                    className='w-full border shadow-md bg-trans text-des justify-start'
                                                     onClick={() => setScreenSelected("pedidos")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -588,7 +603,7 @@ const AreaDiarista = () => {
 
                                                 <div>
                                                     <Button
-                                                    className='w-full border border-des bg-trans text-des'
+                                                    className='w-full border shadow-md bg-trans text-des justify-start'
                                                     onClick={() => setScreenSelected("avaliacoes")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -601,7 +616,8 @@ const AreaDiarista = () => {
                                                     </Button>
                                                 </div>
 
-                                                <div>
+                                                {/* tela para o dashboard */}
+                                                {/* <div>
                                                     <Button
                                                     className='w-full border border-des bg-trans text-des'
                                                     onClick={() => setScreenSelected("painel")}
@@ -614,7 +630,7 @@ const AreaDiarista = () => {
                                                         {isOpen ? "Painel" : ""}
                                                         
                                                     </Button>
-                                                </div>
+                                                </div> */}
 
                                             </div>
                                                 
@@ -888,8 +904,8 @@ const AreaDiarista = () => {
                                         {screenSelected == "pedidos" && (
                                             <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                                 <div className='p-5 flex flex-col gap-5'>
-                                                
-                                                    {agendamentos ? (
+                                                    
+                                                    {agendamentos.length > 0 ? (
                                                         
                                                         agendamentos.map((agendamento) => (
                                                             <>
@@ -941,7 +957,7 @@ const AreaDiarista = () => {
 
                                                                                     </div> 
 
-                                                                                                                                                                 
+                                                                                                                                                                    
                                                                                 </div>
                                                                             </div>
 
@@ -955,11 +971,13 @@ const AreaDiarista = () => {
                                                     
                                                         
                                                     ) : (
-                                                        <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
+                                                        <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
                                                             <p>Você não possui nenhum agendamento</p>
                                                         </div>
 
                                                     )}
+
+                                                   
                                                     
 
                                                 </div>
@@ -967,7 +985,43 @@ const AreaDiarista = () => {
                                             </section>
                                         )}
 
-                                       
+                                        {screenSelected == "avaliacoes" && (
+                                            <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                                <div className='p-5 flex flex-col gap-5'>
+                                                {avaliacoes.length > 0 ? (
+                                                    avaliacoes.map((avaliacao) => (
+                                                        
+                                                        <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full'>
+                                                            <div className=' avaliacao flex gap-3 shadow-md bg-opacity-30 rounded-md p-5'>
+                                                                <div className='flex flex-col w-full'>
+                                                                    <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md w-full min-h-20">
+                                                                        <p className='text-prim'>{avaliacao?.comment === "" ? "O cliente não fez um comentário do serviço": avaliacao.comment}</p>
+                                                                    </div>
+                                                                    <div className='flex justify-center gap-10'>
+                                                                        {[1, 2, 3, 4, 5].map((star) => (
+                                                                            <StarReview
+                                                                            key={star}
+                                                                            filled={star <= avaliacao?.stars}
+                                                                            />
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))
+
+                                                ) : (
+                                                    <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
+                                                        <p>Você não possui nenhuma avaliação no momento</p>
+                                                    </div>
+                                                )}
+                                                    
+
+                                                </div>
+                                                
+                                            </section>
+                                        )}
+
                                     </div>
 
                                     <EditUserModal 
