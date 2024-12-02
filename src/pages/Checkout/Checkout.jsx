@@ -88,7 +88,7 @@ export default function Checkout() {
         due_date: calcularDataValidade(1),
         items: [
           {
-            "description": agendamentoData.observacao === "" ? "Diaria" : agendamentoData.observacao,
+            "description": "Fatura do seu Pedido",
             "quantity": AgendamenteDataQtd.length,
             "price_cents": agendamentoData.valorServico * 100
           }
