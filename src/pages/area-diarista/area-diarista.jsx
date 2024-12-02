@@ -676,29 +676,20 @@ const AreaDiarista = () => {
                                                     </div>
 
                                                     <h2 className="text-xl pt-10 text-prim font-semibold">Informações Pessoais</h2>
-                                                    <div className="grid  sm:grid-cols-3 gap-5 pt-2">
+                                                    <div className="grid  sm:grid-cols-2 gap-5 pt-2">
+                                                        
                                                         <div className="grid gap-2">
-                                                        <label htmlFor="cpf" className="text-neutral-500">CPF</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cpfCnpj} />
+                                                            <label htmlFor="email" className="text-neutral-500">E-mail</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.email} />
                                                         </div>
-
                                                         <div className="grid gap-2">
-                                                        <label htmlFor="rg" className="text-neutral-500">RG</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.rg} />
-                                                        </div>
-
-                                                        <div className="grid gap-2">
-                                                        <label htmlFor="email" className="text-neutral-500">E-mail</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.email} />
+                                                            <label htmlFor="telefone" className="text-neutral-500">Telefone</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.telefone} />
                                                         </div>
 
                                                     </div>
 
-                                                    <div className="grid  sm:grid-cols-3 gap-5 pt-5">
-                                                        <div className="grid gap-2">
-                                                        <label htmlFor="telefone" className="text-neutral-500">Telefone</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.telefone} />
-                                                        </div>
+                                                    <div className="grid  sm:grid-cols-2 gap-5 pt-5">
 
                                                         <div className="grid gap-2">
                                                         <label htmlFor="rg" className="text-neutral-500">Estado Civil</label>
