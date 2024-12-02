@@ -4,12 +4,14 @@ import { HeaderApp, Logo, Footer, ModalQuemSomos, ModalDuvidas} from '../../comp
 import User from "../../assets/img/diarista-cadastro/user.png"
 import EditUserModal from './EditUserModal.jsx';
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
-import { Avatar, Button, ScrollShadow, Spinner, Tooltip } from '@nextui-org/react';
+import { accordion, Avatar, Button, ScrollShadow, Spinner, Tooltip } from '@nextui-org/react';
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
+import {Accordion, AccordionItem} from "@nextui-org/accordion";
 
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { CreateStepTwo } from '../../services/api.js';
+import { CreateStepTwo, getAgendamentos } from '../../services/api.js';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
@@ -22,6 +24,11 @@ const AreaDiarista = () => {
     const token = localStorage.getItem('token_prestador'); // Obter o token do localStorage
     // Recuperar as URLs e converter para objeto JSON
     const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls_prestador')) || {}); // Atualize o estado URLs aqui
+    const [agendamentos, setAgendamentos] = useState([])
+    const [avaliacoes, setAvaliacoes] = useState([])
+    const [selectedAgendamento, setSelectedAgendamento] = useState([])
+    const [openDetalhes, setOpenDetalhes] = useState(false)
+
 
     const [OpenWho, SetOpenWho] = useState(false)
     const [OpenDuvidas, SetOpenDuvidas] = useState(false)
@@ -34,6 +41,14 @@ const AreaDiarista = () => {
     const [openSucess, setOpenSucess] = useState(false)
     const [isOpen, setIsOpen] = useState(true)
     const {screenSelected, setScreenSelected} = useScreenSelected()
+    const [openPerfil, setOpenPerfil] = useState(false)
+
+    const formatarMoeda = (valor) => {
+        return new Intl.NumberFormat('pt-BR', { 
+            style: 'currency', 
+            currency: 'BRL' 
+        }).format(valor);
+    }
 
 
     useEffect(() => {
@@ -42,7 +57,11 @@ const AreaDiarista = () => {
                 const response = await axios.get(`https://limppay-api-production.up.railway.app/users/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                setUserInfo(response.data);
+                const agendamentos = await getAgendamentos(userId)
+                console.log(agendamentos)
+
+                setAgendamentos(agendamentos)
+                setUserInfo(response.data)
             } catch (error) {
                 console.error('Erro ao buscar informações do usuário:', error);
             }
@@ -286,11 +305,8 @@ const AreaDiarista = () => {
 
     const fullName = userInfo?.name?.trim()
     const firstName = fullName?.split(' ')[0]
-
     const status = userInfo?.ativa
-
     console.log(status)
-
 
     return (
         <>
@@ -521,7 +537,7 @@ const AreaDiarista = () => {
                                 <>
                                     <div className='flex flex-col lg:flex-row h-screen'>
                                         {/* menu lateral */}
-                                        <div className={` lg:flex flex-col pt-[7vh] h-[35vh] lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
+                                        <div className={` lg:flex flex-col pt-[7vh] min-h-[15vh]  lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
                                         isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[13vh] xl:max-w-[13vh] 2xl:min-w-[10vh] 2xl:max-w-[10vh] "
                                         }`}>
 
@@ -864,6 +880,88 @@ const AreaDiarista = () => {
                                                         </div>
                                                         
                                                     </div>
+                                                </div>
+                                                
+                                            </section>
+                                        )}
+
+                                        {screenSelected == "pedidos" && (
+                                            <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                                <div className='p-5 flex flex-col gap-5'>
+                                                
+                                                    {agendamentos ? (
+                                                        
+                                                        agendamentos.map((agendamento) => (
+                                                            <>
+                                                                <div className='flex flex-col gap-3  shadow-md rounded-md p-5 justify-center items-start'>
+                                                                    <div className='flex flex-col lg:flex-row gap-5 items-start w-full justify-between'>
+                                                                        <div className='flex flex-col gap-2 w-full'>
+                                                                            <div className="overflow-y-auto  bg-white p-3 rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between">
+                                                                                <p>
+                                                                                    {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
+                                                                                        day: '2-digit',
+                                                                                        month: 'long',
+                                                                                        year: 'numeric'
+                                                                                    })}
+                                                                                </p>
+                                                                                <p>Subtotal: {formatarMoeda(agendamento.valorServico)}</p>
+                                                                                <div className='w-4/12 sm:w-auto text-center pt-2 sm:pt-0'>
+                                                                                    <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                
+                                                                        
+                                                                    </div>
+                                                                    <Accordion isCompact itemClasses={{title: "text-prim"}}>
+                                                                        <AccordionItem key={agendamento.id} title="Detalhes" >
+                                                                            <div className="mt-2">
+                                                                                <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
+                                                                                    <p className='font-semibold border-t-2 pt-5 border-bord'>Agendamento feito dia {new Date(agendamento?.dataAgendamento).toLocaleDateString('pt-BR', {
+                                                                                        day: '2-digit',
+                                                                                        month: 'long',
+                                                                                        year: 'numeric'
+                                                                                    })}</p>
+                                                                                    <div className='text-justify flex flex-col gap-2'>
+                                                                                        <p><b>Endereço:</b> {agendamento?.enderecoCliente}</p>
+
+                                                                                        <p><b>Prestador:</b> {agendamento?.user?.name}</p>
+
+                                                                                        <p><b>Serviço:</b> {agendamento?.Servico}</p>
+
+                                                                                        <p><b>Observação:</b> {agendamento?.observacao ? agendamento.observacao : "Nenhuma obervação."}</p>
+
+                                                                                        <p><b>Preço:</b> {formatarMoeda(agendamento?.valorServico)}</p>
+
+                                                                                        <p><b>Data:</b> {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
+                                                                                            day: '2-digit',
+                                                                                            month: 'long',
+                                                                                            year: 'numeric'
+                                                                                        })}</p>
+
+                                                                                    </div> 
+
+                                                                                                                                                                 
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                        </AccordionItem>
+                                                                    </Accordion>
+                                                                </div>
+                                                            
+                                                            </>
+                                                        ))
+                                                    
+                                                        
+                                                    ) : (
+                                                        <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
+                                                            <p>Você não possui nenhum agendamento</p>
+                                                        </div>
+
+                                                    )}
+                                                    
+
                                                 </div>
                                                 
                                             </section>

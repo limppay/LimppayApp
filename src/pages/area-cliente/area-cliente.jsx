@@ -136,6 +136,7 @@ const AreaCliente = () => {
                 const response = await axios.get(`https://limppay-api-production.up.railway.app/cliente/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+
                 const enderecoDefault = await getEnderecoDefaultCliente(userId)
                 const agendamentos = await getAgendamentos(userId)
                 const avaliacoes = await getAvaliacoes(userId)
@@ -569,6 +570,7 @@ const AreaCliente = () => {
                                                 </div>
                                             </div>
                                         ))
+                                        
                                     ) : (
                                         <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
                                             <p>Você não possui nenhum agendamento</p>

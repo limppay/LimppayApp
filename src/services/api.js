@@ -193,7 +193,6 @@ export const getUserProfile = async (cpfCnpj) => {
   }
 };
 
-
 export const getEnderecosCliente = async (clienteId) => {
   try {
     const response = await api.get(`/cliente/enderecos/${clienteId}`, {
