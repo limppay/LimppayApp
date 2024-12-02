@@ -10,6 +10,9 @@ import { Avatar, Spinner } from '@nextui-org/react';
 import { getAgendamentos } from '../../services/api.js';
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
+import { Button } from '@nextui-org/react';
+import {Accordion, AccordionItem} from "@nextui-org/accordion";
+
 
 const AreaCliente = () => {
 
@@ -32,6 +35,12 @@ const AreaCliente = () => {
     const [rating, setRating] = useState(0); // Estado para armazenar o valor da avaliação
     // Função para atualizar a avaliação
     const [prestadorId, setPrestadorId] = useState('')
+
+    const [screenSelected, setScreenSelected] = useState("perfil")
+    const [isOpen, setIsOpen] = useState(true)
+    const toggleSidebar = () => {
+        setIsOpen(!isOpen);
+    };
 
     const handleRating = (value) => {
         setRating(value);
@@ -261,182 +270,330 @@ const AreaCliente = () => {
     return (
         <div>
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
-            <main className='flex flex-col  p-5 '>
+            <main className='h-screen w-screen'>
+
                 {userInfo ? (
                     <>
-                        <section className='pt-14 lg:pt-24 lg:flex justify-between w-full gap-1 '>
-                            <div className='flex flex-col gap-5 text-center max-w-50 min-w-72 min-h-60  p-5 rounded-md  lg:w-4/12 lg:h-full'>
-                                <div className="flex flex-col justify-center items-center gap-2">
-                                    <div className='flex items-center'>
-                                        <div>
-                                            <p className='text-prim cursor-pointer' onClick={()=> SetOpen(true)}>Editar Perfil</p>
-                                        </div>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6 text-prim">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                        </svg>
+                        <div className='flex flex-col lg:flex-row h-screen'>
+                            {/* menu lateral */}
+                            <div className={` lg:flex flex-col pt-[7vh] min-h-[15vh]  lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
+                            isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[15vh] xl:max-w-[15vh] 2xl:min-w-[12vh] 2xl:max-w-[12vh] "
+                            }`}>
+
+                                <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
+                                    <Avatar
+                                    src={avatarUrl}
+                                    className={`${isOpen ? "" : ""} cursor-pointer`}
+                                    onClick={() => setScreenSelected("perfil")}
+                                    />
+
+
+                                    <Button className="bg- text-des justify-end" onClick={toggleSidebar} >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
+                                    </svg>
+                                    </Button>
+                                </div>
+                                
+                                <div className='flex flex-row lg:grid gap-5 pt-5 p-2 '>
+                                    <div>
+                                        <Button
+                                        className='w-full border shadow-md bg-trans text-des justify-start '
+                                        onClick={() => setScreenSelected("perfil")}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                            </svg>
+                                            
+                                            {isOpen ? "Perfil" : ""}
+                                            
+                                        </Button>
                                     </div>
-                                    <img src={avatarUrl}
-                                    id='avatar' 
-                                    alt="foto de perfil" 
-                                    className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
-                                    onClick={()=> SetOpen(true)}
-                                    
-                                    />                                             
-                                </div>
-                                
-                                <div className='flex flex-col gap-3 h-full max-w-full max-h-full pl-5 pr-5'>
-                                    <h1 className='text-xl text-ter'>{userInfo.name}</h1>
-                                    <div className="overflow-y-auto max-h-32">
-                                        <p className='text-prim text-center'>
-                                            {calcularIdade(userInfo.data)} anos
-                                        </p>
+
+
+                                    <div>
+                                        <Button
+                                        className='w-full border shadow-md bg-trans text-des justify-start'
+                                        onClick={() => setScreenSelected("pedidos")}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+                                            </svg>
+
+                                            {isOpen ? "Meus pedidos" : ""}
+                                            
+                                        </Button>
                                     </div>
+
+                                    <div>
+                                        <Button
+                                        className='w-full border shadow-md bg-trans text-des justify-start'
+                                        onClick={() => setScreenSelected("avaliacoes")}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                            </svg>
+
+
+                                            {isOpen ? "Minhas Avaliações" : ""}
+                                            
+                                        </Button>
+                                    </div>
+
+                                    {/* tela para o dashboard */}
+                                    {/* <div>
+                                        <Button
+                                        className='w-full border border-des bg-trans text-des'
+                                        onClick={() => setScreenSelected("painel")}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                            </svg>
+
+
+                                            {isOpen ? "Painel" : ""}
+                                            
+                                        </Button>
+                                    </div> */}
+
                                 </div>
-                            </div>
-                            <div className='flex flex-col shadow-md shadow-prim rounded-md text-center lg:w-8/12 '>
-                            <div className='dashboard p-5  rounded-md mb-6'>
-                            <div className='flex flex-col lg:flex-row gap-5 mt-4'>
-                                {/* Número total de pedidos */}
-                                <div className='flex-1 p-4 border-l-4 border-des rounded-md border'>
-                                    <h3 className='font-semibold text-lg text-prim'>Número Total de Pedidos</h3>
-                                    <p className='text-2xl text-des'>{totalPedidos}</p>
-                                </div>
-                                
-                                {/* Prestador mais solicitado */}
-                                <div className='flex-1 p-4 border-l-4 border-sec rounded-md border'>
-                                    <h3 className='font-semibold text-lg text-prim'>Prestador Mais Solicitado</h3>
-                                    <p className='text-2xl text-sec'>{prestadorMaisSolicitado}</p>
-                                </div>
-                                
-                                {/* Gasto mensal com os pedidos */}
-                                <div className='flex-1 p-4 border-l-4 border-desSec rounded-md border'>
-                                    <h3 className='font-semibold text-lg text-prim'>Gasto Mensal com Pedidos</h3>
-                                    <p className='text-2xl text-desSec'>{gastoMensal}</p>
-                                </div>
-                            </div>
-                        </div>
                                     
+                            </div>
 
-                                
-                                {/* Modal de edição */}
-                                <EditClienteModal 
-                                    Open={Open}
-                                    SetOpen={() => SetOpen(false)} 
-                                    userInfo={userInfo} 
-                                    token={token} 
-                                    onUserUpdated={handleUserUpdated}
-                                    Urls={urls} 
-                                />                          
-                            </div>      
-                        </section>
-                        <section className='mt-5 lg:flex-row lg:gap-5 lg:justify-around flex flex-col gap-5'>
-                            <div className='lg:w-1/2 flex flex-col items-center shadow-md shadow-prim rounded-md ' >
-                                <div className='p-5 pb-3 border-b border-bord w-full text-center'>
-                                    <h1 className='text-ter text-lg' >Serviços e Históricos</h1>
-                                </div>
-                                <div className='overflow-y-auto max-h-96 h-full'>
-                                    {agendamentos ? (
-                                        agendamentos.map((agendamento) => (
-                                            <div key={agendamento.id} className='p-5 flex flex-col gap-5'>
-                                                <div className='flex gap-3 bg-bord bg-opacity-30 rounded-md p-5 justify-center items-start'>
-                                                    <div className='flex flex-col gap-2 items-center max-w-24 justify-center'
-                                                        onClick={() => {
-                                                            setSelectedAgendamento(agendamento); // Armazena o provider selecionado
-                                                            console.log("agendamento selecionado:", agendamento)
-                                                            setOpenPerfil(true); // Abre o modal
-                                                        }}
-                                                    >
-                                                        <Avatar 
-                                                            src={agendamento.user.avatarUrl} 
-                                                            alt="avatarPrestador"
-                                                            size='lg'
-                                                        />
-                                                        <h3 className='text-prim font-semibold flex flex-wrap text-center'>{agendamento.user.name}</h3>
-                                                        
-                                                        <Dialog open={openPerfil} onClose={() => (setOpenPerfil(false))} className="relative z-10">
-                                                            <DialogBackdrop
-                                                                transition
-                                                                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-                                                            />
-                                                            <div className="fixed inset-0 z-10 p-5  overflow-y-auto bg-prim bg-opacity-50">
-                                                                <div className=" flex min-h-full items-center justify-center text-center sm:items-center ">
-                                                                    <DialogPanel
-                                                                        transition
-                                                                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full"
-                                                                    >
-                                                                        <div className="bg-white pb-4 pt-5 ">
-                                                                            <div className="sm:flex sm:items-start flex-col">
-                                                                                <div className="text-center sm:mt-0 sm:text-left border-b border-bord w-full pb-4">
-                                                                                    <DialogTitle as="h3" className="font-semibold text-desSec text-2xl text-center">
-                                                                                        Perfil Prestador
-                                                                                    </DialogTitle>
-                                                                                </div>
-                                                                                {selectedAgendamento && ( 
-                                                                                    <div className="pt-0 flex flex-col gap-5 w-full bg-pri">
-                                                                                        <div className='flex flex-col gap-2 justify-start'>
-                                                                                            <div className="flex items-center space-x-10 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
-                                                                                                {/* Container do Avatar */}
-                                                                                                <div className="absolute">
-                                                                                                    <Avatar src={selectedAgendamento.user?.avatarUrl} size="lg"    
-                                                                                                    className="w-24 h-24 text-large
-                                                                                                    border-white
-                                                                                                    border-5
-                                                                                                    "
-                                                                                                    />
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div className='p-5'>
-                                                                                            <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5'>
-                                                                                                <h1 className='text-prim font-semibold text-xl'>{selectedAgendamento.user?.name}</h1>
-                                                                                                <p className='text-prim text-[0.8rem]'>
-                                                                                                    {calcularIdade(selectedAgendamento.user?.data)} anos
-                                                                                                </p>
-                                                                                                <p className='text-[0.8rem] text-prim pb-2'>{selectedAgendamento.user?.genero}</p>
-                                                                                                <div className='overflow-y-auto h-[18vh]'>
-                                                                                                    <p className='text-prim text-start pt-4'>{selectedAgendamento.user?.sobre}</p>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className=" px-4 py-3 sm:flex sm:px-6 flex justify-end gap-3 border-t border-bord">
-          
-                                                                            <button
-                                                                                type="button"
-                                                                                data-autofocus
-                                                                                className="p-2 rounded-md 
-                                                                                text-center
-                                                                                text-white 
-                                                                                bg-des         
-                                                                                hover:text-white transition-all
-                                                                                duration-200
-                                                                                hover:bg-sec hover:bg-opacity-75
-                                                                                hover:border-trans
-                                                                                flex 
-                                                                                items-center
-                                                                                justify-center
-                                                                                text-sm
-                                                                                gap-2"
-                                                                                onClick={() => setOpenPerfil(false)}
-
-
-                                                                                
-                                                                            >
-                                                                                Fechar
-                                                                            </button>
-                                                                        </div>
-                                                                    </DialogPanel>
-                                                                </div>
-                                                            </div>
-                                                        </Dialog>
-                                                    
+                            {screenSelected == "perfil" && (
+                                <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                    <div className='lg:flex flex-col max-w-50 min-w-72 min-h-60 p-10 pt-5 w-full 
+                                    '>
+                                        <div className='flex flex-col lg:flex-row lg:justify-between w-full'>
+                                            <div className='text-center flex flex-col gap-2'>
+                                                <div className="flex flex-col justify-center items-center gap-2">
+                                                    <div className='flex items-center'>
+                                                        <div>
+                                                            <p className='text-prim cursor-pointer' onClick={()=> SetOpen(true)}>Editar Perfil</p>
+                                                        </div>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6 text-prim">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                        </svg>
                                                     </div>
-                                                    <div className='flex flex-col lg:flex-row gap-5 items-start'>
-                                                        <div className='flex flex-col gap-2'>
-                                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md text-ter">
+                                                    <img src={avatarUrl}
+                                                    id='avatar' 
+                                                    alt="foto de perfil" 
+                                                    className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
+                                                    onClick={()=> SetOpen(true)}
+                                                    
+                                                    />                                             
+                                                </div>
+                                                
+                                                <div className='flex flex-col gap-3 h-full max-w-full max-h-full pl-5 pr-5'>
+                                                    <h1 className='text-xl text-ter'>{userInfo.name}</h1>
+                                                    
+                                                    <p className='text-prim text-center'>
+                                                        {calcularIdade(userInfo.data)} anos
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <h2 className="text-xl pt-10 text-prim font-semibold">Informações Pessoais</h2>
+                                        <div className="grid  sm:grid-cols-3 gap-5 pt-2">
+                                            
+                                            <div className="grid gap-2">
+                                                <label htmlFor="email" className="text-neutral-500">E-mail</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.email} />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <label htmlFor="telefone" className="text-neutral-500">Telefone 1</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.telefone_1} />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <label htmlFor="telefone" className="text-neutral-500">Telefone 2</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.telefone_2} />
+                                            </div>
+
+                                        </div>
+
+                                        <div className="grid  sm:grid-cols-2 gap-5 pt-5">
+
+                                            <div className="grid gap-2">
+                                            <label htmlFor="rg" className="text-neutral-500">Estado Civil</label>
+                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.estadoCivil} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                            <label htmlFor="genero" className="text-neutral-500">Gênero</label>
+                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.genero} />
+                                            </div>
+
+                                        </div>
+
+                                        
+                                        <h2 className="text-xl pt-10 text-prim font-semibold">Endereço</h2>
+                                        <div className="grid sm:grid-cols-3 gap-5 pt-2">
+
+                                            <div className="grid gap-2">
+                                                <label htmlFor="cep" className="text-prim">CEP</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cep} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <label htmlFor="logradouro" className="text-prim">Logradouro</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.logradouro} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <label htmlFor="numero" className="text-prim">Número</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.numero} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <label htmlFor="complemento" className="text-prim">Complemento</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.complemento} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <label htmlFor="referencia" className="text-prim">Ponto de referência</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.referencia} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <label htmlFor="bairro" className="text-prim">Bairro</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.bairro} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <label htmlFor="cidade" className="text-prim">Cidade</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cidade} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <label htmlFor="estado" className="text-prim">Estado</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.estado} />
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                    {/* Modal de edição */}
+                                    <EditClienteModal 
+                                        Open={Open}
+                                        SetOpen={() => SetOpen(false)} 
+                                        userInfo={userInfo} 
+                                        token={token} 
+                                        onUserUpdated={handleUserUpdated}
+                                        Urls={urls} 
+                                    /> 
+                                
+                            </section>
+                                
+                            )}
+
+                            {screenSelected == "pedidos" && (
+                                <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                    <div className='p-5 flex flex-col gap-5'>
+                                        
+                                    {agendamentos.length > 0 ? (
+                                        agendamentos.map((agendamento) => (
+                                            <>
+                                                <div className='flex flex-col gap-3  shadow-lg rounded-md p-5 justify-center items-start'>
+                                                    <div className='flex flex-col lg:flex-row gap-5 items-start w-full justify-between'>
+                                                        <div className='flex flex-col gap-2 items-center max-w-24 justify-center'
+                                                            onClick={() => {
+                                                                setSelectedAgendamento(agendamento); // Armazena o provider selecionado
+                                                                console.log("agendamento selecionado:", agendamento)
+                                                                setOpenPerfil(true); // Abre o modal
+                                                            }}
+                                                        >
+                                                                <Avatar 
+                                                                    src={agendamento.user.avatarUrl} 
+                                                                    alt="avatarPrestador"
+                                                                    size='lg'
+                                                                />
+                                                                <h3 className='text-prim font-semibold flex flex-wrap text-center'>{agendamento.user.name}</h3>
+                                                                
+                                                                <Dialog open={openPerfil} onClose={() => (setOpenPerfil(false))} className="relative z-10">
+                                                                    <DialogBackdrop
+                                                                        transition
+                                                                        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+                                                                    />
+                                                                    <div className="fixed inset-0 z-10 p-5  overflow-y-auto bg-prim bg-opacity-50">
+                                                                        <div className=" flex min-h-full items-center justify-center text-center sm:items-center ">
+                                                                            <DialogPanel
+                                                                                transition
+                                                                                className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full"
+                                                                            >
+                                                                                <div className="bg-white pb-4 pt-5 ">
+                                                                                    <div className="sm:flex sm:items-start flex-col">
+                                                                                        <div className="text-center sm:mt-0 sm:text-left border-b border-bord w-full pb-4">
+                                                                                            <DialogTitle as="h3" className="font-semibold text-desSec text-2xl text-center">
+                                                                                                Perfil Prestador
+                                                                                            </DialogTitle>
+                                                                                        </div>
+                                                                                        {selectedAgendamento && ( 
+                                                                                            <div className="pt-0 flex flex-col gap-5 w-full bg-pri">
+                                                                                                <div className='flex flex-col gap-2 justify-start'>
+                                                                                                    <div className="flex items-center space-x-10 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
+                                                                                                        {/* Container do Avatar */}
+                                                                                                        <div className="absolute">
+                                                                                                            <Avatar src={selectedAgendamento.user?.avatarUrl} size="lg"    
+                                                                                                            className="w-24 h-24 text-large
+                                                                                                            border-white
+                                                                                                            border-5
+                                                                                                            "
+                                                                                                            />
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className='p-5'>
+                                                                                                    <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5'>
+                                                                                                        <h1 className='text-prim font-semibold text-xl'>{selectedAgendamento.user?.name}</h1>
+                                                                                                        <p className='text-prim text-[0.8rem]'>
+                                                                                                            {calcularIdade(selectedAgendamento.user?.data)} anos
+                                                                                                        </p>
+                                                                                                        <p className='text-[0.8rem] text-prim pb-2'>{selectedAgendamento.user?.genero}</p>
+                                                                                                        <div className='overflow-y-auto h-[18vh]'>
+                                                                                                            <p className='text-prim text-start pt-4'>{selectedAgendamento.user?.sobre}</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className=" px-4 py-3 sm:flex sm:px-6 flex justify-end gap-3 border-t border-bord">
+                
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        data-autofocus
+                                                                                        className="p-2 rounded-md 
+                                                                                        text-center
+                                                                                        text-white 
+                                                                                        bg-des         
+                                                                                        hover:text-white transition-all
+                                                                                        duration-200
+                                                                                        hover:bg-sec hover:bg-opacity-75
+                                                                                        hover:border-trans
+                                                                                        flex 
+                                                                                        items-center
+                                                                                        justify-center
+                                                                                        text-sm
+                                                                                        gap-2"
+                                                                                        onClick={() => setOpenPerfil(false)}
+
+
+                                                                                        
+                                                                                    >
+                                                                                        Fechar
+                                                                                    </button>
+                                                                                </div>
+                                                                            </DialogPanel>
+                                                                        </div>
+                                                                    </div>
+                                                                </Dialog>
+                                                            
+                                                        </div>
+                                                        <div className='flex flex-col gap-2 w-full'>
+                                                            <div className="overflow-y-auto  bg-white p-3 rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between">
                                                                 <p>
                                                                     {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
                                                                         day: '2-digit',
@@ -445,188 +602,156 @@ const AreaCliente = () => {
                                                                     })}
                                                                 </p>
                                                                 <p>Subtotal: {formatarMoeda(agendamento.valorServico)}</p>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className='flex lg:flex-col justify-between h-full gap-5 items-center'>
-                                                            <div>
-                                                                <p className={`${agendamento.status === 'Agendado' ? "text-Des" : agendamento.status === "Iniciado" ? "text-desSec" : agendamento.status === "Cancelado" ? "text-error" : agendamento.status === "Realizado" ? "text-sec" : ""}`}>{agendamento.status}</p>
-                                                            </div>
-                                                            <div>
-                                                                <button 
-                                                                className='bg-des p-2 rounded-md text-white'
-                                                                onClick={() => {
-                                                                    setSelectedAgendamento(agendamento)
-                                                                    setPrestadorId(agendamento.user.id)
-                                                                    setOpenDetalhes(true)
-                                                                }}
-                                                                
-                                                                >
-                                                                    Detalhes
-                                                                
-                                                                </button>
-                                                            </div>
-                                                            <Dialog open={openDetalhes} onClose={() => setOpenDetalhes(false)} className="relative z-10">
-                                                                <DialogBackdrop
-                                                                    transition
-                                                                    className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-                                                                />
-                                                                <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-prim bg-opacity-50">
-                                                                    <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
-                                                                    <DialogPanel
-                                                                        transition
-                                                                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
-                                                                    >
-                                                                        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                                                        <div>
-                                                                            <div className="mt-3 text-center">
-                                                                            <DialogTitle as="h3" className="font-semibold  text-desSec text-2xl">
-                                                                                Detalhes do serviço
-                                                                            </DialogTitle>
-                                                                            <div className="mt-2">
-                                                                                <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
-                                                                                    <p className='font-semibold border-t-2 pt-5 border-bord'>Agendamento feito dia {new Date(selectedAgendamento?.dataAgendamento).toLocaleDateString('pt-BR', {
-                                                                                        day: '2-digit',
-                                                                                        month: 'long',
-                                                                                        year: 'numeric'
-                                                                                    })}</p>
-                                                                                    <div className='text-justify flex flex-col gap-2'>
-                                                                                        <p><b>Endereço:</b> {selectedAgendamento?.enderecoCliente}</p>
-
-                                                                                        <p><b>Prestador:</b> {selectedAgendamento?.user?.name}</p>
-
-                                                                                        <p><b>Serviço:</b> {selectedAgendamento?.Servico}</p>
-
-                                                                                        <p><b>Observação:</b> {selectedAgendamento?.observacao ? selectedAgendamento.observacao : "Nenhuma obervação."}</p>
-
-                                                                                        <p><b>Preço:</b> {formatarMoeda(selectedAgendamento?.valorServico)}</p>
-
-                                                                                        <p><b>Data:</b> {new Date(selectedAgendamento?.dataServico).toLocaleDateString('pt-BR', {
-                                                                                            day: '2-digit',
-                                                                                            month: 'long',
-                                                                                            year: 'numeric'
-                                                                                        })}</p>
-
-                                                                                    </div> 
-
-                                                                                    {selectedAgendamento.status === "Realizado" && (
-                                                                                        <div className='border-t-2 border-bord '>
-                                                                                            <h2 className='font-semibold text-lg pt-5'>Avaliar Prestador</h2>
-                                                                                            <label htmlFor="avaliacao">Conte-nos como foi o serviço desse prestador :D <br />
-                                                                                            Não se preocupe, sua avaliação é totalmente anônima</label>
-                                                                                            <div className='flex flex-col gap-3 pt-5'>
-                                                                                                <div className='flex justify-center gap-10'>
-                                                                                                    {[1, 2, 3, 4, 5].map((star) => (
-                                                                                                        <Star
-                                                                                                        key={star}
-                                                                                                        filled={star <= rating}
-                                                                                                        onClick={() => handleRating(star)}
-                                                                                                        />
-                                                                                                    ))}
-                                                                                                </div>
-                                                                                                <div className='flex flex-col gap-2'>
-                                                                                                    <textarea
-                                                                                                        placeholder="Avalie com suas palavras como foi o serviço desse prestador"
-                                                                                                        className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 focus:outline-ter text-prim w-full max-h-5"
-                                                                                                        rows="3"
-                                                                                                        id="avaliacao"
-                                                                                                        value={review}
-                                                                                                        onChange={handleReviewChange}
-                                                                                                    ></textarea>
-
-                                                                                                    <button 
-                                                                                                    className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec transition-all"
-                                                                                                    onClick={handleCreateReview}
-                                                                                                    >
-                                                                                                        Enviar avaliação
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            
-                                                                                        </div>        
-                                                                                    )}                                                                              
-                                                                                </div>
-                                                                            </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        </div>
-                                                                        <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                                        <button
-                                                                            type="button"
-                                                                            data-autofocus
-                                                                            onClick={() => setOpenDetalhes(false)}
-                                                                            className="p-2 rounded-md w-1/4 max-w-full text-center bg-des text-white transition-all duration-150 hover:bg-sec "
-                                                                        >
-                                                                            Fechar
-                                                                        </button>
-                                                                        </div>
-                                                                    </DialogPanel>
-                                                                    </div>
+                                                                <div className='w-4/12 sm:w-auto text-center pt-2 sm:pt-0'>
+                                                                    <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
                                                                 </div>
-                                                            </Dialog>
-
+                                                            </div>
                                                         </div>
+
+                                                        
                                                     </div>
+                                                    <Accordion isCompact itemClasses={{title: "text-prim"}}>
+                                                        <AccordionItem key={agendamento.id} title="Detalhes" >
+                                                            <div className="mt-2">
+                                                                {agendamento.status === "Realizado" && (
+                                                                    <div className=' text-justify pt-2 pb-4 '>
+                                                                        <h2 className='font-semibold text-lg '>Avaliar Prestador</h2>
+                                                                        <label htmlFor="avaliacao">Conte-nos como foi o serviço desse prestador :D <br />
+                                                                        Não se preocupe, sua avaliação é totalmente anônima</label>
+                                                                        <div className='flex flex-col gap-3 pt-2'>
+                                                                            <div className='flex  gap-10'>
+                                                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                                                    <Star
+                                                                                    key={star}
+                                                                                    filled={star <= rating}
+                                                                                    onClick={() => handleRating(star)}
+                                                                                    />
+                                                                                ))}
+                                                                            </div>
+                                                                            <div className='flex flex-col gap-2'>
+                                                                                <textarea
+                                                                                    placeholder="Avalie com suas palavras como foi o serviço desse prestador"
+                                                                                    className="border rounded-md border-bord p-3 min-h-[20vh] lg:min-h-40 focus:outline-ter text-prim w-full max-h-[20vh]"
+                                                                                    rows="3"
+                                                                                    id="avaliacao"
+                                                                                    value={review}
+                                                                                    onChange={handleReviewChange}
+                                                                                ></textarea>
+
+                                                                                <Button 
+                                                                                    className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec transition-all"
+                                                                                    onClick={handleCreateReview}
+                                                                                >
+                                                                                    Enviar avaliação
+                                                                                </Button>
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                    </div>        
+                                                                )}
+
+                                                                <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
+                                                                    <p className='font-semibold border-t-2 pt-5 border-bord'>Agendamento feito dia {new Date(agendamento?.dataAgendamento).toLocaleDateString('pt-BR', {
+                                                                        day: '2-digit',
+                                                                        month: 'long',
+                                                                        year: 'numeric'
+                                                                    })}</p>
+                                                                    <div className='text-justify flex flex-col gap-2'>
+                                                                        <p><b>Endereço:</b> {agendamento?.enderecoCliente}</p>
+
+                                                                        <p><b>Prestador:</b> {agendamento?.user?.name}</p>
+
+                                                                        <p><b>Serviço:</b> {agendamento?.Servico}</p>
+
+                                                                        <p><b>Observação:</b> {agendamento?.observacao ? agendamento.observacao : "Nenhuma obervação."}</p>
+
+                                                                        <p><b>Preço:</b> {formatarMoeda(agendamento?.valorServico)}</p>
+
+                                                                        <p><b>Data:</b> {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
+                                                                            day: '2-digit',
+                                                                            month: 'long',
+                                                                            year: 'numeric'
+                                                                        })}</p>
+
+                                                                    </div> 
+
+                                                                                                                                                    
+                                                                </div>
+                                                            </div>
+
+
+                                                        </AccordionItem>
+                                                    </Accordion>
                                                 </div>
-                                            </div>
+                                            
+                                            </>
                                         ))
+                                    
                                         
                                     ) : (
-                                        <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
+                                        <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
                                             <p>Você não possui nenhum agendamento</p>
                                         </div>
 
                                     )}
-                                </div>
-                            </div>
+                                        
+                                    </div>
+                                </section>
+                            )}
 
-                            <div className='lg:w-6/12 flex flex-col items-center shadow-md shadow-prim rounded-md'>
-                                <div className='title p-5 pb-3 border-b border-bord w-full text-center'>
-                                    <h1 className='text-ter text-lg'>Minhas Avaliações</h1>
-                                </div>
-                                <div className='overflow-y-auto max-h-96'>
-                                    {avaliacoes ? (
-                                        avaliacoes.map((avaliacao) => (
-                                            
-                                            <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full'>
-                                                <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                                    <div className='flex flex-col gap-2 items-center'
-                                                    
-                                                    >
-                                                        <Avatar 
-                                                        src={avaliacao.provider?.avatarUrl} 
-                                                        alt="avatarCliente"
-                                                        size='lg'
-                                                        />
-                                                        <h3 className='text-prim font-semibold'>{avaliacao.provider?.name}</h3>
+                            {screenSelected == "avaliacoes" && (
+                                <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                    <div className='p-5 flex flex-col gap-5'>
+
+                                        {avaliacoes ? (
+                                            avaliacoes.map((avaliacao) => (
+                                                
+                                                <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full shadow-md rounded-md'>
+                                                    <div className='avaliacao flex gap-3  rounded-md p-5'>
+                                                        <div className='flex flex-col gap-2 items-center'
+                                                        
+                                                        >
+                                                            <Avatar 
+                                                            src={avaliacao.provider?.avatarUrl} 
+                                                            alt="avatarCliente"
+                                                            size='lg'
+                                                            />
+                                                            <h3 className='text-prim font-semibold'>{avaliacao.provider?.name}</h3>
+                                                        </div>
+                                                        <div className='flex flex-col w-full'>
+                                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md w-full min-h-20">
+                                                                <p className='text-prim'>"{avaliacao?.comment}"</p>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div className='flex flex-col w-full'>
-                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md w-full min-h-20">
-                                                            <p className='text-prim'>"{avaliacao?.comment}"</p>
-                                                        </div>
-                                                        <div className='flex justify-center gap-10'>
-                                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                                <StarReview
-                                                                key={star}
-                                                                filled={star <= avaliacao?.stars}
-                                                                />
-                                                            ))}
-                                                        </div>
+                                                    <div className='flex justify-center gap-10'>
+                                                        {[1, 2, 3, 4, 5].map((star) => (
+                                                            <StarReview
+                                                            key={star}
+                                                            filled={star <= avaliacao?.stars}
+                                                            />
+                                                        ))}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))
+                                            ))
 
-                                    ) : (
-                                        <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
-                                            <p>Você não fez nenhuma avaliação.</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                                        ) : (
+                                            <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
+                                                <p>Você não fez nenhuma avaliação.</p>
+                                            </div>
+                                        )}
+                                        
+
+                                    </div>
+                                </section>
+                            )}
+
                             
-                        </section>
-                    </>                    
+                            
+                        </div>
+                        
+                    </>       
+
                 ) : (
                     <>
                         <section className=' flex-col flex justify-center items-center h-[90vh] gap-4'>
