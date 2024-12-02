@@ -23,6 +23,7 @@ import { AgendamentoData } from './context/AgendamentoData'
 import { SelectedProvider } from './context/SelectedProvider'
 import { SelectedDates } from './context/SelectedDates'
 import { SelectedTimes } from './context/SelectedTimes'
+import { ScreenSelect } from './context/ScreenSelect'
 
 // 3 - rotas
 
@@ -89,7 +90,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <SelectedProvider>
           <SelectedDates>
             <SelectedTimes>
-              <RouterProvider router={router}/>
+              <ScreenSelect>
+                <RouterProvider router={router}/>
+              </ScreenSelect>
             </SelectedTimes>
           </SelectedDates>
         </SelectedProvider>

@@ -75,9 +75,6 @@ const AreaCliente = () => {
         return formatarMoeda(totalGasto);
     };
     
-
-    
-
     function Star({ filled, onClick }) {
         return (
             <>
@@ -107,10 +104,6 @@ const AreaCliente = () => {
         );
     }
     
-
- 
-
-
     const handleCreateReview = async () => {
         const reviewData = {
             clientId: userId,
@@ -136,10 +129,6 @@ const AreaCliente = () => {
 
         }
     };
-
-
-
-    
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -205,7 +194,6 @@ const AreaCliente = () => {
     }, [userInfo]); // Isso vai logar as informações do usuário toda vez que mudarem
 
     
-
     const handleUserUpdated = (updatedInfo) => {
         const enderecoDefault = updatedInfo.updatedCliente.EnderecoDefault[0];
     
@@ -234,7 +222,6 @@ const AreaCliente = () => {
         setUrls(newUrls);
     };
     
-
     // Anexos
     const avatarUrl = urls ? Object.values(urls)[0] : null;
 
@@ -268,13 +255,14 @@ const AreaCliente = () => {
         }).format(valor);
     }
 
+
+
     return (
         <div>
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
             <main className='flex flex-col  p-5 '>
                 {userInfo ? (
                     <>
-                        
                         <section className='pt-14 lg:pt-24 lg:flex justify-between w-full gap-1 '>
                             <div className='flex flex-col gap-5 text-center max-w-50 min-w-72 min-h-60  p-5 rounded-md  lg:w-4/12 lg:h-full'>
                                 <div className="flex flex-col justify-center items-center gap-2">
@@ -643,7 +631,6 @@ const AreaCliente = () => {
                             <div className='text-white'>
                                 <Spinner size='lg' />
                             </div>
-                            <p className='text-prim text-center text-md'>Aguarde enquanto carregamos suas informações</p>
                         </section>
                     </>
                 )}

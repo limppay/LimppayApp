@@ -3,6 +3,7 @@ import { Logo } from '../../componentes/imports';
 import painel from "../../assets/img/two-young-professional-housewives-cleaning-the-hou-2023-11-27-05-06-46-utc.jpg";
 import { login } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import { Button, Spinner } from '@nextui-org/react';
 
 export default function DaristaLogin() {
     const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ export default function DaristaLogin() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError('')
         
         try {
             const { access_token, userId, urls } = await login(email, senha);
@@ -34,9 +36,10 @@ export default function DaristaLogin() {
     };
 
     return (
-        <div className='flex h-screen justify-center max-w-full'>
-            <div className='h-screen flex flex-col p-10 w-full lg:w-5/12  bg-center bg-cover'>
-                <main className='flex flex-col gap-10 lg:shadow-none rounded-md p-5 bg-white'>
+        <div className='flex h-screen w-full max-w-full justify-center'>
+            <div className='flex flex-col p-10 w-full lg:w-[vh] xl:w-[100vh]'>
+                <main className='flex flex-col gap-10  rounded-md p-5 bg-white'>
+
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                         <img
                             alt="Limppay"
@@ -97,20 +100,21 @@ export default function DaristaLogin() {
                             </div>
 
                             <div>
-                                <button
+                                <Button
                                     type="submit"
                                     className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                 >
-                                    {loading ? 'Entrando...' : 'Entrar'}
-                                </button>
+                                    {loading ? <Spinner/> : 'Entrar'}
+                                </Button>
                             </div>
                             {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
   
                         </form>
-                    </div>            
+                    </div>      
+                          
                 </main>
             </div>
-            <img src={painel} alt="" className='hidden lg:flex w-full' />
+            <img src={painel} alt="" className='hidden  xl:flex xl:w-[150vh]'/>
         </div>
     );
 }

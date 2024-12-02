@@ -1,11 +1,18 @@
 import React, { useEffect } from 'react';
-import HeaderButton from "./HeaderButton";
-import ButtonAcess from './home/ButtonAcess';
 import "../styles/menu-hamburguer.css";
 import {Button} from "@nextui-org/react";
+import { useLocation } from 'react-router-dom';
+import { useScreenSelected } from '../context/ScreenSelect';
+
 
 export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2,  }) {
-    
+    const location = useLocation()
+    const {screenSelected, setScreenSelected} = useScreenSelected()
+
+    console.log("tela atual: ", screenSelected)
+
+    console.log(location)
+
     useEffect(() => {
         const hamburguerButton = document.getElementById("hamburguerButton");
         const mobileMenu = document.getElementById("mobileMenu");
@@ -98,23 +105,34 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                     </div>
                 </nav>
             </header>
-            <div className="mobile-menu bg-white shadow-md pt-24 p-5 " id="mobileMenu">
+
+            <div className="mobile-menu bg-white shadow-md pt-24 p-5  " id="mobileMenu">
                 <div className="space-y-4 text-start">
-                    <div>
-                        <ul>
-                            {buttons.map((button, index) => (
-                                <HeaderButton 
-                                key={index} 
-                                link={button.link} 
-                                text={button.text} 
-                                OnClick={button.OnClick}
-                                />
-                            ))}
-                        </ul>
-                    </div>
+                    
+                        <div>
+                            <ul className='flex flex-col gap-2'>
+                                {buttons.map((button, index) => (
+                                    <>
+                                        
+                                        <a href={button.link} key={index}>
+                                            <Button
+                                                onClick={button.OnClick}
+                                                className='bg-white text-prim border border-trans hover:border-bord hover:text-sec w-full'
+                                            >
+                                                {button.text}
+                                            </Button>
+                                        </a>
+
+                                    
+                                    </>
+                                ))}
+                            </ul>
+                        </div>
+                   
     
                 </div>
             </div>
+
         </>
     );
 }

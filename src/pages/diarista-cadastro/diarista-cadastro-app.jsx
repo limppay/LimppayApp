@@ -47,6 +47,7 @@ export default function DiaristaCadastro() {
             {/* modals */}
             <ModalQuemSomos Open={Open} SetOpen={() => SetOpen(!Open)}/>
             <ModalDuvidas OpenDuvidas={OpenDuvidas} SetOpenDuvidas={() => SetOpenDuvidas(!OpenDuvidas)}/>
+
             <ModalLoginDiarista OpenLogin={OpenLogin} SetOpenLogin={() => SetOpenLogin(!OpenLogin)}/>
         </>
     )

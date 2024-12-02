@@ -13,6 +13,7 @@ import { CreateStepTwo } from '../../services/api.js';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
+import { useScreenSelected } from '../../context/ScreenSelect.jsx';
 
 const AreaDiarista = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -31,6 +32,8 @@ const AreaDiarista = () => {
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
     const [openSucess, setOpenSucess] = useState(false)
+    const [isOpen, setIsOpen] = useState(true)
+    const {screenSelected, setScreenSelected} = useScreenSelected()
 
 
     useEffect(() => {
@@ -277,6 +280,10 @@ const AreaDiarista = () => {
         window.location.reload()
     }
 
+    const toggleSidebar = () => {
+        setIsOpen(!isOpen);
+    };
+
     const fullName = userInfo?.name?.trim()
     const firstName = fullName?.split(' ')[0]
 
@@ -289,7 +296,7 @@ const AreaDiarista = () => {
         <>
             <div>
                 <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
-                <main className='flex flex-col  p-5 '>
+                <main className='h-screen w-screen'>
 
                     {userInfo ? (
                         <>
@@ -512,281 +519,365 @@ const AreaDiarista = () => {
 
                             { status && (
                                 <>
-                                    <section className='lg:flex justify-between w-full gap-1 pt-14 lg:pt-24'>
-                                        <div className='flex flex-col gap-5 text-center max-w-50 min-w-72 min-h-60  p-5 rounded-md  lg:w-4/12 lg:h-full'>
-                                            <div className="flex flex-col justify-center items-center gap-2">
-                                                <div className='flex items-center'>
-                                                    <div>
-                                                        <p className='text-prim cursor-pointer' onClick={()=> SetOpen(true)}>Editar Perfil</p>
-                                                    </div>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6 text-prim">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                                    </svg>
+                                    <div className='flex flex-col lg:flex-row h-screen'>
+                                        {/* menu lateral */}
+                                        <div className={` lg:flex flex-col pt-[7vh] h-[35vh] lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
+                                        isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[13vh] xl:max-w-[13vh] 2xl:min-w-[10vh] 2xl:max-w-[10vh] "
+                                        }`}>
+
+                                            <div className=" hidden border-b border-desSec lg:flex items-center justify-between pt-2 pb-2 ">
+                                                <Button className="bg- text-desSec" onClick={toggleSidebar} >
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
+                                                </svg>
+                                                </Button>
+                                            </div>
+                                            
+                                            <div className='flex flex-row lg:grid gap-5 pt-5 p-2 '>
+                                                <div>
+                                                    <Button
+                                                    className='w-full border border-desSec bg-trans text-desSec text-start '
+                                                    onClick={() => setScreenSelected("inicial")}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                                        </svg>
+                                                        
+                                                        {isOpen ? "Perfil" : ""}
+                                                        
+                                                    </Button>
                                                 </div>
-                                                <img src={avatarUrl}
-                                                id='avatar' 
-                                                alt="foto de perfil" 
-                                                className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
-                                                onClick={()=> SetOpen(true)}
+
+
+                                                <div>
+                                                    <Button
+                                                    className='w-full border border-desSec bg-trans text-desSec'
+                                                    onClick={() => setScreenSelected("pedidos")}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+                                                        </svg>
+
+                                                        {isOpen ? "Meus pedidos" : ""}
+                                                        
+                                                    </Button>
+                                                </div>
+
+                                                <div>
+                                                    <Button
+                                                    className='w-full border border-desSec bg-trans text-desSec'
+                                                    onClick={() => setScreenSelected("avaliacoes")}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                                        </svg>
+
+
+                                                        {isOpen ? "Minhas Avaliações" : ""}
+                                                        
+                                                    </Button>
+                                                </div>
+
+                                                <div>
+                                                    <Button
+                                                    className='w-full border border-desSec bg-trans text-desSec'
+                                                    onClick={() => setScreenSelected("painel")}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                                        </svg>
+
+
+                                                        {isOpen ? "Painel" : ""}
+                                                        
+                                                    </Button>
+                                                </div>
+
+                                            </div>
                                                 
-                                                />                                             
-                                            </div>
-                                            
-                                            <div className='flex flex-col gap-3 h-full max-w-full max-h-full pl-5 pr-5'>
-                                                <h1 className='text-xl text-ter'>{userInfo.name}</h1>
-                                                <div className="overflow-y-auto max-h-32">
-                                                    <p className='text-prim text-center'>
-                                                        {userInfo.sobre} 
-                                                    </p>
 
-                                                </div>
-                                                    <p className='text-prim text-center'>
-                                                        {calcularIdade(userInfo.data)} anos
-                                                    </p>
-                                            </div>
                                         </div>
-                                        <div className='flex flex-col shadow-md shadow-prim rounded-md text-center lg:w-8/12 '>
-                                            <div className='bg-desSec text-white p-5 rounded-b-none rounded-md lg:hidden'>
-                                                <h1 className='text-xl'>Minhas Informações</h1>
-                                            </div>
-                                            <div className='p-5 flex gap-10 flex-col lg:gap-7'>
-                                                <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                                    <div className='lg:w-3/12'>
-                                                        <p className='flex items-start text-ter lg:text-sm'>Nome Completo</p>
-                                                    </div>
-                                                    <div>
-                                                        <p className='flex items-start text-prim lg:text-sm'>{userInfo.name}</p>
-                                                    </div>
-                                                </div>
-                                                <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                                    <div className='w-3/12'>
-                                                        <p className='flex items-start text-ter lg:text-sm'>Email</p>
-                                                    </div>
-                                                    <div className='flex'>
-                                                        <p className='flex items-start text-prim lg:text-sm'>{userInfo.email}</p>
-                                                    </div>
-                                                </div>
-                                                <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                                    <div className='w-3/12'>
-                                                        <p className='flex items-start text-ter lg:text-sm'>Telefone</p>
-                                                    </div>
-                                                    <div>
-                                                        <p className='flex items-start text-prim lg:text-sm'>{userInfo.telefone}</p>
-                                                    </div>
-                                                </div>
-                                                <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                                    <div className='w-3/12'>
-                                                        <p className='flex items-start text-ter lg:text-sm'>Estado</p>
-                                                    </div>
-                                                    <div>
-                                                        <p className='flex items-start text-prim lg:text-sm'>{userInfo.estado}</p>
-                                                    </div>
-                                                </div>
-                                                <div className='border-b border-bord p-2 flex  gap-2 flex-col lg:flex-row lg:p-0'>
-                                                    <div className='w-3/12'>
-                                                        <p className='flex items-start text-ter lg:text-sm'>Cidade</p>
-                                                    </div>
-                                                    <div>
-                                                        <p className='flex items-start text-prim lg:text-sm'>{userInfo.cidade}</p>
-                                                    </div>
-                                                </div>
-                                                <div className='border-b border-bord p-2 flex flex-col  gap-2 lg:flex-row lg:p-0'>
-                                                    <div className='w-3/12'>
-                                                        <p className='flex items-start text-ter lg:text-sm'>Endereço</p>
-                                                    </div>
-                                                    <div>
-                                                        <p className='text-start text-prim lg:text-sm '>{userInfo.logradouro + ", " +  userInfo.numero + ", " + userInfo.bairro + ", " + userInfo.cep}</p>
-                                                    </div>
-                                                </div>
 
-                                                {/* Modal de edição */}
-                                                    <EditUserModal 
-                                                        Open={Open}
-                                                        SetOpen={() => SetOpen(false)} 
-                                                        userInfo={userInfo} 
-                                                        token={token} 
-                                                        onUserUpdated={handleUserUpdated}
-                                                        Urls={urls} 
-                                                    />                          
-                                            </div>
-                                        </div>      
-                                    </section>
-                                    <section className='mt-5 lg:flex-row lg:gap-5 lg:justify-around flex flex-col gap-5'>
-                                        <div className='lg:w-1/2 flex flex-col items-center shadow-md shadow-prim rounded-md'>
-                                            <div className='p-5 pb-3 border-b border-bord w-full text-center'>
-                                                <h1 className='text-ter text-lg' >Carreira</h1>
-                                            </div>
-                                            <div>
-                                                {/* content here */}
-                                            </div>
-                                        </div>
                                         
+                                        {screenSelected == "inicial" && (
+                                            <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
 
-                                        <div className='lg:w-1/2 flex flex-col items-center shadow-md shadow-prim rounded-md'>
-                                            <div className='p-5 pb-3 border-b border-bord w-full text-center'>
-                                                <h1 className='text-ter text-lg' > Serviços</h1>
-                                            </div>
-                                            <div className=' p-5 flex flex-col gap-5 overflow-y-auto max-h-96'>
-                                                <div className='flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                                    <div className='flex flex-col gap-2 items-center'>
-                                                        <img 
-                                                        src={User} 
-                                                        alt="avatarCliente"
-                                                        className='w-10'
-                                                        />
-                                                        <h3>Cliente</h3>
-                                                    </div>
-                                                    <div className='flex flex-col gap-2'>
-                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                            <p>Limpeza - 8Hrs - 26 de Setembro de 2024</p>
-                                                            <p>Subtotal: R$26,60</p>
-                                                        </div>
-                                                        <div className='flex  justify-end gap-5 items-center'>
-                                                            <div>
-                                                                <p className='text-desSec'>Andamento</p>
+                                                <div className='lg:flex flex-col max-w-50 min-w-72 min-h-60 p-10 pt-5 w-full 
+                                                '>
+                                                    <div className='flex flex-col lg:flex-row lg:justify-between w-full'>
+                                                        <div className='text-center flex flex-col gap-2'>
+                                                            <div className="flex flex-col justify-center items-center gap-2">
+                                                                <div className='flex items-center'>
+                                                                    <div>
+                                                                        <p className='text-prim cursor-pointer' onClick={()=> SetOpen(true)}>Editar Perfil</p>
+                                                                    </div>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6 text-prim">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                                    </svg>
+                                                                </div>
+                                                                <img src={avatarUrl}
+                                                                id='avatar' 
+                                                                alt="foto de perfil" 
+                                                                className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
+                                                                onClick={()=> SetOpen(true)}
+                                                                
+                                                                />                                             
                                                             </div>
-                                                            <div >
-                                                                <button className='bg-des p-2 rounded-md text-white'>Detalhes</button>
+                                                            
+                                                            <div className='flex flex-col gap-3 h-full max-w-full max-h-full pl-5 pr-5'>
+                                                                <h1 className='text-xl text-ter'>{userInfo.name}</h1>
+                                                                
+                                                                <p className='text-prim text-center'>
+                                                                    {calcularIdade(userInfo.data)} anos
+                                                                </p>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
 
-                                                <div className='flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                                    <div className='flex flex-col gap-2 items-center'>
-                                                        <img 
-                                                        src={User} 
-                                                        alt="avatarCliente"
-                                                        className='w-10'
-                                                        />
-                                                        <h3>Cliente</h3>
-                                                    </div>
-                                                    <div className='flex flex-col gap-2'>
-                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                            <p>Limpeza - 16Hrs - 27 de Setembro de 2024</p>
-                                                            <p>Subtotal: R$50,60</p>
                                                         </div>
-                                                        <div className='flex items-end justify-end gap-5'>
-                                                            <div>
-                                                                <p className='text-des'>Agendado</p>
-                                                            </div>
-                                                            <div>
-                                                                <button className='bg-des p-2 rounded-md text-white'>Detalhes</button>
-                                                            </div>
+                                                        <div >
+                                                            <textarea className='text-prim border border-bord p-2 w-full min-h-[20vh]  lg:w-[80vh] xl:w-[100vh] lg:min-h-[40vh] lg:max-h-[40vh] rounded-md' defaultValue={userInfo?.sobre} disabled ></textarea>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                <div className='flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                                    <div className='flex flex-col gap-2 items-center'>
-                                                        <img 
-                                                        src={User} 
-                                                        alt="avatarCliente"
-                                                        className='w-10'
-                                                        />
-                                                        <h3>Cliente</h3>
-                                                    </div>
-                                                    <div className='flex flex-col gap-2'>
-                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                            <p>Limpeza - 16Hrs - 27 de Setembro de 2024</p>
-                                                            <p>Subtotal: R$50,60</p>
+                                                    <h2 className="text-xl pt-10 text-prim font-semibold">Informações Pessoais</h2>
+                                                    <div className="grid  sm:grid-cols-3 gap-5 pt-2">
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="cpf" className="text-neutral-500">CPF</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cpfCnpj} />
                                                         </div>
-                                                        <div className='flex items-end justify-end gap-5'>
-                                                            <div>
-                                                                <p className='text-sec'>Concluído</p>
-                                                            </div>
-                                                            <div >
-                                                                <button className='bg-des p-2 rounded-md text-white'>Detalhes</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            
-                                            </div>
-                                        </div>
 
-                                        <div className='lg:w-6/12 flex flex-col items-center shadow-md shadow-prim rounded-md'>
-                                            <div className='title p-5 pb-3 border-b border-bord w-full text-center'>
-                                                <h1 className='text-ter text-lg'>Avaliações</h1>
-                                            </div>
-                                            <div className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5'>
-                                                <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                                    <div className='flex flex-col gap-2 items-center'>
-                                                        <img 
-                                                        src={User} 
-                                                        alt="avatarCliente"
-                                                        className=''
-                                                        />
-                                                        <h3>Cliente</h3>
-                                                    </div>
-                                                    <div>
-                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="rg" className="text-neutral-500">RG</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.rg} />
                                                         </div>
-                                                        <div>
-                                                            {/* estrela */}
+
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="email" className="text-neutral-500">E-mail</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.email} />
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div className="grid  sm:grid-cols-3 gap-5 pt-5">
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="telefone" className="text-neutral-500">Telefone</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.telefone} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="rg" className="text-neutral-500">Estado Civil</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.estadoCivil} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="genero" className="text-neutral-500">Gênero</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.genero} />
+                                                        </div>
+
+                                                    </div>
+
+                                                    <h2 className="text-xl pt-10 text-prim font-semibold">Informações Bancárias</h2>
+                                                    <div className="grid sm:grid-cols-4 gap-5 pt-2">
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="telefone" className="text-neutral-500">Banco</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.banco} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="rg" className="text-neutral-500">Agência</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.agencia} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="genero" className="text-neutral-500">Conta</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.conta} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                        <label htmlFor="genero" className="text-neutral-500">Pix</label>
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.pix} />
                                                         </div>
                                                     </div>
+
+                                                    <h2 className="text-xl pt-10 text-prim font-semibold">Disponibilidade e Serviços</h2>
+                                                    <div className="pt-2">
+                                                        <span className="font-semibold text-prim pt-5 text-lg">Serviços</span>
+                                                        <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pb-5 pt-5">
+
+                                                        {userInfo?.UserServico.map((service) => (
+                                                            <div key={service.id}>
+                                                                <Button className=" border border-bord bg-trans text-prim w-full" isDisabled>
+                                                                    {service.servico.nome}
+                                                                </Button>
+                                                            </div>
+                                                        ))}
+
+                                                        </div>
+
+                                                        <span className="font-semibold text-prim pt-5 text-lg">Dias disponíveis</span>
+                                                        {/* dias disponiveis */}
+                                                        <div className="text-neutral-400 text-lg">
+                                                        <div className="grid grid-cols-3">
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="domingo"
+                                                                className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].dom}
+                                                                disabled
+                                                                
+                                                                />
+                                                                <label htmlFor="domingo">Domingo</label>
+                                                            </div>
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="segunda" 
+                                                                
+                                                                className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].seg}
+                                                                disabled
+
+                                                                />
+                                                                <label htmlFor="segunda">Segunda</label>
+                                                            </div>
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="ter" 
+                                                                disabled
+                                                                className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
+
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].ter}
+                                                                
+
+                                                                />
+                                                                <label htmlFor="ter">Terça</label>
+                                                            </div>
+                                                        </div>
+                                                        <div className="grid grid-cols-3">
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="quarta" 
+                                                                disabled
+                                                                className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
+
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].quart}
+                                                                
+
+                                                                />
+                                                                <label htmlFor="quarta">Quarta</label>
+                                                            </div>
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="quinta" 
+                                                                disabled
+                                                                className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
+
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].qui}
+                                                                
+
+                                                                />
+                                                                <label htmlFor="quinta">Quinta</label>
+                                                            </div>
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="sexta" 
+                                                                disabled
+                                                                className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
+
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].sex}
+                                                                
+
+                                                                />
+                                                                <label htmlFor="sexta">Sexta</label>
+                                                            </div>
+                                                        </div>
+                                                        <div className="grid grid-cols-3">
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="sabado" 
+                                                                disabled
+                                                                className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
+
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].sab}
+                                                                
+
+                                                                />
+                                                                <label htmlFor="sabado">Sábado</label>
+                                                            </div>
+                                                        </div>
+
+                                                        </div>
+
+                                                        <h2 className="text-xl pt-10 text-prim font-semibold">Endereço</h2>
+                                                        <div className="grid sm:grid-cols-3 gap-5 pt-2">
+
+                                                        <div className="grid gap-2">
+                                                            <label htmlFor="cep" className="text-prim">CEP</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cep} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <label htmlFor="logradouro" className="text-prim">Logradouro</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.logradouro} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <label htmlFor="numero" className="text-prim">Número</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.numero} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <label htmlFor="complemento" className="text-prim">Complemento</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.complemento} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <label htmlFor="referencia" className="text-prim">Ponto de referência</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.referencia} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <label htmlFor="bairro" className="text-prim">Bairro</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.bairro} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <label htmlFor="cidade" className="text-prim">Cidade</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cidade} />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <label htmlFor="estado" className="text-prim">Estado</label>
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.estado} />
+                                                        </div>
+
+                                                        </div>
+                                                        
+
+                                                    </div>
+                                                    
                                                 </div>
-                                                <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                                    <div className='flex flex-col gap-2 items-center'>
-                                                        <img 
-                                                        src={User} 
-                                                        alt="avatarCliente"
-                                                        className=''
-                                                        />
-                                                        <h3>Cliente</h3>
-                                                    </div>
-                                                    <div>
-                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
-                                                        </div>
-                                                        <div>
-                                                            {/* estrela */}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                                    <div className='flex flex-col gap-2 items-center'>
-                                                        <img 
-                                                        src={User} 
-                                                        alt="avatarCliente"
-                                                        className=''
-                                                        />
-                                                        <h3>Cliente</h3>
-                                                    </div>
-                                                    <div>
-                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
-                                                        </div>
-                                                        <div>
-                                                            {/* estrela */}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='avaliacao flex gap-3 bg-bord bg-opacity-30 rounded-md p-5'>
-                                                    <div className='flex flex-col gap-2 items-center'>
-                                                        <img 
-                                                        src={User} 
-                                                        alt="avatarCliente"
-                                                        className=''
-                                                        />
-                                                        <h3>Cliente</h3>
-                                                    </div>
-                                                    <div>
-                                                        <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md">
-                                                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore nesciunt alias officia, veritatis quisquam eaque sed voluptatum saepe ut excepturi aperiam. Dolor eius provident sapiente dicta sed eveniet exercitationem tempora!</p>
-                                                        </div>
-                                                        <div>
-                                                            {/* estrela */}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                    </section>
+                                                
+                                            </section>
+                                        )}
+
+                                       
+                                    </div>
+
                                 
+                                    <EditUserModal 
+                                        Open={Open}
+                                        SetOpen={() => SetOpen(false)} 
+                                        userInfo={userInfo} 
+                                        token={token} 
+                                        onUserUpdated={handleUserUpdated}
+                                        Urls={urls} 
+                                    />                          
                                 </>
                             )}
                         
@@ -794,14 +885,16 @@ const AreaDiarista = () => {
                         
                     ) : (
                         <>
-                            <section className='flex justify-center h-[80vh]'>
-                                <LoadingSpinner/>
+                            <section className=' flex-col flex justify-center items-center h-[90vh] gap-4'>
+                                <div className='text-white'>
+                                    <Spinner size='lg' />
+                                </div>
+                                
                             </section>
                         </>
                     )}
                     
                 </main>
-                <Footer/>
                 <ModalQuemSomos Open={OpenWho} SetOpen={() => SetOpenWho(!OpenWho)}/>
                 <ModalDuvidas OpenDuvidas={OpenDuvidas} SetOpenDuvidas={() => SetOpenDuvidas(!OpenDuvidas)}/>
             </div>

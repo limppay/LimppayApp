@@ -4,6 +4,8 @@ import painel from "../../assets/img/banner-diarista.jpg";
 import { loginCliente } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserProvider';
+import { Button } from '@nextui-org/react';
+import { Spinner } from '@nextui-org/react';
 
 export default function ClienteLogin() {
     const [email, setEmail] = useState('');
@@ -101,12 +103,12 @@ export default function ClienteLogin() {
                             </div>
 
                             <div>
-                                <button
+                                <Button
                                     type="submit"
                                     className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                 >
-                                    {loading ? 'Entrando...' : 'Entrar'}
-                                </button>
+                                    {loading ? <Spinner/> : 'Entrar'}
+                                </Button>
                             </div>
                             {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
   

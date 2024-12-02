@@ -4,6 +4,7 @@ import { Logo } from '../imports'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../services/api';
+import { Button, Spinner } from '@nextui-org/react';
 
 export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
 
@@ -16,6 +17,7 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true)
+        setError('')
         
         try {
             const { access_token, userId, urls } = await login(email, senha);
@@ -37,10 +39,6 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
         }
     };
 
-
-
-
-
   return (
     <Dialog open={OpenLogin} onClose={SetOpenLogin} className="relative z-10">
       <DialogBackdrop
@@ -56,7 +54,8 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
             <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start justify-center">
                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                  <div className="mt-2 lg:flex h-1/2 ">
+                  <div className="mt-2 flex flex-col h-1/2 ">
+
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col justify-center p-2">
                       <img
                         alt="Limppay"
@@ -71,7 +70,7 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
                       </div>
                     </div>
 
-                    <div className="mt-1 lg:mt-10 sm:mx-auto sm:w-full sm:max-w-sm p-2">
+                    <div className="mt-1 sm:mx-auto sm:w-full sm:max-w-sm p-2">
                       <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                           <label htmlFor="email" className="block text-sm font-medium leading-6 text-ter">
@@ -93,10 +92,15 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
                         </div>
 
                         <div>
-                          <div className="flex flex-col justify-between">
+                          <div className="flex items-center justify-between">
                             <label htmlFor="password" className="block text-sm font-medium leading-6 text-ter">
                               Senha
                             </label>
+        
+                            <a href="#" className="text-sm font-semibold text-ter hover:text-indigo-500 ">
+                              Esqueceu sua senha?
+                            </a>
+                     
                           </div>
                           <div className="mt-2">
                             <input
@@ -111,40 +115,38 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
                               border border-bord  focus:outline-ter text-prim"
                             />
                           </div>
-                          <div className="text-sm text-end mt-2">
-                              <a href="#" className="font-semibold text-ter hover:text-indigo-500 ">
-                                Esqueceu sua senha?
-                              </a>
-                          </div>
                         </div>
 
-                        <div className='flex flex-col gap-2'>
+                          {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
+                        <div className='pt-2 flex items-center gap-2 w-full justify-between'>
                           <div>
-                              <button
-                                  type="submit"
-                                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                              >
-                                  {loading ? 'Entrando...' : 'Entrar'}
-                              </button>
+                            <Button
+                              type="button"
+                              data-autofocus
+                              onClick={() => (SetOpenLogin(false), setError(''))}
+                              className="p-2 rounded-md sm:w-[20vh] max-w-full text-center border-des border bg-trans text-des  transition-all "
+                            >
+                              Fechar
+                            </Button>
                           </div>
-                            {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
+
+                          <div>
+                            <Button
+                                type="submit"
+                                className="bg-desSec text-white w-[20vh]"
+                            >
+                                  {loading ? <Spinner/> : 'Entrar'}
+                              </Button>
+                          </div>
                         </div>
                       </form>
-                    </div>  
+                    </div> 
+
                   </div>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-              <button
-                type="button"
-                data-autofocus
-                onClick={() => SetOpenLogin(false)}
-                className="p-2 rounded-md w-1/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75"
-              >
-                Fechar
-              </button>
-            </div>
+            
           </DialogPanel>
         </div>
       </div>
