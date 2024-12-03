@@ -565,7 +565,7 @@ export default function ContrateOnline() {
 
             <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 ">
                 
-                <div className='flex flex-col items-center text-center min-w-[45vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[80vh]'>
+                <div className='flex flex-col items-center text-center min-w-[45vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[100vh] sm:min-h-[80vh]'>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -1022,6 +1022,7 @@ export default function ContrateOnline() {
                                                                 classNames={{
                                                                     backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 "
                                                                 }}
+                                                                className='max-w-[40vh] sm:max-w-[80vh]'
                                                             >
                                                                 <ModalContent>
                                                                     {(onClose) => (
@@ -1033,7 +1034,7 @@ export default function ContrateOnline() {
                                                                             <div className="sm:flex sm:items-start flex-col">
                                                                                 
                                                                                 {selectedProvider && ( // Renderiza as informações do provider selecionado
-                                                                                    <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[70vh]">
+                                                                                    <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[60vh] sm:max-h-[65vh]">
                                                                                         <div className='flex flex-col gap-2 justify-start'>
                                                                                             <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
                                                                                                 {/* Container do Avatar */}
