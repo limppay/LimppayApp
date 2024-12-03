@@ -58,6 +58,7 @@ export default function FormDiarista() {
         cidade:  yup.string(),
         estado: yup.string().typeError(""),
         cpfCnpj: yup.string().trim().required("O CPF é obrigatório").min(11, "Digite um CPF válido"),
+
         rg: yup.string().trim().required("O RG é obrigatório"),
         
 

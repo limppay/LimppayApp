@@ -144,7 +144,7 @@ const AreaDiarista = () => {
 
     useEffect(() => {
         const cadastro = userInfo?.cadastroCompleto
-        const entrevista = userInfo?.entrevistaAprovada
+        const entrevista = userInfo?.Entrevista
         const etapa = userInfo?.etapaCadastro
 
         setCadastroCompleto(cadastro)
@@ -321,234 +321,233 @@ const AreaDiarista = () => {
     const fullName = userInfo?.name?.trim()
     const firstName = fullName?.split(' ')[0]
     const status = userInfo?.ativa
+    
     console.log(status)
 
     return (
         <>
             <div>
                 <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
-                <main className='h-screen w-screen'>
+                <main className='h-screen '>
 
                     {userInfo ? (
                         <>
-                            {etapaCadastro == 1 && (
-                                <section className='pt-14 pl-20 pr-20 lg:flex justify-between w-full gap-1 '>
-                                    <form className="flex flex-col w-full" onSubmit={handleSubmit(onSubmit)}>
-                                        <div className="mt-7 p-9 pt-0 pb-0 flex flex-col">
-                                            <h2 className="text-2xl text-desSec">Completar cadastro</h2>
-                                            <p className='text-sec font-semibold'>Olá, {userInfo.name}</p>
-                                            <p className='text-prim'>Para que sua conta seja ativada e você tenha acesso a plataforma , precisamos que conclua seu cadastro :D</p>
-                                        </div>
-
-                                        <div className='pt-5'>
-                                            <div className='flex justify-between'>
-                                                <div className="flex flex-col justify-center items-center gap-2 ">
-                                                    <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
-                                                        <Avatar src={image} 
-                                                            alt="foto de perfil" 
-                                                            className="min-w-72 min-h-72 max-w-72 max-h-72 lg:min-w-60 lg:min-h-60 lg:max-w-60 lg:max-h-60 text-large"
-                                                        />                  
-                                                        <input 
-                                                            type="file" 
-                                                            id="fotoPerfil"
-                                                            accept="image/*"
-                                                            {...register("arquivoFoto")}
-                                                            onChange={(e) => {
-                                                                const file = e.target.files[0]; // Pega o arquivo selecionado
-                                                                handleImageChange(e); // Exibe a imagem
-                                                                setValue("arquivoFoto", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
-                                                            }}
-                                                            className="p-2 w-full hidden"
-                                                        />                      
-                                                    </label>
-                                                    <div className="flex gap-2 items-center">
-                                                        <span className="text-prim">Foto de perfil</span>
-                                                        <Tooltip
-                                                        content="Recomendamos inserir uma foto com tamanho quadrado ou altura maior que a largura"
-                                                        isOpen={isOpenFoto}
-                                                        onOpenChange={setIsOpenFoto}
-                                                        size="md"
-                                                        radius="md"
-                                                        shadow="sm"
-                                                        placement="top"
-                                                        showArrow
-                                                        shouldFlip
-                                                        >
-                                                            <button type="button" onClick={handleToggleFoto} onMouseEnter={() => setIsOpenFoto(true)} onMouseLeave={() => setIsOpenFoto(false)} className="w-5 h-5 text-white bg-prim rounded-full">
-                                                                ?
-                                                            </button>
-                                                        </Tooltip>
-                                                    </div>
-                                                    {errors.arquivoFoto && (
-                                                        <span className="text-error opacity-75">{errors.arquivoFoto.message}</span>
-                                                    )}
+                            <div className='flex'>
+                                {etapaCadastro <= 3 && !entrevistaAprovada && !status && (
+                                    <>
+                                        <section className='lg:flex justify-between w-8/12 gap-1 h-[80vh] pt-[10vh] lg:pt-[12vh] xl:pt-[14vh] '>
+                                            <div className='w-full flex flex-col  pl-10 pr-10 h-full'>
+                                                <div className='max-w-[55vh]'>
+                                                    <h2 className='text-desSec text-xl sm:text-2xl'>Cadastro em andamento</h2>
+                                                    <p className='text-prim'><b>{firstName} </b>, Falta pouco para sua conta ser ativada, aguarde ser chamado para uma entrevista com a Limppay! :D</p>
                                                 </div>
-                                                <div className='grid w-1/2'>
-                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                        <label htmlFor="agencia" className="text-prim">Agência</label>
-                                                        <input 
-                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                        id="agencia" 
-                                                        type="text" 
-                                                        placeholder="Somente números" 
-                                                        {...register("agencia")}
-                                                        />
-                                                        {errors.agencia && 
-                                                        <span className="text-error opacity-75">{errors.agencia?.message}</span>}
-                                                    </div>
-                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                        <label htmlFor="conta" className="text-prim">Conta</label>
-                                                        <input 
-                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                        id="conta" 
-                                                        type="text" 
-                                                        placeholder="Somente números" 
-                                                        {...register("conta")}
-                                                        />
-                                                        {errors.conta && 
-                                                        <span className="text-error opacity-75">{errors.conta?.message}</span>}
-
-                                                    </div>
-                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                        <label htmlFor="pix" className="text-prim">Pix</label>
-                                                        <input 
-                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                        id="pix" 
-                                                        type="text" 
-                                                        placeholder="Digite sua chave pix" 
-                                                        {...register("pix")}
-                                                        />
-                                                        {errors.pix && 
-                                                        <span className="text-error opacity-75">{errors.pix?.message}</span>}
-                                                    </div>
-
+                                                <div className='pt-5 text-prim w-1/2 h-full'>
+                                                    <ProgressBar step={etapaCadastro} />
                                                 </div>
 
                                             </div>
-                                            <div>
-                                                <div className="mt-4 text-prim pr-9 pl-9">
-                                                    <label htmlFor="docCpf">
-                                                        CPF
-                                                        <span className="ml-2">(Frente e verso)</span>
-                                                        <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
-                                                            <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
-                                                                <p>Selecione o arquivo</p>
-                                                                <input 
-                                                                type="file" 
-                                                                name="docCpf" 
-                                                                id="docCpf"  
-                                                                accept="application/pdf, image/*" 
-                                                                className=" p-2 w-full hidden" 
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files[0]; // Pega o arquivo selecionado
-                                                                    handleNameChange(e); // Exibe o nome do arquivo
-                                                                    setValue("arquivoCpf", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
-                                                                }}/>
-                                                            </div>
-                                                            <div className="flex  overflow-hidden lg:text-start">
-                                                                <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docCpf}</span>
-                                                            </div>
-                                                        </div>           
-                                                    </label> 
-                                                    {errors.arquivoCpf && (
-                                                        <span className="text-error opacity-75">{errors.arquivoCpf.message}</span>
-                                                    )}      
-                                                </div>
-                                                <div className="mt-4 text-prim pr-9 pl-9">
-                                                    <label htmlFor="docResidencia">
-                                                        Comprovante de residência
-                                                        <span className="ml-2"></span>
-                                                        <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
-                                                            <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
-                                                                <p>Selecione o arquivo</p>
-                                                                <input 
-                                                                type="file" 
-                                                                name="docResidencia" 
-                                                                id="docResidencia"  
-                                                                accept="application/pdf, image/*" 
-                                                                className=" p-2 w-full hidden" 
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files[0]; // Pega o arquivo selecionado
-                                                                    handleNameChange(e); // Exibe o nome do arquivo
-                                                                    setValue("arquivoResidencia", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
-                                                                }}/>
-                                                            </div>
-                                                            <div className="flex  overflow-hidden lg:text-start">
-                                                                <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docResidencia}</span>
-                                                            </div>
-                                                        </div>           
-                                                    </label>  
-                                                    {errors.arquivoResidencia && (
-                                                        <span className="text-error opacity-75">{errors.arquivoResidencia.message}</span>
-                                                    )}      
-                                                </div>
-                                                <div className="mt-4 text-prim pr-9 pl-9">
-                                                    <label htmlFor="docIdt">
-                                                        RG ou CNH
-                                                        <span className="ml-2">(Frente e verso)</span>
-                                                        <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
-                                                            <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
-                                                                <p>Selecione o arquivo</p>
-                                                                <input 
-                                                                type="file" 
-                                                                name="docIdt"
-                                                                id="docIdt"  
-                                                                accept="application/pdf, image/*" 
-                                                                className=" p-2 w-full hidden" 
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files[0]; // Pega o arquivo selecionado
-                                                                    handleNameChange(e); // Exibe o nome do arquivo
-                                                                    setValue("arquivodt", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
-                                                                }}/>
-                                                            </div>
-                                                            <div className="flex  overflow-hidden lg:text-start">
-                                                                <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docIdt}</span>
-                                                            </div>
-                                                        </div>           
-                                                    </label>
-                                                    {errors.arquivodt && 
-                                                    <span className="text-error opacity-75">{errors.arquivodt?.message}</span>}       
-                                                </div>
-                                            </div>
 
 
+                                        </section>
 
+                                
+                                    </>
 
+                                )}
 
-                                        </div>
-                                        
-                                        <div className="mt-4 pl-9 pr-9 pb-9 space-y-5">
-                                            <button type="submit" className="text-center w-full lg:w-1/2  bg-des rounded-md text-white p-2 hover:bg-sec transition-all " id="buttonSubmit"  >{loading ? <Spinner /> : 'Enviar'}</button>
+                                {etapaCadastro == 3 && !cadastroCompleto && (
+                                    <section className=' lg:flex justify-between w-full gap-1 pt-[10vh] lg:pt-[12vh] xl:pt-[14vh] '>
+                                        <form className="flex flex-col w-full" onSubmit={handleSubmit(onSubmit)}>
                                             
-                                        </div>
-                                    </form>
-                                </section>
-                            )}
 
-                            {etapaCadastro > 1 && !status && (
-                                <>
-                                    <section className='lg:flex justify-between w-full gap-1 h-[80vh] pt-14 '>
-                                        <div className='w-full flex flex-col justify-center pl-10 pr-10'>
-                                            <div className='max-w-[55vh]'>
-                                                <h2 className='text-desSec text-2xl'>Contratação em andamento</h2>
-                                                <p className='text-prim'>{firstName}, Falta pouco para sua conta ser ativada, aguarde ser chamado para uma entrevista com a Limppay! :D</p>
+                                            <div className='pt-5'>
+                                                <div className='grid md:flex md:justify-between'>
+                                                    <div className="flex flex-col justify-center items-center gap-2 ">
+                                                        <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
+                                                            <Avatar src={image} 
+                                                                alt="foto de perfil" 
+                                                                className="min-w-60 min-h-60 max-w-72 max-h-72 lg:min-w-60 lg:min-h-60 lg:max-w-60 lg:max-h-60 text-large"
+                                                            />                  
+                                                            <input 
+                                                                type="file" 
+                                                                id="fotoPerfil"
+                                                                accept="image/*"
+                                                                {...register("arquivoFoto")}
+                                                                onChange={(e) => {
+                                                                    const file = e.target.files[0]; // Pega o arquivo selecionado
+                                                                    handleImageChange(e); // Exibe a imagem
+                                                                    setValue("arquivoFoto", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                                                                }}
+                                                                className="p-2 w-full hidden"
+                                                            />                      
+                                                        </label>
+                                                        <div className="flex gap-2 items-center">
+                                                            <span className="text-prim">Foto de perfil</span>
+                                                            <Tooltip
+                                                            content="Recomendamos inserir uma foto com tamanho quadrado ou altura maior que a largura"
+                                                            isOpen={isOpenFoto}
+                                                            onOpenChange={setIsOpenFoto}
+                                                            size="md"
+                                                            radius="md"
+                                                            shadow="sm"
+                                                            placement="top"
+                                                            showArrow
+                                                            shouldFlip
+                                                            >
+                                                                <button type="button" onClick={handleToggleFoto} onMouseEnter={() => setIsOpenFoto(true)} onMouseLeave={() => setIsOpenFoto(false)} className="w-5 h-5 text-white bg-prim rounded-full">
+                                                                    ?
+                                                                </button>
+                                                            </Tooltip>
+                                                        </div>
+                                                        {errors.arquivoFoto && (
+                                                            <span className="text-error opacity-75">{errors.arquivoFoto.message}</span>
+                                                        )}
+                                                    </div>
+                                                    <div className='md:grid sm:w-1/2'>
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                            <label htmlFor="agencia" className="text-prim">Agência</label>
+                                                            <input 
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full "
+                                                            id="agencia" 
+                                                            type="text" 
+                                                            placeholder="Somente números" 
+                                                            {...register("agencia")}
+                                                            />
+                                                            {errors.agencia && 
+                                                            <span className="text-error opacity-75">{errors.agencia?.message}</span>}
+                                                        </div>
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                            <label htmlFor="conta" className="text-prim">Conta</label>
+                                                            <input 
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                            id="conta" 
+                                                            type="text" 
+                                                            placeholder="Somente números" 
+                                                            {...register("conta")}
+                                                            />
+                                                            {errors.conta && 
+                                                            <span className="text-error opacity-75">{errors.conta?.message}</span>}
+
+                                                        </div>
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                            <label htmlFor="pix" className="text-prim">Pix</label>
+                                                            <input 
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                            id="pix" 
+                                                            type="text" 
+                                                            placeholder="Digite sua chave pix" 
+                                                            {...register("pix")}
+                                                            />
+                                                            {errors.pix && 
+                                                            <span className="text-error opacity-75">{errors.pix?.message}</span>}
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div className='grid gap-2 pt-5 pb-5'>
+                                                    <div className="mt-4 text-prim pr-9 pl-9">
+                                                        <label htmlFor="docCpf">
+                                                            CPF
+                                                            <span className="ml-2">(Frente e verso)</span>
+                                                            <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
+                                                                <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
+                                                                    <p>Selecione o arquivo</p>
+                                                                    <input 
+                                                                    type="file" 
+                                                                    name="docCpf" 
+                                                                    id="docCpf"  
+                                                                    accept="application/pdf, image/*" 
+                                                                    className=" p-2 w-full hidden" 
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files[0]; // Pega o arquivo selecionado
+                                                                        handleNameChange(e); // Exibe o nome do arquivo
+                                                                        setValue("arquivoCpf", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                                                                    }}/>
+                                                                </div>
+                                                                <div className="flex  overflow-hidden lg:text-start">
+                                                                    <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docCpf}</span>
+                                                                </div>
+                                                            </div>           
+                                                        </label> 
+                                                        {errors.arquivoCpf && (
+                                                            <span className="text-error opacity-75">{errors.arquivoCpf.message}</span>
+                                                        )}      
+                                                    </div>
+                                                    <div className="mt-4 text-prim pr-9 pl-9">
+                                                        <label htmlFor="docResidencia">
+                                                            Comprovante de residência
+                                                            <span className="ml-2"></span>
+                                                            <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
+                                                                <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
+                                                                    <p>Selecione o arquivo</p>
+                                                                    <input 
+                                                                    type="file" 
+                                                                    name="docResidencia" 
+                                                                    id="docResidencia"  
+                                                                    accept="application/pdf, image/*" 
+                                                                    className=" p-2 w-full hidden" 
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files[0]; // Pega o arquivo selecionado
+                                                                        handleNameChange(e); // Exibe o nome do arquivo
+                                                                        setValue("arquivoResidencia", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                                                                    }}/>
+                                                                </div>
+                                                                <div className="flex  overflow-hidden lg:text-start">
+                                                                    <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docResidencia}</span>
+                                                                </div>
+                                                            </div>           
+                                                        </label>  
+                                                        {errors.arquivoResidencia && (
+                                                            <span className="text-error opacity-75">{errors.arquivoResidencia.message}</span>
+                                                        )}      
+                                                    </div>
+                                                    <div className="mt-4 text-prim pr-9 pl-9">
+                                                        <label htmlFor="docIdt">
+                                                            RG ou CNH
+                                                            <span className="ml-2">(Frente e verso)</span>
+                                                            <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
+                                                                <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
+                                                                    <p>Selecione o arquivo</p>
+                                                                    <input 
+                                                                    type="file" 
+                                                                    name="docIdt"
+                                                                    id="docIdt"  
+                                                                    accept="application/pdf, image/*" 
+                                                                    className=" p-2 w-full hidden" 
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files[0]; // Pega o arquivo selecionado
+                                                                        handleNameChange(e); // Exibe o nome do arquivo
+                                                                        setValue("arquivodt", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                                                                    }}/>
+                                                                </div>
+                                                                <div className="flex  overflow-hidden lg:text-start">
+                                                                    <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docIdt}</span>
+                                                                </div>
+                                                            </div>           
+                                                        </label>
+                                                        {errors.arquivodt && 
+                                                        <span className="text-error opacity-75">{errors.arquivodt?.message}</span>}       
+                                                    </div>
+                                                </div>
+
+
+
+
 
                                             </div>
-                                            <div className='pt-5 text-prim w-1/2'>
-                                                <ProgressBar step={etapaCadastro} />
+                                            
+                                            <div className="mt-4 pl-9 pr-9 pb-9 space-y-5">
+                                                <Button type="submit" className="text-center w-full   bg-des rounded-md text-white p-2 hover:bg-sec transition-all " id="buttonSubmit"  >{loading ? <Spinner /> : 'Enviar'}</Button>
+                                                
                                             </div>
-
-                                        </div>
-
-
+                                        </form>
                                     </section>
+                                )}
+                            </div>
 
-                            
-                                </>
-
-                            )}
-
-                            { status && (
+                            { etapaCadastro == 3 && entrevistaAprovada && cadastroCompleto &&  (
                                 <>
                                     <div className='flex flex-col lg:flex-row h-screen'>
                                         {/* menu lateral */}

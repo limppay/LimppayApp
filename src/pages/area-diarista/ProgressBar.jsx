@@ -3,16 +3,16 @@ import React from 'react';
 const ProgressBar = ({ step }) => {
 
   const steps = [
-    { id: 1, label: "Criar conta" },
-    { id: 2, label: "Cadastro completo" },
-    { id: 3, label: "Entrevista" },
-    { id: 4, label: "Conta ativada" },
+    { id: 1, label: "Conta criada" },
+    { id: 2, label: "Entrevista" },
+    { id: 3, label: "Completar cadastro" },
+    { id: 4, label: "Ativação da conta" },
   ];
 
   return (
-    <div className="flex flex-col items-center w-full pt-5">
+    <div className="flex flex-col items-center w-full h-[45vh] pt-5">
       {steps.map((item, index) => (
-        <div key={item.id} className="flex items-baseline w-full ">
+        <div key={item.id} className="flex items-baseline w-full h-full ">
           {/* Coluna para bolinha e linha */}
           <div className="flex flex-col items-center">
             {/* Marcador */}
@@ -27,7 +27,7 @@ const ProgressBar = ({ step }) => {
             {/* Linha vertical */}
             {index < steps.length - 1 && (
               <div
-                className={`w-1 h-8 lg:h-16 ${
+                className={`w-1 h-[10vh] lg:h-16 ${
                   step > item.id ? 'bg-sec' : 'bg-prim'
                 }`}
               ></div>
