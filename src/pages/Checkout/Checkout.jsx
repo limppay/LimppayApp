@@ -11,7 +11,7 @@ import { Avatar } from '@nextui-org/avatar'
 import { createAgendamento, criarFaturaCartao, criarFaturaPix } from '../../services/api';
 import { obterTokenCartao } from '../../services/iuguApi';
 import { useUser } from '../../context/UserProvider';
-import { Input, Spinner } from '@nextui-org/react';
+import { Button, Input, Spinner } from '@nextui-org/react';
 import {Image} from "@nextui-org/image";
 import {Snippet} from "@nextui-org/snippet";
 
@@ -80,7 +80,6 @@ export default function Checkout() {
     return data.toISOString().split('T')[0]; // Retorna a data no formato YYYY-MM-DD
   }
   
-
   const createPix = async () => {
     if(isLoading) return
 
@@ -122,22 +121,20 @@ export default function Checkout() {
 
     try {
         const token = await obterTokenCartao(data);
-        console.log(token)
-
-        let response;
+        console.log(token);
 
         if (metodoPagamento === 'credit_card') {
-            response = await criarFaturaCartao({
+            const response = await criarFaturaCartao({
                 email: user.email,
                 items: [
                     {
-                        "description": "Fatura do seu pedido",
-                        "quantity": AgendamenteDataQtd.length,
-                        "price_cents": 2 * 100
-                    }
+                        description: "Fatura do seu pedido",
+                        quantity: AgendamenteDataQtd.length,
+                        price_cents: 2 * 100,
+                    },
                 ],
                 payment_method: "credit_card",
-                due_date: "2024-12-31",
+                due_date: calcularDataValidade(2),
                 payer: {
                     name: data.nome,
                     cpf_cnpj: "08213350227",
@@ -148,46 +145,44 @@ export default function Checkout() {
                     verification_value: data.cvc,
                     expiration_month: data.mesExpiracao,
                     expiration_year: data.anoExpiracao,
-                    holder_name: data.nome
-                }
+                    holder_name: data.nome,
+                },
             });
 
-            const isCreateAgendamento = async () => {
-              try {
-                const response = await createAgendamento(agendamentoData)
-                console.log("Agendamento criado com sucesso!", response)
-                
-              } catch (error) {
-                console.log("Erro ao criar o agendamento", error)
-              } finally {
-                reset()
-              }
-            }
-    
-            isCreateAgendamento()
-
             console.log('Fatura criada com sucesso:', response);
-        }
 
+            // Se o pagamento foi bem-sucedido, cria o agendamento
+            try {
+                const agendamentoResponse = await createAgendamento(agendamentoData);
+                console.log("Agendamento criado com sucesso!", agendamentoResponse);
+            } catch (agendamentoError) {
+                console.error("Erro ao criar o agendamento", agendamentoError);
+            } finally {
+                reset();
+            }
+
+            setTimeout(() => {
+                navigate("/area-cliente");
+                localStorage.removeItem('agendamentoData');
+                localStorage.removeItem('selectedProvider');
+                localStorage.removeItem('selectedDates');
+                localStorage.removeItem('selectedTimes');
+
+                setAgendamentoData(null);
+                setIsPayment(false);
+            }, 4000);
+
+        }
     } catch (error) {
         console.error('Erro no pagamento:', error);
         setIsPaymentFailed(true);
 
     } finally {
-      setIsPaymentFinally(true);
-      
-      setTimeout(() => {
-        navigate("/area-cliente")
-        localStorage.removeItem('agendamentoData');
-        localStorage.removeItem('selectedProvider');
-        localStorage.removeItem('selectedDates');
-        localStorage.removeItem('selectedTimes');
-
-        setAgendamentoData(null)
-        setIsPayment(false);
-      }, 4000);
+      setIsPaymentFinally(true)
+        
     }
   };
+
 
   console.log(pixChave)
 
@@ -287,8 +282,8 @@ export default function Checkout() {
             <div className='flex w-full gap-5'>
               <div>
                 <div>
-                    <button
-                    className='p-2 border border-bord rounded-md text-prim  text-start w-full flex items-center gap-2 justify-between'
+                    <Button
+                    className='p-2 border bg-white sm:min-w-[30vh] border-bord rounded-md text-prim  text-start w-full flex items-center gap-2 justify-between'
                     onClick={HandleCreditCard}
                     >
                       <div className='flex items-center gap-2'>
@@ -300,13 +295,13 @@ export default function Checkout() {
                         <i class="fas fa-check"></i>
                       )}
 
-                    </button>
+                    </Button>
                 </div>
               </div>
               <div className='w-4/12'>
                 <div className='w-12/12'>
-                  <button
-                  className='p-2 border border-bord rounded-md text-prim lg:w-6/12 w-full text-start flex gap-2 items-center justify-between'
+                  <Button
+                  className='sm:min-w-[30vh]  p-2 border bg-white border-bord rounded-md text-prim lg:w-6/12 w-full text-start flex gap-2 items-center justify-between'
                   onClick={handlePix}
                   >
                     <div className='flex gap-2'>
@@ -318,7 +313,7 @@ export default function Checkout() {
                     {metodoPagamento === "pix" && (
                         <i class="fas fa-check"></i>
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -431,7 +426,7 @@ export default function Checkout() {
                 </div>
 
                 <div className="mt-6">
-                  <button 
+                  <Button 
                   type='submit'
                   className="p-2 rounded-md 
                   text-center
@@ -450,7 +445,7 @@ export default function Checkout() {
                   "
                   >
                     <i className="ion-locked mr-2"></i>Finalizar compra
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>
@@ -626,6 +621,11 @@ export default function Checkout() {
                           <p className='text-error'>｡•́︿•̀｡</p>
                           <h2 className='text-error font-semibold text-xl'>Falha ao processar pagamento</h2>
                           <p className='text-prim text-sm' >Não foi possível realizar o pagamento, tente novamente mais tarde ou entre em contato com o seu banco.</p>
+                        </div>
+                        <div>
+                          <Button className='bg-white text-error border border-error' onPress={() => setIsPayment(false)}>
+                            Voltar
+                          </Button>
                         </div>
                       </>
                     ) : (

@@ -110,14 +110,14 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                 <div className="space-y-4 text-start">
                     
                         <div>
-                            <ul className='flex flex-col gap-2'>
+                            <ul className='flex flex-col gap-5'>
                                 {buttons.map((button, index) => (
                                     <>
                                         
                                         <a href={button.link} key={index}>
                                             <Button
                                                 onClick={button.OnClick}
-                                                className='bg-white text-prim border border-trans hover:border-bord hover:text-sec w-full'
+                                                className='bg-white text-prim border border-trans hover:border-bord hover:text-sec w-full justify-end'
                                             >
                                                 {button.text}
                                             </Button>

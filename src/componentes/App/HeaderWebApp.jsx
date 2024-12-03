@@ -157,7 +157,9 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                                     <Button
                                         
                                         onClick={acess.OnClickPrim}
-                                        className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white'
+                                        className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white
+                                        
+                                        '
                                         
                                         
                                         
@@ -192,14 +194,21 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
       <div className="mobile-menu bg-white shadow-md pt-24 p-5 " id="mobileMenu">
         <div className="space-y-4 text-start">
           <div>
-            <ul>
+            <ul className='grid gap-5'>
               {buttons.map((button, index) => (
-                <HeaderButton
-                  key={index}
-                  link={button.link}
-                  text={button.text}
-                  OnClick={button.OnClick}
-                />
+                <>
+                    
+                    <a href={button.link} key={index}>
+                        <Button
+                            onClick={button.OnClick}
+                            className='bg-white text-center text-prim border border-trans hover:border-bord hover:text-sec justify-end w-full'
+                        >
+                            {button.text}
+                        </Button>
+                    </a>
+
+                
+                </>
               ))}
             </ul>
           </div>
