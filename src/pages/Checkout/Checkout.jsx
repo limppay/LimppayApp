@@ -19,6 +19,8 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
+import io from 'socket.io-client';
+
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 
@@ -70,6 +72,8 @@ export default function Checkout() {
   const [isPaymentFinally, setIsPaymentFinally] = useState(false) 
   const [isPaymentFailed, setIsPaymentFailed] = useState(false)
 
+  const [paymentStatus, setPaymentStatus] = useState(null);
+
   console.log(agendamentoData)
   const AgendamenteDataQtd = [agendamentoData]
   console.log(AgendamenteDataQtd.length)
@@ -91,7 +95,7 @@ export default function Checkout() {
           {
             "description": "Fatura do seu Pedido",
             "quantity": AgendamenteDataQtd.length,
-            "price_cents": agendamentoData.valorServico * 100
+            "price_cents": 1 * 100
           }
         ],
         payer: {
@@ -111,6 +115,64 @@ export default function Checkout() {
   if (metodoPagamento === 'pix') {
     createPix()
   }
+
+  // efeito para atualizar a pagina ao efetuar o pagamento via pix
+  useEffect(() => {
+    // Conectar ao servidor WebSocket
+    const socket = io('https://limppay-api-production.up.railway.app'); // A URL do seu servidor WebSocket
+
+    console.log(socket);
+
+
+    // Ouvir o evento 'payment_status' enviado pelo servidor
+    socket.on('payment_status', (data) => {
+      console.log('Pagamento status recebido:', data);
+      
+      if (data.status === 'paid') {
+        setPaymentStatus({
+          status: 'Pago',
+          amount: data.paidAmount,
+          pixId: data.pixEndToEndId,
+        });
+
+        const createNewAgendamento = async () => {
+          // Se o pagamento foi bem-sucedido, cria o agendamento
+          try {
+            const agendamentoResponse = await createAgendamento(agendamentoData);
+            console.log("Agendamento criado com sucesso!", agendamentoResponse);
+
+            
+            navigate("/area-cliente");
+            localStorage.removeItem('agendamentoData');
+            localStorage.removeItem('selectedProvider');
+            localStorage.removeItem('selectedDates');
+            localStorage.removeItem('selectedTimes');
+
+            setAgendamentoData(null);
+            
+
+          } catch (agendamentoError) {
+              console.error("Erro ao criar o agendamento", agendamentoError);
+
+          } finally {
+              reset();
+          }
+          
+        }
+
+        createNewAgendamento()
+
+      } else {
+        setPaymentStatus({ status: 'Falhou' });
+
+      }
+    });
+
+    // Fechar a conexão quando o componente for desmontado
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   const handleFinalizarCompra = async (data) => {
     setIsPaymentFailed(false);
@@ -183,9 +245,7 @@ export default function Checkout() {
     }
   };
 
-
   console.log(pixChave)
-
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -256,8 +316,6 @@ export default function Checkout() {
   if (!agendamentoData) {
     return null; // Não renderiza se os dados não estiverem disponíveis
   }
-
-  
 
   console.log(dadosCartao)
 
@@ -454,42 +512,61 @@ export default function Checkout() {
           {metodoPagamento === 'pix' && (
             <div className='flex justify-center w-full h-full'>
               {qrCodePix ? (
-                <>
-                  <div className='flex flex-col min-h-full min-w-full items-center gap-5'>
-                    <div className='text-center flex flex-col justify-center items-center'>
-                      <h3 className='text-prim font-semibold'>Escaneie o QR Code para pagamento via PIX:</h3>
-                      <Image
-                        className='z-0'
-                        height={250}
-                        width={250}
-                        alt="QR Code Pix"
-                        src={qrCodePix}
-                      />
-                    </div>
-                    <div className='max-w-full flex flex-col gap-2'>
-                      <div className='flex justify-center items-center gap-2'>
-                        <p className='text-center text-prim font-semibold'>Pix copia e cole</p>
+                paymentStatus ? (
+                  <>
+                    <div className='flex flex-col min-h-full min-w-full items-center gap-5'>
+                      <div className='text-center flex flex-col justify-center items-center'>
+                        <h3 className='text-prim font-semibold'>Pagamento realizado com sucesso!</h3>
+
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-[20vh] text-sec">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                          </svg>
+
                       </div>
-                      <div className='flex items-center gap-2 max-w-full'>
-                        <Snippet hideSymbol="true" 
-                          tooltipProps={{
-                            color: "default",
-                            content: "Copiar chave pix",
-                            disableAnimation: true,
-                            placement: "right",
-                            closeDelay: 0
-                          }} 
-                        >
-                          <div className='max-w-80 lg:max-w-xl'>
-                            <div className='p-2 flex flex-row overflow-x-scroll '>
-                              <p className='text-prim whitespace-nowrap '>{pixChave}</p>
+                      
+                    </div>
+                  </>
+
+                ) : (
+                  <>
+                    <div className='flex flex-col min-h-full min-w-full items-center gap-5'>
+                      <div className='text-center flex flex-col justify-center items-center'>
+                        <h3 className='text-prim font-semibold'>Escaneie o QR Code para pagamento via PIX:</h3>
+                        <Image
+                          className='z-0'
+                          height={250}
+                          width={250}
+                          alt="QR Code Pix"
+                          src={qrCodePix}
+                        />
+                      </div>
+                      <div className='max-w-full flex flex-col gap-2'>
+                        <div className='flex justify-center items-center gap-2'>
+                          <p className='text-center text-prim font-semibold'>Pix copia e cole</p>
+                        </div>
+                        <div className='flex items-center gap-2 max-w-full'>
+                          <Snippet hideSymbol="true" 
+                            tooltipProps={{
+                              color: "default",
+                              content: "Copiar chave pix",
+                              disableAnimation: true,
+                              placement: "right",
+                              closeDelay: 0
+                            }} 
+                          >
+                            <div className='max-w-80 lg:max-w-xl'>
+                              <div className='p-2 flex flex-row overflow-x-scroll '>
+                                <p className='text-prim whitespace-nowrap '>{pixChave}</p>
+                              </div>
                             </div>
-                          </div>
-                        </Snippet>
+                          </Snippet>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </>                
+                  </>
+
+                )
+
               ) : (
                 <div className='flex justify-center items-center w-full h-1/2 text-white'>
                   <Spinner size='lg' />
