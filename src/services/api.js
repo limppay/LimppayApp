@@ -173,7 +173,7 @@ export const resetPassword = async (token, newPassword) => {
 export const getDisponiveis = (dataServico, servicoId, cidade, estado) => {
   return api.get('/prestadores/disponiveis', {
     params: {
-      data: dataServico,
+      datas: dataServico,
       servicoId: servicoId,
       cidade: cidade,
       estado: estado

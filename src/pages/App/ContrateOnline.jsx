@@ -342,50 +342,50 @@ export default function ContrateOnline() {
         setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
     }
 
+    // Tela dos prestadores: faz a requisição para buscar somente os prestadores disponíveis
     const handleProceed = async () => {
-        setFinding(true)
-        
-        console.log("Local do cliente", cidade, estado, selectedService)
-        
+        setFinding(true);
+        console.log("Local do cliente", cidade, estado, selectedService);
+
         try {
             if (selectedDates.length > 0) {
-                const formattedDate = selectedDates[0].toISOString().split('T')[0]; // Formata a data para YYYY-MM-DD
-                
-                const response = await getDisponiveis(formattedDate, servicoId, cidade, estado)
+                // Formata todas as datas selecionadas no array como strings no formato YYYY-MM-DD
+                const formattedDates = selectedDates.map((date) => date.toISOString().split('T')[0]);
+                console.log("Array de datas: ", formattedDates)
+
+                // Faz a requisição para a API enviando o array de datas
+                const response = await getDisponiveis(formattedDates, servicoId, cidade, estado);
 
                 console.log("Resposta da API:", response.data);
-                
+
                 // Inicialmente, define os providers sem as URLs de avatar
                 setProviders(response.data);
-                
+
                 if (response.data.length > 0) {
-                    // Loop para buscar as URLs de avatar de cada prestador e atualizar o estado
+                    // Busca as URLs de avatar de cada prestador e atualiza o estado
                     const updatedProviders = await Promise.all(
                         response.data.map(async (provider) => {
                             const avatar = await getUserProfile(provider.cpfCnpj); // Obtenha a URL do avatar
                             return { ...provider, avatar }; // Retorna o objeto provider com o avatar incluído
                         })
                     );
-    
+
                     setProviders(updatedProviders); // Atualiza o estado com os providers incluindo seus avatares
-
                     console.log(updatedProviders);
-
                 } else {
-                    console.error('Nenhum prestador disponível encontrado');
+                    console.error("Nenhum prestador disponível encontrado");
                 }
-                
             } else {
-                console.error('Nenhuma data selecionada');
+                console.error("Nenhuma data selecionada");
             }
         } catch (error) {
-            console.error('Erro ao buscar prestadores disponíveis:', error);
+            console.error("Erro ao buscar prestadores disponíveis:", error);
         } finally {
-            setFinding(false)
-            setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
+            setFinding(false);
+            setCurrentStep((prevStep) => Math.min(prevStep + 1, 4));
         }
-
     };
+
 
     const handleStepClick = (index) => {
         if (index < currentStep) {
@@ -517,6 +517,7 @@ export default function ContrateOnline() {
     
     const HandleNavigateCheckout = async () => {
         const FormDate = new Date(selectedDates[0]).toDateString(); // Converte a data para o formato legivel
+
         const times = selectedTimes[FormDate]; // Acessa o valor correspondente no objeto
         // // console.log(times)
         // // console.log(observacao)
