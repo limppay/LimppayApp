@@ -138,22 +138,19 @@ export default function Checkout() {
         const createNewAgendamento = async () => {
           // Se o pagamento foi bem-sucedido, cria o agendamento
           try {
-            const agendamentoResponse = await createAgendamento(agendamentoData);
-            console.log("Agendamento criado com sucesso!", agendamentoResponse);
+              
+            console.log("agendamentos: ", agendamentoData)
 
-            
-            navigate("/area-cliente");
-            localStorage.removeItem('agendamentoData');
-            localStorage.removeItem('selectedProvider');
-            localStorage.removeItem('selectedDates');
-            localStorage.removeItem('selectedTimes');
+            for (const agendamento of agendamentoData) {
 
-            setAgendamentoData(null);
-            
+              const agendamentoResponse = await createAgendamento(agendamento);
+              console.log(`Agendamento para ${agendamento.dataServico} criado com sucesso!`, agendamentoResponse);
 
+            }
+              
           } catch (agendamentoError) {
-              console.error("Erro ao criar o agendamento", agendamentoError);
-
+              console.error("Erro ao criar os agendamentos", agendamentoError);
+              alert("Erro ao criar os agendamentos!");
           } finally {
               reset();
           }
@@ -174,25 +171,30 @@ export default function Checkout() {
     };
   }, []);
 
+  console.log("agendamentos: ", agendamentoData)
+
   const handleFinalizarCompra = async (data) => {
     setIsPaymentFailed(false);
     setIsPaymentFinally(false);
     setIsPayment(true);
 
-    console.log("Dados do cartao recebido: ", data);
+    console.log("Valor total: ", agendamentoData)
+
+    console.log("Dados do cartão recebido: ", data);
 
     try {
         const token = await obterTokenCartao(data);
         console.log(token);
 
         if (metodoPagamento === 'credit_card') {
+            // Cria a fatura do pedido
             const response = await criarFaturaCartao({
                 email: user.email,
                 items: [
                     {
                         description: "Fatura do seu pedido",
-                        quantity: AgendamenteDataQtd.length,
-                        price_cents: 2 * 100,
+                        quantity: selectedDates.length, // Define a quantidade de itens com base nas datas selecionadas
+                        price_cents: agendamentoData[0].valorServico * 100, // Valor total
                     },
                 ],
                 payment_method: "credit_card",
@@ -213,15 +215,24 @@ export default function Checkout() {
 
             console.log('Fatura criada com sucesso:', response);
 
-            // Se o pagamento foi bem-sucedido, cria o agendamento
             try {
-                const agendamentoResponse = await createAgendamento(agendamentoData);
-                console.log("Agendamento criado com sucesso!", agendamentoResponse);
+              
+              console.log("agendamentos: ", agendamentoData)
+
+              for (const agendamento of agendamentoData) {
+
+                const agendamentoResponse = await createAgendamento(agendamento);
+                console.log(`Agendamento para ${agendamento.dataServico} criado com sucesso!`, agendamentoResponse);
+
+              }
+                
             } catch (agendamentoError) {
-                console.error("Erro ao criar o agendamento", agendamentoError);
+                console.error("Erro ao criar os agendamentos", agendamentoError);
+                alert("Erro ao criar os agendamentos!");
             } finally {
                 reset();
             }
+          
 
             setTimeout(() => {
                 navigate("/area-cliente");
@@ -233,17 +244,15 @@ export default function Checkout() {
                 setAgendamentoData(null);
                 setIsPayment(false);
             }, 4000);
-
         }
     } catch (error) {
         console.error('Erro no pagamento:', error);
         setIsPaymentFailed(true);
-
     } finally {
-      setIsPaymentFinally(true)
-        
+        setIsPaymentFinally(true);
     }
   };
+
 
   console.log(pixChave)
   
@@ -752,7 +761,7 @@ export default function Checkout() {
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                     </svg>
 
-                    <p className="text-lg text-sec">{agendamentoData ? formatarMoeda(agendamentoData.valorServico) : "R$ 0,00"}</p>
+                    <p className="text-lg text-sec">{agendamentoData ? formatarMoeda(agendamentoData[0].valorServico) : "R$ 0,00"}</p>
 
                 </div>
             </div>

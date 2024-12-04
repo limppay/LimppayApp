@@ -351,7 +351,6 @@ export default function ContrateOnline() {
             if (selectedDates.length > 0) {
                 // Formata todas as datas selecionadas no array como strings no formato YYYY-MM-DD
                 const formattedDates = selectedDates.map((date) => date.toISOString().split('T')[0]);
-                console.log("Array de datas: ", formattedDates)
 
                 // Faz a requisição para a API enviando o array de datas
                 const response = await getDisponiveis(formattedDates, servicoId, cidade, estado);
@@ -516,33 +515,67 @@ export default function ContrateOnline() {
 
     
     const HandleNavigateCheckout = async () => {
-        const FormDate = new Date(selectedDates[0]).toDateString(); // Converte a data para o formato legivel
-
-        const times = selectedTimes[FormDate]; // Acessa o valor correspondente no objeto
-        // // console.log(times)
-        // // console.log(observacao)
-
+        
+        // Cria um array com os dados de todos os agendamentos
+        const agendamentos = selectedDates.map((date) => {
+            const FormDate = new Date(date).toDateString(); // Formata a data
+            const times = selectedTimes[FormDate]; // Obtém o horário correspondente
     
-        const data = {
-            userId: selectedProvider.id,
-            clienteId: clienteId,
-            servicoId: servicoId,
-            dataServico: new Date(selectedDates[0]).toDateString(),
-            Servico: selectedService,
-            horaServico: times,
-            valorServico: sumValueService,
-            observacao: observacao,
-            ...(selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id })
-        };
-
-        localStorage.setItem('agendamentoData', JSON.stringify(agendamentoData));
+            return {
+                userId: selectedProvider.id,
+                clienteId: clienteId,
+                servicoId: servicoId,
+                dataServico: FormDate,
+                Servico: selectedService,
+                horaServico: times,
+                valorServico: sumValueService,
+                observacao: observacao,
+                ...(selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id }),
+            };
+        });
+    
+        // Armazena os dados no localStorage
+        localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
         localStorage.setItem('selectedProvider', JSON.stringify(selectedProvider));
         localStorage.setItem('selectedDates', JSON.stringify(selectedDates));
         localStorage.setItem('selectedTimes', JSON.stringify(selectedTimes));
+    
+        // Define o estado e navega para o checkout
+        await setAgendamentoData(agendamentos); // Ajustado para enviar o array de agendamentos
+        navigate("/checkout-pagamento");
+    };
+    
+
+    // const HandleNavigateCheckout = async () => {
+    //     const FormDate = selectedDates.map((date) => date.toISOString()); // Converte a data para o formato legivel
+
+    //     const times = selectedTimes[FormDate]; // Acessa o valor correspondente no objeto
+    //     // // console.log(times)
+    //     // // console.log(observacao)
+
+    
+    //     const data = {
+    //         userId: selectedProvider.id,
+    //         clienteId: clienteId,
+    //         servicoId: servicoId,
+    //         dataServico: selectedDates.map((date) => date.toISOString().split('T')[0]),
+    //         Servico: selectedService,
+    //         horaServico: times,
+    //         valorServico: sumValueService,
+    //         observacao: observacao,
+    //         ...(selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id })
+    //     };
+
+    //     console.log("Datas selecionadas: ", FormDate)
+
+    //     localStorage.setItem('agendamentoData', JSON.stringify(agendamentoData));
+    //     localStorage.setItem('selectedProvider', JSON.stringify(selectedProvider));
+    //     localStorage.setItem('selectedDates', JSON.stringify(selectedDates));
+    //     localStorage.setItem('selectedTimes', JSON.stringify(selectedTimes));
         
-        await setAgendamentoData(data)
-        navigate("/checkout-pagamento")
-    }
+    //     await setAgendamentoData(data)
+    //     navigate("/checkout-pagamento")
+    // }
 
     function StarReview({ filled }) {
         return (
