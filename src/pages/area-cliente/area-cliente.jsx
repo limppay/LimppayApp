@@ -458,7 +458,24 @@ const AreaCliente = () => {
             currency: 'BRL' 
         }).format(valor);
     }
+    
+const [searchTerm, setSearchTerm] = useState("");
+const [startDate, setStartDate] = useState(null);
+const [endDate, setEndDate] = useState(null);
 
+  
+// Função para filtrar os agendamentos com base no nome e na data
+const agendamentosFiltrados = agendamentos.filter((agendamento) => {
+    const nameMatch = agendamento.user.name.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Filtra pela data, caso as datas de início e fim estejam definidas
+    const dateMatch = (startDate && new Date(agendamento.dataServico) >= new Date(startDate)) &&
+                      (endDate && new Date(agendamento.dataServico) <= new Date(endDate));
+
+    // Retorna true se ambos os filtros (nome e data) coincidirem
+    return nameMatch && (!startDate || !endDate || dateMatch);
+});
+  
 
 
     return (
@@ -701,9 +718,45 @@ const AreaCliente = () => {
                             {screenSelected == "pedidos" && (
                                 <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5 flex flex-col gap-5'>
-                                        
+                                    <div className="flex items-center gap-4 mb-5">
+                                <input
+                                    type="text"
+                                    placeholder="Pesquisar"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="border p-2 rounded"
+                                />
+
+                                <input
+                                                    type="date"
+                                                    value={startDate}
+                                                    onChange={(e) => setStartDate(e.target.value)}
+                                                    className="border p-2 rounded"
+                                                    placeholder="Início"
+                                                />
+                                                <input
+                                                    type="date"
+                                                    value={endDate}
+                                                    onChange={(e) => setEndDate(e.target.value)}
+                                                    className="border p-2 rounded"
+                                                    placeholder="Fim"
+                                                />
+
+                            </div>
+
+
+                     
+
                                     {agendamentos.length > 0 ? (
-                                        agendamentos.map((agendamento) => (
+                                    agendamentosFiltrados.sort((a, b) => {
+                                        const prioridade = (status) => {
+                                            if (status === "Iniciado") return 1;
+                                            if (status === "Agendado") return 2;
+                                            return 3;
+                                        };
+                                        return prioridade(a.status) - prioridade(b.status);
+                                    })   
+                                        .map((agendamento) => (
                                             <>
                                                 <div className='flex flex-col gap-3  shadow-lg rounded-md p-5 justify-center items-start'>
                                                     <div className='flex flex-col lg:flex-row gap-5 items-start w-full justify-between'>
@@ -823,6 +876,7 @@ const AreaCliente = () => {
                                                     <Accordion isCompact itemClasses={{title: "text-prim"}}>
                                                         <AccordionItem key={agendamento.id} title="Detalhes" >
                                                             <div className="mt-2">
+                                                                
                                                                 {agendamento.status === "Realizado" && (
                                                                     <div className=' text-justify pt-2 pb-4 '>
                                                                         <h2 className='font-semibold text-lg '>Avaliar Prestador</h2>
