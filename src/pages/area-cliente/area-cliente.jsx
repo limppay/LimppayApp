@@ -21,6 +21,7 @@ import * as yup from "yup"
 import InputMask from "react-input-mask"
 
 
+
 const AreaCliente = () => {
 
     const [userInfo, setUserInfo] = useState(null);
@@ -955,6 +956,13 @@ const agendamentosFiltrados = agendamentos.filter((agendamento) => {
                                     ) : (
                                         <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
                                             <p>Você não possui nenhum agendamento</p>
+                                            <div className='pt-5'>
+                                                <a href="/contrate-online">
+                                                    <Button className='bg-des text-white'>
+                                                        Fazer agendamento
+                                                    </Button>
+                                                </a>
+                                            </div>
                                         </div>
 
                                     )}
