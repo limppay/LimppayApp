@@ -181,7 +181,6 @@ export const getDisponiveis = (dataServico, servicoId, cidade, estado) => {
   });
 };
 
-
 export const getUserProfile = async (cpfCnpj) => {
   try {
     const response = await api.get(`/users/profile/${cpfCnpj}`);
@@ -350,5 +349,18 @@ export const findAllServicos = async () => {
     return false; // Retornar false em caso de erro
   }
 }
+
+export const applyCoupom = async (code, valor) => {
+  try {
+    const response = await api.post(`/coupons/${code}/apply`, {
+      totalAmount: valor
+    })
+    
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  }
+}  
 
 export default api;

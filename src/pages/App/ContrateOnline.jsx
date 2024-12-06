@@ -4,7 +4,7 @@ import {Logo, Footer } from '../../componentes/imports';
 import ServiceSelection from '../../componentes/App/ServiceSelection';
 import CustomCalendar from '../../componentes/App/DatePicker';
 import ProgressBar from '../../componentes/App/ProgressBar';
-import { createAgendamento, CreateEnderecosCliente, deleteEnderecosCliente, getAvaliacoesByPrestador, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
+import { applyCoupom, createAgendamento, CreateEnderecosCliente, deleteEnderecosCliente, getAvaliacoesByPrestador, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
 import {Avatar, Spinner, spinner} from "@nextui-org/react";
 'use client'
 import {CircularProgress} from "@nextui-org/progress";
@@ -66,6 +66,20 @@ export default function ContrateOnline() {
         estado: yup.string(),
     })
 
+    const cupom = yup.object({
+        code: yup.string().required("Digite o codigo do cupom"),
+    })
+
+    const {
+        register: registerCupom,
+        handleSubmit: handleSubmitCupom,
+        formState: { errors: errorCupom },
+        reset: resetCupom,
+        } = useForm({
+        resolver: yupResolver(cupom),
+    })
+
+
     const {
         register,
         handleSubmit,
@@ -103,6 +117,7 @@ export default function ContrateOnline() {
         }
 
     }
+
 
     // // console.log(errors)
 
@@ -495,7 +510,44 @@ export default function ContrateOnline() {
         return cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2");
     };
 
-    const sumValueService = (serviceValue * selectedDates.length)
+    const [sumValueService, setSumValueService] = useState(serviceValue * selectedDates.length); // Estado para o valor total
+    const [apply, setApply] = useState(false);
+    const [cupomError, setCupomError] = useState(null);
+
+    // Atualiza dinamicamente o valor total ao selecionar novas datas ou alterar o valor do serviço
+    useEffect(() => {
+        const total = serviceValue * selectedDates.length;
+        setSumValueService(total);
+    }, [serviceValue, selectedDates]);
+
+    const handleApplyCupom = async (data) => {
+        console.log("Cupom utilizado: ", data);
+        setApply(true);
+        setCupomError(null); // Limpa erros anteriores
+
+        try {
+            const response = await applyCoupom(data.code, sumValueService);
+            setApply(false);
+
+            if (response && response.data) {
+                console.log("Cupom adicionado com sucesso!", response.data);
+                console.log("Desconto total: ", response.data.discountedAmount);
+
+                // Atualiza o valor total do pedido com o valor descontado
+                setSumValueService(response.data.discountedAmount);
+            } else {
+                setCupomError("Não foi possível adicionar este cupom");
+            }
+        } catch (error) {
+            console.log("Erro ao aplicar cupom:", error.message);
+            setApply(false);
+            setCupomError("Ocorreu um erro ao tentar aplicar o cupom");
+        }
+    };
+
+    // Exibe o valor atualizado no console ou na interface
+    console.log("Valor total atualizado: ", sumValueService);
+
 
     const formatarMoeda = (valor) => {
         return new Intl.NumberFormat('pt-BR', { 
@@ -1257,27 +1309,39 @@ export default function ContrateOnline() {
                                     <div className='w-full flex flex-col gap-3'>
                                         <h2 className='text-desSec font-semibold text-xl'>Cupom de desconto</h2>
                                         <div className='flex gap-5'>
-                                            <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' />
-                                            <Button 
-                                            className="p-2 rounded-md 
-                                            text-center
-                                            text-white 
-                                            bg-des         
-                                            hover:text-white transition-all
-                                            duration-200
-                                            hover:bg-sec hover:bg-opacity-75
-                                            hover:border-trans
-                                            flex 
-                                            items-center
-                                            justify-center
-                                            text-sm
-                                            gap-2
-                                            w-4/12
-                                            "
-                                            >
-                                                Utilizar
-                                            </Button>
+                                            <form onSubmit={handleSubmitCupom(handleApplyCupom)} className='flex gap-5 w-full'>
+                                                <div className='w-full flex flex-col items-center gap-2'>
+                                                    <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' 
+                                                        {...registerCupom("code")}
+                                                    />
+                                                    <span className='text-error'>{cupomError}</span>
+
+
+                                                </div>
+                                                <Button 
+                                                type='submit'
+                                                className="p-2 rounded-md 
+                                                text-center
+                                                text-white 
+                                                bg-des         
+                                                hover:text-white transition-all
+                                                duration-200
+                                                hover:bg-sec hover:bg-opacity-75
+                                                hover:border-trans
+                                                flex 
+                                                items-center
+                                                justify-center
+                                                text-sm
+                                                gap-2
+                                                w-4/12
+                                                "
+                                                >
+                                                    {apply ? <Spinner/> : "Utilizar"}
+                                                </Button>
+
+                                            </form>
                                         </div>
+                                        
                                     </div>
 
                                 </div>

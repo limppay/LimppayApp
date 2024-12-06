@@ -598,7 +598,7 @@ export default function Checkout() {
                       Valor a ser pago
                       
                   </h3>
-                  <p className='text-lg ' >{agendamentoData ? formatarMoeda(agendamentoData.valorServico) : "R$ 0,00"}</p>
+                  <p className='text-lg ' >{agendamentoData ? formatarMoeda(agendamentoData[0].valorServico) : "R$ 0,00"}</p>
 
               </div>
               <div className='flex flex-col gap-7 w-full pl-7 pr-7'>
