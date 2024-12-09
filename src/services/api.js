@@ -350,10 +350,11 @@ export const findAllServicos = async () => {
   }
 }
 
-export const applyCoupom = async (code, valor) => {
+export const applyCoupom = async (code, valor, clienteId) => {
   try {
     const response = await api.post(`/coupons/${code}/apply`, {
-      totalAmount: valor
+      totalAmount: valor,
+      userId: clienteId
     })
     
     return response

@@ -37,8 +37,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   
     }, [])
 
-  const services = servicos
-  .filter((servico) => servico.status === true) // Filtra apenas os com status true
+  const services = servicos.filter((servico) => servico.status === true) // Filtra apenas os com status true
   .map((servico) => ({
     // icon: 'fas fa-baby',
     id: servico.id,

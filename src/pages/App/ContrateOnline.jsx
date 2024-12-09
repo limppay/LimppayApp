@@ -510,15 +510,26 @@ export default function ContrateOnline() {
         return cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2");
     };
 
-    const [sumValueService, setSumValueService] = useState(serviceValue * selectedDates.length); // Estado para o valor total
+    const [sumValueService, setSumValueService] = useState(serviceValue * selectedDates.length)
+
+    const [valorCupom, setValorCupom] = useState(0)
+    const [descontoTotal, setDescontoTotal] = useState(0)
+    const [valorLiquido, setValorLiquido]  = useState(0)
+
     const [apply, setApply] = useState(false);
     const [cupomError, setCupomError] = useState(null);
 
     // Atualiza dinamicamente o valor total ao selecionar novas datas ou alterar o valor do serviço
     useEffect(() => {
         const total = serviceValue * selectedDates.length;
+
         setSumValueService(total);
     }, [serviceValue, selectedDates]);
+
+    useEffect(() => {
+        setValorLiquido(sumValueService)
+
+    }, [sumValueService])
 
     const handleApplyCupom = async (data) => {
         console.log("Cupom utilizado: ", data);
@@ -526,7 +537,7 @@ export default function ContrateOnline() {
         setCupomError(null); // Limpa erros anteriores
 
         try {
-            const response = await applyCoupom(data.code, sumValueService);
+            const response = await applyCoupom(data.code, sumValueService, clienteId );
             setApply(false);
 
             if (response && response.data) {
@@ -534,7 +545,9 @@ export default function ContrateOnline() {
                 console.log("Desconto total: ", response.data.discountedAmount);
 
                 // Atualiza o valor total do pedido com o valor descontado
-                setSumValueService(response.data.discountedAmount);
+                setDescontoTotal(response.data.discount);
+                setValorLiquido(sumValueService - Number(descontoTotal))
+                
             } else {
                 setCupomError("Não foi possível adicionar este cupom");
             }
@@ -545,8 +558,17 @@ export default function ContrateOnline() {
         }
     };
 
+    useEffect(() => {
+        setValorLiquido(sumValueService - Number(descontoTotal))
+
+    }, [descontoTotal])
+
+
     // Exibe o valor atualizado no console ou na interface
-    console.log("Valor total atualizado: ", sumValueService);
+    console.log("Valor do servico: ", serviceValue)
+    console.log("Valor bruto: ", sumValueService)
+    console.log("Valor total do desconto: ", Number(descontoTotal));
+    console.log("Valor Liquido: ", valorLiquido || sumValueService);
 
 
     const formatarMoeda = (valor) => {
@@ -580,7 +602,14 @@ export default function ContrateOnline() {
                 dataServico: FormDate,
                 Servico: selectedService,
                 horaServico: times,
-                valorServico: sumValueService,
+                valorServico: serviceValue,
+                valorBruto: sumValueService,
+
+                valorCupom: valorCupom,
+                descontoTotal: Number(descontoTotal),
+
+                valorLiquido: valorLiquido || sumValueService,
+
                 observacao: observacao,
                 ...(selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id }),
             };
@@ -1380,24 +1409,51 @@ export default function ContrateOnline() {
                 {/* Cartão azul - Visível somente em telas grandes (desktop) */}
                 {currentStep > 0 && (
                     <div className="hidden md:block lg:block  lg:pt-[5vh] ">
-                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pt-[12vh] md:pt-[13vh] lg:pt-[0vh] xl:pt-[0vh] p-4 flex flex-col items-center gap-10 max-w-[50vh] xl:max-w-[60vh] xl:min-w-[60vh] text-justify min-h-[80vh] ">
-                            <div className='w-full flex justify-between items-center border-b p-12 pt-0 pb-2 lg:pt-12 xl:pt-16 pl-7 pr-7'>
-                                <h3 className="text-xl flex flex-wrap ">
+                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pt-[12vh] md:pt-[13vh] lg:pt-[0vh] xl:pt-[0vh] p-4 flex flex-col items-center gap-10 max-w-[50vh] xl:max-w-[60vh] xl:min-w-[60vh] text-justify min-h-[80vh]  ">
+
+                            <div className='w-full flex justify-between items-start border-b p-12 pt-0 pb-2 lg:pt-12 xl:pt-16 pl-7 pr-7 '>
+                                <h3 className="text-xl flex flex-wrap">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 font-semibold">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                     </svg>
-
-                                    Resumo
-                                    
+                                    Total
                                 </h3>
-                                <p className='text-lg ' >{sumValueService ? formatarMoeda(sumValueService) : "R$ 0,00"}</p>
 
+                                <div className="flex flex-col lg:flex-row items-center gap-2">
+                                    {/* Se o valor do desconto existir, mostra a linha riscada */}
+                                    {descontoTotal ? (
+                                        <>
+                                            <div className='flex flex-col justify-end items-end'>
+                                                <div className='flex'>
+                                                    <p className=' relative text-[1.5vh]'>
+                                                        -${descontoTotal}
+                                                    </p>
+                                                    <p className="text-md line-through text-gray-500">
+                                                        {formatarMoeda(sumValueService)}
+                                                    </p>
+
+                                                </div>
+                                                <p className="text-md font-semibold text-green-500">
+                                                    {formatarMoeda(valorLiquido)}
+                                                </p>
+
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <p className="text-lg">{formatarMoeda(valorLiquido)}</p>
+                                    )}
+                                </div>
                             </div>
+
+
                                 <div className='flex flex-col gap-7 w-full pl-7 pr-7'>
                                     {selectedService?(
                                         <div className='w-full flex flex-col  gap-2 justify-between'>
                                             <p className='text-lg font-semibold'>Serviço selecionado:</p>
-                                            <p className='text-base'>{selectedService}</p>
+                                            <div className='flex items-center w-full justify-between'>
+                                                <p className='text-base'>{selectedService}</p>
+                                                <p className='text-base'>{formatarMoeda(serviceValue)}</p>
+                                            </div>
                                         </div>
                                     ):(
                                         <div className='w-full flex flex-col  gap-2'>
@@ -1509,7 +1565,7 @@ export default function ContrateOnline() {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                 </svg>
 
-                                <p className="text-lg text-sec">{sumValueService ? formatarMoeda(sumValueService) : 'R$ 0,00'}</p>
+                                <p className="text-lg text-sec">{valorLiquido ? formatarMoeda(valorLiquido) : 'R$ 0,00'}</p>
 
                             </div>
                         </div>

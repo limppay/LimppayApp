@@ -466,7 +466,7 @@ const [endDate, setEndDate] = useState(null);
 
   
 // Função para filtrar os agendamentos com base no nome e na data
-const agendamentosFiltrados = agendamentos.filter((agendamento) => {
+    const agendamentosFiltrados = agendamentos.length > 0 && agendamentos.filter((agendamento) => {
     const nameMatch = agendamento.user.name.toLowerCase().includes(searchTerm.toLowerCase());
     
     // Filtra pela data, caso as datas de início e fim estejam definidas

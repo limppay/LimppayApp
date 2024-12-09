@@ -194,7 +194,7 @@ export default function Checkout() {
                     {
                         description: "Fatura do seu pedido",
                         quantity: selectedDates.length, // Define a quantidade de itens com base nas datas selecionadas
-                        price_cents: agendamentoData[0].valorServico * 100, // Valor total
+                        price_cents: (agendamentoData[0].valorLiquido / selectedDates.length) * 100, // Valor total
                     },
                 ],
                 payment_method: "credit_card",
@@ -598,7 +598,7 @@ export default function Checkout() {
                       Valor a ser pago
                       
                   </h3>
-                  <p className='text-lg ' >{agendamentoData ? formatarMoeda(agendamentoData[0].valorServico) : "R$ 0,00"}</p>
+                  <p className='text-lg ' >{agendamentoData ? formatarMoeda(agendamentoData[0].valorLiquido) : "R$ 0,00"}</p>
 
               </div>
               <div className='flex flex-col gap-7 w-full pl-7 pr-7'>

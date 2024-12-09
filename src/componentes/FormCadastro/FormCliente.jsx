@@ -197,6 +197,19 @@ export default function FormCliente() {
 
     // states
     const [image, setImage] = useState(User)
+
+    useEffect(() => {
+        // Buscar o caminho da imagem padrão e convertê-la em um arquivo
+        fetch(User)
+        .then((response) => response.blob())
+        .then((blob) => {
+            const defaultFile = new File([blob], "default.png", { type: blob.type });
+            setValue("arquivoFoto", defaultFile, { shouldValidate: true }); // Define o arquivo no formulário
+            setImage(User); // Exibe a imagem padrão
+        });
+    }, [setValue]);
+
+
     const [fileNames, setFileNames] = useState({
         docIdt: "Arquivo não selecionado",
         docCpf: "Arquivo não selecionado",
@@ -353,18 +366,32 @@ export default function FormCliente() {
                             alt="foto de perfil" 
                             className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
                             />                  
-                            <input 
-                                type="file" 
+                            <input
+                                type="file"
                                 id="fotoPerfil"
                                 accept="image/*"
                                 {...register("arquivoFoto")}
                                 onChange={(e) => {
-                                    const file = e.target.files[0]; // Pega o arquivo selecionado
-                                    handleImageChange(e); // Exibe a imagem
-                                    setValue("arquivoFoto", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
-                                  }}
-                                  className="p-2 w-full hidden"
-                            />                      
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        const imageUrl = URL.createObjectURL(file);
+                                        setImage(imageUrl); // Atualiza a imagem exibida
+                                        setValue("arquivoFoto", file, { shouldValidate: true }); // Define o arquivo selecionado
+                                    } else {
+                                        // Reverte para a imagem padrão
+                                        fetch(User)
+                                            .then((response) => response.blob())
+                                            .then((blob) => {
+                                                const defaultFile = new File([blob], "default.png", { type: blob.type });
+                                                setValue("arquivoFoto", defaultFile, { shouldValidate: true });
+                                                setImage(User); // Atualiza a imagem exibida para o padrão
+                                                trigger("arquivoFoto"); // Revalida o campo
+                                            });
+                                    }
+                                }}
+                                className="p-2 w-full hidden"
+                            />
+                      
                         </label>
                         <span className="text-prim">Foto de perfil</span>
                         {errors.arquivoFoto && (
