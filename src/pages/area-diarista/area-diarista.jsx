@@ -16,6 +16,7 @@ import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
 import { useScreenSelected } from '../../context/ScreenSelect.jsx';
+import Calendar from './Calendar.jsx';
 
 const AreaDiarista = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -26,6 +27,7 @@ const AreaDiarista = () => {
     const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls_prestador')) || {}); // Atualize o estado URLs aqui
     const [agendamentos, setAgendamentos] = useState([])
     const [avaliacoes, setAvaliacoes] = useState([])
+    const [datasBloqueadas, setDatasBloqueadas] = useState([])
     const [selectedAgendamento, setSelectedAgendamento] = useState([])
     const [openDetalhes, setOpenDetalhes] = useState(false)
 
@@ -42,6 +44,13 @@ const AreaDiarista = () => {
     const [isOpen, setIsOpen] = useState(true)
     const {screenSelected, setScreenSelected} = useScreenSelected()
     const [openPerfil, setOpenPerfil] = useState(false)
+    const [ selectedDates, setSelectedDates ] = useState([])
+    const formattedDates = selectedDates.map(date => {
+        return new Date(date).toISOString().split('T')[0];
+    });
+    console.log("Datas selecionadas: ", formattedDates)
+    const [numberOfDays, setNumberOfDays] = useState(0)
+
 
     const formatarMoeda = (valor) => {
         return new Intl.NumberFormat('pt-BR', { 
@@ -59,11 +68,14 @@ const AreaDiarista = () => {
                 });
                 const agendamentos = await getAgendamentos(userId)
                 const avaliacoes = await getAvaliacoesByPrestador(userId)
+                const datasBloqueadas = response.data.DiasBloqueados
+
                 console.log("Avaliações: ", avaliacoes)
                 console.log(agendamentos)
 
                 setAvaliacoes(avaliacoes)
                 setAgendamentos(agendamentos)
+                setDatasBloqueadas(datasBloqueadas)
                 setUserInfo(response.data)
             } catch (error) {
                 console.error('Erro ao buscar informações do usuário:', error);
@@ -74,6 +86,8 @@ const AreaDiarista = () => {
             fetchUserInfo();
         }
     }, [token, userId]);
+
+    console.log("Datas bloqueadas: ", datasBloqueadas )
 
 
     useEffect(() => {
@@ -615,6 +629,22 @@ const AreaDiarista = () => {
                                                     </Button>
                                                 </div>
 
+                                                <div>
+                                                    <Button
+                                                    className='w-full border shadow-md bg-trans text-des justify-start'
+                                                    onClick={() => setScreenSelected("datasBloqueadas")}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z" />
+                                                        </svg>
+
+
+
+                                                        {isOpen ? "Datas bloqueadas" : ""}
+                                                        
+                                                    </Button>
+                                                </div>
+
                                                 {/* tela para o dashboard */}
                                                 {/* <div>
                                                     <Button
@@ -1006,6 +1036,60 @@ const AreaDiarista = () => {
                                                         <p>Você não possui nenhuma avaliação no momento</p>
                                                     </div>
                                                 )}
+                                                    
+
+                                                </div>
+                                                
+                                            </section>
+                                        )}
+
+                                        {screenSelected == "datasBloqueadas" && (
+                                            <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                                <div className='p-10 flex gap-5 justify-around  items-start '>
+                                                    <Calendar 
+                                                        // onConfirmSelection={handleConfirmSelection}
+                                                        selectedDates={selectedDates}
+                                                        setSelectedDates={setSelectedDates}
+                                                        maxSelection={numberOfDays} // Defina aqui o número máximo de seleções permitidas
+                                                        
+                                                    
+
+                                                    />
+                                                    <div className='p-5 rounded-md shadow-lg min-h-[60vh] max-h-[50vh] min-w-[80vh] gap-2 flex flex-col '>
+                                                        <div className='p-2'>
+                                                            <h2 className='text-desSec text-lg font-semibold'>Datas Bloqueadas</h2>
+                                                        </div>
+                                                        <div className='flex flex-col overflow-y-auto gap-2'>
+                                                            {datasBloqueadas.length > 0 && datasBloqueadas.map((dataBloqueada) => (
+                                                                <>
+                                                                    <div key={dataBloqueada.id} className='p-2'>
+                                                                        <div className='border border-desSec bg-white w-full opacity-100 rounded-lg flex items-center p-2 justify-between shadow-md '>
+                                                                            <div>
+                                                                                {
+                                                                                    new Date(dataBloqueada.data).toISOString().split('T')[0]
+                                                                                }
+                                                                            </div>
+                                                                            <div>
+                                                                                <Button className='bg-white shadow-sm'>
+                                                                                    <span className='text-sec'>
+                                                                                        Desbloquear
+                                                                                    </span>
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-4 text-sec">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                                                                    </svg>
+
+                                                                                </Button>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </>
+                                                            ))}
+
+                                                        </div>
+
+                                                    </div>
+                                                
                                                     
 
                                                 </div>

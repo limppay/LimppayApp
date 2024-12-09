@@ -362,6 +362,35 @@ export const applyCoupom = async (code, valor, clienteId) => {
     console.error(error.response?.data.message || error.message);
     return false; // Retornar false em caso de erro
   }
-}  
+}
+
+export const bloquearData = async (userId, data) => {
+  try {
+    const response = await api.post(`dias-bloqueados/bloquear`, {
+      userId,
+      data
+    })
+
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  }
+}
+
+export const desbloquearData = async (userId, data) => {
+  try {
+    const response = await api.delete(`dias-bloqueados/desbloquear`, {
+      userId,
+      data
+    })
+
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  }
+}
+
 
 export default api;
