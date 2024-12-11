@@ -52,6 +52,7 @@ const AreaCliente = () => {
     const [creating, setCreating] = useState(false)
     const inputRef = useRef(null)
     const [loadingEdit, setLoadingEdit] = useState(false)
+    const [loadingReview, setLoadingReview] = useState(false)
 
 
     const fetchUserInfo = async () => {
@@ -275,10 +276,11 @@ const AreaCliente = () => {
         );
     }
     
-    const handleCreateReview = async () => {
+    const handleCreateReview = async (id) => {
+        setLoadingReview(true)
         const reviewData = {
             clientId: userId,
-            providerId: prestadorId,
+            providerId: id,
             stars: rating,
             comment: review,
         };
@@ -290,7 +292,7 @@ const AreaCliente = () => {
             console.log(response);
             setRating(0)
             setReview('')
-
+            setLoadingReview(false)
         } catch (error) {
             console.log(error);
         } finally {
@@ -876,9 +878,12 @@ const experienciaPercent = 60; // Defina a lógica para calcular o percentual de
 
                                                                                 <Button 
                                                                                     className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec transition-all"
-                                                                                    onClick={handleCreateReview}
+                                                                                    onClick={() => (
+                                                                                        handleCreateReview(agendamento.user.id)
+
+                                                                                    )}
                                                                                 >
-                                                                                    Enviar avaliação
+                                                                                    {loadingReview? <Spinner/> : "Enviar Avaliação"}
                                                                                 </Button>
                                                                             </div>
                                                                         </div>
