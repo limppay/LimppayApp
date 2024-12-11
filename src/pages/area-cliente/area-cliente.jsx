@@ -245,39 +245,6 @@ const AreaCliente = () => {
     const handleReviewChange = (event) => {
         setReview(event.target.value);
     };
-
-    // Calcular o número total de pedidos
-    const totalPedidos = agendamentos ? agendamentos.length : 0;
-
-    // Calcular o prestador mais solicitado
-    const prestadorMaisSolicitado = () => {
-        const prestadoresCount = {};
-
-        agendamentos.forEach((agendamento) => {
-            const prestadorId = agendamento.user.id;
-            prestadoresCount[prestadorId] = (prestadoresCount[prestadorId] || 0) + 1;
-        });
-
-        // Encontrar o prestador mais solicitado
-        const prestadorIdMaisSolicitado = Object.keys(prestadoresCount).reduce((a, b) =>
-            prestadoresCount[a] > prestadoresCount[b] ? a : b
-        );
-
-        const prestador = agendamentos.find((agendamento) => agendamento.user.id === prestadorIdMaisSolicitado);
-        return prestador ? prestador.user.name : "Nenhum prestador solicitado";
-    };
-    
-     // Calcular o gasto mensal
-     const gastoMensal = () => {
-        const hoje = new Date();
-        const mesAtual = hoje.getMonth();  // 0 = Janeiro, 1 = Fevereiro, ..., 11 = Dezembro
-
-        const totalGasto = agendamentos
-            .filter((agendamento) => new Date(agendamento.dataServico).getMonth() === mesAtual)
-            .reduce((total, agendamento) => total + parseFloat(agendamento.valorServico), 0);
-
-        return formatarMoeda(totalGasto);
-    };
     
     function Star({ filled, onClick }) {
         return (
@@ -477,6 +444,10 @@ const [endDate, setEndDate] = useState(null);
     return nameMatch && (!startDate || !endDate || dateMatch);
 });
   
+const nivelProgress = 75; // Defina a lógica para calcular o progresso
+const experienciaPercent = 60; // Defina a lógica para calcular o percentual de experiência
+
+
 
 
     return (
@@ -569,9 +540,9 @@ const [endDate, setEndDate] = useState(null);
                                     
 
                                     {/* tela para o dashboard */}
-                                    {/* <div>
+                                     <div>
                                         <Button
-                                        className='w-full border border-des bg-trans text-des'
+                                        className='w-full border border-des bg-trans text-des justify-start'
                                         onClick={() => setScreenSelected("painel")}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -582,7 +553,7 @@ const [endDate, setEndDate] = useState(null);
                                             {isOpen ? "Painel" : ""}
                                             
                                         </Button>
-                                    </div> */}
+                                    </div> 
 
                                 </div>
                                     
@@ -1393,6 +1364,57 @@ const [endDate, setEndDate] = useState(null);
                                     </Modal>
                                 </section>
                             )}
+
+                            {screenSelected === "painel" && (
+                            <div className="pt-28 flex-1 p-6 bg-gray-100">
+                                {/* Header do painel */}
+                                <h1 className="text-des text-2xl font-bold text-gray-700 mb-6">Painel</h1>
+
+                                {/* Grid do dashboard */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                
+                                {/* Prestador mais contratado */}
+                                <div className="bg-white border border-desSec shadow-md rounded-md p-6">
+                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
+                                    <div className="flex items-center">
+                                    <div className="w-16 h-16 bg-gray-300 rounded-full mr-4">
+                                        <img src={prestadorMaisContratado?.avatarUrl || "/default-avatar.png"} alt="avatar" className="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                    <span className="text-desSec text-gray-700 font-medium">{prestadorMaisContratado?.name || "Carregando..."}</span>
+                                    </div>
+                                </div>
+
+                                {/* Solicitações do mês */}
+                                <div className="bg-white border border-desSec shadow-md rounded-md p-6">
+                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Solicitações do Mês</h2>
+                                    <p className="text-desSec text-3xl font-bold text-gray-800">{solicitacoesDoMes || 0}</p>
+                                </div>
+
+                                {/* Total de agendamentos */}
+                                <div className="bg-white border border-desSec shadow-md rounded-md p-6">
+                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
+                                    <p className="text-desSec text-3xl font-bold text-gray-800">{totalDeAgendamentos || 0}</p>
+                                </div>
+                                </div>
+
+                                {/* Componente de Nível */}
+                                <div className="bg-white border border-desSec shadow-md rounded-md p-6 mt-10 h-48">
+                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Nível</h2>
+                                <div className="flex flex-col justify-center items-center">
+                                    <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                                    <div
+                                        className="bg-desSec h-3 rounded-full"
+                                        style={{ width: `${nivelProgress}%` }} // Ajuste o valor aqui conforme o progresso
+                                    ></div>
+                                    </div>
+                                    <span className="text-desSec text-xl font-semibold">{nivel || "Nível 1"}</span>
+                                    <span className="text-desSec text-sm text-gray-600">Experiência: {experienciaPercent}%</span>
+                                </div>
+                                </div>
+
+                            </div>
+                            )}
+
 
                         </div>
                         
