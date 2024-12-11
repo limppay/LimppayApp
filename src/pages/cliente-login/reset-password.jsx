@@ -12,7 +12,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { Button, Spinner } from '@nextui-org/react';
 
-export default function ResetPassword() {
+export default function ResetPasswordCliente() {
 
   const schema = yup.object({
     senha: yup.string().trim().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
@@ -62,7 +62,7 @@ export default function ResetPassword() {
       setErrorMessage(null);
       setOpen(true);
       setTimeout(() => {
-        navigate('/diarista-login');
+        navigate('/');
       }, 3000);
     } else {
       setLoading(false);
@@ -188,7 +188,7 @@ export default function ResetPassword() {
                     </DialogTitle>
                     <div className="mt-2 text-center">
                       <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh]">
-                        <p className='text-prim'>Estamos lhe redirecionando para a tela de login...</p>
+                        
                       </div>
                     </div>
                   </div>

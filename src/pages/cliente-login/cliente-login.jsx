@@ -81,7 +81,7 @@ export default function ClienteLogin() {
                                         Senha
                                     </label>
                                     <div className="text-sm">
-                                        <a href="/request-reset-password"
+                                        <a href="/request-reset-password-cliente"
                                         target='_blank'
                                         className="font-semibold text-ter hover:text-indigo-500">
                                             Esqueceu sua senha?

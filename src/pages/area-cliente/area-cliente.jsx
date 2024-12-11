@@ -882,6 +882,7 @@ const experienciaPercent = 60; // Defina a lógica para calcular o percentual de
                                                                                         handleCreateReview(agendamento.user.id)
 
                                                                                     )}
+                                                                                    isDisabled={loadingReview}
                                                                                 >
                                                                                     {loadingReview? <Spinner/> : "Enviar Avaliação"}
                                                                                 </Button>

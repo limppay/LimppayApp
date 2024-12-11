@@ -13,7 +13,7 @@ import InputMask from "react-input-mask"
 import { Button, Spinner } from '@nextui-org/react';
 
 
-export default function RequestResetPassword() {
+export default function RequestResetPasswordCliente() {
 
     const schema = yup.object({
         email: yup.string().email("Email inválido.").default(""),
@@ -62,7 +62,7 @@ export default function RequestResetPassword() {
         const cpfCnpjSemMascara = removerMascara(data.cpfCnpj);
     
         try {
-          const response = await requestPasswordReset(data.email, cpfCnpjSemMascara, 'prestador');
+          const response = await requestPasswordReset(data.email, cpfCnpjSemMascara, "cliente");
           
           setLoading(false);
           setOpen(true); // Sucesso ao enviar o link

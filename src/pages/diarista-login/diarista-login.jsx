@@ -78,7 +78,7 @@ export default function DaristaLogin() {
                                         Senha
                                     </label>
                                     <div className="text-sm">
-                                        <a href="/request-reset-password"
+                                        <a href="/request-reset-password-user"
                                         target='_blank'
                                         className="font-semibold text-ter hover:text-indigo-500">
                                             Esqueceu sua senha?

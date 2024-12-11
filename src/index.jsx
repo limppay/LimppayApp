@@ -11,6 +11,9 @@ import DaristaLogin from './pages/diarista-login/diarista-login'
 import AreaDiarista from './pages/area-diarista/area-diarista'
 import ResetPassword from './pages/diarista-login/reset-password'
 import RequestResetPassword from './pages/diarista-login/request-reset-password'
+import ResetPasswordCliente from './pages/cliente-login/reset-password'
+import RequestResetPasswordCliente from './pages/cliente-login/request-reset-password'
+
 import ContrateOnline from './pages/App/ContrateOnline'
 import ClienteCadastro from './pages/cliente-cadastro/ClienteCadastro'
 import ClienteLogin from './pages/cliente-login/cliente-login'
@@ -46,12 +49,16 @@ const router = createBrowserRouter([
       element: <DaristaLogin/>
     },
     {
-      path: "request-reset-password",
+      path: "request-reset-password-user",
       element: <RequestResetPassword/>
     },
     {
       path:"reset-password",
       element: <ResetPassword/>
+    },
+    {
+      path: "request-reset-password-cliente",
+      element: <RequestResetPasswordCliente/>
     },
     {
       path: "area-diarista",

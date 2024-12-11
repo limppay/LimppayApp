@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const urlProducao = 'https://limppay-api-production.up.railway.app'
+const local = 'http://localhost:3000'
+
 const api = axios.create({
-  baseURL: 'https://limppay-api-production.up.railway.app'
+  baseURL: local
 });
 
 // Função para criar o usuário e enviar arquivos
@@ -140,11 +143,12 @@ export const updateCliente = async (id, clienteData) => {
 };
 
 // Função para solicitar o link de redefinição de senha
-export const requestPasswordReset = async (email, cpfCnpj) => {
+export const requestPasswordReset = async (email, cpfCnpj, type) => {
   try {
     const response = await api.post('/auth/request-password-reset', {
       email,
-      cpfCnpj
+      cpfCnpj,
+      type
     });
 
     return response.data;
