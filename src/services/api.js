@@ -364,12 +364,9 @@ export const applyCoupom = async (code, valor, clienteId) => {
   }
 }
 
-export const bloquearData = async (userId, data) => {
+export const bloquearData = async (data) => {
   try {
-    const response = await api.post(`dias-bloqueados/bloquear`, {
-      userId,
-      data
-    })
+    const response = await api.post(`dias-bloqueados/bloquear`, data)
 
     return response
   } catch (error) {
@@ -380,15 +377,28 @@ export const bloquearData = async (userId, data) => {
 
 export const desbloquearData = async (userId, data) => {
   try {
-    const response = await api.delete(`dias-bloqueados/desbloquear`, {
-      userId,
-      data
-    })
+    // Passando os dados como um objeto no corpo da requisição
+    const response = await api.delete('dias-bloqueados/desbloquear', {
+      data: { userId, data } // Enviando o body corretamente
+    });
 
+    return response;
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  }
+}
+
+
+export const findAllDiasBloqueados = async (userId) => {
+  try {
+    const response = await api.get(`dias-bloqueados/listar/${userId}`)
+    
     return response
   } catch (error) {
     console.error(error.response?.data.message || error.message);
     return false; // Retornar false em caso de erro
+    
   }
 }
 

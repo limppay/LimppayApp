@@ -9,9 +9,9 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
     const location = useLocation()
     const {screenSelected, setScreenSelected} = useScreenSelected()
 
-    console.log("tela atual: ", screenSelected)
+    // console.log("tela atual: ", screenSelected)
 
-    console.log(location)
+    // console.log(location)
 
     useEffect(() => {
         const hamburguerButton = document.getElementById("hamburguerButton");

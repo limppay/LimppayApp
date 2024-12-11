@@ -17,6 +17,9 @@ import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
 import { useScreenSelected } from '../../context/ScreenSelect.jsx';
 import Calendar from './Calendar.jsx';
+import { bloquearData } from '../../services/api.js';
+import { desbloquearData } from '../../services/api.js';
+import { findAllDiasBloqueados } from '../../services/api.js';
 
 const AreaDiarista = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -45,12 +48,70 @@ const AreaDiarista = () => {
     const {screenSelected, setScreenSelected} = useScreenSelected()
     const [openPerfil, setOpenPerfil] = useState(false)
     const [ selectedDates, setSelectedDates ] = useState([])
-    const formattedDates = selectedDates.map(date => {
+    const [selectedDate, setSelectedDate] = useState()
+    const [numberOfDays, setNumberOfDays] = useState(0)
+    const formattedDates = selectedDates?.map(date => {
         return new Date(date).toISOString().split('T')[0];
     });
     console.log("Datas selecionadas: ", formattedDates)
-    const [numberOfDays, setNumberOfDays] = useState(0)
+    console.log("Dias bloqueados: ", datasBloqueadas)
 
+    const HandleGetDiasBloqueados = async () => {
+        try {
+            const response = await findAllDiasBloqueados(userId)
+            console.log("Dias bloqueados atualizados: ", response.data)
+            setDatasBloqueadas(response.data)
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const blockDates = async () => {
+        console.log("Iniciando bloqueio de datas: ", formattedDates)
+
+        for(const date of formattedDates ) {
+
+            const data = {
+                userId: userId,
+                data: date
+            }
+            
+            try {
+                const response = await bloquearData(data)
+                console.log("Data(s) bloqueada(s) com sucesso!", response.data)
+                // Atualize os dias bloqueados após o desbloqueio
+                HandleGetDiasBloqueados();
+    
+            } catch (error) {
+                console.log(error)
+                
+            }
+
+        }
+        
+        // HandleGetDiasBloqueados()
+    }
+
+    const unlockDate = async (data) => {
+        console.log("Iniciando desbloqueio da data: ", data);
+    
+        const date = new Date(data).toISOString().split('T')[0]
+    
+        console.log("Dados enviados ", date);
+        console.log("Id do cliente: ", userId)
+    
+        try {
+            const response = await desbloquearData(userId, date );
+            console.log("Data(s) desbloqueada(s) com sucesso!", response.data);
+    
+            // Atualize os dias bloqueados após o desbloqueio
+            HandleGetDiasBloqueados();
+        } catch (error) {
+            console.error("Erro ao desbloquear data: ", error);
+        }
+    };
+    
 
     const formatarMoeda = (valor) => {
         return new Intl.NumberFormat('pt-BR', { 
@@ -70,8 +131,8 @@ const AreaDiarista = () => {
                 const avaliacoes = await getAvaliacoesByPrestador(userId)
                 const datasBloqueadas = response.data.DiasBloqueados
 
-                console.log("Avaliações: ", avaliacoes)
-                console.log(agendamentos)
+                // console.log("Avaliações: ", avaliacoes)
+                // console.log(agendamentos)
 
                 setAvaliacoes(avaliacoes)
                 setAgendamentos(agendamentos)
@@ -85,13 +146,13 @@ const AreaDiarista = () => {
         if (token && userId) {
             fetchUserInfo();
         }
-    }, [token, userId]);
+    }, [token, userId, ]);
 
     console.log("Datas bloqueadas: ", datasBloqueadas )
 
 
     useEffect(() => {
-        console.log("Informações do usuário atualizadas:", userInfo);
+        // console.log("Informações do usuário atualizadas:", userInfo);
     }, [userInfo]); // Isso vai logar as informações do usuário toda vez que mudarem
     
 
@@ -167,7 +228,7 @@ const AreaDiarista = () => {
 
     }, [userInfo, setUserInfo])
 
-    console.log("Situação atual da conta: ", cadastroCompleto, entrevistaAprovada, etapaCadastro)
+    // console.log("Situação atual da conta: ", cadastroCompleto, entrevistaAprovada, etapaCadastro)
 
 
     const schema = yup.object({
@@ -246,7 +307,7 @@ const AreaDiarista = () => {
         setLoading(true)
         setMessage(null)
 
-        console.log(data)
+        // console.log(data)
 
         const formData = new FormData()
 
@@ -266,7 +327,7 @@ const AreaDiarista = () => {
           setLoading(false)
           setOpenSucess(true)
 
-          console.log('Usuário atualizado com sucesso:', response.data);
+          // console.log('Usuário atualizado com sucesso:', response.data);
           
         } catch (error) {
             setLoading(false)
@@ -279,7 +340,7 @@ const AreaDiarista = () => {
 
     };
 
-    console.log(errors)
+    // console.log(errors)
 
     // states
     const [image, setImage] = useState(User)
@@ -336,7 +397,7 @@ const AreaDiarista = () => {
     const firstName = fullName?.split(' ')[0]
     const status = userInfo?.ativa
     
-    console.log(status)
+    // console.log(status)
 
     return (
         <>
@@ -1045,46 +1106,65 @@ const AreaDiarista = () => {
 
                                         {screenSelected == "datasBloqueadas" && (
                                             <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
-                                                <div className='p-10 flex gap-5 justify-around  items-start '>
+                                                <div className='p-10 flex flex-col md:flex-row gap-10 justify-around  items-start'>
                                                     <Calendar 
                                                         // onConfirmSelection={handleConfirmSelection}
                                                         selectedDates={selectedDates}
                                                         setSelectedDates={setSelectedDates}
                                                         maxSelection={numberOfDays} // Defina aqui o número máximo de seleções permitidas
-                                                        
+                                                        blockDates={() => blockDates()}
                                                     
 
                                                     />
-                                                    <div className='p-5 rounded-md shadow-lg min-h-[60vh] max-h-[50vh] min-w-[80vh] gap-2 flex flex-col '>
-                                                        <div className='p-2'>
-                                                            <h2 className='text-desSec text-lg font-semibold'>Datas Bloqueadas</h2>
+                                                    <div className='p-5 rounded-lg shadow-lg border border-desSec md:min-h-[60vh] md:max-h-[50vh] w-full gap-2 flex flex-col min-h-[50vh] '>
+                                                        <div className=''>
+                                                            <h2 className='text-desSec text-xl font-semibold text-center'>Datas Bloqueadas</h2>
                                                         </div>
                                                         <div className='flex flex-col overflow-y-auto gap-2'>
-                                                            {datasBloqueadas.length > 0 && datasBloqueadas.map((dataBloqueada) => (
-                                                                <>
-                                                                    <div key={dataBloqueada.id} className='p-2'>
-                                                                        <div className='border border-desSec bg-white w-full opacity-100 rounded-lg flex items-center p-2 justify-between shadow-md '>
-                                                                            <div>
-                                                                                {
-                                                                                    new Date(dataBloqueada.data).toISOString().split('T')[0]
-                                                                                }
-                                                                            </div>
-                                                                            <div>
-                                                                                <Button className='bg-white shadow-sm'>
-                                                                                    <span className='text-sec'>
-                                                                                        Desbloquear
-                                                                                    </span>
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-4 text-sec">
-                                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                                                                                    </svg>
+                                                            {datasBloqueadas.length == 0 ? (
+                                                                <div className='flex flex-col w-full min-h-[40vh] text-center justify-center  '>
+                                                                    <span className='opacity-30'>
+                                                                        Nenuma data bloqueada
+                                                                    </span>
 
-                                                                                </Button>
-                                                                            </div>
+                                                                </div>
 
+                                                            ) : (
+                                                                datasBloqueadas.length > 0 &&
+                                                                    datasBloqueadas.map((dataBloqueada) => (
+                                                                        <div key={dataBloqueada.id} className="p-2">
+                                                                            <div className="border border-desSec bg-white w-full opacity-100 rounded-lg flex items-center p-2 justify-between shadow-md ">
+                                                                                <div>
+                                                                                    {new Date(dataBloqueada.data).toISOString().split('T')[0]}
+                                                                                </div>
+                                                                                <div>
+                                                                                    <Button
+                                                                                        className="bg-white shadow-sm"
+                                                                                        onClick={() => unlockDate(dataBloqueada.data)}
+                                                                                    >
+                                                                                        <span className="text-sec">Desbloquear</span>
+                                                                                        <svg
+                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                            fill="none"
+                                                                                            viewBox="0 0 24 24"
+                                                                                            strokeWidth="1.5"
+                                                                                            stroke="currentColor"
+                                                                                            className="size-4 text-sec"
+                                                                                        >
+                                                                                            <path
+                                                                                                strokeLinecap="round"
+                                                                                                strokeLinejoin="round"
+                                                                                                d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+                                                                                            />
+                                                                                        </svg>
+                                                                                    </Button>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                </>
-                                                            ))}
+                                                                    ))
+
+                                                            )}
+
 
                                                         </div>
 
