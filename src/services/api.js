@@ -402,5 +402,18 @@ export const findAllDiasBloqueados = async (userId) => {
   }
 }
 
+export const updateDiasDisponveis = async (userId, data) => {
+  try {
+    const response = await api.put(`users/${userId}/dias-disponiveis`, data)
+
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+    
+  }
+}
+
+
 
 export default api;

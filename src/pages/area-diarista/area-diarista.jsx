@@ -20,6 +20,7 @@ import Calendar from './Calendar.jsx';
 import { bloquearData } from '../../services/api.js';
 import { desbloquearData } from '../../services/api.js';
 import { findAllDiasBloqueados } from '../../services/api.js';
+import { updateDiasDisponveis } from '../../services/api.js';
 
 const AreaDiarista = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -33,7 +34,7 @@ const AreaDiarista = () => {
     const [datasBloqueadas, setDatasBloqueadas] = useState([])
     const [selectedAgendamento, setSelectedAgendamento] = useState([])
     const [openDetalhes, setOpenDetalhes] = useState(false)
-
+    const [loadingDay, setLoadingDay] = useState(false)
 
     const [OpenWho, SetOpenWho] = useState(false)
     const [OpenDuvidas, SetOpenDuvidas] = useState(false)
@@ -111,6 +112,48 @@ const AreaDiarista = () => {
             console.error("Erro ao desbloquear data: ", error);
         }
     };
+
+    const diasDisponveisSchema = yup.object({
+        // Dias da semana 
+        dom: yup.boolean(),
+        seg: yup.boolean(),
+        ter: yup.boolean(),
+        quart: yup.boolean(),
+        qui: yup.boolean(),
+        sex: yup.boolean(),
+        sab: yup.boolean(),
+        diasSemana: yup.boolean().test('at-least-one-day', 'Selecione pelo menos um dia', function () {
+            const { dom, seg, ter, quart, qui, sex, sab } = this.parent
+            return dom || seg || ter || quart || qui || sex || sab
+        }),
+    })
+    .required()
+
+    // Hook Forms
+    const {
+        register: registerDay,
+        handleSubmit: handleSubmitDay,
+        formState: { errors: errorsDay },
+        reset: resetDay,  
+        } = useForm({
+        resolver: yupResolver(diasDisponveisSchema),
+    })
+
+    const handleUpdateDiasDisponveis = async (data) => {
+        console.log("Dados enviados", data)
+        setLoadingDay(true)
+
+        try {
+            const response = await updateDiasDisponveis(userId, data)
+            console.log("Dias disponíveis atualizado com sucesso! ", response.data)
+            setLoadingDay(false)
+
+        } catch (error) {
+            console.log(error)
+            
+        } 
+        
+    }
     
 
     const formatarMoeda = (valor) => {
@@ -701,7 +744,7 @@ const AreaDiarista = () => {
 
 
 
-                                                        {isOpen ? "Datas bloqueadas" : ""}
+                                                        {isOpen ? "Dias disponíveis" : ""}
                                                         
                                                     </Button>
                                                 </div>
@@ -1106,6 +1149,113 @@ const AreaDiarista = () => {
 
                                         {screenSelected == "datasBloqueadas" && (
                                             <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                                
+                                                <div className='w-full p-10 pb-0 pt-2'>
+                                                    <div>
+                                                        <h2 className='text-xl font-semibold'>Precisa mudar os seus dias disponveis na semana? </h2>
+                                                        <p>Sem problemas, você pode editar quando quiser, sinta-se livre! :D </p>
+                                                    </div>
+                                                </div>
+                                                <div className='p-10 flex flex-col md:flex-row gap-10 justify-around  items-start'>
+                                                    <form className='w-full grid gap-2' onSubmit={handleSubmitDay(handleUpdateDiasDisponveis)}>
+                                                        <div className='w-full grid grid-cols-3'>
+                                                            
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="domingo" 
+                                                                {...registerDay("dom", {required: true})}
+                                                                className="days cursor-pointer"
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].dom}
+                                                                />
+                                                                <label htmlFor="domingo">Domingo</label>
+                                                            </div>
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="segunda" 
+                                                                {...registerDay("seg")}
+                                                                className="days cursor-pointer"
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].seg}
+                                                                />
+                                                                <label htmlFor="segunda">Segunda</label>
+                                                            </div>
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="terca" 
+                                                                {...registerDay("ter")}
+                                                                className="days cursor-pointer"
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].ter}
+                                                                />
+                                                                <label htmlFor="terca">Terça</label>
+                                                            </div>
+                                                        
+                                                        
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="quarta" 
+                                                                {...registerDay("quart")}
+                                                                className="days cursor-pointer"
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].quart}
+                                                                />
+                                                                <label htmlFor="quarta">Quarta</label>
+                                                            </div>
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="quinta" 
+                                                                {...registerDay("qui")}
+                                                                className="days cursor-pointer"
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].qui}
+                                                                />
+                                                                <label htmlFor="quinta">Quinta</label>
+                                                            </div>
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="sexta" 
+                                                                {...registerDay("sex")}
+                                                                className="days cursor-pointer"
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].sex}
+                                                                />
+                                                                <label htmlFor="sexta">Sexta</label>
+                                                            </div>
+                                                        
+                                                        
+                                                            <div className="m-3 mb-0 ml-0 flex gap-2">
+                                                                <input 
+                                                                type="checkbox" 
+                                                                id="sabado" 
+                                                                {...registerDay("sab")}
+                                                                className="days cursor-pointer"
+                                                                defaultChecked={userInfo?.DiasDisponiveis[0].sab}
+                                                                />
+                                                                <label htmlFor="sabado">Sábado</label>
+                                                            </div>
+                                                            
+
+                                                        </div>
+                                                        <div>
+                                                            <Button className='bg-white text-sec border border-sec w-full' type='submit' isDisabled={loadingDay}>
+                                                                {loadingDay ? <Spinner className='text-white'/> : "Confirmar e atualizar"}
+                                                            </Button>
+                                                        </div>
+                                                        <div className="mt-2 w-full">
+                                                            {errorsDay.diasSemana && <p className="text-error opacity-75">{errorsDay.diasSemana.message}</p>}
+                                                        </div>
+
+
+                                                    </form>
+
+                                                    
+                                                </div>
+                                                <div className='w-full p-10 pb-0 pt-0'>
+                                                    <p className='font-semibold text-xl'>Houve um imprevisto?</p>
+                                                    <p>sem problemas, você pode bloquear ou desbloquear especificamente o dia que você não vai está disponível :D</p>
+
+                                                </div>
                                                 <div className='p-10 flex flex-col md:flex-row gap-10 justify-around  items-start'>
                                                     <Calendar 
                                                         // onConfirmSelection={handleConfirmSelection}
@@ -1116,13 +1266,14 @@ const AreaDiarista = () => {
                                                     
 
                                                     />
-                                                    <div className='p-5 rounded-lg shadow-lg border border-desSec md:min-h-[60vh] md:max-h-[50vh] w-full gap-2 flex flex-col min-h-[50vh] '>
-                                                        <div className=''>
+                                                    <div className='p-5 rounded-lg shadow-lg border border-desSec md:min-h-[60vh] md:max-h-[50vh] w-full gap-2 flex flex-col max-h-[50vh] '>
+                                                        <div className='w-full justify-center items-center text-center'>
                                                             <h2 className='text-desSec text-xl font-semibold text-center'>Datas Bloqueadas</h2>
+                                                            
                                                         </div>
                                                         <div className='flex flex-col overflow-y-auto gap-2'>
                                                             {datasBloqueadas.length == 0 ? (
-                                                                <div className='flex flex-col w-full min-h-[40vh] text-center justify-center  '>
+                                                                <div className='flex flex-col w-full max-h-[40vh] text-center justify-center  '>
                                                                     <span className='opacity-30'>
                                                                         Nenuma data bloqueada
                                                                     </span>
@@ -1173,6 +1324,7 @@ const AreaDiarista = () => {
                                                     
 
                                                 </div>
+                                                
                                                 
                                             </section>
                                         )}

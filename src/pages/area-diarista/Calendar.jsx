@@ -225,7 +225,7 @@ const Calendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSele
   };
 
   return (
-    <div className="flex flex-col justify-center items-center  min-w-[38vh] max-w-[55vh] md:min-w-11/12 md:max-w-1/12 sm:w-[50vh] md:w-11/12 lg:w-7/12 xl:w-6/12">
+    <div className="flex flex-col justify-center items-center  min-w-[38vh] max-w-full md:min-w-11/12 md:max-w-1/12 sm:w-[50vh] md:w-11/12 lg:w-7/12 xl:w-6/12">
       
       <motion.div
         className="w-full bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec lg:h-[60vh]"
