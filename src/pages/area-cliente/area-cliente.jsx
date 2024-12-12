@@ -4,7 +4,7 @@ import { HeaderApp, Logo,Footer} from '../../componentes/imports.jsx'
 import User from "../../assets/img/diarista-cadastro/user.png"
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import EditClienteModal from './EditClienteModal.jsx';
-import { CreateEnderecosCliente, createReview, deleteEnderecosCliente, getAvaliacoes, getEnderecoDefaultCliente } from '../../services/api.js';
+import { CreateEnderecosCliente, createReview, deleteEnderecosCliente, getAvaliacoes, getEnderecoDefaultCliente, getPrestadorMaisContratado, getSolicitacoesDoMes, getSolicitacoesTotal } from '../../services/api.js';
 import HeaderWebApp from '../../componentes/App/HeaderWebApp.jsx';
 import { Avatar, ScrollShadow, Spinner } from '@nextui-org/react';
 import { getAgendamentos } from '../../services/api.js';
@@ -448,9 +448,48 @@ const [endDate, setEndDate] = useState(null);
   
 const nivelProgress = 75; // Defina a lógica para calcular o progresso
 const experienciaPercent = 60; // Defina a lógica para calcular o percentual de experiência
+const [PrestadorMaisContratado, setPrestadorMaisContratado] = useState()
+useEffect(() => {
+    const handlePrestadorMaisContratado = async() => {
+        try {
+            const response = await getPrestadorMaisContratado(userId)
+            // console.log("RESPOSTA", response)
+            setPrestadorMaisContratado(response)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    handlePrestadorMaisContratado()
+  }, [userId, userInfo]);
+// console.log("PRESTADOR MAIS SOLICITADO", PrestadorMaisContratado)
 
+ const [SolicitacoesDoMes, setSolicitacoesDoMes] = useState(0);
+  useEffect(()=>{
+    const handleSolicitacoesDoMes = async()=>{
+        try{
+            const solMes = await getSolicitacoesDoMes(userId)
+            setSolicitacoesDoMes(solMes)
+        }catch(error){
+            console.log(error)
+        }
+    }
+    handleSolicitacoesDoMes()
+  }, [userId, userInfo]);
 
-
+  const [SolicitacoesTotal, setSolicitacoesTotal] = useState(0);
+  useEffect(() =>{
+    const handleSolicitacoesTotal = async()=>{
+        try{
+            const solTotal = await getSolicitacoesTotal(userId)
+            setSolicitacoesTotal(solTotal)
+        }catch(error){
+            console.log(error)
+        }
+    }
+    handleSolicitacoesTotal()
+  }, [userId, userInfo]);
+    
+  console.log(PrestadorMaisContratado);  // Verifique o objeto inteiro
 
     return (
         <div>
@@ -1372,54 +1411,65 @@ const experienciaPercent = 60; // Defina a lógica para calcular o percentual de
                             )}
 
                             {screenSelected === "painel" && (
-                            <div className="pt-28 flex-1 p-6 bg-gray-100">
-                                {/* Header do painel */}
-                                <h1 className="text-des text-2xl font-bold text-gray-700 mb-6">Painel</h1>
+                                                        <div className="pt-28 flex-1 p-6 bg-gray-100">
+                                                            {/* Header do painel */}
+                                                            <h1 className="text-des text-2xl font-bold text-gray-700 mb-6">Painel</h1>
 
-                                {/* Grid do dashboard */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                
-                                {/* Prestador mais contratado */}
-                                <div className="bg-white border border-desSec shadow-md rounded-md p-6">
-                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
-                                    <div className="flex items-center">
-                                    <div className="w-16 h-16 bg-gray-300 rounded-full mr-4">
-                                        <img src={prestadorMaisContratado?.avatarUrl || "/default-avatar.png"} alt="avatar" className="w-full h-full object-cover rounded-full" />
-                                    </div>
-                                    <span className="text-desSec text-gray-700 font-medium">{prestadorMaisContratado?.name || "Carregando..."}</span>
-                                    </div>
-                                </div>
+                                                            {/* Grid do dashboard */}
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                            {/* Prestador mais contratado */}
+                                                            <div className="bg-white border border-desSec shadow-md rounded-md p-6">
+                                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
+                                                            <div className="flex items-center">
+                                                                <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
+                                                                <Avatar
+                                                                    src={PrestadorMaisContratado?.avatarUrl}
+                                                                    alt={PrestadorMaisContratado?.name}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                                </div>
+                                                                <span className="text-desSec text-gray-700 font-medium">
+                                                                {PrestadorMaisContratado?.name || "Carregando..."}
+                                                                </span>
+                                                            </div>
+                                                            </div>
 
-                                {/* Solicitações do mês */}
-                                <div className="bg-white border border-desSec shadow-md rounded-md p-6">
-                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Solicitações do Mês</h2>
-                                    <p className="text-desSec text-3xl font-bold text-gray-800">{solicitacoesDoMes || 0}</p>
-                                </div>
 
-                                {/* Total de agendamentos */}
-                                <div className="bg-white border border-desSec shadow-md rounded-md p-6">
-                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
-                                    <p className="text-desSec text-3xl font-bold text-gray-800">{totalDeAgendamentos || 0}</p>
-                                </div>
-                                </div>
+                                                            {/* Solicitações do mês */}
+                                                            <div className="bg-white border border-desSec shadow-md rounded-md p-6">
+                                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                                Solicitações do Mês
+                                                            </h2>
+                                                            <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                                {SolicitacoesDoMes || 0}
+                                                            </p>
+                                                            </div>
 
-                                {/* Componente de Nível */}
-                                <div className="bg-white border border-desSec shadow-md rounded-md p-6 mt-10 h-48">
-                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Nível</h2>
-                                <div className="flex flex-col justify-center items-center">
-                                    <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-                                    <div
-                                        className="bg-desSec h-3 rounded-full"
-                                        style={{ width: `${nivelProgress}%` }} // Ajuste o valor aqui conforme o progresso
-                                    ></div>
-                                    </div>
-                                    <span className="text-desSec text-xl font-semibold">{nivel || "Nível 1"}</span>
-                                    <span className="text-desSec text-sm text-gray-600">Experiência: {experienciaPercent}%</span>
-                                </div>
-                                </div>
+                                                            {/* Total de agendamentos */}
+                                                            <div className="bg-white border border-desSec shadow-md rounded-md p-6">
+                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
+                                                                <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
+                                                            </div> 
+                                                            </div>
 
-                            </div>
-                            )}
+                                                            {/* Componente de Nível */}
+                                                            {/* <div className="bg-white border border-desSec shadow-md rounded-md p-6 mt-10 h-48">
+                                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Nível</h2>
+                                                            <div className="flex flex-col justify-center items-center">
+                                                                <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                                                                <div
+                                                                    className="bg-desSec h-3 rounded-full"
+                                                                    style={{ width: `${nivelProgress || 0}%` }}
+                                                                ></div>
+                                                                </div>
+                                                                <span className="text-desSec text-xl font-semibold">{nivel || "Nível 1"}</span>
+                                                                <span className="text-desSec text-sm text-gray-600">
+                                                                Experiência: {experienciaPercent || 0}%
+                                                                </span>
+                                                            </div>
+                                                            </div> */}
+                                                        </div>
+                                                        )}
 
 
                         </div>
