@@ -418,6 +418,34 @@ export const updateDiasDisponveis = async (userId, data) => {
   }
 }
 
+export const getPrestadorMaisContratado = async (clienteId) => {
+  try {
+    const response = await api.get(`agendamentos/prestador-maisAgendado/${clienteId}`);
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
+  }
+}
 
+export const getSolicitacoesDoMes = async (clienteId) => {
+  try {
+    const response = await api.get(`agendamentos/solicitacoes-Mes/${clienteId}`);
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
+  }
+}
+
+export const getSolicitacoesTotal = async (clienteId) =>{
+  try{
+    const response = await api.get(`agendamentos/solicitacoes-Total/${clienteId}`);
+    return response.data;
+  }catch(error){
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
+  }
+}
 
 export default api;
