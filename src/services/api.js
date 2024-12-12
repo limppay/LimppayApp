@@ -448,4 +448,15 @@ export const getSolicitacoesTotal = async (clienteId) =>{
   }
 }
 
+export const createSugestao = async (data) => {
+  try {
+    const response = await api.post(`suggestions/`, data)
+
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  }
+}
+
 export default api;
