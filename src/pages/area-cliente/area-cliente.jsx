@@ -899,7 +899,6 @@ const experienciaPercent = 60; // Defina a lógica para calcular o percentual de
                                                                         year: 'numeric'
                                                                     })}</p>
                                                                     <div className='text-justify flex flex-col gap-2'>
-                                                                        <p><b>Endereço:</b> {agendamento?.enderecoCliente}</p>
 
                                                                         <p><b>Prestador:</b> {agendamento?.user?.name}</p>
 
@@ -914,6 +913,14 @@ const experienciaPercent = 60; // Defina a lógica para calcular o percentual de
                                                                             month: 'long',
                                                                             year: 'numeric'
                                                                         })}</p>
+                                                                        <p><b>Endereço:</b> {agendamento?.enderecoCliente}</p>
+                                                                        <a 
+                                                                            href={`https://www.google.com/maps/place/${encodeURIComponent(69038004)}`} 
+                                                                            target="_blank" 
+                                                                            rel="noopener noreferrer"
+                                                                        >
+                                                                         Ver localização com marcador no Google Maps
+                                                                        </a>
 
                                                                     </div> 
 
