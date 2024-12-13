@@ -448,6 +448,16 @@ export const getSolicitacoesTotal = async (clienteId) =>{
   }
 }
 
+export const getGastoMes = async (clienteId) => {
+  try{
+    const response = await api.get(`agendamentos/gasto-Mes/${clienteId}`);
+    return response.data;
+  }catch (error){
+    const errorMessage = error.response?.data?.message || 'Problemas de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
+  }
+}
+
 export const createSugestao = async (data) => {
   try {
     const response = await api.post(`suggestions/`, data)
