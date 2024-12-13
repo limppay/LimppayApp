@@ -1553,7 +1553,7 @@ export default function ContrateOnline() {
                     </div>
                 )}
 
-                <div className={`${currentStep >= 1 ? "" : "hidden"} fixed bottom-0 left-0 w-full transition-all duration-300 ease-in-out ${isExpanded ? 'h-[60vh]' : 'h-[8vh]'} bg-white p-2  text-prim  shadow-[0_-4px_10px_rgba(0,0,0,0.1)] `}>
+                <div className={`${currentStep >= 1 ? "" : "hidden"} sm:hidden fixed bottom-0 left-0 w-full transition-all duration-300 ease-in-out ${isExpanded ? 'h-[60vh]' : 'h-[8vh]'} bg-white p-2  text-prim  shadow-[0_-4px_10px_rgba(0,0,0,0.1)] `}>
                     <div
                         className="cursor-pointer  bg-white pt-2 p-4 text-center  font-semibold rounded-t-lg"
                         onClick={() => setIsExpanded(!isExpanded)}
