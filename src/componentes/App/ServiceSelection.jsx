@@ -43,7 +43,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
 
   const services = servicos.filter((servico) => servico.status === true) // Filtra apenas os com status true
   .map((servico) => ({
-    // icon: 'fas fa-baby',
+    icone: servico.icone,
     id: servico.id,
     title: servico.nome,
 
@@ -147,7 +147,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
                 filteredServices.map((service, index) => (
                   <ServiceCard
                     key={index}
-                    icon={service.icon}
+                    icon={service.icone}
                     title={service.title}
                     description={service.description}
                     value={service.value}

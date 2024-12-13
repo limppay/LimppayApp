@@ -1,6 +1,29 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@nextui-org/react';
+// Font Awesome imports
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBroom,
+  faHome,
+  faBaby,
+  faUtensils,
+  faBolt,
+  faWrench,
+  faPlus,
+  faComputer,
+  faSeedling,
+  faBuilding,
+  faCouch,
+  faTShirt,
+  faTools,
+  faPaintRoller,
+  faGlassMartini,
+  faTshirt,
+  faHouse,
+  faScrewdriverWrench,
+  faMartiniGlass,
+} from "@fortawesome/free-solid-svg-icons";
 
 const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, days, setDays, onProceed }) => {
   const incrementDays = () => {
@@ -17,14 +40,37 @@ const ServiceCard = ({ icon, title, description, value, isExpanded, onClick, day
     
   };
 
+  const iconMap = {
+    broom: faBroom,
+    house: faHouse,
+    baby: faBaby,
+    utensils: faUtensils,
+    bolt: faBolt,
+    wrench: faWrench,
+    plus: faPlus,
+    computer: faComputer,
+    seedling: faSeedling,
+    building: faBuilding,
+    couch: faCouch,
+    shirt: faTShirt,
+    "screwdriver-wrench": faScrewdriverWrench,
+    "paint-roller": faPaintRoller,
+    "martini-glass": faMartiniGlass,
+  };
+
+  const IconComponent = ({ iconName }) => {
+    const icon = iconMap[iconName];
+    return icon ? <FontAwesomeIcon icon={icon} className="size-10 text-neutral-500"  /> : null;
+  };
+
   return (
     <div 
-      className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${isExpanded ? 'border-desSec bg-desSec shadow-lg' : 'border-desSec'}`}
+      className={`border rounded-lg p-5 cursor-pointer transition-all duration-200 ${isExpanded ? 'border-desSec bg-desSec shadow-lg' : 'border-desSec'}`}
       onClick={onClick} // Chama a função de clique passada como prop
     >
-      <div className="flex flex-col gap-3 md:flex-row md:items-center">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center pb-5 ">
         <div className={`text-3xl flex gap-4 w-full ${isExpanded ? 'text-white' : 'text-sec'}`}>
-          <i className={icon}></i>
+          <IconComponent iconName={icon} />
           <h3 className={`text-lg font-semibold ${isExpanded ? 'text-white' : 'text-ter'} mb-2`}>{title}</h3>
         </div>
       </div>
