@@ -137,7 +137,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
               </label>
             </div>
 
-            <div className={`max-h-80 overflow-y-auto grid grid-cols-1  lg:grid-cols-2  gap-4 min-h-[55vh] md:min-h-[45vh] ${loading ? "items-center" : ""} `}>
+            <div className={`max-h-80 overflow-y-auto grid grid-cols-1  lg:grid-cols-2  gap-4 min-h-[60vh] md:min-h-[45vh] ${loading ? "items-center" : ""} `}>
               {loading ? (
                 <div className='col-span-2 text-white min-w-[20vh] '>
                   <Spinner size='lg' />
