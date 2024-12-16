@@ -48,8 +48,12 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
     title: servico.nome,
 
     description: servico.descricao,
-    value: servico.valorDiaria
+    value: servico.valorDiaria,
+    valueMeia: servico.valorMeiaDiaria,
+    valueHora: servico.valorUmaHora
   }));
+
+  console.log("Serviços: ", servicos)
   
     
   const filteredServices = services.filter(service =>
@@ -66,6 +70,10 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
     setServiceValue(services[index].value)
     
   };
+
+  const HandleSetServiceValue = (value) => {
+    setServiceValue(value)
+  }
 
   const handleProceed = () => {
     onDaysChange(days); // Chama a função para atualizar o número de dias no componente pai
@@ -151,11 +159,14 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
                     title={service.title}
                     description={service.description}
                     value={service.value}
+                    valueMeia={service.valueMeia}
+                    valueHora={service.valueHora}
                     isExpanded={selectedServiceIndex === index}
                     onClick={() => handleServiceClick(index, service?.id)}
                     days={days}
                     setDays={setDays}
                     onProceed={handleProceed} // Passa a função onProceed para o ServiceCard
+                    HandleSetServiceValue={HandleSetServiceValue}
                   />
                 ))
               ) : (
@@ -167,13 +178,6 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
 
           <div className="mt-6 bg-white shadow-md rounded-lg p-4 flex flex-col gap-2">
             <h3 className="text-center text-lg font-semibold text-prim ">Não encontrou o que queria?</h3>
-            <div className='text-prim'>
-              <p>Nos envie uma sugestão de serviço que você gostaria de contratar. <br />
-              Não se preocupe, sua sugestão é totalmente anônima :D
-              </p>
-
-            </div>
-            <p></p>
             <form className='flex flex-col gap-5' onSubmit={handleSubmit(onSubmit)}>
               <div className='flex flex-col justify-start'>
                 <input 
@@ -190,7 +194,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
               </div>
               <div className='flex flex-col justify-start'>
                 <textarea
-                  placeholder="Descrição da sugestão"
+                  placeholder="Nos envie uma sugestão de serviço que você gostaria de contratar"
                   className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 focus:outline-ter text-prim w-full max-h-1"
                   rows="3"
                   {...register("description")}
