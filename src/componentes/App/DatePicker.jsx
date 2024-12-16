@@ -198,7 +198,20 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
     for (let i = 1; i <= daysInMonth; i++) {
   const dateToCheck = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
   const isSelected = selectedDates.some(date => date.toDateString() === dateToCheck.toDateString());
-  const isDisabled = dateToCheck < today;
+  const isDisabled = (() => {
+    const now = new Date();
+    const isPast = dateToCheck < today;
+  
+    // Checar se passou das 19:00 horário de Brasília
+    const brazilTimeOffset = -3; // UTC-3
+    const brazilHour = now.getUTCHours() + brazilTimeOffset;
+  
+    const isAfter7PM = brazilHour >= 19;
+    const isTomorrow = dateToCheck.toDateString() === new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toDateString();
+  
+    return isPast || (isAfter7PM && isTomorrow);
+  })();
+  
 
   days.push(
     <div
