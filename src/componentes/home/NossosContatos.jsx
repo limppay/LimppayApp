@@ -52,7 +52,7 @@ export default function NossosContatos() {
     }
         
     return (
-        <section className="flex justify-center pb-12 lg:pt-0 pt-10" id="nossos-contatos">
+        <section className="flex justify-center pb-12 lg:pt-0 pt-10 p-10" id="nossos-contatos">
             <div className="isolate px-6 lg:px-8 flex flex-col lg:flex-row justify-around items-baseline ">
                 <div className="flex flex-col md:w-1/2">
                     {/* Seção à Esquerda */}
@@ -116,7 +116,7 @@ export default function NossosContatos() {
                                 <textarea
                                     id="message"
                                     {...register("message")}
-                                    className="block px-3.5 py-2 shadow-sm sm:text-sm sm:leading-6 w-full border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-prim"
+                                    className="block px-3.5 py-2 shadow-sm sm:text-sm sm:leading-6 w-full border rounded-md 2xl:max-h-[25vh] 2xl:min-h-[25vh]  border-bord p-3 pt-2 pb-2 focus:outline-prim text-prim"
                                     
                                 />
                                 </div>

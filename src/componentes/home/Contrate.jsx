@@ -1,9 +1,10 @@
+import { Button } from "@nextui-org/react";
 import ContrateOnline from "../../assets/img/1.webp";
 import SejaDiarista from "../../assets/img/2.webp";
 
 export default function Contrate() {
     return (
-        <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0 ">
+        <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0  ">
             <div className="container mx-auto px-4 flex flex-col md:flex-row gap-10">
                 <div className="bg-white  rounded-lg overflow-hidden flex flex-col-reverse lg:flex-row items-center lg:justify-center">
                     <div className="items-center justify-center">
@@ -14,7 +15,11 @@ export default function Contrate() {
                             </p>
                         </div>
                         <div className="p-4 text-center lg:text-start">
-                            <a href="/contrate-online" className="bg-des text-white px-4 py-2 rounded hover:bg-blue-600 transition">Contrate online</a>
+                            <a href="/contrate-online">
+                            <Button className="bg-des text-white">
+                                Contrate online
+                            </Button>
+                            </a>
                         </div>
                     </div>
                     <img src={ContrateOnline} alt="contrate diarista" className=" lg:w-4/12 w-8/12 object-cover" />
@@ -31,7 +36,11 @@ export default function Contrate() {
                             </p>
                         </div>
                         <div className="p-4 text-center lg:text-start">
-                            <a href="/seja-diarista" className="bg-des text-white px-4 py-2 rounded hover:bg-blue-600 transition">Seja diarista</a>
+                            <a href="/seja-diarista">
+                            <Button className="bg-des text-white">
+                                Seja diarista
+                            </Button>
+                            </a>
                         </div>
                     </div>
                 </div>

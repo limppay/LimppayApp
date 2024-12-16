@@ -2,11 +2,12 @@ import LimpezaResi from "../../assets/img/MG_9549.webp"
 import RoupasPassadas from "../../assets/img/MG_9585.webp"
 import LimpezaPres from "../../assets/img/MG_9567.webp"
 import React from 'react';
+import { Button } from "@nextui-org/react";
 
 export default function Servicos() {
     return (
-        <section id="servicos" className="lg:pt-12 pt-10 pb-5">
-            <div className="lg:flex-row flex flex-col justify-around lg:items-end items-center text-prim gap-10">
+        <section id="servicos" className="lg:pt-12 pt-10 ">
+            <div className="grid md:grid-cols-3 justify-items-center   text-prim gap-10">
                 <div className="flex flex-col justify-center text-center items-center gap-3">
                     <img src={LimpezaResi} alt="slide" className="w-6/12"/>
                     <div>
@@ -14,7 +15,12 @@ export default function Servicos() {
                         <p>Casas e apartamentos mais limpos e organizados</p>
                     </div>
                     <div className="pt-2">
-                        <a href="/contrate-online" className="p-2 rounded-md w-2/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75">Contrate online</a>
+                        <a href="/contrate-online">
+                            <Button className="bg-des text-white">
+                                Contrate online
+
+                            </Button>
+                        </a>
                     </div>
                 </div>
                 <div className="flex flex-col justify-center text-center items-center gap-3" >
@@ -26,7 +32,12 @@ export default function Servicos() {
                         </div>
                     </div>
                     <div className="pt-2">
-                        <a href="/contrate-online" className="p-2 rounded-md w-2/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75">Contrate online</a>
+                        <a href="/contrate-online">
+                            <Button className="bg-des text-white">
+                                Contrate online
+
+                            </Button>
+                        </a>
                     </div>
                 </div>
                 <div className="flex flex-col justify-center text-center items-center gap-3" >
@@ -38,7 +49,11 @@ export default function Servicos() {
                         </div>
                     </div>
                     <div className="pt-2">
-                        <a href="/contrate-online" className="p-2 rounded-md w-2/4 max-w-full text-center bg-des text-white transition-all hover:bg-sec hover:bg-opacity-75">Contrate online</a>
+                        <a href="/contrate-online">
+                            <Button className="bg-des text-white">
+                                Contrate online
+                            </Button>
+                        </a>
                     </div>
                 </div>
             </div>

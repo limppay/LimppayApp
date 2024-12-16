@@ -1,4 +1,5 @@
 import React from "react";
+import WhatsAppIcon from "../assets/img/whatsapp.png"
 
 const WhatsappButton = () => {
   return (
@@ -14,11 +15,11 @@ const WhatsappButton = () => {
       </span>
 
       {/* Ícone do WhatsApp */}
-      <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center shadow-lg group hover:scale-110 transition-transform duration-300 bg-white">
+      <div className="2xl:w-12 2xl:h-12 rounded-full bg-green-500 flex items-center justify-center shadow-lg group hover:scale-110 transition-transform duration-300 bg-white">
         <img
-          src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
+          src={WhatsAppIcon}
           alt="WhatsApp"
-          className="w-8 h-8"
+          className="w-8 h-8 2xl:w-12 2xl:h-12"
         />
       </div>
     </a>
