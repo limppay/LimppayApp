@@ -6,8 +6,8 @@ import { Button } from "@nextui-org/react";
 
 export default function Servicos() {
     return (
-        <section id="servicos" className="lg:pt-12 pt-10 ">
-            <div className="grid md:grid-cols-3 justify-items-center   text-prim gap-10">
+        <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0 flex justify-center ">
+            <div className=" container grid md:grid-cols-3 justify-items-center   text-prim gap-10">
                 <div className="flex flex-col justify-center text-center items-center gap-3">
                     <img src={LimpezaResi} alt="slide" className="w-6/12"/>
                     <div>

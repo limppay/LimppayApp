@@ -52,8 +52,8 @@ export default function NossosContatos() {
     }
         
     return (
-        <section className="flex justify-center pb-12 lg:pt-0 pt-10 p-10" id="nossos-contatos">
-            <div className="isolate px-6 lg:px-8 flex flex-col lg:flex-row justify-around items-baseline ">
+        <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0 flex justify-center " >
+            <div className=" container  flex flex-col lg:flex-row justify-around items-baseline ">
                 <div className="flex flex-col md:w-1/2">
                     {/* Seção à Esquerda */}
                     <div className="space-y-6">

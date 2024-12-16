@@ -39,9 +39,7 @@ export default function App() {
         <Slide/>
         <ElementosSobre/>
         <Contrate/>
-        <div className='lg:p-12 pt-0 pb-0 lg:pb-0 p-10'>
-          <Servicos/>
-        </div>
+        <Servicos/>
 
         <Contratar/>
         <QuemSomos/>

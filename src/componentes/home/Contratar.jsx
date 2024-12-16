@@ -5,7 +5,7 @@ import ProfiQuali from "../../assets/img/profissionais-qualificados.png"
 export default function Contratar() {
     return (
         <section className="flex  justify-center lg:flex-row w-full p-5 lg:p-0">
-            <div className="grid md:grid-cols-3  text-prim p-5 md:pb-16 gap-5 ">
+            <div className="container grid md:grid-cols-3  text-prim p-5 md:pb-16 gap-5 ">
                 <div className="flex flex-col justify-center items-center text-justify p-10">
                     <img src={ContratacaoRapida} alt="contração rápida"/>
                     <div className="flex flex-col gap-2">

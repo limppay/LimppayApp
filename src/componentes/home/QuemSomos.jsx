@@ -4,8 +4,8 @@ import { Logo } from '../imports';
 
 export default function QuemSomos() {
     return (
-      <section id="quem-somos" className='w-full pb-10 '>
-        <div className='w-full flex justify-center'>
+      <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0 flex justify-center ">
+        <div className='container '>
           <div className="flex flex-col p-10 2xl:max-w-[160vh]">
             <h2 className=" text-center text-desSec text-4xl font-semibold tracking-tight lg:text-5xl">Quem Somos</h2>
             <div className='w-full text-md text-prim text-justify flex flex-col '>
