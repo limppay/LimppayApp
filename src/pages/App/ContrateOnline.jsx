@@ -32,6 +32,8 @@ import axios from 'axios';
 
 import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { Button } from '@nextui-org/react';
+import CookieBanner from '../../componentes/App/CookieBanner';
+import WhatsappButton from '../../componentes/WhatsAppContact';
 
 
 export default function ContrateOnline() {
@@ -1623,10 +1625,13 @@ export default function ContrateOnline() {
                         </div>
                     </div>
                 </div>
+                <WhatsappButton/>
 
                 
                       
             </main>
+            {/* banner para aceitar os cookies */}
+            {/* <CookieBanner/> */}
 
             <Footer/>
 

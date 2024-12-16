@@ -469,4 +469,16 @@ export const createSugestao = async (data) => {
   }
 }
 
+export const sendMailContact = async (data) => {
+  try {
+    const response = await api.post(`contact/send`, data)
+
+    return response.data
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  }
+  
+}
+
 export default api;
