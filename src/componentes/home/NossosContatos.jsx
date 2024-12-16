@@ -52,9 +52,9 @@ export default function NossosContatos() {
     }
         
     return (
-        <section className="pt-0 lg:p-24 lg:pb-0 lg:pt-0 flex justify-center " >
-            <div className=" container  flex flex-col lg:flex-row justify-around items-baseline ">
-                <div className="flex flex-col md:w-1/2">
+        <section className="pt-0 lg:p-24  lg:pt-0 flex justify-center pb-10  " >
+            <div className=" container  flex flex-col lg:flex-row justify-around items-baseline">
+                <div className="flex flex-col md:w-1/2 p-10 sm:p-0 ">
                     {/* Seção à Esquerda */}
                     <div className="space-y-6">
                         <h2 className="text-3xl font-semibold text-desSec text-center lg:text-start">Fale Conosco</h2>
@@ -76,7 +76,7 @@ export default function NossosContatos() {
                     </div>
                 </div>
 
-                <div>
+                <div className='p-10 sm:p-0' >
                     <form onSubmit={handleSubmit(onSubmit)} className="mx-auto mt-16 max-w-xl sm:mt-20">
                         <div className="flex flex-col gap-x-8 gap-y-6">
                             <div className='flex justify-between w-full gap-10'>

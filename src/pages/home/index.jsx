@@ -35,7 +35,7 @@ export default function App() {
   return (
     <div className="app">
       <HeaderApp img={logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
-      <main className='z-0 relative pt-16'>
+      <main className='z-0 relative pt-16 pb-10'>
         <Slide/>
         <ElementosSobre/>
         <Contrate/>

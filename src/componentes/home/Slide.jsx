@@ -8,7 +8,7 @@ import SlideStepTwo from '../../assets/img/slide/1920x700-02.webp';
 
 const Slide = () => {
   return (
-    <section>
+    <section className='2xl:pt-0 md:pt-[2vh]'>
       <Swiper
         modules={[Pagination, Autoplay]}
         spaceBetween={0}
