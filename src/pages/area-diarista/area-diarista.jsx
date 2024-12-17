@@ -11,7 +11,7 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { CreateStepTwo, getAgendamentos, getAvaliacoesByPrestador } from '../../services/api.js';
+import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico } from '../../services/api.js';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
@@ -35,6 +35,7 @@ const AreaDiarista = () => {
     const [selectedAgendamento, setSelectedAgendamento] = useState([])
     const [openDetalhes, setOpenDetalhes] = useState(false)
     const [loadingDay, setLoadingDay] = useState(false)
+    const [loadingServico, setLoadingServico] = useState(false)
 
     const [OpenWho, SetOpenWho] = useState(false)
     const [OpenDuvidas, SetOpenDuvidas] = useState(false)
@@ -441,6 +442,95 @@ const AreaDiarista = () => {
     const status = userInfo?.ativa
     
     // console.log(status)
+    const servicosSchema = yup.object({
+        servicosSelecionados: yup.array().required("Selecione um servico")
+    })
+    .required()
+
+   
+
+    // Hook Forms
+    const {
+        register: registerService,
+        handleSubmit: handleSubmitService,
+        formState: { errors: errorsService },
+        reset: resetService,  
+        } = useForm({
+        resolver: yupResolver(servicosSchema),
+    })
+
+
+    const handleUpdateServicos = async (data) => {
+        console.log("Dados enviados", data)
+        setLoadingServico(true)
+        
+        const req = {
+            servicosSelecionados: JSON.stringify(selectedServices)
+        }
+
+        console.log("Array de serviços enviado: ", req.servicosSelecionados)
+        
+
+        try {
+            const response = await updateServico(userId, data)
+            console.log("Serviços atualizados com sucesso! ", response)
+            setLoadingServico(false)
+            setServiceMessage("Enviado com sucesso!")
+
+        } catch (error) {
+            console.log(error)
+            setServiceMessage(error)
+        } 
+        
+    }
+    
+    const [servicos, setServicos] = useState([])
+    const [selectedServices, setSelectedServices] = useState([])
+    const toggleService = (id) => {
+        if (selectedServices.includes(id)) {
+            // Remove se já estiver selecionado
+            setSelectedServices(selectedServices.filter((service) => service !== id));
+        } else {
+            // Adiciona à lista
+            setSelectedServices([...selectedServices, id]);
+        }
+    };
+
+    const [serviceMessage, setServiceMessage] = useState("")
+
+    // função para fazer as requisições
+    useEffect(() => {
+
+        const handleGetServicos = async () => {
+        try {
+            const response = await findAllServicos()
+            console.log("Servicos", response)
+
+            setServicos(response)
+            
+    
+        } catch (error) {
+            console.log(error)
+            
+
+        } 
+
+        }
+
+        handleGetServicos()
+
+    }, [])
+
+    useEffect(() => {
+        if (selectedServices) {
+                resetService({
+                servicosSelecionados: selectedServices,
+            });
+
+        }
+    }, [selectedServices, reset]);
+
+    console.log("Serviços selecionados: ", selectedServices)
 
     return (
         <>
@@ -745,6 +835,23 @@ const AreaDiarista = () => {
 
 
                                                         {isOpen ? "Dias disponíveis" : ""}
+                                                        
+                                                    </Button>
+                                                </div>
+
+                                                <div>
+                                                    <Button
+                                                    className='w-full border shadow-md bg-trans text-des justify-start'
+                                                    onClick={() => setScreenSelected("servicos")}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+                                                        </svg>
+
+
+
+
+                                                        {isOpen ? "Serviços" : ""}
                                                         
                                                     </Button>
                                                 </div>
@@ -1343,6 +1450,63 @@ const AreaDiarista = () => {
                                                 </div>
                                                 
                                                 
+                                            </section>
+                                        )}
+
+                                        {screenSelected == "servicos" && (
+                                            <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                                <div className='p-7   flex flex-col gap-5'>
+                                                    <div>
+                                                        <h2 className='text-2xl font-semibold '>Serviços</h2>
+                                                    </div>
+                                                    <div className="w-full pb-10 ">
+                                                        <form className='flex flex-col gap-5 ' onSubmit={handleSubmitService(handleUpdateServicos)}>
+                                                            <div className="overflow-y-auto max-h-[60vh] lg:p-2 grid grid-cols-1 gap-5 lg:grid-cols-5 items-center lg:gap-5">
+                                                                {servicos
+                                                                .filter((servico) => servico.status)
+                                                                .map((servico) => (
+                                                                    <div key={servico.id} className="flex items-center">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            id={`servico-${servico.id}`}
+                                                                            value={servico.id}
+                                                                            checked={selectedServices.includes(servico.id)}
+                                                                            onChange={() => toggleService(servico.id)}
+                                                                            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                                                        />
+                                                                        <label
+                                                                            htmlFor={`servico-${servico.id}`}
+                                                                            className="ml-2 block text-sm text-gray-900"
+                                                                        >
+                                                                            {servico.nome}
+                                                                        </label>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                            <div className='flex flex-col w-full md:w-6/12 gap-2'>
+                                                                <Button className=' bg-sec text-white' isDisabled={selectedServices.length > 0 ? false : true} type='submit'>
+                                                                    {loadingServico ? <Spinner/> : "Confirmar"}
+                                                                </Button>
+                                                                
+                                                                {serviceMessage && 
+                                                                    <span className='text-center'>{serviceMessage}</span>
+                                                                }
+                                                            </div>
+
+
+                                                        </form>
+                                                        
+                                                    </div>
+
+                                                    <span className='opacity-50 flex items-center gap-2'>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                                                        </svg>
+
+                                                        Selecione os serviços que você deseja realizar
+                                                    </span>
+
+                                                </div>
                                             </section>
                                         )}
 

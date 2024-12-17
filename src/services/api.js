@@ -481,4 +481,16 @@ export const sendMailContact = async (data) => {
   
 }
 
+export const updateServico = async (id, data) => {
+  try {
+    const response = await api.patch(`users/${id}/servicos`, data)
+
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  }
+  
+}
+
 export default api;

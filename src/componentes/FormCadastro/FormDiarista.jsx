@@ -11,8 +11,6 @@ import User from "../../assets/img/diarista-cadastro/user.png"
 import {Tooltip} from "@nextui-org/tooltip";
 import { Spinner } from "@nextui-org/react"
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
-
-
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import {useNavigate } from 'react-router-dom';
