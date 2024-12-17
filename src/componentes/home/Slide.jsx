@@ -21,10 +21,14 @@ const Slide = () => {
         pagination={{ clickable: true }}
       >
         <SwiperSlide className="flex justify-center items-center">
-          <img src={SlideStepOne} alt="slide" className="w-full h-auto object-contain" />
+          <a href="https://api.whatsapp.com/send?phone=5592992648251&text=Ol%C3%A1,%20vim%20pelo%20seu%20site%20e%20gostaria%20de%20saber%20mais%20informa%C3%A7%C3%B5es%20sobre%20o%20servi%C3%A7o!%20%E2%9C%85" className='cursor-default'>
+            <img src={SlideStepOne} alt="slide" className="w-full h-auto object-contain" />
+          </a>
         </SwiperSlide>
         <SwiperSlide className="flex justify-center items-center">
-          <img src={SlideStepTwo} alt="slide" className="w-full h-auto object-contain" />
+          <a href="/contrate-online" className='cursor-default'>
+            <img src={SlideStepTwo} alt="slide" className="w-full h-auto object-contain" />
+          </a>
         </SwiperSlide>
       </Swiper>
     </section>

@@ -65,7 +65,7 @@ const ServiceCard = ({HandleSetServiceValue, icon, title, description, value, is
 
   return (
     <div 
-      className={`border rounded-lg p-5 cursor-pointer transition-all duration-200 ${isExpanded ? 'border-desSec bg-desSec shadow-lg' : 'border-desSec'}`}
+      className={` border rounded-lg p-5 cursor-pointer transition-all duration-200 ${isExpanded ? 'border-desSec bg-desSec shadow-lg' : 'border-desSec'}`}
       onClick={onClick} // Chama a função de clique passada como prop
     >
       <div className="flex flex-col gap-3 md:flex-row md:items-center pb-5 ">

@@ -681,9 +681,9 @@ export default function ContrateOnline() {
         <>
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
-            <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 ">
+            <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 2xl:pt-[3vh]  ">
                 
-                <div className='flex flex-col items-center text-center min-w-[45vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[100vh] sm:min-h-[80vh]'>
+                <div className='flex flex-col items-center text-center min-w-[45vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[100vh] sm:min-h-[80vh] 2xl:max-w-[100vh] 2xl:min-w-[100vh]  '>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -1675,8 +1675,8 @@ export default function ContrateOnline() {
 
                 <WhatsappButton/>
 
-              
             </main>
+            
             {/* banner para aceitar os cookies */}
             {/* <CookieBanner/> */}
 

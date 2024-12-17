@@ -122,8 +122,8 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen w-full h-full ">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl mx-auto">
+    <div className="bg-gray-50 min-h-screen w-full h-full  ">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl mx-auto ">
         {/* Coluna principal */}
         <div className="lg:col-span-2">
           <div className="bg-white sm:shadow-md rounded-lg p-4 w-full">

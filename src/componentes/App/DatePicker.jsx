@@ -373,8 +373,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   };
 
   return (
-    <div className="flex flex-col justify-center items-center pt-4 min-w-[38vh] max-w-[55vh] md:min-w-11/12 md:max-w-1/12 sm:w-[50vh] md:w-11/12 lg:w-7/12 xl:w-6/12">
-      
+    <div className="flex flex-col justify-center items-center pt-4 min-w-[38vh] max-w-[55vh] md:min-w-11/12 md:max-w-1/12 sm:w-[50vh] md:w-11/12 lg:w-7/12 xl:w-6/12 2xl:w-6/12">
       <motion.div
         className="w-full bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec lg:h-[60vh]"
         key={`${currentDate.toISOString()}-${currentYearPage}-${showMonths}-${showYears}`} // Key para reiniciar a animação
@@ -405,6 +404,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
             </svg>
           </button>
         </div>
+        
         {showYears ? renderYears() : showMonths ? renderMonths() : (
           <>
             <div className='lg:pt-0 p-2 overflow-hidden'>
