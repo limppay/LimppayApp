@@ -7,6 +7,8 @@ import { useUser } from '../../context/UserProvider';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from "@nextui-org/react";
 import {Button} from "@nextui-org/react";
+import User from "../../assets/img/diarista-cadastro/user.png"
+
 
 export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
     const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {});
@@ -120,7 +122,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                   <div className='flex items-center gap-2'>
                     <div className='flex gap-2 items-center'>
                       <Avatar
-                        src={avatarUrl}
+                        src={!avatarUrl ? avatarUrl : User}
                         alt="User Avatar"
                         size='sm'
                         onClick={HandleNavigateUser}

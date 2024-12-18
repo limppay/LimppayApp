@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import axios from "axios"
 import { updateCliente } from '../../services/api';
+import User from "../../assets/img/diarista-cadastro/user.png"
 
 import InputMask from "react-input-mask"
 
@@ -286,7 +287,7 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
                             <div className='lg:flex-row flex flex-col items-center lg:justify-around'>
                                 <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
-                                    <img src={image} 
+                                    <img src={!image ? image : User} 
                                     alt="foto de perfil" 
                                     className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
                                     />                  
