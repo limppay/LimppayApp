@@ -48,16 +48,12 @@ export default function FormDiarista() {
         estadoCivil: yup.number().required("Estado civil é obrigatório").typeError("Estado Civil é obrigatório"),
         telefone: yup.string().trim().required("Telefone é obrigatório"),
         email: yup.string().trim().required("E-mail é obrigatório").email("Email inválido."),
-        cep:  yup.string().required("Preencha os campos abaixo").min(8, "Digite um cep válido"),
-        logradouro:  yup.string(),
-        numero:  yup.string().trim().required("Número é obrigatório"),
-        complemento:  yup.string(),
-        bairro:  yup.string(),
+        
+
         cidade:  yup.string(),
         estado: yup.string().typeError(""),
         cpfCnpj: yup.string().trim().required("O CPF é obrigatório").min(11, "Digite um CPF válido"),
 
-        rg: yup.string().trim().required("O RG é obrigatório"),
         
 
         senha: yup.string().trim().required("A senha é obrigatório").min(6, "A senha deve ter no minimo 6 caracteres"),
@@ -148,7 +144,6 @@ export default function FormDiarista() {
 
         const cpfCnpjSemMascara = removerMascara(data.cpfCnpj);
         const telefoneSemMascara = removerMascara(data.telefone);
-        const cepSemMascara = removerMascara(data.cep);
 
         //Validação de maioridade
         const today = new Date();
@@ -177,17 +172,11 @@ export default function FormDiarista() {
 
         formData.append('data', dataNascimento)
 
-        formData.append('cep', cepSemMascara)
-
-        formData.append('logradouro', data.logradouro)
-        formData.append('numero', data.numero)
-        formData.append('complemento', data.complemento)
-        formData.append('bairro', data.bairro)
         formData.append('cidade', data.cidade)
         formData.append('estado', data.estado)
 
         formData.append('cpfCnpj', cpfCnpjSemMascara)
-        formData.append('rg', data.rg)
+
 
         formData.append('senha', data.senha)
         formData.append('sobre', data.sobre)
@@ -426,7 +415,7 @@ export default function FormDiarista() {
         }));
       };
       
-      const estados = {
+    const estados = {
         "AC": "Acre",
         "AL": "Alagoas",
         "AP": "Amapá",
@@ -454,7 +443,7 @@ export default function FormDiarista() {
         "SP": "São Paulo",
         "SE": "Sergipe",
         "TO": "Tocantins"
-      };
+    };
       
     const handleCepChange = async (e) => {
     const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
@@ -675,7 +664,7 @@ export default function FormDiarista() {
                     )}
                 </div>
 
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                {/* <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="rg" className="text-prim">RG</label>
                     <input
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
@@ -686,7 +675,7 @@ export default function FormDiarista() {
                     />
                     {errors.rg && 
                     <span className="text-error opacity-75">{errors.rg?.message}</span>}
-                </div>
+                </div> */}
             </div>
 
             <div className="lg:flex">
@@ -885,7 +874,7 @@ export default function FormDiarista() {
                 <span className="text-error opacity-75">{errors.cep?.message}</span>}
             </div>
 
-            <div className="lg:flex lg:justify-between">
+            {/* <div className="lg:flex lg:justify-between">
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="cep" className="text-prim">CEP</label>
                     <InputMask 
@@ -967,7 +956,7 @@ export default function FormDiarista() {
                     {errors.bairro && 
                     <span className="text-error opacity-75">{errors.bairro?.message}</span>}
                 </div>
-            </div>
+            </div> */}
 
             <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                 <label htmlFor="cidade" className="text-prim">Cidade</label>
@@ -977,7 +966,7 @@ export default function FormDiarista() {
                 type="text" 
                 placeholder="" 
                 {...register("cidade")}
-                readOnly
+                
                 />
                 {errors.cidade && 
                 <span className="text-error opacity-75">{errors.cidade?.message}</span>}
@@ -991,7 +980,7 @@ export default function FormDiarista() {
                 type="text" 
                 placeholder=""
                 {...register("estado")}
-                readOnly
+                
                 />
                 {errors.estado && 
                 <span className="text-error opacity-75">{errors.estado?.message}</span>}

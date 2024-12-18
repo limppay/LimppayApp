@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { HeaderApp, Logo, Footer, ModalQuemSomos, ModalDuvidas} from '../../componentes/imports.jsx'
 import User from "../../assets/img/diarista-cadastro/user.png"
@@ -21,6 +21,7 @@ import { bloquearData } from '../../services/api.js';
 import { desbloquearData } from '../../services/api.js';
 import { findAllDiasBloqueados } from '../../services/api.js';
 import { updateDiasDisponveis } from '../../services/api.js';
+import InputMask from "react-input-mask"
 
 const AreaDiarista = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -326,7 +327,18 @@ const AreaDiarista = () => {
 
         agencia: yup.string().required("Agência é obrigatório").trim(),
         conta: yup.string().required("Conta é obrigatório"),
-        pix: yup.string().required("Informe uma chave pix")
+        banco: yup.number().required("Banco é obrigatório"),
+        pix: yup.string().required("Informe uma chave pix"),
+
+        cep:  yup.string().required("Preencha os campos abaixo").min(8, "Digite um cep válido"),
+        logradouro:  yup.string(),
+        numero:  yup.string().trim().required("Número é obrigatório"),
+        complemento:  yup.string(),
+        referencia:  yup.string(),
+        bairro:  yup.string(),
+        cidade:  yup.string(),
+        estado: yup.string().typeError(""),
+        rg: yup.string().trim().required("O RG é obrigatório"),
     })
     .required()
 
@@ -346,12 +358,17 @@ const AreaDiarista = () => {
         resolver: yupResolver(schema),
     })
 
+    const removerMascara = (valor) => {
+        return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são números
+    };
+
     // onSubmit do Forms
     const onSubmit = async (data) => {
         setLoading(true)
         setMessage(null)
 
         // console.log(data)
+        const cepSemMascara = removerMascara(data.cep);
 
         const formData = new FormData()
 
@@ -364,6 +381,14 @@ const AreaDiarista = () => {
         formData.append('arquivodt', data.arquivodt);
         formData.append('arquivoCpf', data.arquivoCpf);
         formData.append('arquivoResidencia', data.arquivoResidencia);
+
+        formData.append('cep', cepSemMascara)
+        formData.append('logradouro', data.logradouro)
+        formData.append('numero', data.numero)
+        formData.append('complemento', data.complemento)
+        formData.append('referencia', data.referencia)
+        formData.append('bairro', data.bairro)
+        formData.append('rg', data.rg)
 
         try {
           const response = await CreateStepTwo(userId, formData);
@@ -384,8 +409,70 @@ const AreaDiarista = () => {
 
     };
 
-    // console.log(errors)
+    const inputRef = useRef(null)
+    const [cepError, setCepError] = useState("")
 
+    const estados = {
+        "AC": "Acre",
+        "AL": "Alagoas",
+        "AP": "Amapá",
+        "AM": "Amazonas",
+        "BA": "Bahia",
+        "CE": "Ceará",
+        "DF": "Distrito Federal",
+        "ES": "Espírito Santo",
+        "GO": "Goiás",
+        "MA": "Maranhão",
+        "MT": "Mato Grosso",
+        "MS": "Mato Grosso do Sul",
+        "MG": "Minas Gerais",
+        "PA": "Pará",
+        "PB": "Paraíba",
+        "PR": "Paraná",
+        "PE": "Pernambuco",
+        "PI": "Piauí",
+        "RJ": "Rio de Janeiro",
+        "RN": "Rio Grande do Norte",
+        "RS": "Rio Grande do Sul",
+        "RO": "Rondônia",
+        "RR": "Roraima",
+        "SC": "Santa Catarina",
+        "SP": "São Paulo",
+        "SE": "Sergipe",
+        "TO": "Tocantins"
+    };
+      
+    const handleCepChange = async (e) => {
+        const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
+        setCepError("")
+        
+        if (cep.length === 8) {
+            try {
+            setLoading(true);
+            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+            if (!response.data.erro) {
+                setValue("logradouro", response.data.logradouro);
+                setValue("bairro", response.data.bairro);
+                setValue("cidade", response.data.localidade);
+        
+                // Converter a sigla do estado para o nome completo
+                const nomeEstado = estados[response.data.uf];
+                setValue("estado", nomeEstado);
+        
+                setCepError("");
+            } else {
+                setCepError("CEP não encontrado");
+            }
+            } catch (error) {
+                console.error('Erro ao buscar o CEP:', error);
+                alert('Erro ao buscar o CEP.');
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+
+    
     // states
     const [image, setImage] = useState(User)
     const [fileNames, setFileNames] = useState({
@@ -532,6 +619,11 @@ const AreaDiarista = () => {
 
     console.log("Serviços selecionados: ", selectedServices)
 
+    const Banco = [
+        {text: "Santander", value: 1}
+
+    ]
+
     return (
         <>
             <div>
@@ -547,7 +639,7 @@ const AreaDiarista = () => {
                                             <div className='w-full flex flex-col  pl-10 pr-10 h-full'>
                                                 <div className='max-w-[55vh]'>
                                                     <h2 className='text-desSec text-xl sm:text-2xl'>Cadastro em andamento</h2>
-                                                    <p className='text-prim'><b>{firstName} </b>, Falta pouco para sua conta ser ativada, aguarde ser chamado para uma entrevista com a Limppay! :D</p>
+                                                    <p className='text-prim'><b>{firstName} </b>, Falta pouco para sua conta ser ativada! :D</p>
                                                 </div>
                                                 <div className='pt-5 text-prim w-1/2 h-full'>
                                                     <ProgressBar step={etapaCadastro} />
@@ -566,8 +658,6 @@ const AreaDiarista = () => {
                                 {etapaCadastro == 3 && !cadastroCompleto && (
                                     <section className=' lg:flex justify-between w-full gap-1 pt-[10vh] lg:pt-[12vh] xl:pt-[14vh] '>
                                         <form className="flex flex-col w-full" onSubmit={handleSubmit(onSubmit)}>
-                                            
-
                                             <div className='pt-5'>
                                                 <div className='grid md:flex md:justify-between'>
                                                     <div className="flex flex-col justify-center items-center gap-2 ">
@@ -611,50 +701,190 @@ const AreaDiarista = () => {
                                                             <span className="text-error opacity-75">{errors.arquivoFoto.message}</span>
                                                         )}
                                                     </div>
-                                                    <div className='md:grid sm:w-1/2'>
-                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                            <label htmlFor="agencia" className="text-prim">Agência</label>
-                                                            <input 
-                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full "
-                                                            id="agencia" 
-                                                            type="text" 
-                                                            placeholder="Somente números" 
-                                                            {...register("agencia")}
-                                                            />
-                                                            {errors.agencia && 
-                                                            <span className="text-error opacity-75">{errors.agencia?.message}</span>}
-                                                        </div>
-                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                            <label htmlFor="conta" className="text-prim">Conta</label>
-                                                            <input 
-                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                            id="conta" 
-                                                            type="text" 
-                                                            placeholder="Somente números" 
-                                                            {...register("conta")}
-                                                            />
-                                                            {errors.conta && 
-                                                            <span className="text-error opacity-75">{errors.conta?.message}</span>}
+                                                </div>
 
-                                                        </div>
-                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                            <label htmlFor="pix" className="text-prim">Pix</label>
-                                                            <input 
-                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                            id="pix" 
-                                                            type="text" 
-                                                            placeholder="Digite sua chave pix" 
-                                                            {...register("pix")}
-                                                            />
-                                                            {errors.pix && 
-                                                            <span className="text-error opacity-75">{errors.pix?.message}</span>}
-                                                        </div>
+                                                <div className='grid sm:grid-cols-2 '>
+                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                                                        <label htmlFor="banco" className="text-prim">Banco</label>
+                                                        <select  
+                                                        id="banco"
+                                                        {...register("banco")}
+                                                        className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
+                                                            <option value="" >Selecione</option>
+                                                            {Banco.map((options, index) => (
+                                                                <option key={index} value={options.value}>{options.text}</option>
+                                                            ))}
+                                                        </select>
+                                                        {errors.banco && 
+                                                        <span className="text-error opacity-75">{errors.banco?.message}</span>}           
+                                                    </div>
+                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                        <label htmlFor="agencia" className="text-prim">Agência</label>
+                                                        <input 
+                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full "
+                                                        id="agencia" 
+                                                        type="text" 
+                                                        placeholder="Somente números" 
+                                                        {...register("agencia")}
+                                                        />
+                                                        {errors.agencia && 
+                                                        <span className="text-error opacity-75">{errors.agencia?.message}</span>}
+                                                    </div>
+                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                        <label htmlFor="conta" className="text-prim">Conta</label>
+                                                        <input 
+                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                        id="conta" 
+                                                        type="text" 
+                                                        placeholder="Somente números" 
+                                                        {...register("conta")}
+                                                        />
+                                                        {errors.conta && 
+                                                        <span className="text-error opacity-75">{errors.conta?.message}</span>}
 
+                                                    </div>
+                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                        <label htmlFor="pix" className="text-prim">Pix</label>
+                                                        <input 
+                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                        id="pix" 
+                                                        type="text" 
+                                                        placeholder="Digite sua chave pix" 
+                                                        {...register("pix")}
+                                                        />
+                                                        {errors.pix && 
+                                                        <span className="text-error opacity-75">{errors.pix?.message}</span>}
                                                     </div>
 
                                                 </div>
 
                                                 <div className='grid gap-2 pt-5 pb-5'>
+                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                        <label htmlFor="rg" className="text-prim">RG</label>
+                                                        <input
+                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                        id="rg" 
+                                                        type="text" 
+                                                        placeholder="Somente números" 
+                                                        {...register("rg")}
+                                                        />
+                                                        {errors.rg && 
+                                                        <span className="text-error opacity-75">{errors.rg?.message}</span>}
+                                                    </div>
+
+                                                    <div className="lg:flex lg:justify-between">
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                            <label htmlFor="cep" className="text-prim">CEP</label>
+                                                            <InputMask 
+                                                            ref={inputRef}
+                                                            mask="99999-999"
+                                                            maskChar={null}
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                            id="cep" 
+                                                            type="text" 
+                                                            placeholder="Somente números" 
+                                                            {...register("cep")}
+                                                            onChange={handleCepChange}
+                                                            />
+                                                            {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
+                                                        </div>
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                            <label htmlFor="logradouro" className="text-prim">Logradouro</label>
+                                                            <input 
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                            id="logradouro" 
+                                                            type="text" 
+                                                            placeholder="" 
+                                                            {...register("logradouro")}
+                                                            readOnly
+                                                            />
+                                                            {errors.logradouro && 
+                                                            <span className="text-error opacity-75">{errors.logradouro?.message}</span>}
+                                                        </div>
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                            <label htmlFor="numero" className="text-prim">Número</label>
+                                                            <input 
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                            id="numero" 
+                                                            type="text" 
+                                                            placeholder="" 
+                                                            {...register("numero")}
+                                                            />
+                                                            {errors.numero && 
+                                                            <span className="text-error opacity-75">{errors.numero?.message}</span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="lg:flex lg:justify-between">
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                            <label htmlFor="complemento" className="text-prim">Complemento</label>
+                                                            <input 
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                            id="complemento" 
+                                                            type="text" 
+                                                            placeholder="Casa, apt, bloco, etc"
+                                                            maxLength="100" 
+                                                            {...register("complemento")}
+                                                            />
+                                                            {errors.complemento && 
+                                                            <span className="text-error opacity-75">{errors.complemento?.message}</span>}
+                                                        </div>
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                            <label htmlFor="pontoRef" className="text-prim">Ponto de Referência</label>
+                                                            <input 
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                            id="pontoRef" 
+                                                            type="text" 
+                                                            placeholder="" 
+                                                            maxLength="150"
+                                                            {...register("referencia")}
+                                                            />
+                                                            {errors.pontoRef && 
+                                                            <span className="text-error opacity-75">{errors.referencia?.message}</span>}
+                                                        </div>
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                            <label htmlFor="bairro" className="text-prim">Bairro</label>
+                                                            <input 
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                            id="bairro" 
+                                                            type="text" 
+                                                            placeholder="" 
+                                                            {...register("bairro")}
+                                                            readOnly
+                                                            />
+                                                            {errors.bairro && 
+                                                            <span className="text-error opacity-75">{errors.bairro?.message}</span>}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                        <label htmlFor="cidade" className="text-prim">Cidade</label>
+                                                        <input 
+                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                        id="cidade" 
+                                                        type="text" 
+                                                        placeholder="" 
+                                                        {...register("cidade")}
+                                                        readOnly
+                                                        />
+                                                        {errors.cidade && 
+                                                        <span className="text-error opacity-75">{errors.cidade?.message}</span>}
+                                                    </div>
+
+                                                    <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                        <label htmlFor="estado" className="text-prim">Estado</label>
+                                                        <input 
+                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
+                                                        id="estado" 
+                                                        type="text" 
+                                                        placeholder=""
+                                                        {...register("estado")}
+                                                        readOnly
+                                                        />
+                                                        {errors.estado && 
+                                                        <span className="text-error opacity-75">{errors.estado?.message}</span>}
+                                                    </div>
+
+
                                                     <div className="mt-4 text-prim pr-9 pl-9">
                                                         <label htmlFor="docCpf">
                                                             CPF
@@ -739,10 +969,6 @@ const AreaDiarista = () => {
                                                         <span className="text-error opacity-75">{errors.arquivodt?.message}</span>}       
                                                     </div>
                                                 </div>
-
-
-
-
 
                                             </div>
                                             
@@ -1567,7 +1793,6 @@ const AreaDiarista = () => {
                         <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-10 pb-10 ">
                             <div className='text-prim grid gap-2'>
                                 <p>Suas informações foram enviadas com sucesso e seu cadastro está em processo de análise.</p>
-                                <p>Logo logo nossa equipe vai entrar em contato para agendar sua entrevista</p>
                             </div>
                             
                         </div>
