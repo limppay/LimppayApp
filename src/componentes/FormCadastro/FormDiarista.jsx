@@ -64,27 +64,27 @@ export default function FormDiarista() {
         referencia:  yup.string(),
 
         data: yup
-        .date()
-        .typeError('Data de nascimento inválida')
-        .required("Data de nascimento é obrigatória")
-        .test('is-valid-date', 'Data deve ser uma data válida', (value) =>{
-            if(!value) return false; //se o valor for nulo ou indefinido
-            return !isNaN(value.getTime()); //Verifica se a data é válida
-        })
-        .min(new Date(1900, 0, 1), "Data de nascimento inválida") //Define uma data mínima
-        .max(new Date(), "Data de nascimento não pode ser no futuro"), //Define que não pode ser uma data futura
+            .date()
+            .typeError('Data de nascimento inválida')
+            .required("Data de nascimento é obrigatória")
+            .test('is-valid-date', 'Data deve ser uma data válida', (value) =>{
+                if(!value) return false; //se o valor for nulo ou indefinido
+                return !isNaN(value.getTime()); //Verifica se a data é válida
+            })
+            .min(new Date(1900, 0, 1), "Data de nascimento inválida") //Define uma data mínima
+            .max(new Date(), "Data de nascimento não pode ser no futuro"), //Define que não pode ser uma data futura
 
         arquivoCurriculo: yup
-        .mixed()
-        .test("required", "Curriculo é obrigatório", (value) => {
-        return value instanceof File; // Verifica se o valor é um arquivo
-        })
-        .test("fileSize", "O arquivo é muito grande", (value) => {
-        return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
-        })
-        .test("fileType", "Formato de arquivo não suportado", (value) => {
-        return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
-        }),
+            .mixed()
+            .test("required", "Curriculo é obrigatório", (value) => {
+            return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
+            }),
 
         // Dias da semana 
         dom: yup.boolean(),
@@ -664,18 +664,6 @@ export default function FormDiarista() {
                     )}
                 </div>
 
-                {/* <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="rg" className="text-prim">RG</label>
-                    <input
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="rg" 
-                    type="text" 
-                    placeholder="Somente números" 
-                    {...register("rg")}
-                    />
-                    {errors.rg && 
-                    <span className="text-error opacity-75">{errors.rg?.message}</span>}
-                </div> */}
             </div>
 
             <div className="lg:flex">
@@ -874,90 +862,7 @@ export default function FormDiarista() {
                 <span className="text-error opacity-75">{errors.cep?.message}</span>}
             </div>
 
-            {/* <div className="lg:flex lg:justify-between">
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="cep" className="text-prim">CEP</label>
-                    <InputMask 
-                    ref={inputRef}
-                    mask="99999-999"
-                    maskChar={null}
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="cep" 
-                    type="text" 
-                    placeholder="Somente números" 
-                    {...register("cep")}
-                    onChange={handleCepChange}
-                    />
-                    {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
-                </div>
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="logradouro" className="text-prim">Logradouro</label>
-                    <input 
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="logradouro" 
-                    type="text" 
-                    placeholder="" 
-                    {...register("logradouro")}
-                    readOnly
-                    />
-                    {errors.logradouro && 
-                    <span className="text-error opacity-75">{errors.logradouro?.message}</span>}
-                </div>
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="numero" className="text-prim">Número</label>
-                    <input 
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="numero" 
-                    type="text" 
-                    placeholder="" 
-                    {...register("numero")}
-                    />
-                    {errors.numero && 
-                    <span className="text-error opacity-75">{errors.numero?.message}</span>}
-                </div>
-            </div>
-            <div className="lg:flex lg:justify-between">
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="complemento" className="text-prim">Complemento</label>
-                    <input 
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="complemento" 
-                    type="text" 
-                    placeholder="Casa, apt, bloco, etc"
-                    maxLength="100" 
-                    {...register("complemento")}
-                    />
-                    {errors.complemento && 
-                    <span className="text-error opacity-75">{errors.complemento?.message}</span>}
-                </div>
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="pontoRef" className="text-prim">Ponto de Referência</label>
-                    <input 
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="pontoRef" 
-                    type="text" 
-                    placeholder="" 
-                    maxLength="150"
-                    {...register("referencia")}
-                    />
-                    {errors.pontoRef && 
-                    <span className="text-error opacity-75">{errors.referencia?.message}</span>}
-                </div>
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="bairro" className="text-prim">Bairro</label>
-                    <input 
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="bairro" 
-                    type="text" 
-                    placeholder="" 
-                    {...register("bairro")}
-                    readOnly
-                    />
-                    {errors.bairro && 
-                    <span className="text-error opacity-75">{errors.bairro?.message}</span>}
-                </div>
-            </div> */}
-
+            
             <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                 <label htmlFor="cidade" className="text-prim">Cidade</label>
                 <input 

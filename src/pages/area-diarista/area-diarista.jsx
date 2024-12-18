@@ -58,6 +58,7 @@ const AreaDiarista = () => {
     });
     console.log("Datas selecionadas: ", formattedDates)
     console.log("Dias bloqueados: ", datasBloqueadas)
+    const [old, setOld] = useState('')
 
     const HandleGetDiasBloqueados = async () => {
         try {
@@ -183,6 +184,7 @@ const AreaDiarista = () => {
                 setAgendamentos(agendamentos)
                 setDatasBloqueadas(datasBloqueadas)
                 setUserInfo(response.data)
+                setOld(response.data.Old)
             } catch (error) {
                 console.error('Erro ao buscar informações do usuário:', error);
             }
@@ -277,6 +279,37 @@ const AreaDiarista = () => {
 
 
     const schema = yup.object({
+        // Data de nascimento
+        data: yup
+            .date()
+            .nullable()  // Permite que o valor seja null ou não fornecido
+            .typeError('Data de nascimento inválida')
+            .test('is-valid-date', 'Data deve ser uma data válida', (value) => {
+                if (!value) return true; // Se não for fornecido, é considerado válido
+                return !isNaN(value.getTime()); // Verifica se a data é válida
+            })
+            .min(new Date(1900, 0, 1), "Data de nascimento inválida") // Define uma data mínima
+            .max(new Date(), "Data de nascimento não pode ser no futuro") // Define que não pode ser uma data futura
+            .when('old', {
+                is: 'Migrate', // Se a variável 'old' for igual a "Migrate"
+                then: yup.date().required("Data de nascimento é obrigatória") // Torna obrigatório
+            }),
+
+        // Currículo
+        arquivoCurriculo: yup
+            .mixed()
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+                return !value || value.size <= 5000000; // Limita o tamanho do arquivo a 5MB
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+                return !value || ['image/jpeg', 'image/png', 'application/pdf'].includes(value?.type); // Limita os tipos permitidos
+            })
+            .when('old', {
+                is: 'Migrate', // Se a variável 'old' for igual a "Migrate"
+                then: yup.mixed().required("Currículo é obrigatório") // Torna obrigatório
+            }),
+
+
         arquivoFoto: yup
             .mixed()
             .test("required", "Foto de perfil é obrigatório", (value) => {
@@ -362,6 +395,7 @@ const AreaDiarista = () => {
         return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são números
     };
 
+    const [dataNascimento, setDataNascimento] = useState()
     // onSubmit do Forms
     const onSubmit = async (data) => {
         setLoading(true)
@@ -370,6 +404,7 @@ const AreaDiarista = () => {
         // console.log(data)
         const cepSemMascara = removerMascara(data.cep);
 
+
         const formData = new FormData()
 
         formData.append('banco', data.banco)
@@ -377,6 +412,11 @@ const AreaDiarista = () => {
         formData.append('conta', data.conta)
         formData.append('pix', data.pix)
         
+        if(old == 'Migrate') {
+            formData.append('arquivoCurriculo', data.arquivoCurriculo);
+            
+        }
+
         formData.append('arquivoFoto', data.arquivoFoto);
         formData.append('arquivodt', data.arquivodt);
         formData.append('arquivoCpf', data.arquivoCpf);
@@ -388,7 +428,30 @@ const AreaDiarista = () => {
         formData.append('complemento', data.complemento)
         formData.append('referencia', data.referencia)
         formData.append('bairro', data.bairro)
+        formData.append('cidade', data.cidade)
+        formData.append('estado', data.estado)
         formData.append('rg', data.rg)
+
+        if(old == 'Migrate') {
+            //Validação de maioridade
+            const today = new Date();
+            const birthDate = new Date(data.data); //Data de nascimento inserida
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+            const dayDifference = today.getDate() - birthDate.getDate();
+    
+            if(age < 18 || (age === 18 && (monthDifference<0 || (monthDifference === 0 && dayDifference < 0)))){
+                setLoading(false);
+                setMessage("Você precisa ser maior de 18 anos para se cadastrar.");
+                return; //Cancela o envio se a idade for menor que 18 anos
+            }
+    
+            const dataNascimento = birthDate.toISOString(); //Formatação da data
+
+
+            formData.append('data', dataNascimento)
+
+        }
 
         try {
           const response = await CreateStepTwo(userId, formData);
@@ -624,6 +687,9 @@ const AreaDiarista = () => {
 
     ]
 
+    console.log("Status da migração: ", old) // migrate ou null - identifica se o usuario veio do sistema antigo ou nao
+    console.log(errors)
+
     return (
         <>
             <div>
@@ -771,6 +837,20 @@ const AreaDiarista = () => {
                                                         {errors.rg && 
                                                         <span className="text-error opacity-75">{errors.rg?.message}</span>}
                                                     </div>
+                                                    
+                                                    {old == 'Migrate' &&
+                                                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                                                            <label htmlFor="data" className="text-prim">Data de Nascimento</label>
+                                                            <input
+                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter"
+                                                            id="data"
+                                                            type="date"
+                                                            {...register("data")}
+                                                            />
+                                                            {errors.data && 
+                                                            <span className="text-error opacity-75">{errors.data?.message}</span>}
+                                                        </div>                                                      
+                                                    }
 
                                                     <div className="lg:flex lg:justify-between">
                                                         <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
@@ -968,6 +1048,36 @@ const AreaDiarista = () => {
                                                         {errors.arquivodt && 
                                                         <span className="text-error opacity-75">{errors.arquivodt?.message}</span>}       
                                                     </div>
+                                                    {old == 'Migrate' && 
+                                                        <div className="mt-4 text-prim pr-9 pl-9">
+                                                            <label htmlFor="docCurriculo">
+                                                                Currículo
+                                                                <span className="ml-2"></span>
+                                                                <div className="border gap-3 border-bord rounded-md flex items-center lg:gap-5 ">
+                                                                    <div className="p-1 bg-prim bg-opacity-90 text-white rounded-l-md lg:p-3 h-12">
+                                                                        <p>Selecione o arquivo</p>
+                                                                        <input 
+                                                                        type="file" 
+                                                                        name="docCurriculo" 
+                                                                        id="docCurriculo"  
+                                                                        accept="application/pdf, image/*" 
+                                                                        className=" p-2 w-full hidden" 
+                                                                        onChange={(e) => {
+                                                                            const file = e.target.files[0]; // Pega o arquivo selecionado
+                                                                            handleNameChange(e); // Exibe o nome do arquivo
+                                                                            setValue("arquivoCurriculo", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
+                                                                        }}/>
+                                                                    </div>
+                                                                    <div className="flex  overflow-hidden lg:text-start">
+                                                                        <span className="max-w-28 max-h-12 lg:max-w-xl">{fileNames.docCurriculo}</span>
+                                                                    </div>
+                                                                </div>           
+                                                            </label>    
+                                                            {errors.arquivoCurriculo && (
+                                                                <span className="text-error opacity-75">{errors.arquivoCurriculo.message}</span>
+                                                            )}    
+                                                        </div>
+                                                    }
                                                 </div>
 
                                             </div>
