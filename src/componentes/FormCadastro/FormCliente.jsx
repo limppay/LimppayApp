@@ -23,16 +23,7 @@ export default function FormCliente() {
         name: yup.string().trim().required("O nome é obrigatório"),
 
         cpfCnpj: yup.string().trim().required("O CPF é obrigatório").min(11, "Digite um CPF válido"),
-        data: yup
-        .date()
-        .typeError('Data de nascimento inválida')
-        .required("Data de nascimento é obrigatória")
-        .test('is-valid-date', 'Data deve ser uma data válida', (value) =>{
-            if(!value) return false; //se o valor for nulo ou indefinido
-            return !isNaN(value.getTime()); //Verifica se a data é válida
-        })
-        .min(new Date(1900, 0, 1), "Data de nascimento inválida") //Define uma data mínima
-        .max(new Date(), "Data de nascimento não pode ser no futuro"), //Define que não pode ser uma data futura
+
         genero: yup.string(),
         estadoCivil: yup.number().required("Estado civil é obrigatório").typeError("Estado Civil é obrigatório"),
 
@@ -95,21 +86,6 @@ export default function FormCliente() {
         const telefone_2_SemMascara = removerMascara(data.telefone_2);
         const cepSemMascara = removerMascara(data.cep);
 
-        //Validação de maioridade
-        const today = new Date();
-        const birthDate = new Date(data.data); //Data de nascimento inserida
-        const age = today.getFullYear() - birthDate.getFullYear();
-        const monthDifference = today.getMonth() - birthDate.getMonth();
-        const dayDifference = today.getDate() - birthDate.getDate();
-
-        if(age < 18 || (age === 18 && (monthDifference<0 || (monthDifference === 0 && dayDifference < 0)))){
-            setLoading(false);
-            setMessage("Você precisa ser maior de 18 anos para se cadastrar.");
-            return; //Cancela o envio se a idade for menor que 18 anos
-        }
-
-        const dataNascimento = birthDate.toISOString(); //Formatação da data
-
         console.log(data)
         const formData = new FormData()
         formData.append('name', data.name)
@@ -120,8 +96,6 @@ export default function FormCliente() {
         formData.append('telefone_2', telefone_2_SemMascara)
 
         formData.append('email', data.email)
-
-        formData.append('data', dataNascimento)
 
         formData.append('cep', cepSemMascara)
 
@@ -588,17 +562,7 @@ export default function FormCliente() {
                     <span className="text-error opacity-75">{errors.estadoCivil?.message}</span>}           
                 </div>
                 
-                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
-                    <label htmlFor="data" className="text-prim">Data de Nascimento</label>
-                    <input
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter"
-                    id="data"
-                    type="date"
-                    {...register("data")}
-                    />
-                    {errors.data && 
-                    <span className="text-error opacity-75">{errors.data?.message}</span>}
-                </div>
+
             </div>
             
 

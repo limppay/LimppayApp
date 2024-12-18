@@ -409,19 +409,6 @@ const AreaCliente = () => {
 
     ]
 
-    const calcularIdade = (data) =>{
-        const hoje = new Date();
-        const nascimento = new Date(data);
-        let idade = hoje.getFullYear() - nascimento.getFullYear();
-        const mes = hoje.getMonth() - nascimento.getMonth();
-
-        if(mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())){
-            idade--;
-        }
-
-        return idade;
-    };
-
     const formatarMoeda = (valor) => {
         return new Intl.NumberFormat('pt-BR', { 
             style: 'currency', 
@@ -636,10 +623,7 @@ useEffect(() => {
                                                 
                                                 <div className='flex flex-col gap-3 h-full max-w-full max-h-full pl-5 pr-5'>
                                                     <h1 className='text-xl text-ter'>{userInfo.name}</h1>
-                                                    
-                                                    <p className='text-prim text-center'>
-                                                        {calcularIdade(userInfo.data)} anos
-                                                    </p>
+
                                                 </div>
 
                                             </div>
