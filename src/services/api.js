@@ -4,7 +4,7 @@ const urlProducao = 'https://limppay-api-production.up.railway.app'
 const local = 'http://localhost:3000'
 
 const api = axios.create({
-  baseURL: local
+  baseURL: urlProducao
 });
 
 // Função para criar o usuário e enviar arquivos
