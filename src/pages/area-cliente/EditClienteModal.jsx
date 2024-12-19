@@ -303,20 +303,6 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                                 </label>
                             </div>
 
-
-                            <div className="p-5 pt-4 pb-0 flex flex-col">
-                                <label htmlFor="name" className="text-prim">Nome</label>
-                                <input 
-                                className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                id="name"
-                                type="text" 
-                                placeholder="Nome"
-                                {...register("name")}                         
-                                />
-                                {errors.name && (
-                                    <span className="text-error opacity-75">{errors.name.message}</span>
-                                )}
-                            </div>
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col w-full">
                               <div className="flex gap-2 justify-between">
                                 <label htmlFor="Genero" className="text-prim">Gênero</label>
