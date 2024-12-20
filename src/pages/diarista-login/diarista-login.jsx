@@ -18,13 +18,12 @@ export default function DaristaLogin() {
         setError('')
         
         try {
-            const { access_token, userId, urls } = await login(email, senha);
+            const { access_token, userId } = await login(email, senha);
             if (!access_token) {
                 setError(err.message);
             } else {
                 localStorage.setItem('token_prestador', access_token);
                 localStorage.setItem('prestadorId', userId);
-                localStorage.setItem('urls_prestador', JSON.stringify(urls));
                 navigate("/area-diarista");
             }
         } catch (err) {

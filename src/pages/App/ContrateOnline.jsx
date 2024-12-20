@@ -382,8 +382,7 @@ export default function ContrateOnline() {
                     // Busca as URLs de avatar de cada prestador e atualiza o estado
                     const updatedProviders = await Promise.all(
                         response.data.map(async (provider) => {
-                            const avatar = await getUserProfile(provider.cpfCnpj); // Obtenha a URL do avatar
-                            return { ...provider, avatar }; // Retorna o objeto provider com o avatar incluído
+                            return provider; // Retorna o objeto provider com o avatar incluído
                         })
                     );
 
@@ -1096,7 +1095,7 @@ export default function ContrateOnline() {
                                                             >
                                                                 <div>
                                                                     <Avatar 
-                                                                    src={provider?.avatar?.avatarUrl}
+                                                                    src={provider?.avatarUrl.avatarUrl}
                                                                     size="lg"
                                                                     />
                                                                 </div>
@@ -1157,7 +1156,7 @@ export default function ContrateOnline() {
                                                                                             <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
                                                                                                 {/* Container do Avatar */}
                                                                                                 <div className="absolute">
-                                                                                                    <Avatar src={selectedProvider?.avatar?.avatarUrl} size="lg"    
+                                                                                                    <Avatar src={selectedProvider?.avatarUrl.avatarUrl} size="lg"    
                                                                                                     className="w-24 h-24 text-large
                                                                                                     border-white
                                                                                                     border-5

@@ -29,7 +29,9 @@ const AreaDiarista = () => {
     const userId = localStorage.getItem('prestadorId'); // Obter o ID do usuário do localStorage
     const token = localStorage.getItem('token_prestador'); // Obter o token do localStorage
     // Recuperar as URLs e converter para objeto JSON
-    const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls_prestador')) || {}); // Atualize o estado URLs aqui
+
+    // const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls_prestador')) || {}); // Atualize o estado URLs aqui
+
     const [agendamentos, setAgendamentos] = useState([])
     const [avaliacoes, setAvaliacoes] = useState([])
     const [datasBloqueadas, setDatasBloqueadas] = useState([])
@@ -59,6 +61,8 @@ const AreaDiarista = () => {
     console.log("Datas selecionadas: ", formattedDates)
     console.log("Dias bloqueados: ", datasBloqueadas)
     const [old, setOld] = useState('')
+
+    console.log(userInfo)
 
     const HandleGetDiasBloqueados = async () => {
         try {
@@ -176,7 +180,7 @@ const AreaDiarista = () => {
                 const agendamentos = await getAgendamentos(userId)
                 const avaliacoes = await getAvaliacoesByPrestador(userId)
                 const datasBloqueadas = response.data.DiasBloqueados
-
+                console.log("Prestador: ", response.data)
                 // console.log("Avaliações: ", avaliacoes)
                 // console.log(agendamentos)
 
@@ -203,30 +207,12 @@ const AreaDiarista = () => {
     }, [userInfo]); // Isso vai logar as informações do usuário toda vez que mudarem
     
 
-    const handleUserUpdated = (updatedInfo) => {
-        setUserInfo(updatedInfo.updatedUser)
-        // Atualize as URLs aqui também
-        const newUrls = updatedInfo.urls; // Supondo que a resposta inclui as novas URLs
-        localStorage.setItem('urls', JSON.stringify(newUrls));
-        setUrls(newUrls); // Atualiza o estado com as novas URLs
+    const handleUserUpdated = () => {
+        window.location.reload()
 
     };
 
-    const presignedUrls = urls || {};
-  
-    const getArquivoUrl = (tipo) => {
-        // Encontra o arquivo com a chave que inclui o tipo especificado
-        return Object.entries(presignedUrls).find(([key]) => key.includes(tipo))?.[1] || null;
-    };
-    
-    // Selecionar os arquivos dinamicamente
-    const avatarUrl = getArquivoUrl('arquivoFoto');
-    
-    const arquivoIdentidade = getArquivoUrl('arquivodt');
-    const arquivoCPF = getArquivoUrl('arquivoCpf');
-    const arquivoResidencia = getArquivoUrl('arquivoResidencia');
-    const arquivoCurriculo = getArquivoUrl('arquivoCurriculo');
-    
+
     const buttons = [
         {
             link: "#", 
@@ -1101,7 +1087,7 @@ const AreaDiarista = () => {
 
                                             <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
                                                 <Avatar
-                                                src={avatarUrl}
+                                                src={userInfo?.AvatarUrl.avatarUrl}
                                                 className={`${isOpen ? "" : ""} cursor-pointer`}
                                                 onClick={() => setScreenSelected("perfil")}
                                                 />
@@ -1228,7 +1214,7 @@ const AreaDiarista = () => {
                                                                         <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                                                     </svg>
                                                                 </div>
-                                                                <img src={avatarUrl}
+                                                                <img src={userInfo?.AvatarUrl?.avatarUrl}
                                                                 id='avatar' 
                                                                 alt="foto de perfil" 
                                                                 className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
@@ -1854,7 +1840,7 @@ const AreaDiarista = () => {
                                         userInfo={userInfo} 
                                         token={token} 
                                         onUserUpdated={handleUserUpdated}
-                                        Urls={urls} 
+                                        Urls={userInfo?.AvatarUrl?.avatarUrl} 
                                     />                          
                                 </>
                             )}

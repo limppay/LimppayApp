@@ -107,15 +107,13 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
         if (updatedUser) {
           console.log('Usuário atualizado com sucesso:', updatedUser);
+          
+          
+          
+          SetOpen(false); // Fechar o modal após o sucesso
+          onUserUpdated(updatedUser);
           setLoading(false)
 
-          const newUrls = updateUser.urls
-          localStorage.setItem('urls', JSON.stringify(newUrls))
-
-
-          onUserUpdated(updatedUser);
-
-          SetOpen(false); // Fechar o modal após o sucesso
         } else {
           console.error('Falha ao atualizar o usuário.');
           // Aqui você pode adicionar lógica para mostrar uma mensagem de erro
@@ -135,7 +133,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
   const [cepError, setCepError] = useState("")
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null)
-  const avatarUrl = Urls ? Object.values(Urls)[0] : null;
+  const avatarUrl = Urls
   const [image, setImage] = useState(avatarUrl)
   const [file, setFile] = useState(null);
 
