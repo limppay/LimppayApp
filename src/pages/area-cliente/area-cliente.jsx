@@ -19,17 +19,25 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
 import InputMask from "react-input-mask"
-
+import dotenv from 'dotenv';
 
 
 const AreaCliente = () => {
+    dotenv.config();
+    // Determina a URL com base no NODE_ENV
+    const baseURL =
+    process.env.NODE_ENV === 'local'
+    ? 'http://localhost:3000/cliente/me'
+    : 'https://limppay-api-production.up.railway.app/cliente/me';
 
     const [userInfo, setUserInfo] = useState(null);
     const[Open, SetOpen] = useState(false)
-    const userId = localStorage.getItem('userId'); // Obter o ID do usuário do localStorage
-    const token = localStorage.getItem('token'); // Obter o token do localStorage
-    // Recuperar as URLs e converter para objeto JSON
-    const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {}); // Atualize o estado URLs aqui
+
+    // const userId = localStorage.getItem('userId'); // Obter o ID do usuário do localStorage
+    // const token = localStorage.getItem('token'); // Obter o token do localStorage
+    // // Recuperar as URLs e converter para objeto JSON
+    // const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {}); // Atualize o estado URLs aqui
+
     const [adressDefault, setAdressDefault] = useState([])
     const [agendamentos, setAgendamentos] = useState([])
     const [avaliacoes, setAvaliacoes] = useState([])
@@ -68,13 +76,15 @@ const AreaCliente = () => {
 
     const fetchUserInfo = async () => {
         try {
-            const response = await axios.get(`https://limppay-api-production.up.railway.app/cliente/${userId}`, {
-                headers: { Authorization: `Bearer ${token}` },
+            const response = await axios.get(baseURL, {
+                withCredentials: true
             });
 
-            const enderecoDefault = await getEnderecoDefaultCliente(userId)
-            const agendamentos = await getAgendamentos(userId)
-            const avaliacoes = await getAvaliacoes(userId)
+            console.log("Conta do cliente: ", response.data)
+
+            const enderecoDefault = await getEnderecoDefaultCliente(response.data.id)
+            const agendamentos = await getAgendamentos(response.data.id)
+            const avaliacoes = await getAvaliacoes(response.data.id)
 
             setAgendamentos(agendamentos)
             setAvaliacoes(avaliacoes)
@@ -112,7 +122,7 @@ const AreaCliente = () => {
 
 
     const schema = yup.object().shape({
-        clienteId: yup.string().default(userId),
+        clienteId: yup.string().default(userInfo?.id),
         localServico: yup.string().required("Informe o nome do endereço").trim(),
         cep: yup.string().required("Cep é obrigatório"),
         logradouro: yup.string(),
@@ -147,9 +157,7 @@ const AreaCliente = () => {
             setCreating(false)
             setOpenCreateAdress(false)
 
-            if (token && userId) {
-                fetchUserInfo();
-            }
+            fetchUserInfo()
 
             reset()
             
@@ -174,9 +182,7 @@ const AreaCliente = () => {
             
             setDeleting(false)
 
-            if (token && userId) {
-                fetchUserInfo();
-            }
+            fetchUserInfo()
     
         } catch (error) {
             console.error("Erro ao excluir o endereço: ", error);
@@ -290,7 +296,7 @@ const AreaCliente = () => {
     const handleCreateReview = async (id) => {
         setLoadingReview(true)
         const reviewData = {
-            clientId: userId,
+            clientId: userInfo?.id,
             providerId: id,
             stars: rating,
             comment: review,
@@ -307,23 +313,27 @@ const AreaCliente = () => {
         } catch (error) {
             console.log(error);
         } finally {
-            const avaliacoes = await getAvaliacoes(userId)
+            const avaliacoes = await getAvaliacoes(userInfo?.id)
             setAvaliacoes(avaliacoes)
             setOpenDetalhes(false)
 
         }
     };
 
+
+
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await axios.get(`https://limppay-api-production.up.railway.app/cliente/${userId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
+                const response = await axios.get(baseURL, {
+                    withCredentials: true
                 });
 
-                const enderecoDefault = await getEnderecoDefaultCliente(userId)
-                const agendamentos = await getAgendamentos(userId)
-                const avaliacoes = await getAvaliacoes(userId)
+                console.log("Conta do cliente: ", response.data)
+
+                const enderecoDefault = await getEnderecoDefaultCliente(response.data.id)
+                const agendamentos = await getAgendamentos(response.data.id)
+                const avaliacoes = await getAvaliacoes(response.data.id)
 
                 setAgendamentos(agendamentos)
                 setAvaliacoes(avaliacoes)
@@ -359,10 +369,9 @@ const AreaCliente = () => {
             }
         };
         
-        if (token && userId) {
-            fetchUserInfo();
-        }
-    }, [token, userId]);
+        fetchUserInfo()
+
+    }, []);
 
     const status = localStorage.getItem("status")
     console.log("Status da conta: ", status)
@@ -402,13 +411,13 @@ const AreaCliente = () => {
     
         setUserInfo(updatedUserInfo);
     
-        const newUrls = updatedInfo.urls;
-        localStorage.setItem('urls', JSON.stringify(newUrls));
-        setUrls(newUrls);
+        // const newUrls = updatedInfo.urls;
+        // localStorage.setItem('urls', JSON.stringify(newUrls));
+        // setUrls(newUrls);
     };
     
     // Anexos
-    const avatarUrl = urls ? Object.values(urls)[0] : null;
+    // const avatarUrl = urls ? Object.values(urls)[0] : null;
 
     const buttons = [
         { link: "/", text: "Dúvidas"},
@@ -450,7 +459,7 @@ const [PrestadorMaisContratado, setPrestadorMaisContratado] = useState()
 useEffect(() => {
     const handlePrestadorMaisContratado = async() => {
         try {
-            const response = await getPrestadorMaisContratado(userId)
+            const response = await getPrestadorMaisContratado(userInfo?.id)
             // console.log("RESPOSTA", response)
             setPrestadorMaisContratado(response)
         } catch (error) {
@@ -458,46 +467,46 @@ useEffect(() => {
         }
     }
     handlePrestadorMaisContratado()
-  }, [userId, userInfo]);
+  }, [userInfo?.id, userInfo]);
 
  const [SolicitacoesDoMes, setSolicitacoesDoMes] = useState(0);
   useEffect(()=>{
     const handleSolicitacoesDoMes = async()=>{
         try{
-            const solMes = await getSolicitacoesDoMes(userId)
+            const solMes = await getSolicitacoesDoMes(userInfo?.id)
             setSolicitacoesDoMes(solMes)
         }catch(error){
             console.log(error)
         }
     }
     handleSolicitacoesDoMes()
-  }, [userId, userInfo]);
+  }, [userInfo?.id, userInfo]);
 
   const [SolicitacoesTotal, setSolicitacoesTotal] = useState(0);
   useEffect(() =>{
     const handleSolicitacoesTotal = async()=>{
         try{
-            const solTotal = await getSolicitacoesTotal(userId)
+            const solTotal = await getSolicitacoesTotal(userInfo?.id)
             setSolicitacoesTotal(solTotal)
         }catch(error){
             console.log(error)
         }
     }
     handleSolicitacoesTotal()
-  }, [userId, userInfo]);
+  }, [userInfo?.id, userInfo]);
     
   const [GastoMes, setGastoMes] = useState(0);
   useEffect(()=>{
     const handleGastoMes = async()=>{
         try{
-            const fatMes = await getGastoMes(userId)
+            const fatMes = await getGastoMes(userInfo?.id)
             setGastoMes(fatMes)
         }catch(error){
             console.log(error)
         }
     }
     handleGastoMes()
-  }, [userId, userInfo]);
+  }, [userInfo?.id, userInfo]);
 
     return (
         <div>
@@ -514,7 +523,7 @@ useEffect(() => {
 
                                 <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
                                     <Avatar
-                                    src={avatarUrl == null ? User : avatarUrl}
+                                    src={User}
                                     className={`${isOpen ? "" : ""} cursor-pointer`}
                                     onClick={() => setScreenSelected("perfil")}
                                     />
@@ -623,7 +632,7 @@ useEffect(() => {
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                                         </svg>
                                                     </div>
-                                                    <img src={avatarUrl == null ? User : avatarUrl}
+                                                    <img src={User}
                                                     id='avatar' 
                                                     alt="foto de perfil" 
                                                     className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
@@ -724,9 +733,9 @@ useEffect(() => {
                                         Open={Open}
                                         SetOpen={() => SetOpen(false)} 
                                         userInfo={userInfo} 
-                                        token={token} 
+                                        // token={token} 
                                         onUserUpdated={handleUserUpdated}
-                                        Urls={urls} 
+                                        // Urls={urls} 
                                     /> 
                                 
                             </section>

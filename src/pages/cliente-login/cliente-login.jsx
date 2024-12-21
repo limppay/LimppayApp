@@ -21,14 +21,15 @@ export default function ClienteLogin() {
         setLoading(true);
         
         try {
-            const { access_token, userId, urls } = await loginCliente(email, senha);
-            if (!access_token) {
-                setError(err.message);
+            const user = await loginCliente(email, senha);
+            if (!user) {
+                setError("Não foi possivel realizar o login");
             } else {
-                localStorage.setItem('token', access_token);
-                localStorage.setItem('userId', userId);
-                localStorage.setItem('urls', JSON.stringify(urls));
-                setUser({access_token, userId, urls})
+                // localStorage.setItem('token', access_token);
+                // localStorage.setItem('userId', userId);
+                // localStorage.setItem('urls', JSON.stringify(urls));
+                
+                setUser({user})
                 navigate("/area-cliente");
             }
         } catch (err) {

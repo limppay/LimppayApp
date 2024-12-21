@@ -18,17 +18,20 @@ export default function DaristaLogin() {
         setError('')
         
         try {
-            const { access_token, userId } = await login(email, senha);
-            if (!access_token) {
-                setError(err.message);
+            const response = await login(email, senha);
+            console.log("Usuário logado com sucesso! ", response.data)
+
+            if (!response) {
+                setError("Não foi possível fazer o login");
             } else {
-                localStorage.setItem('token_prestador', access_token);
-                localStorage.setItem('prestadorId', userId);
+                // localStorage.setItem('token_prestador', access_token);
+                // localStorage.setItem('prestadorId', userId);
                 navigate("/area-diarista");
             }
         } catch (err) {
-            setError(err.message);
+            setError('Não foi possivel realizar o login: ', err);
             console.error(err);
+
         } finally {
             setLoading(false);
         }

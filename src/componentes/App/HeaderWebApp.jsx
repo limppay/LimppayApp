@@ -5,13 +5,20 @@ import "../../styles/menu-hamburguer.css";
 import axios from "axios";
 import { useUser } from '../../context/UserProvider';
 import { useNavigate } from 'react-router-dom';
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Spinner } from "@nextui-org/react";
 import {Button} from "@nextui-org/react";
 import User from "../../assets/img/diarista-cadastro/user.png"
-
+import { loggoutCliente } from '../../services/api';
+import dotenv from 'dotenv';
 
 export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
-    const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {});
+    dotenv.config();
+      // Determina a URL com base no NODE_ENV
+    const baseURL =
+      process.env.NODE_ENV === 'local'
+      ? 'http://localhost:3000/cliente/me'
+      : 'https://limppay-api-production.up.railway.app/cliente/me';
+
     const navigate = useNavigate();
     const { user, setUser  } = useUser();
 
@@ -20,28 +27,31 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
     useEffect(() => {
         if (isFetched.current) return;  // Se já foi feito, não executa de novo
 
-        const token = localStorage.getItem('token');
-        const userId = localStorage.getItem('userId');
-
-        if (token && userId) {
-            fetchUserInfo(token, userId).then(data => {
-                if (data) {  // Verifica se obteve os dados corretamente
-                    setUser(data);  // Atualiza o contexto do usuário
-                    setUrls(JSON.parse(localStorage.getItem('urls')));  // Atualiza as URLs do usuário
-                    isFetched.current = true;  // Marca que a requisição foi feita com sucesso
-                }
-            }).catch(err => {
-                console.error('Erro ao buscar informações do usuário:', err);
-                isFetched.current = false;  // Reseta caso ocorra um erro
+        const fetchUserInfo = async () => {
+          try {
+            const response = await axios.get(baseURL, {
+              withCredentials: true,
             });
-        }
-    }, [user]);  // Dependência vazia para executar o efeito apenas uma vez
+      
+            setUser(response.data)
+            isFetched.current = true
+          } catch (error) {
+            console.error('Erro ao buscar informações do usuário:', error);
+            isFetched.current = false;
+            return null;
+          }
+        };
 
-  const fetchUserInfo = async (token, userId) => {
+        fetchUserInfo()
+ 
+    }, []);  // Dependência vazia para executar o efeito apenas uma vez
+
+  const fetchUserInfo = async () => {
     try {
-      const response = await axios.get(`https://limppay-api-production.up.railway.app/cliente/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.get(baseURL, {
+        withCredentials: true,
       });
+
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar informações do usuário:', error);
@@ -70,14 +80,22 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
     }
   }, []);
 
-  const HandleExitUser = () => {
+  const [loggout, setLoggout] = useState(false)
+  const HandleExitUser = async () => {
+    setLoggout(true)
     setUser(null);
-    setUrls({});
-    localStorage.removeItem('status')
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('urls');
-    localStorage.removeItem('enderecosCliente')
+
+    try {
+      const response = await loggoutCliente()
+      console.log("Loggout executado com sucesso!", response)
+      setLoggout(false)
+
+    } catch (error) {
+      console.log(error)
+      
+    }
+    
+    
     window.location.reload();
   };
 
@@ -85,7 +103,9 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
     navigate("/area-cliente");
   };
 
-  const avatarUrl = urls ? Object.values(urls)[0] : null;
+  const fullName = user?.name?.trim()
+  const firstName = fullName?.split(' ')[0]
+
 
   return (
     <>
@@ -119,16 +139,16 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
             <div className='flex  items-center gap-2'>
               <div className='text-center flex justify-center items-center '>
                 {user ? (
-                  <div className='flex items-center gap-2'>
-                    <div className='flex gap-2 items-center'>
+                  <div className='flex items-center gap-2 w-[25vh] sm:w-auto'>
+                    <div className='flex gap-2 items-center w-full'>
                       <Avatar
-                        src={avatarUrl == null ? User : avatarUrl}
+                        src={User}
                         alt="User Avatar"
                         size='sm'
                         onClick={HandleNavigateUser}
                         className='cursor-pointer'
                       />
-                      <span className='text-prim font-semibold'>Olá, {user.name}</span>
+                      <span className='text-prim font-semibold'>Olá, {firstName}</span>
                     </div>
                     <div>
                       <Button
@@ -146,7 +166,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                         '
                         onClick={HandleExitUser}
                       >
-                        Sair
+                        {loggout ? <Spinner className='text-white' color='danger'/> : "Sair"}
                       </Button>
                     </div>
                   </div>

@@ -22,15 +22,18 @@ import { desbloquearData } from '../../services/api.js';
 import { findAllDiasBloqueados } from '../../services/api.js';
 import { updateDiasDisponveis } from '../../services/api.js';
 import InputMask from "react-input-mask"
+import dotenv from 'dotenv';
 
 const AreaDiarista = () => {
+    dotenv.config();
+        // Determina a URL com base no NODE_ENV
+    const baseURL =
+        process.env.NODE_ENV === 'local'
+        ? 'http://localhost:3000/users/me'
+        : 'https://limppay-api-production.up.railway.app/users/me';
+    
     const [userInfo, setUserInfo] = useState(null);
     const[Open, SetOpen] = useState(false)
-    const userId = localStorage.getItem('prestadorId'); // Obter o ID do usuário do localStorage
-    const token = localStorage.getItem('token_prestador'); // Obter o token do localStorage
-    // Recuperar as URLs e converter para objeto JSON
-
-    // const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls_prestador')) || {}); // Atualize o estado URLs aqui
 
     const [agendamentos, setAgendamentos] = useState([])
     const [avaliacoes, setAvaliacoes] = useState([])
@@ -66,7 +69,7 @@ const AreaDiarista = () => {
 
     const HandleGetDiasBloqueados = async () => {
         try {
-            const response = await findAllDiasBloqueados(userId)
+            const response = await findAllDiasBloqueados(userInfo?.id)
             console.log("Dias bloqueados atualizados: ", response.data)
             setDatasBloqueadas(response.data)
 
@@ -174,30 +177,30 @@ const AreaDiarista = () => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await axios.get(`https://limppay-api-production.up.railway.app/users/${userId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
+                const user = await axios.get(baseURL, {
+                    withCredentials: true
                 });
-                const agendamentos = await getAgendamentos(userId)
-                const avaliacoes = await getAvaliacoesByPrestador(userId)
-                const datasBloqueadas = response.data.DiasBloqueados
-                console.log("Prestador: ", response.data)
+
+                const agendamentos = await getAgendamentos(user.data.id)
+                const avaliacoes = await getAvaliacoesByPrestador(user.data.id)
+                const datasBloqueadas = user.data.DiasBloqueados
+                console.log("Prestador: ", user.data)
                 // console.log("Avaliações: ", avaliacoes)
                 // console.log(agendamentos)
 
                 setAvaliacoes(avaliacoes)
                 setAgendamentos(agendamentos)
                 setDatasBloqueadas(datasBloqueadas)
-                setUserInfo(response.data)
-                setOld(response.data.Old)
+                setUserInfo(user.data)
+                setOld(user.Old)
             } catch (error) {
                 console.error('Erro ao buscar informações do usuário:', error);
             }
         };
+        
+        fetchUserInfo()
 
-        if (token && userId) {
-            fetchUserInfo();
-        }
-    }, [token, userId, ]);
+    }, [ ]);
 
     console.log("Datas bloqueadas: ", datasBloqueadas )
 
@@ -1838,7 +1841,7 @@ const AreaDiarista = () => {
                                         Open={Open}
                                         SetOpen={() => SetOpen(false)} 
                                         userInfo={userInfo} 
-                                        token={token} 
+                                        // token={token} 
                                         onUserUpdated={handleUserUpdated}
                                         Urls={userInfo?.AvatarUrl?.avatarUrl} 
                                     />                          

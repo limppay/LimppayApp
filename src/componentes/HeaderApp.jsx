@@ -1,17 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import "../styles/menu-hamburguer.css";
-import {Button} from "@nextui-org/react";
-import { useLocation } from 'react-router-dom';
+import {Button, Spinner} from "@nextui-org/react";
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useScreenSelected } from '../context/ScreenSelect';
+import { loggoutUser } from '../services/api';
 
 
 export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2,  }) {
     const location = useLocation()
-    const {screenSelected, setScreenSelected} = useScreenSelected()
+    const navigate = useNavigate()
 
-    // console.log("tela atual: ", screenSelected)
-
-    // console.log(location)
+    console.log("Localização atual", location.pathname)
 
     useEffect(() => {
         const hamburguerButton = document.getElementById("hamburguerButton");
@@ -37,6 +36,25 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
             };
         }
     }, []);
+
+    const [loggout, setLoggout] = useState(false)
+    const HandleExitUser = async () => {
+        setLoggout(true)
+
+        try {
+            const response = await loggoutUser()
+            console.log("Loggout executado com sucesso!", response)
+            setLoggout(false)
+            navigate("/")
+
+        } catch (error) {
+            console.log(error)
+            
+        } 
+        
+        
+    };
+
 
     return (
         <>
@@ -68,37 +86,63 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
 
                         {/* botões de acesso */}
                         <div className='flex'>
-                            <ul className='flex w-full gap-2'>
-                                {btnAcess.map((acess, index) => (
-                                    <>
-                                        <a href={acess.LinkPrim} key={index}>
-                                            <Button
-                                                
-                                                onClick={acess.OnClickPrim}
-                                                className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white'
-                                                
-                                                
-                                                
-                                            >
-                                                {acess.AcessPrim}
-                                            </Button>
-                                        </a>
+                            {location.pathname == "/area-diarista" ? (
+                                <> 
+                                    <div>
+                                        <Button
+                                            className='
+                                            bg-white
+                                            lg:p-2
+                                            p-2
+                                            text-sm
+                                            sm:text-md
+                                            md:text-md
+                                            lg:text-md
+                                            border
+                                            border-error
+                                            rounded-md text-error
+                                            '
+                                            onClick={HandleExitUser}
+                                        >
+                                            {loggout ? <Spinner className='text-white' color='danger'/> : "Sair"}
+                                        </Button>
+                                    </div>
 
-                                        <a href={acess.LinkSec} key={index}>
-                                            <Button
-                                                onClick={acess.OnClickSec}
-                                                className='bg-des hover:bg-sec text-white'
-                                            >
-                                                {acess.AcessSec}
-                                            </Button>                                            
+                                </>
+                            ) : (
+                                <ul className='flex w-full gap-2'>
+                                    {btnAcess.map((acess, index) => (
+                                        <>
+                                            <a href={acess.LinkPrim} key={index}>
+                                                <Button
+                                                    
+                                                    onClick={acess.OnClickPrim}
+                                                    className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white'
+                                                    
+                                                    
+                                                    
+                                                >
+                                                    {acess.AcessPrim}
+                                                </Button>
+                                            </a>
+
+                                            <a href={acess.LinkSec} key={index}>
+                                                <Button
+                                                    onClick={acess.OnClickSec}
+                                                    className='bg-des hover:bg-sec text-white'
+                                                >
+                                                    {acess.AcessSec}
+                                                </Button>                                            
+                                            
+                                            </a> 
+
+                                        </>
+
                                         
-                                        </a> 
+                                    ))} 
+                                </ul>
 
-                                    </>
-
-                                    
-                                ))} 
-                            </ul>
+                            )}
                         </div>
 
                         <i className="fas fa-bars cursor-pointer text-2xl text-des lg:hidden" id="hamburguerButton"></i>

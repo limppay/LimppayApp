@@ -1,11 +1,87 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
+// Carrega as variáveis de ambiente do arquivo .env
+dotenv.config();
 
-const urlProducao = 'https://limppay-api-production.up.railway.app'
-const local = 'http://localhost:3000'
+// Define a baseURL com base no NODE_ENV
+const baseURL =
+  process.env.NODE_ENV === 'local'
+    ? 'http://localhost:3000'
+    : 'https://limppay-api-production.up.railway.app';
 
 const api = axios.create({
-  baseURL: urlProducao
+  baseURL,
+  withCredentials: true, // Habilita o envio de cookies
 });
+
+// Função para fazer login (Usuário)
+export const login = async (email, senha) => {
+  try {
+    const response = await api.post('/auth/login-user', {
+      email,
+      senha,
+    });
+
+    // Retorne informações úteis para o front-end
+    return response;
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+
+    throw new Error(errorMessage);
+  }
+};
+
+// Função para fazer login (Cliente)
+export const loginCliente = async (email, senha) => {
+  try {
+    const response = await api.post('/auth/login-cliente', {
+      email,
+      senha,
+    });
+
+    // Retorne informações úteis para o front-end
+    return response;
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+
+    throw new Error(errorMessage);
+  }
+};
+
+export const loggoutUser = async () => {
+  try {
+    const response = await api.get("/users/logout", {
+      withCredentials: true
+    })
+    
+    return response.data
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+
+    throw new Error(errorMessage);
+  }
+  
+}
+
+export const loggoutCliente = async () => {
+  try {
+    const response = await api.get("/cliente/logout", {
+      withCredentials: true
+    })
+    
+    return response.data
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+
+    throw new Error(errorMessage);
+  }
+  
+}
+
 
 // Função para criar o usuário e enviar arquivos
 export const createUser = async (userData) => {
@@ -50,58 +126,6 @@ export const createCliente = async (clienteData) => {
       },
     });
     return response.data;
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
-
-    throw new Error(errorMessage)
-  }
-};
-
-// Função para fazer login
-export const login = async (email, senha) => {
-  try {
-    const response = await api.post('/auth/login-user', {
-      email,
-      senha,
-    });
-
-    const { access_token, userId, urls } = response.data; // Desestruturando corretamente
-
-    if (access_token) {
-      localStorage.setItem('token', access_token); // Armazenar o token
-      localStorage.setItem('userId', userId); // Armazenar o ID do usuário
-      localStorage.setItem('urls', JSON.stringify(urls))
-
-      return { access_token, userId, urls }; // Retornar o token e o ID do usuário
-    } else {
-      throw new Error('Token não encontrado na resposta.');
-    }
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
-
-    throw new Error(errorMessage)
-  }
-};
-
-// Função para fazer login como cliente
-export const loginCliente = async (email, senha) => {
-  try {
-    const response = await api.post('/auth/login-cliente', {
-      email,
-      senha,
-    });
-
-    const { access_token, userId, urls } = response.data; // Desestruturando corretamente
-
-    if (access_token) {
-      localStorage.setItem('token', access_token); // Armazenar o token
-      localStorage.setItem('userId', userId); // Armazenar o ID do usuário
-      localStorage.setItem('urls', JSON.stringify(urls))
-
-      return { access_token, userId, urls }; // Retornar o token e o ID do usuário
-    } else {
-      throw new Error('Token não encontrado na resposta.');
-    }
   } catch (error) {
     const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
 

@@ -1,5 +1,8 @@
 import axios from 'axios';
 import { Buffer } from 'buffer';
+import dotenv from 'dotenv';
+// Carrega as variáveis de ambiente do arquivo .env
+dotenv.config();
 
 // Configura a instância axios com a chave da API Iugu
 const iuguApi = axios.create({
@@ -14,7 +17,7 @@ export const obterTokenCartao = async (dadosCartao) => {
       const response = await iuguApi.post('/payment_token', {
         account_id: '2DB84A3C876E4C3CA1D8DB98C6425456',  // Defina o ID da sua conta aqui
         method: 'credit_card',
-        test: false,  // Defina como true no ambiente de desenvolvimento
+        test: process.env.NODE_ENV === 'local',  // Defina como true no ambiente de desenvolvimento
         data: {
           number: dadosCartao.numero,
           verification_value: dadosCartao.cvc,
