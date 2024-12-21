@@ -5,7 +5,7 @@ dotenv.config();
 
 // Define a baseURL com base no NODE_ENV
 const baseURL =
-  process.env.NODE_ENV === 'local'
+  process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
     : 'https://limppay-api-production.up.railway.app';
 

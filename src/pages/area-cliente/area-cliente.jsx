@@ -26,7 +26,7 @@ const AreaCliente = () => {
     dotenv.config();
     // Determina a URL com base no NODE_ENV
     const baseURL =
-    process.env.NODE_ENV === 'local'
+    process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000/cliente/me'
     : 'https://limppay-api-production.up.railway.app/cliente/me';
 
