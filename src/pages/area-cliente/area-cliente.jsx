@@ -19,14 +19,14 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
 import InputMask from "react-input-mask"
-import dotenv from 'dotenv';
+
 
 
 const AreaCliente = () => {
-    dotenv.config();
+
     // Determina a URL com base no NODE_ENV
     const baseURL =
-    process.env.NODE_ENV === 'development'
+    import.meta.env.VITE_ENV === 'development'
     ? 'http://localhost:3000/cliente/me'
     : 'https://limppay-api-production.up.railway.app/cliente/me';
 

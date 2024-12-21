@@ -22,13 +22,13 @@ import { desbloquearData } from '../../services/api.js';
 import { findAllDiasBloqueados } from '../../services/api.js';
 import { updateDiasDisponveis } from '../../services/api.js';
 import InputMask from "react-input-mask"
-import dotenv from 'dotenv';
+
 
 const AreaDiarista = () => {
-    dotenv.config();
+
         // Determina a URL com base no NODE_ENV
     const baseURL =
-        process.env.NODE_ENV === 'development'
+        import.meta.env.VITE_ENV === 'development'
         ? 'http://localhost:3000/users/me'
         : 'https://limppay-api-production.up.railway.app/users/me';
     

@@ -40,9 +40,8 @@ import WhatsAppIcon from "../../assets/img/whatsapp.png"
 export default function ContrateOnline() {
 
     const prestadorId = localStorage.getItem("prestadorId");
-
-    const clienteId = localStorage.getItem("userId");
-
+    const { user } = useUser();
+    const clienteId = user?.id;
     console.log("Id do cliente: ", clienteId)
 
     if (prestadorId && clienteId) {
@@ -242,7 +241,6 @@ export default function ContrateOnline() {
     const [estado, setEstado] = useState("")
     const [finding, setFinding] = useState(false)
 
-    const { user } = useUser();
     const { agendamentoData, setAgendamentoData } = useAgendamentoData()
     const { selectedProvider, setSelectedProvider } = useSelectedProvider()
     const { selectedDates, setSelectedDates } = useSelectedDates([])

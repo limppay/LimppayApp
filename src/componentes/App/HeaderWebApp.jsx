@@ -9,13 +9,13 @@ import { Avatar, Spinner } from "@nextui-org/react";
 import {Button} from "@nextui-org/react";
 import User from "../../assets/img/diarista-cadastro/user.png"
 import { loggoutCliente } from '../../services/api';
-import dotenv from 'dotenv';
+
 
 export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
-    dotenv.config();
+
       // Determina a URL com base no NODE_ENV
     const baseURL =
-      process.env.NODE_ENV === 'development'
+      import.meta.env.VITE_ENV === 'development'
       ? 'http://localhost:3000/cliente/me'
       : 'https://limppay-api-production.up.railway.app/cliente/me';
 

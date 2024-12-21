@@ -1,11 +1,9 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
 // Carrega as variáveis de ambiente do arquivo .env
-dotenv.config();
 
 // Define a baseURL com base no NODE_ENV
 const baseURL =
-  process.env.NODE_ENV === 'development'
+  import.meta.env.VITE_ENV === 'development'
     ? 'http://localhost:3000'
     : 'https://limppay-api-production.up.railway.app';
 
