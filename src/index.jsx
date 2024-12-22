@@ -2,6 +2,8 @@ import React, { Children } from 'react'
 // 1 - configurando o router
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider} from "react-router-dom"
+import { HelmetProvider } from "react-helmet-async";
+
 // 2 - Paginas
 import Home from './pages/home/index'
 import DiaristaApp from './pages/seja-diarista/diarista-app'
@@ -97,18 +99,20 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <UserProvider>
-      <AgendamentoData>
-        <SelectedProvider>
-          <SelectedDates>
-            <SelectedTimes>
-              <ScreenSelect>
-                <RouterProvider router={router}/>
-              </ScreenSelect>
-            </SelectedTimes>
-          </SelectedDates>
-        </SelectedProvider>
-      </AgendamentoData>
-    </UserProvider>
+    <HelmetProvider>
+      <UserProvider>
+        <AgendamentoData>
+          <SelectedProvider>
+            <SelectedDates>
+              <SelectedTimes>
+                <ScreenSelect>
+                  <RouterProvider router={router}/>
+                </ScreenSelect>
+              </SelectedTimes>
+            </SelectedDates>
+          </SelectedProvider>
+        </AgendamentoData>
+      </UserProvider>
+    </HelmetProvider>
   </React.StrictMode>,
 )

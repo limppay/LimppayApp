@@ -22,6 +22,7 @@ import { desbloquearData } from '../../services/api.js';
 import { findAllDiasBloqueados } from '../../services/api.js';
 import { updateDiasDisponveis } from '../../services/api.js';
 import InputMask from "react-input-mask"
+import { Helmet } from 'react-helmet-async';
 
 
 const AreaDiarista = () => {
@@ -681,6 +682,9 @@ const AreaDiarista = () => {
 
     return (
         <>
+            <Helmet>
+                <title>Limppay: Area Prestador</title>
+            </Helmet>
             <div>
                 <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
                 <main className='h-screen '>

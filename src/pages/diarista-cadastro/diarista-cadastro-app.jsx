@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async"
 import { HeaderApp, Logo, Footer, FormDiarista, ModalQuemSomos, ModalDuvidas, ModalLoginDiarista } from "../../componentes/imports.jsx"
 import "../../styles/footer.css"
 import { useState } from "react"
@@ -33,6 +34,9 @@ export default function DiaristaCadastro() {
 
     return (
         <>
+            <Helmet>
+                <title>Limppay: Cadastro Prestador</title>
+            </Helmet>
             <HeaderApp img={Logo} alt={"Diarista"} buttons={buttons} btnAcess={btnAcess} text1={"Faça seu cadastro"} text2={"E se torne uma diarista! :)"}/>
             <main className="w-full flex flex-col items-center justify-center">
                 <section className="pt-20">

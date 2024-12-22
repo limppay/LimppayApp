@@ -7,6 +7,7 @@ import { useUser } from '../../context/UserProvider';
 import { Button } from '@nextui-org/react';
 import { Spinner } from '@nextui-org/react';
 import CookieBanner from '../../componentes/App/CookieBanner';
+import { Helmet } from 'react-helmet-async';
 
 export default function ClienteLogin() {
     const [email, setEmail] = useState('');
@@ -43,6 +44,9 @@ export default function ClienteLogin() {
 
     return (
         <>
+            <Helmet>
+                <title>Limppay: Cliente</title>
+            </Helmet>
             <div className='flex h-screen justify-center max-w-full'>
                 <div className='h-screen flex flex-col p-10 w-full lg:w-5/12  bg-center bg-cover'>
                     <main className='flex flex-col gap-10 lg:shadow-none rounded-md p-5 bg-white'>

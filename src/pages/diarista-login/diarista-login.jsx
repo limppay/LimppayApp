@@ -5,6 +5,7 @@ import { login } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { Button, Spinner } from '@nextui-org/react';
 import CookieBanner from '../../componentes/App/CookieBanner';
+import { Helmet } from 'react-helmet-async';
 
 export default function DaristaLogin() {
     const [email, setEmail] = useState('');
@@ -40,6 +41,9 @@ export default function DaristaLogin() {
 
     return (
         <>
+            <Helmet>
+                <title>Limppay: Prestador</title>
+            </Helmet>
             <div className='flex h-screen w-full max-w-full justify-center'>
                 <div className='flex flex-col p-10 w-full lg:w-[vh] xl:w-[100vh]'>
                     <main className='flex flex-col gap-10  rounded-md p-5 bg-white'>

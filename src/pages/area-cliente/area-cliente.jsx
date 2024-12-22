@@ -19,6 +19,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
 import InputMask from "react-input-mask"
+import { Helmet } from 'react-helmet-async';
 
 
 
@@ -510,6 +511,9 @@ useEffect(() => {
 
     return (
         <div>
+            <Helmet>
+                <title>Limppay: Area Cliente</title>
+            </Helmet>
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
             <main className='h-screen w-screen'>
 

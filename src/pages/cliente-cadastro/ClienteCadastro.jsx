@@ -2,6 +2,7 @@ import { HeaderApp, Logo, Footer, ModalQuemSomos, ModalDuvidas } from "../../com
 import "../../styles/footer.css"
 import { useState } from "react"
 import FormCliente from "../../componentes/FormCadastro/FormCliente.jsx"
+import { Helmet } from "react-helmet-async"
 
 export default function ClienteCadastro() {
     const [Open, SetOpen] = useState(false)
@@ -32,6 +33,9 @@ export default function ClienteCadastro() {
 
     return (
         <>
+            <Helmet>
+                <title>Limppay: Cadastro Cliente</title>
+            </Helmet>
             <HeaderApp img={Logo} alt={"Diarista"} buttons={buttons} btnAcess={btnAcess} text1={"Faça seu cadastro"} text2={"E contrate um serviço! :)"}/>
             <main className="w-full flex flex-col items-center justify-center">
                 <section className="pt-20">

@@ -35,6 +35,7 @@ import { Button } from '@nextui-org/react';
 import CookieBanner from '../../componentes/App/CookieBanner';
 import WhatsappButton from '../../componentes/WhatsAppContact';
 import WhatsAppIcon from "../../assets/img/whatsapp.png"
+import { Helmet } from 'react-helmet-async';
 
 
 export default function ContrateOnline() {
@@ -676,6 +677,9 @@ export default function ContrateOnline() {
 
     return (
         <>
+            <Helmet>
+                <title>Limppay: Contrate Online</title>
+            </Helmet>
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
             <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 2xl:pt-[3vh]  ">
