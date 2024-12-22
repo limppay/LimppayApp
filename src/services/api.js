@@ -14,6 +14,12 @@ const api = axios.create({
 
 // Função para fazer login (Usuário)
 export const login = async (email, senha) => {
+  const cookiesAccepted = localStorage.getItem('cookiesConsent')
+
+  if (cookiesAccepted !== 'accepted') {
+    throw new Error('Você precisa aceitar os cookies para fazer login');
+  }
+
   try {
     const response = await api.post('/auth/login-user', {
       email,
@@ -32,6 +38,12 @@ export const login = async (email, senha) => {
 
 // Função para fazer login (Cliente)
 export const loginCliente = async (email, senha) => {
+  const cookiesAccepted = localStorage.getItem('cookiesConsent')
+
+  if (cookiesAccepted !== 'accepted') {
+    throw new Error('Você precisa aceitar os cookies para fazer login.');
+  }
+
   try {
     const response = await api.post('/auth/login-cliente', {
       email,

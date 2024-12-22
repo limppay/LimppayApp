@@ -14,6 +14,7 @@ import DuvidasFrequentes from '../../componentes/DuvidasFrequentes.jsx';
 import NossosContatos from '../../componentes/home/NossosContatos.jsx';
 import Footer from '../../componentes/Footer.jsx';
 import logo from '../../assets/img/limppay-logo.png'
+import CookieBanner from '../../componentes/App/CookieBanner.jsx';
 
 export default function App() {
   const buttons = [
@@ -47,6 +48,8 @@ export default function App() {
         <DuvidasFrequentes/>
         <NossosContatos/>
       </main>
+      <CookieBanner/>
+
       <Footer/>
     </div>
   );

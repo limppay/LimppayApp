@@ -13,6 +13,7 @@ import ResetPassword from './pages/diarista-login/reset-password'
 import RequestResetPassword from './pages/diarista-login/request-reset-password'
 import ResetPasswordCliente from './pages/cliente-login/reset-password'
 import RequestResetPasswordCliente from './pages/cliente-login/request-reset-password'
+import CookiePolicy from './pages/PoliticasCookies'
 
 import ContrateOnline from './pages/App/ContrateOnline'
 import ClienteCadastro from './pages/cliente-cadastro/ClienteCadastro'
@@ -87,6 +88,10 @@ const router = createBrowserRouter([
     {
       path: "checkout-pagamento",
       element: <Checkout/>
+    },
+    {
+      path: "politica-de-cookies",
+      element: <CookiePolicy/>
     }
 ])
 

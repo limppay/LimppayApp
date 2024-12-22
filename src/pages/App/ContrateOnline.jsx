@@ -1675,7 +1675,7 @@ export default function ContrateOnline() {
             </main>
             
             {/* banner para aceitar os cookies */}
-            {/* <CookieBanner/> */}
+            <CookieBanner/>
 
             <Footer />
 
