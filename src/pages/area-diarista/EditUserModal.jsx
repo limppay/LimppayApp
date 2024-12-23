@@ -8,6 +8,7 @@ import axios from "axios"
 import { updateUser } from '../../services/api';
 
 import InputMask from "react-input-mask"
+import { Button, Spinner } from '@nextui-org/react';
 
 
 const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
@@ -102,8 +103,7 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
       }
 
       try {
-        const userId = localStorage.getItem('userId')
-        const updatedUser = await updateUser(userId, formData)
+        const updatedUser = await updateUser(userInfo?.id, formData)
 
         if (updatedUser) {
           console.log('Usuário atualizado com sucesso:', updatedUser);
@@ -592,15 +592,17 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                             </div>
                           </div>
                           <div className="bg-gray-50 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 lg:gap-10 flex flex-row-reverse gap-5">
-                            <button type='submit'  className="text-center w-full lg:w-2/12  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 ">{loading ? "Editando..." : "Editar"}</button>
-                            <button
+                            <Button type='submit'  className="text-center w-full lg:w-2/12  bg-des text-white hover:bg-sec transition-all duration-100 " isDisabled={loading}>
+                              {loading ? <Spinner/> : "Editar"}
+                            </Button>
+                            <Button
                               type="button"
                               data-autofocus
                               onClick={() => SetOpen(false)}
-                              className="text-center w-full lg:w-2/12 bg-white rounded-md text-prim p-2 hover:text-sec transition-all duration-100 border border-bord "
+                              className="text-center w-full lg:w-2/12 bg-white  text-prim hover:text-sec transition-all duration-100 border border-bord "
                             >
                               Cancelar
-                            </button>
+                            </Button>
                           </div>
                       </form>
                     </div>           

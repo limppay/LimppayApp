@@ -85,7 +85,7 @@ const AreaDiarista = () => {
         for(const date of formattedDates ) {
 
             const data = {
-                userId: userId,
+                userId: userInfo?.id,
                 data: date
             }
             
@@ -111,10 +111,10 @@ const AreaDiarista = () => {
         const date = new Date(data).toISOString().split('T')[0]
     
         console.log("Dados enviados ", date);
-        console.log("Id do cliente: ", userId)
+        console.log("Id do cliente: ", userInfo?.id)
     
         try {
-            const response = await desbloquearData(userId, date );
+            const response = await desbloquearData(userInfo?.id, date );
             console.log("Data(s) desbloqueada(s) com sucesso!", response.data);
     
             // Atualize os dias bloqueados após o desbloqueio
@@ -155,7 +155,7 @@ const AreaDiarista = () => {
         setLoadingDay(true)
 
         try {
-            const response = await updateDiasDisponveis(userId, data)
+            const response = await updateDiasDisponveis(userInfo?.id, data)
             console.log("Dias disponíveis atualizado com sucesso! ", response.data)
             setLoadingDay(false)
 
@@ -444,7 +444,7 @@ const AreaDiarista = () => {
         }
 
         try {
-          const response = await CreateStepTwo(userId, formData);
+          const response = await CreateStepTwo(userInfo?.id, formData);
           reset()
           setLoading(false)
           setOpenSucess(true)
@@ -612,7 +612,7 @@ const AreaDiarista = () => {
         
 
         try {
-            const response = await updateServico(userId, data)
+            const response = await updateServico(userInfo?.id, data)
             console.log("Serviços atualizados com sucesso! ", response)
             setLoadingServico(false)
             setServiceMessage("Enviado com sucesso!")
@@ -1494,14 +1494,7 @@ const AreaDiarista = () => {
                                                                         <AccordionItem key={agendamento.id} title="Detalhes" >
                                                                             <div className="mt-2">
                                                                                 <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
-                                                                                    <p className='font-semibold border-t-2 pt-5 border-bord'>Agendamento feito dia {new Date(agendamento?.dataAgendamento).toLocaleDateString('pt-BR', {
-                                                                                        day: '2-digit',
-                                                                                        month: 'long',
-                                                                                        year: 'numeric'
-                                                                                    })}</p>
                                                                                     <div className='text-justify flex flex-col gap-2'>
-
-                                                                                        <p><b>Prestador:</b> {agendamento?.user?.name}</p>
 
                                                                                         <p><b>Serviço:</b> {agendamento?.Servico}</p>
 

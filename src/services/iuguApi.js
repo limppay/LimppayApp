@@ -8,6 +8,7 @@ const iuguApi = axios.create({
     Authorization: `Basic ${Buffer.from(import.meta.env.VITE_IUGU_API_KEY + ':').toString('base64')}`,
   },
 });
+
 // import.meta.env.VITE_ENV === 'development'
 
 export const obterTokenCartao = async (dadosCartao) => {
@@ -15,7 +16,7 @@ export const obterTokenCartao = async (dadosCartao) => {
     const response = await iuguApi.post('/payment_token', {
       account_id: import.meta.env.VITE_ACCOUNT_ID,
       method: 'credit_card',
-      test: false, // Defina como true no ambiente de desenvolvimento
+      test: import.meta.env.VITE_ENV === 'development', // Defina como true no ambiente de desenvolvimento
       data: {
         number: dadosCartao.numero,
         verification_value: dadosCartao.cvc,
