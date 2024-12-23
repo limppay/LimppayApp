@@ -25,11 +25,16 @@ import io from 'socket.io-client';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 
 import { useCheckout } from '../../context/CheckoutData';
+import axios from 'axios';
 
 export default function Checkout() {
   const {user} = useUser()
   const {checkoutData, setCheckoutData} = useCheckout()
   console.log("Dados recebidos para o checkout: ", checkoutData)
+
+
+
+  
 
 
   const schemaDadosCartao = yup.object({
@@ -88,7 +93,22 @@ export default function Checkout() {
     data.setDate(data.getDate() + diasParaVencer); // Adiciona os dias
     return data.toISOString().split('T')[0]; // Retorna a data no formato YYYY-MM-DD
   }
-  
+
+  const [sessionCode, setSessionCode] = useState(null);
+  // gera o codigo de sessao unica
+  const getCodeSession = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/checkout/session/${id}`)
+      console.log("Codigo da sessão: ", response.data)
+      setSessionCode(response.data.sessionCode)
+
+    } catch (error) {
+      console.log(error)
+      
+    }
+    
+  }
+
   const createPix = async () => {
     if(isLoading) return
 
@@ -110,72 +130,88 @@ export default function Checkout() {
       }
     );
     
-    console.log(response.pix.qrcode)
-    console.log(response.pix.qrcode_text)
+    console.log(response.data.pix.qrcode)
+    console.log(response.data.pix.qrcode_text)
+    console.log("Id unico do pix", response.data.id)
+    console.log("Id unico do pix", response)
 
-    setQrCodePix(response.pix.qrcode)
-    setPixChave(response.pix.qrcode_text)
+    getCodeSession(response.data.id)
+    setQrCodePix(response.data.pix.qrcode)
+    setPixChave(response.data.pix.qrcode_text)
     setIsLoading(true)
   }
 
-  if (metodoPagamento === 'pix') {
+  if(metodoPagamento == "pix") {
     createPix()
   }
+  
+
+
+
+  //https://limppay-api-production.up.railway.app
 
   // efeito para atualizar a pagina ao efetuar o pagamento via pix
   useEffect(() => {
+    if (!sessionCode) return;
     // Conectar ao servidor WebSocket
-    const socket = io('https://limppay-api-production.up.railway.app'); // A URL do seu servidor WebSocket
+    const socket = io('http://localhost:3000', {
+      query: { sessionCode } // Enviar o código de sessão como parâmetro
+    }); // A URL do seu servidor WebSocket
 
-    console.log(socket);
+    console.log("Conexão WebSocket estabelecida:", socket);
+
+    socket.on('payment_status', (data) => {
+      console.log('Status de pagamento recebido:', data);
+      setPaymentStatus(data.status);  // Atualiza o status de pagamento no front-end
+    });
 
 
     // Ouvir o evento 'payment_status' enviado pelo servidor
-    socket.on('payment_status', (data) => {
-      console.log('Pagamento status recebido:', data);
+    // socket.on('payment_status', (data) => {
+    //   console.log('Pagamento status recebido:', data);
       
-      if (data.status === 'paid') {
-        setPaymentStatus({
-          status: 'Pago',
-          amount: data.paidAmount,
-          pixId: data.pixEndToEndId,
-        });
+    //   if (data.status === 'paid') {
+    //     setPaymentStatus({
+    //       status: 'Pago',
+    //       amount: data.paidAmount,
+    //       pixId: data.pixEndToEndId,
+    //     });
 
-        const createNewAgendamento = async () => {
-          // Se o pagamento foi bem-sucedido, cria o agendamento
-          try {
+    //     const createNewAgendamento = async () => {
+    //       // Se o pagamento foi bem-sucedido, cria o agendamento
+    //       try {
               
-            console.log("agendamentos: ", checkoutData)
+    //         console.log("agendamentos: ", checkoutData)
 
-            for (const agendamento of checkoutData) {
+    //         for (const agendamento of checkoutData) {
 
-              const agendamentoResponse = await createAgendamento(agendamento);
-              console.log(`Agendamento para ${agendamento.dataServico} criado com sucesso!`, agendamentoResponse);
+    //           const agendamentoResponse = await createAgendamento(agendamento);
+    //           console.log(`Agendamento para ${agendamento.dataServico} criado com sucesso!`, agendamentoResponse);
 
-            }
+    //         }
               
-          } catch (agendamentoError) {
-              console.error("Erro ao criar os agendamentos", agendamentoError);
-              alert("Erro ao criar os agendamentos!");
-          } finally {
-              reset();
-          }
+    //       } catch (agendamentoError) {
+    //           console.error("Erro ao criar os agendamentos", agendamentoError);
+    //           alert("Erro ao criar os agendamentos!");
+    //       } finally {
+    //           reset();
+    //       }
           
-        }
+    //     }
 
-        createNewAgendamento()
+    //     createNewAgendamento()
 
-      } else {
-        setPaymentStatus({ status: 'Falhou' });
+    //   } else {
+    //     setPaymentStatus({ status: 'Falhou' });
 
-      }
-    });
+    //   }
+    // });
 
     // Fechar a conexão quando o componente for desmontado
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [sessionCode]);
 
 
   const handleFinalizarCompra = async (data) => {
