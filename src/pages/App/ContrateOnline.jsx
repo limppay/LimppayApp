@@ -37,8 +37,15 @@ import WhatsappButton from '../../componentes/WhatsAppContact';
 import WhatsAppIcon from "../../assets/img/whatsapp.png"
 import { Helmet } from 'react-helmet-async';
 
+import { useCheckout } from '../../context/CheckoutData';
+import CheckoutNotification from './CheckoutNotification';
+
 
 export default function ContrateOnline() {
+
+    const { checkoutData, setCheckoutData } = useCheckout()
+
+    console.log("Dados do context checkout: ", checkoutData)
 
     const prestadorId = localStorage.getItem("prestadorId");
     const { user } = useUser();
@@ -616,48 +623,19 @@ export default function ContrateOnline() {
             };
         });
     
-        // Armazena os dados no localStorage
-        localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
-        localStorage.setItem('selectedProvider', JSON.stringify(selectedProvider));
-        localStorage.setItem('selectedDates', JSON.stringify(selectedDates));
-        localStorage.setItem('selectedTimes', JSON.stringify(selectedTimes));
+        // // Armazena os dados no localStorage
+        // localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
+        // localStorage.setItem('selectedProvider', JSON.stringify(selectedProvider));
+        // localStorage.setItem('selectedDates', JSON.stringify(selectedDates));
+        // localStorage.setItem('selectedTimes', JSON.stringify(selectedTimes));
     
         // Define o estado e navega para o checkout
-        await setAgendamentoData(agendamentos); // Ajustado para enviar o array de agendamentos
+        // await setAgendamentoData(agendamentos); // Ajustado para enviar o array de agendamentos
+
+        await setCheckoutData(agendamentos)
         navigate("/checkout-pagamento");
     };
     
-
-    // const HandleNavigateCheckout = async () => {
-    //     const FormDate = selectedDates.map((date) => date.toISOString()); // Converte a data para o formato legivel
-
-    //     const times = selectedTimes[FormDate]; // Acessa o valor correspondente no objeto
-    //     // // console.log(times)
-    //     // // console.log(observacao)
-
-    
-    //     const data = {
-    //         userId: selectedProvider.id,
-    //         clienteId: clienteId,
-    //         servicoId: servicoId,
-    //         dataServico: selectedDates.map((date) => date.toISOString().split('T')[0]),
-    //         Servico: selectedService,
-    //         horaServico: times,
-    //         valorServico: sumValueService,
-    //         observacao: observacao,
-    //         ...(selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id })
-    //     };
-
-    //     console.log("Datas selecionadas: ", FormDate)
-
-    //     localStorage.setItem('agendamentoData', JSON.stringify(agendamentoData));
-    //     localStorage.setItem('selectedProvider', JSON.stringify(selectedProvider));
-    //     localStorage.setItem('selectedDates', JSON.stringify(selectedDates));
-    //     localStorage.setItem('selectedTimes', JSON.stringify(selectedTimes));
-        
-    //     await setAgendamentoData(data)
-    //     navigate("/checkout-pagamento")
-    // }
 
     function StarReview({ filled }) {
         return (
@@ -1501,7 +1479,7 @@ export default function ContrateOnline() {
                                         <div className='w-full flex flex-col  gap-2'>
                                             <p className='text-md font-semibold'> Prestador selecionado:</p>
                                             <div className='flex w-full items-center gap-2'>
-                                                <Avatar src={selectedProvider.avatar?.avatarUrl} size="md"/>
+                                                <Avatar src={selectedProvider?.avatarUrl?.avatarUrl} size="md"/>
                                                 <p className='text-base'>{selectedProvider.name}</p>
                                                 {/*Mostra o avatar do prestador */}
                                             </div>
@@ -1680,6 +1658,10 @@ export default function ContrateOnline() {
             
             {/* banner para aceitar os cookies */}
             <CookieBanner/>
+            {currentStep == 0 && (
+                <CheckoutNotification/>
+
+            )} 
 
             <Footer />
 

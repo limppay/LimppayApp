@@ -30,6 +30,7 @@ import { SelectedProvider } from './context/SelectedProvider'
 import { SelectedDates } from './context/SelectedDates'
 import { SelectedTimes } from './context/SelectedTimes'
 import { ScreenSelect } from './context/ScreenSelect'
+import { CheckoutProvider } from './context/CheckoutData';
 
 // 3 - rotas
 
@@ -101,17 +102,19 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
       <UserProvider>
-        <AgendamentoData>
-          <SelectedProvider>
-            <SelectedDates>
-              <SelectedTimes>
-                <ScreenSelect>
-                  <RouterProvider router={router}/>
-                </ScreenSelect>
-              </SelectedTimes>
-            </SelectedDates>
-          </SelectedProvider>
-        </AgendamentoData>
+        <CheckoutProvider>
+          <AgendamentoData>
+            <SelectedProvider>
+              <SelectedDates>
+                <SelectedTimes>
+                  <ScreenSelect>
+                    <RouterProvider router={router}/>
+                  </ScreenSelect>
+                </SelectedTimes>
+              </SelectedDates>
+            </SelectedProvider>
+          </AgendamentoData>
+        </CheckoutProvider>
       </UserProvider>
     </HelmetProvider>
   </React.StrictMode>,
