@@ -98,7 +98,7 @@ export default function Checkout() {
   // gera o codigo de sessao unica
   const getCodeSession = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:3000/checkout/session/${id}`)
+      const response = await axios.get(`https://limppay-api-production.up.railway.app/checkout/session/${id}`)
       console.log("Codigo da sessão: ", response.data)
       setSessionCode(response.data.sessionCode)
 
@@ -154,7 +154,7 @@ export default function Checkout() {
   useEffect(() => {
     if (!sessionCode) return;
     // Conectar ao servidor WebSocket
-    const socket = io('http://localhost:3000', {
+    const socket = io('https://limppay-api-production.up.railway.app', {
       query: { sessionCode } // Enviar o código de sessão como parâmetro
     }); // A URL do seu servidor WebSocket
 
