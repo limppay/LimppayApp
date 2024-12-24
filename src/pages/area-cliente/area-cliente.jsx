@@ -34,11 +34,6 @@ const AreaCliente = () => {
     const [userInfo, setUserInfo] = useState(null);
     const[Open, SetOpen] = useState(false)
 
-    // const userId = localStorage.getItem('userId'); // Obter o ID do usuário do localStorage
-    // const token = localStorage.getItem('token'); // Obter o token do localStorage
-    // // Recuperar as URLs e converter para objeto JSON
-    // const [urls, setUrls] = useState(JSON.parse(localStorage.getItem('urls')) || {}); // Atualize o estado URLs aqui
-
     const [adressDefault, setAdressDefault] = useState([])
     const [agendamentos, setAgendamentos] = useState([])
     const [avaliacoes, setAvaliacoes] = useState([])
@@ -390,31 +385,28 @@ const AreaCliente = () => {
 
     
     const handleUserUpdated = (updatedInfo) => {
-        const enderecoDefault = updatedInfo.updatedCliente.EnderecoDefault[0];
+        // const enderecoDefault = updatedInfo.updatedCliente.EnderecoDefault[0];
     
-        const updatedUserInfo = {
-            ...userInfo,
-            ...updatedInfo.updatedCliente,
-            iD_Endereco: enderecoDefault.id,
-            clienteId: enderecoDefault.clienteId,
-            cep: enderecoDefault.cep,
-            cidade: enderecoDefault.cidade,
-            complemento: enderecoDefault.complemento,
-            estado: enderecoDefault.estado,
-            logradouro: enderecoDefault.logradouro,
-            numero: enderecoDefault.numero,
-            referencia: enderecoDefault.referencia,
-            bairro: enderecoDefault.bairro,
-        };
+        // const updatedUserInfo = {
+        //     ...userInfo,
+        //     ...updatedInfo.updatedCliente,
+        //     iD_Endereco: enderecoDefault.id,
+        //     clienteId: enderecoDefault.clienteId,
+        //     cep: enderecoDefault.cep,
+        //     cidade: enderecoDefault.cidade,
+        //     complemento: enderecoDefault.complemento,
+        //     estado: enderecoDefault.estado,
+        //     logradouro: enderecoDefault.logradouro,
+        //     numero: enderecoDefault.numero,
+        //     referencia: enderecoDefault.referencia,
+        //     bairro: enderecoDefault.bairro,
+        // };
     
-        // Remover a propriedade EnderecoDefault do objeto principal
-        delete updatedUserInfo.EnderecoDefault;
+        // // Remover a propriedade EnderecoDefault do objeto principal
+        // delete updatedUserInfo.EnderecoDefault;
     
-        setUserInfo(updatedUserInfo);
-    
-        // const newUrls = updatedInfo.urls;
-        // localStorage.setItem('urls', JSON.stringify(newUrls));
-        // setUrls(newUrls);
+        window.location.reload()
+
     };
     
     // Anexos
@@ -527,7 +519,7 @@ useEffect(() => {
 
                                 <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
                                     <Avatar
-                                    src={User}
+                                    src={userInfo?.AvatarUrl.avatarUrl || User}
                                     className={`${isOpen ? "" : ""} cursor-pointer`}
                                     onClick={() => setScreenSelected("perfil")}
                                     />
@@ -636,7 +628,7 @@ useEffect(() => {
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                                         </svg>
                                                     </div>
-                                                    <img src={User}
+                                                    <img src={userInfo?.AvatarUrl.avatarUrl || User}
                                                     id='avatar' 
                                                     alt="foto de perfil" 
                                                     className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
@@ -739,7 +731,7 @@ useEffect(() => {
                                         userInfo={userInfo} 
                                         // token={token} 
                                         onUserUpdated={handleUserUpdated}
-                                        // Urls={urls} 
+                                        Urls={userInfo?.AvatarUrl?.avatarUrl} 
                                     /> 
                                 
                             </section>

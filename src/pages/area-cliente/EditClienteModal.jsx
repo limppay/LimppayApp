@@ -9,6 +9,7 @@ import { updateCliente } from '../../services/api';
 import User from "../../assets/img/diarista-cadastro/user.png"
 
 import InputMask from "react-input-mask"
+import { Button, Spinner } from '@nextui-org/react';
 
 
 const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
@@ -104,8 +105,7 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
       }
 
       try {
-        const userId = localStorage.getItem('userId')
-        const updatedCliente = await updateCliente(userId, formData)
+        const updatedCliente = await updateCliente(userInfo?.id, formData)
 
         if (updatedCliente) {
           
@@ -114,13 +114,9 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
           const userInforUpdate = updatedCliente.EnderecoDefault
           console.log("teste", userInforUpdate)
 
-          const newUrls = updatedCliente.urls
-          localStorage.setItem('urls', JSON.stringify(newUrls))
-
-
           onUserUpdated(updatedCliente);
-
           SetOpen(false); // Fechar o modal após o sucesso
+          setLoading(false)
         } else {
           console.error('Falha ao atualizar o usuário.');
           // Aqui você pode adicionar lógica para mostrar uma mensagem de erro
@@ -140,7 +136,7 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
   const [cepError, setCepError] = useState("")
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null)
-  const avatarUrl = Urls ? Object.values(Urls)[0] : null;
+  const avatarUrl = Urls
   const [image, setImage] = useState(avatarUrl)
   const [file, setFile] = useState(null);
 
@@ -287,7 +283,7 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
                             <div className='lg:flex-row flex flex-col items-center lg:justify-around'>
                                 <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
-                                    <img src={!image ? image : User} 
+                                    <img src={image || User} 
                                     alt="foto de perfil" 
                                     className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
                                     />                  
@@ -520,15 +516,17 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                             </div>
                           </div>
                           <div className="bg-gray-50 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 lg:gap-10 flex flex-row-reverse gap-5">
-                            <button type='submit'  className="text-center w-full lg:w-2/12  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 ">{loading ? "Editando..." : "Editar"}</button>
-                            <button
+                            <Button type='submit'  className="text-center w-full lg:w-2/12  bg-des text-white hover:bg-sec transition-all duration-100 " isDisabled={loading}>
+                              {loading ? <Spinner/> : "Editar"}
+                            </Button>
+                            <Button
                               type="button"
                               data-autofocus
                               onClick={() => SetOpen(false)}
-                              className="text-center w-full lg:w-2/12 bg-white rounded-md text-prim p-2 hover:text-sec transition-all duration-100 border border-bord "
+                              className="text-center w-full lg:w-2/12 bg-white  text-prim hover:text-sec transition-all duration-100 border border-bord "
                             >
                               Cancelar
-                            </button>
+                            </Button>
                           </div>
                       </form>
                     </div>           
