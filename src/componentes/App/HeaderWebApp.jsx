@@ -142,7 +142,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                   <div className='flex items-center gap-2 w-[25vh] sm:w-auto'>
                     <div className='flex gap-2 items-center w-full'>
                       <Avatar
-                        src={user?.AvatarUrl.avatarUrl || User}
+                        src={user?.AvatarUrl?.avatarUrl ? user?.AvatarUrl?.avatarUrl : User}
                         alt="User Avatar"
                         size='sm'
                         onClick={HandleNavigateUser}

@@ -82,11 +82,7 @@ const router = createBrowserRouter([
     },
     {
       path: "area-cliente",
-      element: (
-        <ProtectedRoute>
-          <AreaCliente/>
-        </ProtectedRoute>
-      ) 
+      element: <AreaCliente/>
     },
     {
       path: "checkout-pagamento",
