@@ -48,7 +48,7 @@ const AreaCliente = () => {
     // Função para atualizar a avaliação
     const [prestadorId, setPrestadorId] = useState('')
 
-    const [screenSelected, setScreenSelected] = useState("perfil")
+    const [screenSelected, setScreenSelected] = useState("painel")
     const [isOpen, setIsOpen] = useState(true)
     const [deleting, setDeleting] = useState(false)
     const [openCreateAdress, setOpenCreateAdress] = useState(false)
@@ -501,6 +501,50 @@ useEffect(() => {
     handleGastoMes()
   }, [userInfo?.id, userInfo]);
 
+  console.log("Prestador mais solicitado: ", PrestadorMaisContratado)
+
+  const calcularValorLiquido = (valorLiquido, desconto, valorServico) => {
+    const ValorBruto =  valorLiquido + desconto
+    const qtdAgendamentos = ValorBruto / valorServico
+    const descontoPorServico = desconto / qtdAgendamentos
+
+    const descontoTotalServico = valorServico - descontoPorServico
+
+    return formatarMoeda(descontoTotalServico)
+
+  }
+
+  const calcularValorDesconto = (valorLiquido, desconto, valorServico) => {
+    const ValorBruto =  valorLiquido + desconto
+    const qtdAgendamentos = ValorBruto / valorServico
+    const descontoPorServico = desconto / qtdAgendamentos
+
+    return formatarMoeda(descontoPorServico)
+
+  }
+
+  const calcularQtdAgendamentos = (valorLiquido, desconto, valorServico) => {
+    const ValorBruto =  valorLiquido + desconto
+    const qtdAgendamentos = ValorBruto / valorServico
+  
+    return qtdAgendamentos
+
+  }
+
+  const calcularValorBruto = (valorLiquido, desconto, valorServico) => {
+    const ValorBruto =  valorLiquido + desconto
+  
+    return formatarMoeda(ValorBruto)
+
+  }
+
+  const MapsLocate = (logradouro, numero, bairro, cidade, estado, cep) => {
+    const local = `${logradouro}, ${numero} - ${bairro}, ${cidade} - ${estado}, ${cep} `
+    console.log(local)
+
+    return local
+  }
+
     return (
         <div>
             <Helmet>
@@ -516,6 +560,7 @@ useEffect(() => {
                             <div className={` lg:flex flex-col pt-[7vh] min-h-[15vh]  lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
                             isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[15vh] xl:max-w-[15vh] 2xl:min-w-[12vh] 2xl:max-w-[12vh] "
                             }`}>
+                                
 
                                 <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
                                     <Avatar
@@ -533,6 +578,47 @@ useEffect(() => {
                                 </div>
                                 
                                 <div className='flex flex-row lg:grid gap-5 pt-5 p-2 '>
+                                    <div>
+                                        <Button
+                                        className='w-full border border-des bg-trans text-des justify-start'
+                                        onClick={() => setScreenSelected("painel")}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                            </svg>
+
+
+                                            {isOpen ? "Painel" : ""}
+                                            
+                                        </Button>
+                                    </div> 
+                                    <div>
+                                        <Button
+                                        className='w-full border shadow-md bg-trans text-des justify-start'
+                                        onClick={() => setScreenSelected("pedidos")}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+                                            </svg>
+
+                                            {isOpen ? "Meus pedidos" : ""}
+                                            
+                                        </Button>
+                                    </div>
+                                    <div>
+                                        <Button
+                                        className='w-full border shadow-md bg-trans text-des justify-start'
+                                        onClick={() => setScreenSelected("avaliacoes")}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                            </svg>
+
+
+                                            {isOpen ? "Minhas Avaliações" : ""}
+                                            
+                                        </Button>
+                                    </div>
                                     <div>
                                         <Button
                                         className='w-full border shadow-md bg-trans text-des justify-start '
@@ -560,58 +646,74 @@ useEffect(() => {
                                             {isOpen ? "Meus Endereços" : ""}
                                             
                                         </Button>
-                                    </div>
-
-
-                                    <div>
-                                        <Button
-                                        className='w-full border shadow-md bg-trans text-des justify-start'
-                                        onClick={() => setScreenSelected("pedidos")}
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
-                                            </svg>
-
-                                            {isOpen ? "Meus pedidos" : ""}
-                                            
-                                        </Button>
-                                    </div>
-
-                                    <div>
-                                        <Button
-                                        className='w-full border shadow-md bg-trans text-des justify-start'
-                                        onClick={() => setScreenSelected("avaliacoes")}
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-                                            </svg>
-
-
-                                            {isOpen ? "Minhas Avaliações" : ""}
-                                            
-                                        </Button>
-                                    </div>
-                                    
-
-                                    {/* tela para o dashboard */}
-                                     <div>
-                                        <Button
-                                        className='w-full border border-des bg-trans text-des justify-start'
-                                        onClick={() => setScreenSelected("painel")}
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                                            </svg>
-
-
-                                            {isOpen ? "Painel" : ""}
-                                            
-                                        </Button>
-                                    </div> 
+                                    </div>                                    
 
                                 </div>
                                     
                             </div>
+
+                            {screenSelected === "painel" && (
+                                <div className="md:pt-28 flex-1 p-6 ">
+                                    {/* Header do painel */}
+
+                                    {/* Grid do dashboard */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {/* Prestador mais contratado */}
+                                        <div className="bg-white  shadow-md rounded-lg p-6">
+                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
+                                        <div className="flex items-center">
+                                            <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
+                                            <Avatar
+                                                src={PrestadorMaisContratado?.avatarUrl?.avatarUrl || User}
+                                                alt={PrestadorMaisContratado?.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            </div>
+                                            <span className="text-desSec  font-medium">
+                                            {PrestadorMaisContratado?.name || <span className='text-white'> <Spinner/> </span>}
+                                            </span>
+                                        </div>
+                                    </div>
+
+
+                                    {/* Solicitações do mês */}
+                                    <div className="bg-white  shadow-md rounded-lg p-6">
+                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                            Solicitações do Mês
+                                        </h2>
+                                        <p className="text-desSec text-3xl font-bold text-gray-800">
+                                            {SolicitacoesDoMes || 0}
+                                        </p>
+                                    </div>
+
+                                    {/* Total de agendamentos */}
+                                    <div className="bg-white  shadow-md rounded-lg p-6">
+                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
+                                        <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
+                                    </div> 
+                                </div>
+
+                                    {/* Total de gastos no mês */}
+                                    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
+                                        <div className='bg-white  shadow-md rounded-lg p-6 mt-10 h-44'>
+                                            <h2 className='text-desSec text-lg font-semibold text-gray-600 mb-4'>Gasto no mês</h2>
+                                            <p className='text-desSec text-3xl font-bold text-gray-800'>R$ {GastoMes.toFixed(2) || "0.00"}</p>
+                                        </div>
+
+                                        {/* Componente de Nível */}
+                                        {/* <div className="bg-white border border-desSec shadow-md rounded-md p-6 mt-10 h-44">
+                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Nível</h2>
+                                            <div className="flex flex-col justify-center items-center">
+                                                <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                                                    <div className="bg-desSec h-3 rounded-full"/>
+                                                </div>
+                                                <span className="text-desSec text-xl font-semibold"> "Nível 1"</span>
+                                                <span className="text-desSec text-sm text-gray-600">Experiência: 0%</span>
+                                            </div>
+                                        </div>  */}
+                                    </div>
+                                </div>
+                            )}
 
                             {screenSelected == "perfil" && (
                                 <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
@@ -741,31 +843,35 @@ useEffect(() => {
                             {screenSelected == "pedidos" && (
                                 <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5 flex flex-col gap-5'>
-                                    <div className="flex items-center gap-4 mb-5">
-                                <input
-                                    type="text"
-                                    placeholder="Pesquisar"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="border p-2 rounded"
-                                />
+                                    <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
+                                            <input
+                                                type="text"
+                                                placeholder="Pesquisar"
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className="border p-2 rounded-lg w-full border-bord focus:outline-bord"
+                                            />
 
-                                <input
+                                            <div className='flex justify-between w-full gap-5 items-center'>
+                                                <input
                                                     type="date"
                                                     value={startDate}
                                                     onChange={(e) => setStartDate(e.target.value)}
-                                                    className="border p-2 rounded"
+                                                    className="border p-2 rounded-lg w-full border-bord focus:outline-bord"
                                                     placeholder="Início"
                                                 />
                                                 <input
                                                     type="date"
                                                     value={endDate}
                                                     onChange={(e) => setEndDate(e.target.value)}
-                                                    className="border p-2 rounded"
+                                                    className="border p-2 rounded-lg w-full border-bord focus:outline-bord"
                                                     placeholder="Fim"
                                                 />
 
-                            </div>
+                                            </div>
+
+
+                                    </div>
 
 
                      
@@ -782,13 +888,13 @@ useEffect(() => {
                                         .map((agendamento) => (
                                             <>
                                                 <div className='flex flex-col gap-3  shadow-lg rounded-md p-5 justify-center items-start'>
-                                                    <div className='flex flex-col lg:flex-row gap-5 items-start w-full justify-between'>
-                                                        <div className='flex flex-col gap-2 items-center max-w-24 justify-center'
-                                                            onClick={() => {
-                                                                setSelectedAgendamento(agendamento); // Armazena o provider selecionado
-                                                                console.log("agendamento selecionado:", agendamento)
-                                                                setOpenPerfil(true); // Abre o modal
-                                                            }}
+                                                    <div className='flex flex-col  gap-5 items-start w-full justify-between p-2'>
+                                                        <div className='w-full flex gap-2 items-center '
+                                                            // onClick={() => {
+                                                            //     setSelectedAgendamento(agendamento); // Armazena o provider selecionado
+                                                            //     console.log("agendamento selecionado:", agendamento)
+                                                            //     setOpenPerfil(true); // Abre o modal
+                                                            // }}
                                                         >
                                                                 <Avatar 
                                                                     src={agendamento.user.avatarUrl} 
@@ -878,18 +984,94 @@ useEffect(() => {
                                                                 </Dialog>
                                                             
                                                         </div>
-                                                        <div className='flex flex-col gap-2 w-full'>
-                                                            <div className="overflow-y-auto  bg-white p-3 rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between">
-                                                                <p>
-                                                                    {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
-                                                                        day: '2-digit',
-                                                                        month: 'long',
-                                                                        year: 'numeric'
-                                                                    })}
-                                                                </p>
-                                                                <p>Subtotal: {formatarMoeda(agendamento.valorServico)}</p>
-                                                                <div className='w-4/12 sm:w-auto text-center pt-2 sm:pt-0'>
-                                                                    <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
+
+                                                        <div className='flex flex-col gap-2 w-full  '>
+                                                            <div className="overflow-y-auto  bg-white  rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5 ">
+                                                                
+                                                                <div className='text-prim w-full flex flex-col gap-5'>
+                                                                    <p className='text-justify'>
+                                                                        {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
+                                                                            day: '2-digit',
+                                                                            month: 'long',
+                                                                            year: 'numeric'
+                                                                        })}
+
+                                                                    </p>
+                                                                    <div className='flex flex-col w-full gap-5 '>
+                                                                        {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
+                                                                            <div>
+                                                                                {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
+                                                                                    <div className='w-full flex justify-between'>
+                                                                                        <span>
+                                                                                            Combo:
+                                                                                        </span> 
+                                                                                        {
+
+                                                                                        calcularValorBruto(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico)}
+                                                                                    </div>
+
+
+
+                                                                                )}
+
+                                                                                {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
+                                                                                    <div className='w-full flex justify-between'>
+                                                                                        <span>
+                                                                                            Desconto Total:
+                                                                                        </span> 
+                                                                                        {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) ? formatarMoeda(agendamento?.descontoTotal) : "Não"}
+                                                                                    </div>
+                                                                                )}
+
+                                                                                {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
+                                                                                    <div className='w-full flex justify-between'>
+                                                                                        <span>
+                                                                                            Valor pago:
+                                                                                        </span> 
+                                                                                        {formatarMoeda(agendamento?.valorLiquido)}
+                                                                                    </div>
+                                                                                )}
+
+                                                                                
+
+                                                                            </div>
+
+                                                                        )}
+
+                                                                        <div >
+                                                                            {
+                                                                            calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) <= 1 &&
+                                                                                <div className='w-full flex justify-between'>
+                                                                                    <span>
+                                                                                        Cupom Desconto:
+                                                                                    </span> 
+                                                                                    {calcularValorDesconto(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico)}
+                                                                                </div>
+                                                                            
+                                                                            }
+
+                                                                            <div className='w-full flex justify-between'>
+                                                                                <span>
+                                                                                    Valor Serviço: 
+                                                                                </span>
+                                                                                {formatarMoeda(agendamento.valorServico)}
+                                                                            </div>
+                                                                            <div className='w-full flex justify-between'>
+                                                                                <span>
+                                                                                    {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1  ? "Total" : "Valor Pago"}
+                                                                                </span> 
+                                                                                {calcularValorLiquido(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico)}
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                        
+
+
+                                                                    </div>
+                                                                    <div className='w-4/12 sm:w-auto text-center pt- sm:pt-0 flex items-center justify-start gap-5'>
+                                                                        <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -947,7 +1129,7 @@ useEffect(() => {
                                                                         month: 'long',
                                                                         year: 'numeric'
                                                                     })}</p>
-                                                                    <div className='text-justify flex flex-col gap-2'>
+                                                                    <div className='text-justify flex flex-col gap-4'>
 
                                                                         <p><b>Prestador:</b> {agendamento?.user?.name}</p>
 
@@ -955,7 +1137,6 @@ useEffect(() => {
 
                                                                         <p><b>Observação:</b> {agendamento?.observacao ? agendamento.observacao : "Nenhuma obervação."}</p>
 
-                                                                        <p><b>Preço:</b> {formatarMoeda(agendamento?.valorServico)}</p>
 
                                                                         <p><b>Data:</b> {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
                                                                             day: '2-digit',
@@ -965,7 +1146,7 @@ useEffect(() => {
                                                                         <div className='flex flex-col gap-2 max-w-[100vh]'>
                                                                             <p><b>Endereço:</b> {agendamento?.enderecoCliente}</p>
                                                                             <a 
-                                                                                href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento?.enderecoCliente)}`} 
+                                                                                href={`https://www.google.com/maps/place/${encodeURIComponent(MapsLocate(agendamento?.logradouro, agendamento?.numero, agendamento?.bairro, agendamento?.cidade, agendamento?.estado, agendamento?.cep))}`} 
                                                                                 target="_blank" 
                                                                                 rel="noopener noreferrer"
                                                                             >
@@ -1021,9 +1202,10 @@ useEffect(() => {
                                         {avaliacoes ? (
                                             avaliacoes.map((avaliacao) => (
                                                 
-                                                <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full shadow-md rounded-md'>
-                                                    <div className='avaliacao flex gap-3  rounded-md p-5'>
-                                                        <div className='flex flex-col gap-2 items-center'
+                                                <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full shadow-xl rounded-md'>
+
+                                                    <div className='avaliacao flex flex-col gap-3  rounded-md '>
+                                                        <div className='flex gap-2 items-center'
                                                         
                                                         >
                                                             <Avatar 
@@ -1033,20 +1215,41 @@ useEffect(() => {
                                                             />
                                                             <h3 className='text-prim font-semibold'>{avaliacao.provider?.name}</h3>
                                                         </div>
+
                                                         <div className='flex flex-col w-full'>
-                                                            <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md w-full min-h-20">
+                                                            <div className="overflow-y-auto max-h-52 bg-white pt-2 rounded-md w-full min-h-20">
                                                                 <p className='text-prim'>"{avaliacao?.comment}"</p>
                                                             </div>
                                                         </div>
+
                                                     </div>
-                                                    <div className='flex justify-center gap-10'>
-                                                        {[1, 2, 3, 4, 5].map((star) => (
-                                                            <StarReview
-                                                            key={star}
-                                                            filled={star <= avaliacao?.stars}
-                                                            />
-                                                        ))}
+
+                                                    <div className='flex flex-col sm:flex-row items-center justify-between gap-2'>
+                                                        <div className='flex justify-start gap-10'>
+                                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                                <StarReview
+                                                                key={star}
+                                                                filled={star <= avaliacao?.stars}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                        <div className='w-full flex justify-end'>
+                                                            <span>
+                                                                {avaliacao?.createdAt &&
+                                                                new Intl.DateTimeFormat('pt-BR', {
+                                                                    day: '2-digit',
+                                                                    month: 'long',
+                                                                    year: 'numeric'
+                                                                }).format(new Date(avaliacao.createdAt))}
+                                                            </span>
+                                                        </div>
+
+
+
+
                                                     </div>
+
+
                                                 </div>
                                             ))
 
@@ -1436,71 +1639,7 @@ useEffect(() => {
                                     </Modal>
                                 </section>
                             )}
-
-                            {screenSelected === "painel" && (
-                                                        <div className="pt-28 flex-1 p-6 bg-gray-100">
-                                                            {/* Header do painel */}
-                                                            <h1 className="text-des text-2xl font-bold text-gray-700 mb-6">Painel</h1>
-
-                                                            {/* Grid do dashboard */}
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                                {/* Prestador mais contratado */}
-                                                                <div className="bg-white border border-desSec shadow-md rounded-md p-6">
-                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
-                                                                <div className="flex items-center">
-                                                                    <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
-                                                                    <Avatar
-                                                                        src={PrestadorMaisContratado?.avatarUrl}
-                                                                        alt={PrestadorMaisContratado?.name}
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                    </div>
-                                                                    <span className="text-desSec text-gray-700 font-medium">
-                                                                    {PrestadorMaisContratado?.name || "Carregando..."}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-
-
-                                                            {/* Solicitações do mês */}
-                                                            <div className="bg-white border border-desSec shadow-md rounded-md p-6">
-                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
-                                                                    Solicitações do Mês
-                                                                </h2>
-                                                                <p className="text-desSec text-3xl font-bold text-gray-800">
-                                                                    {SolicitacoesDoMes || 0}
-                                                                </p>
-                                                            </div>
-
-                                                            {/* Total de agendamentos */}
-                                                            <div className="bg-white border border-desSec shadow-md rounded-md p-6">
-                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
-                                                                <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
-                                                            </div> 
-                                                        </div>
-
-                                                            {/* Total de gastos no mês */}
-                                                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
-                                                                <div className='bg-white border border-desSec shadow-md rounded-md p-6 mt-10 h-44'>
-                                                                    <h2 className='text-desSec text-lg font-semibold text-gray-600 mb-4'>Gasto no mês</h2>
-                                                                    <p className='text-desSec text-3xl font-bold text-gray-800'>R$ {GastoMes.toFixed(2) || "0.00"}</p>
-                                                                </div>
-
-                                                                {/* Componente de Nível */}
-                                                                {/* <div className="bg-white border border-desSec shadow-md rounded-md p-6 mt-10 h-44">
-                                                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Nível</h2>
-                                                                    <div className="flex flex-col justify-center items-center">
-                                                                        <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-                                                                            <div className="bg-desSec h-3 rounded-full"/>
-                                                                        </div>
-                                                                        <span className="text-desSec text-xl font-semibold"> "Nível 1"</span>
-                                                                        <span className="text-desSec text-sm text-gray-600">Experiência: 0%</span>
-                                                                    </div>
-                                                                </div>  */}
-                                                            </div>
-                                                    </div>
-                                                        )}
-
+                            
 
 
                         </div>
