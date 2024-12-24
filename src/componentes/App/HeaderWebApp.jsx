@@ -93,10 +93,12 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
     } catch (error) {
       console.log(error)
       
+    } finally {
+      navigate("/contrate-online")
     }
     
+    window.location.reload()
     
-    window.location.reload();
   };
 
   const HandleNavigateUser = () => {
