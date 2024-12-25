@@ -307,7 +307,7 @@ export default function ContrateOnline() {
     // função para resetar o agendamento, toda vez que sair de checkout e voltar para contrate
     useEffect(() => {
         setAgendamentoData([]);
-        setSelectedProvider()
+        setSelectedProvider(null)
         setSelectedDates([])
         setSelectedTimes([])
 
@@ -413,7 +413,7 @@ export default function ContrateOnline() {
         if (index < currentStep) {
 
             if ( index < 2 ) {
-                setSelectedTimes(null)
+                setSelectedProvider(null)
                 setSelectedEnderecoCliente(enderecoDefaultCliente[0]?.id)
                 setEstado(enderecoDefaultCliente[0]?.estado)
                 setCidade(enderecoDefaultCliente[0]?.cidade)
@@ -427,7 +427,7 @@ export default function ContrateOnline() {
 
             if ( index < 1 ) {
                 setSelectedDates([])
-                setSelectedProvider([])
+                setSelectedProvider(null)
             }
 
             setCurrentStep(index);
@@ -623,15 +623,6 @@ export default function ContrateOnline() {
             };
         });
     
-        // // Armazena os dados no localStorage
-        // localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
-        // localStorage.setItem('selectedProvider', JSON.stringify(selectedProvider));
-        // localStorage.setItem('selectedDates', JSON.stringify(selectedDates));
-        // localStorage.setItem('selectedTimes', JSON.stringify(selectedTimes));
-    
-        // Define o estado e navega para o checkout
-        // await setAgendamentoData(agendamentos); // Ajustado para enviar o array de agendamentos
-
         await setCheckoutData(agendamentos)
         navigate("/checkout-pagamento");
     };
@@ -650,7 +641,7 @@ export default function ContrateOnline() {
     }
 
     console.log("Servico selecionado: ", selectedService)
-
+    console.log("Prestador selecionado: ", selectedProvider)
 
 
     return (
@@ -705,7 +696,7 @@ export default function ContrateOnline() {
                                         <p className='text-prim'>Carregando endereços</p>
                                     </div>
                                 ) : (
-                                    enderecoDefaultCliente && ( 
+                                    enderecoDefaultCliente.length > 0 ? ( 
                                         <div>
                                             <div className='grid lg:grid-cols-2 min-w-[35vh] max-w-[45vh] sm:min-w-[100vh] sm:max-w-[80vh] sm:w-[80vh] lg:w-full
                                             md:grid-cols-2
@@ -1009,6 +1000,7 @@ export default function ContrateOnline() {
                                                         w-full
                                                         "
                                                         onClick={handleProceed}
+                                                        isDisabled={finding}
                                                     >
                                                        {finding ? <Spinner /> : "Selecionar e prosseguir"}  
                                                     </Button>
@@ -1016,6 +1008,14 @@ export default function ContrateOnline() {
                                             )}
                                         </div>
                                         
+                                    ) : (
+                                        <div className='flex flex-col items-center justify-center h-80'>
+                                            <div className="text-white">
+                                                <Spinner size='lg' color='primary' />
+                                            </div>
+                                            <p className='text-prim'>Carregando endereços</p>
+                                        </div>
+
                                     )               
                                 )
                             ) : (
@@ -1029,9 +1029,26 @@ export default function ContrateOnline() {
                         <>
                             <div className='pt-5'>
                                 {providers.length === 0 ? (
-                                    <div className='h-[40vh] flex justify-center items-center'>
-                                        <h1 className='text-desSec'>Não há prestadores disponíveis nessa data ou serviço :/</h1>
-                                    </div>
+                                    <div className="h-[40vh] flex flex-col justify-center items-center gap-4 text-desSec opacity-60">
+                                        <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-16 h-16 text-sec"
+                                        >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                                        />
+                                        </svg>
+                                        <p className="text-justify text-lg font-medium max-w-md ">
+                                        Infelizmente, nenhum prestador está disponível para os critérios especificados. Tente ajustar os filtros ou volte mais tarde :(
+                                        </p>
+                                  </div>
+                                  
                                 ) : (
                                     <div className='flex flex-col gap-3'>
 
@@ -1056,189 +1073,193 @@ export default function ContrateOnline() {
                                         </div>
 
                                         <div className='flex flex-col justify-between h-[55vh]'>
-                                            <div className={`grid ${filteredProviders.length > 0 ? "xl:grid-cols-3        lg:grid-cols-2  grid-cols-1 min-h-[20vh] max-h-[35vh] overflow-y-auto min-w-[40vh] max-w-[45vh] sm:min-w-[80vh] sm:max-w-[100vh]  " : "grid-none"}  pt-3 gap-10`}>
-                                            {filteredProviders.length > 0 ? (
-                                                filteredProviders.map((provider) => (
-                                                    <>
-                                                
-                                                        <div key={provider.id} className='flex flex-col gap-3 '>
-                                                            <div 
-                                                            className={`flex gap-3 p-2 items-center cursor-pointer transition-all duration-200
-                                                            border rounded-lg 
-                                                            ${selectedProvider && selectedProvider.id === provider.id ? ' border-sec' : 'hover:border-sec border-trans'}`}
-                                                            
-                                                            onClick={() => {
-                                                                setSelectedProvider(provider); // Armazena o provider selecionado
-                                                                // // console.log(provider.id);
-                                                            }}
+                                            <div className={` grid ${filteredProviders.length > 0 ? "        lg:grid-cols-2  grid-cols-1 min-h-[20vh] max-h-[35vh] overflow-y-auto min-w-[40vh] max-w-[45vh] sm:min-w-[80vh] sm:max-w-[100vh]  " : "grid-none"}  pt-3 gap-10`}>
+                                                {filteredProviders.length > 0 ? (
+                                                    filteredProviders.map((provider) => (
+                                                        <>
+                                                    
+                                                            <div key={provider.id} className='flex flex-col gap-3 '>
+                                                                <div 
+                                                                className={`shadow-sm flex gap-3 p-2 items-center cursor-pointer transition-all duration-200
+                                                                border rounded-lg 
+                                                                ${selectedProvider && selectedProvider.id === provider.id ? ' border-sec' : 'hover:border-sec border-trans'}`}
+                                                                
+                                                                onClick={() => {
+                                                                    setSelectedProvider(provider); // Armazena o provider selecionado
+                                                                    // // console.log(provider.id);
+                                                                }}
 
-                                                            >
-                                                                <div>
-                                                                    <Avatar 
-                                                                    src={provider?.avatarUrl.avatarUrl}
-                                                                    size="lg"
-                                                                    />
+                                                                >
+                                                                    <div>
+                                                                        <Avatar 
+                                                                        src={provider?.avatarUrl.avatarUrl}
+                                                                        size="lg"
+                                                                        />
+                                                                    </div>
+
+                                                                    <div className='flex justify-start flex-col w-full'>
+                                                                        <p className='
+                                                                        text-prim
+                                                                        text-start
+                                                                        '>{provider.name}</p>
+                                                                        <button className='p-1 rounded-md w-full max-w-full text-center
+                                                                        text-sec 
+                                                                        border-sec
+                                                                        border
+                                                                        hover:text-white transition-all hover:bg-sec hover:bg-opacity-75
+                                                                        hover:border-trans
+                                                                        flex 
+                                                                        items-center
+                                                                        justify-center
+                                                                        gap-2
+                                                                        '
+
+                                                                        onClick={() => {
+                                                                            setSelectedProvider(provider)
+                                                                            setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
+                                                                            setOpen(true)
+                                                                        }}                                                         
+                                                                        
+                                                                        >
+                                                                            <i className="fa-solid fa-star" ></i>
+                                                                            Perfil
+                                                                        </button>
+                                                                    </div>
+
                                                                 </div>
 
-                                                                <div className='flex justify-start flex-col w-full'>
-                                                                    <p className='
-                                                                    text-prim
-                                                                    text-start
-                                                                    '>{provider.name}</p>
-                                                                    <button className='p-1 rounded-md w-full max-w-full text-center
-                                                                    text-sec 
-                                                                    border-sec
-                                                                    border
-                                                                    hover:text-white transition-all hover:bg-sec hover:bg-opacity-75
-                                                                    hover:border-trans
-                                                                    flex 
-                                                                    items-center
-                                                                    justify-center
-                                                                    gap-2
-                                                                    '
+                                                                
 
-                                                                    onClick={() => {
-                                                                        setSelectedProvider(provider)
-                                                                        setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
-                                                                        setOpen(true)
-                                                                    }}                                                         
-                                                                    
-                                                                    >
-                                                                        <i className="fa-solid fa-star" ></i>
-                                                                        Perfil
-                                                                    </button>
-                                                                </div>
 
                                                             </div>
+                                                            
+                                                        </>                                                
+                                                    ))
+                                                    
 
-                                                            <Modal 
-                                                                backdrop="opaque" 
-                                                                isOpen={open} 
-                                                                onOpenChange={setOpen}
-                                                                placement='center'
-                                                                classNames={{
-                                                                    backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 "
-                                                                }}
-                                                                className='max-w-[40vh] sm:max-w-[80vh]'
-                                                            >
-                                                                <ModalContent>
-                                                                    {(onClose) => (
-                                                                    <>
-                                                                        <ModalHeader className="flex flex-col gap-1 p-0 text-desSec"></ModalHeader>
-                                                                        <ModalBody className='p-0'>
+                                                    
+                                                ) : (
+                                                    <>
+                                                        <p className="text-prim">Nenhum prestador encontrado.</p>
+                                                    </>
+                                                )}
+                                                <Modal 
+                                                    backdrop="opaque" 
+                                                    isOpen={open} 
+                                                    onOpenChange={setOpen}
+                                                    placement='center'  
+                                                    classNames={{
+                                                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 "
+                                                    }}
+                                                    className='max-w-[40vh] sm:max-w-[80vh]'
+                                                >
+                                                    <ModalContent>
+                                                        {(onClose) => (
+                                                        <>
+                                                            <ModalHeader className="flex flex-col gap-1 p-0 text-desSec"></ModalHeader>
+                                                            <ModalBody className='p-0'>
 
-                                                                        <div className="bg-white pb-4 pt-0 p-0 ">
-                                                                            <div className="sm:flex sm:items-start flex-col">
-                                                                                
-                                                                                {selectedProvider && ( // Renderiza as informações do provider selecionado
-                                                                                    <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[60vh] sm:max-h-[65vh]">
-                                                                                        <div className='flex flex-col gap-2 justify-start'>
-                                                                                            <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
-                                                                                                {/* Container do Avatar */}
-                                                                                                <div className="absolute">
-                                                                                                    <Avatar src={selectedProvider?.avatarUrl.avatarUrl} size="lg"    
-                                                                                                    className="w-24 h-24 text-large
-                                                                                                    border-white
-                                                                                                    border-5
-                                                                                                    "
-                                                                                                    />
-                                                                                                </div>
-                                                                                                
-                                                                                            </div>
-                                                                                        </div>
+                                                            <div className="bg-white pb-4 pt-0 p-0 ">
+                                                                <div className="sm:flex sm:items-start flex-col">
+                                                                    
+                                                                    {selectedProvider && ( // Renderiza as informações do provider selecionado
+                                                                        <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[60vh] sm:max-h-[65vh]">
+                                                                            <div className='flex flex-col gap-2 justify-start'>
+                                                                                <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
+                                                                                    {/* Container do Avatar */}
+                                                                                    <div className="absolute">
+                                                                                        <Avatar src={selectedProvider?.avatarUrl.avatarUrl} size="lg"    
+                                                                                        className="w-24 h-24 text-large
+                                                                                        border-white
+                                                                                        border-5
+                                                                                        "
+                                                                                        />
+                                                                                    </div>
+                                                                                    
+                                                                                </div>
+                                                                            </div>
 
-                                                                                        <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
-                                                                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                                                                <StarReview
-                                                                                                    key={star}
-                                                                                                    filled={star <= mediaStars}
-                                                                                                />
-                                                                                            ))}
-                                                                                        </div>
-                                                                                        
-                                                                                        <div className='overflow-y-auto max-h-[80vh] '>
-                                                                                            <div className='p-5 pb-1'>
-                                                                                                <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
-                                                                                                    <h1 className='text-prim font-semibold text-xl'>{selectedProvider.name}</h1>
-                                                                                                    <p className='text-prim text-[0.8rem]'>
-                                                                                                        {calcularIdade(selectedProvider.data)} anos
-                                                                                                    </p>
-                                                                                                    <p className='text-[0.8rem] text-prim pb-2'>{selectedProvider.genero}</p>
-                                                                                                    <div className='overflow-y-auto lg:h-[20vh]'>
-                                                                                                        <p className='text-prim text-start pt-4 text-sm'>{selectedProvider.sobre}</p>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div className='p-5'>
-                                                                                                <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
-                                                                                                    <Accordion   >
-                                                                                                        <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${avaliacoes.length} )`} classNames={{title: 'text-prim text-md '}} >
-                                                                                                            <div className='flex flex-col gap-5'>
-                                                                                                                {avaliacoes && (
-                                                                                                                    avaliacoes.length == 0 ? (
-                                                                                                                        <div className=' p-5 text-prim flex flex-col justify-center text-center'>
-                                                                                                                            <h3 className='font-semibold'>Sem avaliações</h3>
-                                                                                                                        </div>
-                                                                                                                        
-                                                                                                                    ) : (
-                                                                                                                        avaliacoes.map((avaliacao) => (
-                                                                                                                            <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
-                                                                                                                                <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
-                                                                                                                                    day: '2-digit',
-                                                                                                                                    month: 'long',
-                                                                                                                                    year: 'numeric'
-                                                                                                                                })}</h3>
-                                                                                                                                <p>"{avaliacao?.comment}"</p>
-                                                                                                                                <div className='flex justify-start items-center gap-2 pr-5 pt-2'>
-                                                                                                                                    {[1, 2, 3, 4, 5].map((star) => (
-                                                                                                                                        <StarReview
-                                                                                                                                            key={star}
-                                                                                                                                            filled={star <= avaliacao.stars}
-                                                                                                                                        />
-                                                                                                                                    ))}
-                                                                                                                                </div>
-                                                                                                                            </div>
-                                                                                                                        ))
-                                                                                                                    )
-                                                                                                                )}
-                                                                                                            </div>
-                                                                                                        </AccordionItem>
-                                                                                                    </Accordion>
-                                                                                                </div>
-                                                                                            </div>
+                                                                            <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
+                                                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                                                    <StarReview
+                                                                                        key={star}
+                                                                                        filled={star <= mediaStars}
+                                                                                    />
+                                                                                ))}
+                                                                            </div>
+                                                                            
+                                                                            <div className='overflow-y-auto max-h-[80vh] '>
+                                                                                <div className='p-5 pb-1'>
+                                                                                    <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
+                                                                                        <h1 className='text-prim font-semibold text-xl'>{selectedProvider.name}</h1>
+                                                                                        <p className='text-prim text-[0.8rem]'>
+                                                                                            {calcularIdade(selectedProvider.data)} anos
+                                                                                        </p>
+                                                                                        <p className='text-[0.8rem] text-prim pb-2'>{selectedProvider.genero}</p>
+                                                                                        <div className='overflow-y-auto lg:h-[20vh]'>
+                                                                                            <p className='text-prim text-start pt-4 text-sm'>{selectedProvider.sobre}</p>
                                                                                         </div>
                                                                                     </div>
-                                                                                )}
-
+                                                                                </div>
+                                                                                <div className='p-5'>
+                                                                                    <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
+                                                                                        <Accordion   >
+                                                                                            <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${avaliacoes.length} )`} classNames={{title: 'text-prim text-md '}} >
+                                                                                                <div className='flex flex-col gap-5'>
+                                                                                                    {avaliacoes && (
+                                                                                                        avaliacoes.length == 0 ? (
+                                                                                                            <div className=' p-5 text-prim flex flex-col justify-center text-center'>
+                                                                                                                <h3 className='font-semibold'>Sem avaliações</h3>
+                                                                                                            </div>
+                                                                                                            
+                                                                                                        ) : (
+                                                                                                            avaliacoes.map((avaliacao) => (
+                                                                                                                <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
+                                                                                                                    <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
+                                                                                                                        day: '2-digit',
+                                                                                                                        month: 'long',
+                                                                                                                        year: 'numeric'
+                                                                                                                    })}</h3>
+                                                                                                                    <p>"{avaliacao?.comment}"</p>
+                                                                                                                    <div className='flex justify-start items-center gap-2 pr-5 pt-2'>
+                                                                                                                        {[1, 2, 3, 4, 5].map((star) => (
+                                                                                                                            <StarReview
+                                                                                                                                key={star}
+                                                                                                                                filled={star <= avaliacao.stars}
+                                                                                                                            />
+                                                                                                                        ))}
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            ))
+                                                                                                        )
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            </AccordionItem>
+                                                                                        </Accordion>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                                                                        
-
-                                                            
-                                                                        </ModalBody>
-                                                                        <ModalFooter>
-                                                                        <Button color="danger" variant="light" onPress={onClose}>
-                                                                            Fechar
-                                                                        </Button>
-                                                                        <Button className='bg-desSec text-white' onPress={handleConfirmSelection}  >
-                                                                            Selecionar e prosseguir
-                                                                        </Button>
-                                                                        </ModalFooter>
-                                                                    </>
                                                                     )}
-                                                                </ModalContent>
-                                                            </Modal>
 
+                                                                </div>
+                                                            </div>
+                                                                                                            
 
-                                                        </div>
-                                                        
-                                                    </>                                                
-                                                ))
-                                            ) : (
-                                                <>
-                                                    <p className="text-prim">Nenhum prestador encontrado.</p>
-                                                </>
-                                            )}
+                                                
+                                                            </ModalBody>
+                                                            <ModalFooter>
+                                                            <Button color="danger" variant="light" onPress={onClose}>
+                                                                Fechar
+                                                            </Button>
+                                                            <Button className='bg-desSec text-white' onPress={handleConfirmSelection}  >
+                                                                Selecionar e prosseguir
+                                                            </Button>
+                                                            </ModalFooter>
+                                                        </>
+                                                        )}
+                                                    </ModalContent>
+                                                </Modal>
                                             </div>
 
                                             <div className='flex justify-center pt-5 border-b border-bord'>
@@ -1346,6 +1367,7 @@ export default function ContrateOnline() {
                                                 gap-2
                                                 w-4/12
                                                 "
+                                                isDisabled={apply}
                                                 >
                                                     {apply ? <Spinner/> : "Utilizar"}
                                                 </Button>
@@ -1635,7 +1657,7 @@ export default function ContrateOnline() {
                                 <p className="text-lg font-semibold">Prestador selecionado:</p>
                                 {selectedProvider ? (
                                     <div className="flex items-center gap-2">
-                                        <Avatar src={selectedProvider.avatar?.avatarUrl} size="sm" />
+                                        <Avatar src={selectedProvider.avatarUrl?.avatarUrl} size="sm" />
                                         <p className="text-base">{selectedProvider.name}</p>
                                     </div>
                                 ) : (

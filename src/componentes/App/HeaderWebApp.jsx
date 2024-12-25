@@ -44,7 +44,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
 
         fetchUserInfo()
  
-    }, []);  // Dependência vazia para executar o efeito apenas uma vez
+    }, [user]);  // Dependência vazia para executar o efeito apenas uma vez
 
   const fetchUserInfo = async () => {
     try {
@@ -83,7 +83,6 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
   const [loggout, setLoggout] = useState(false)
   const HandleExitUser = async () => {
     setLoggout(true)
-    setUser(null);
 
     try {
       const response = await loggoutCliente()
@@ -94,10 +93,12 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
       console.log(error)
       
     } finally {
+      setUser(null);
+      window.location.reload()
       navigate("/contrate-online")
     }
     
-    window.location.reload()
+
     
   };
 

@@ -163,7 +163,9 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
+              <Button color="danger" variant="light" onClick={
+                () => (onClose())
+                }>
                 Cancelar
               </Button>
               <Button className='bg-desSec text-white' onPress={handleConfirm} isDisabled={!isConfirmEnabled}>

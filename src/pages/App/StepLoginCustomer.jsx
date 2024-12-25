@@ -16,28 +16,24 @@ export default function StepLoginCustomer() {
     setLoading(true);
 
     try {
-      const { access_token, userId, urls } = await loginCliente(email, senha);
+      const user = await loginCliente(email, senha);
 
       // Obtendo os endereços do cliente
-      const enderecosCliente = await getEnderecosCliente(userId);
-      if (!enderecosCliente) {
-        setError('Erro ao buscar endereços do cliente');
-        return;
-      }
+      // const enderecosCliente = await getEnderecosCliente(userId);
+      // if (!enderecosCliente) {
+      //   setError('Erro ao buscar endereços do cliente');
+      //   return;
+      // }
 
-      if (!access_token) {
+      if (!user) {
         setError('Erro ao fazer login');
       } else {
+        
+        // setUser({ userId, urls, enderecos: enderecosCliente });
 
-        localStorage.setItem('token', access_token);
-        localStorage.setItem('userId', userId);
-        localStorage.setItem('urls', JSON.stringify(urls));
-        localStorage.setItem('enderecosCliente', JSON.stringify(enderecosCliente));
+        console.log("Login efetuado com sucesso! ", user)
+        setUser({user});
 
-        setUser({ userId, urls, enderecos: enderecosCliente });
-
-        console.log(access_token)
-        console.log(enderecosCliente)
       }
     } catch (err) {
       setError('Erro ao fazer login');
@@ -100,6 +96,7 @@ export default function StepLoginCustomer() {
               <Button
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                isDisabled={loading}
               >
                 {loading ? <Spinner size='md'/> : 'Entrar'}
               </Button>

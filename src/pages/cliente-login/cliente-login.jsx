@@ -26,11 +26,7 @@ export default function ClienteLogin() {
             const user = await loginCliente(email, senha);
             if (!user) {
                 setError("Não foi possivel realizar o login");
-            } else {
-                // localStorage.setItem('token', access_token);
-                // localStorage.setItem('userId', userId);
-                // localStorage.setItem('urls', JSON.stringify(urls));
-                
+            } else {                
                 setUser({user})
                 navigate("/area-cliente");
             }
