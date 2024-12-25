@@ -804,10 +804,10 @@ export default function ContrateOnline() {
                                                 <div className='xl:min-h-[44vh] xl:max-h-[44vh] xl:max-w-[45vh] xl:min-w-[40vh]  border-2 border-bord rounded-lg lg:min-h-[40vh] lg:max-h-[40vh] lg:max-w-[40vh] lg:min-w-[40vh] transition all min-h-[35vh] max-h-[45vh] min-w-[34vh] max-w-[40vh]
                                                 
                                                 flex items-center justify-center'>
-                                                    <button 
+                                                    <Button 
                                                     className='p-2 bg-des rounded-md text-white text-sm'
                                                     onClick={() => setOpenCreateAdress(true)}
-                                                    >Cadastrar novo endereço</button>
+                                                    >Cadastrar novo endereço</Button>
                                                 </div>
 
 
@@ -1102,7 +1102,8 @@ export default function ContrateOnline() {
                                                                         text-prim
                                                                         text-start
                                                                         '>{provider.name}</p>
-                                                                        <button className='p-1 rounded-md w-full max-w-full text-center
+                                                                        <Button className='p-1 rounded-md w-full max-w-full text-center
+                                                                        bg-white
                                                                         text-sec 
                                                                         border-sec
                                                                         border
@@ -1123,7 +1124,7 @@ export default function ContrateOnline() {
                                                                         >
                                                                             <i className="fa-solid fa-star" ></i>
                                                                             Perfil
-                                                                        </button>
+                                                                        </Button>
                                                                     </div>
 
                                                                 </div>
@@ -1264,7 +1265,7 @@ export default function ContrateOnline() {
 
                                             <div className='flex justify-center pt-5 border-b border-bord'>
                                                 {selectedProvider ? (
-                                                    <button
+                                                    <Button
                                                         type="button"
                                                         data-autofocus
                                                         className="p-2 rounded-md 
@@ -1286,9 +1287,9 @@ export default function ContrateOnline() {
                                                         
                                                     >
                                                         Selecionar e prosseguir
-                                                    </button>
+                                                    </Button>
                                                 ) : ( 
-                                                    <button
+                                                    <Button
                                                         type="button"
                                                         data-autofocus
                                                         className="p-2 rounded-md 
@@ -1310,7 +1311,7 @@ export default function ContrateOnline() {
                                                         
                                                     >
                                                         Selecione por mim e prosseguir
-                                                    </button>
+                                                    </Button>
                                                     
                                                 )}
                                             </div>
