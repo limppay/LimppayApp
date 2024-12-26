@@ -10,16 +10,16 @@ const WhatsappButton = () => {
       className="fixed bottom-2 right-2 z-5  items-center space-x-1 group p-2 hidden sm:flex"
     >
       {/* Texto "Atendimento" */}
-      <span className="bg-white rounded-xl opacity-0  shadow-2xl shadow-prim p-2 text-sec text-sm  group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-300 ease-in-out">
+      <span className="bg-white rounded-xl opacity-0  shadow-2xl shadow-prim p-2 text-sec text-sm  group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-300 ease-in-out 2xl:text-lg">
         Atendimento
       </span>
 
       {/* Ícone do WhatsApp */}
-      <div className="2xl:w-12 2xl:h-12 rounded-full bg-green-500 flex items-center justify-center shadow-sm shadow-prim  group hover:scale-110 transition-transform duration-300">
+      <div className="2xl:w-16 2xl:h-16 rounded-full bg-green-500 flex items-center justify-center shadow-sm shadow-prim  group hover:scale-110 transition-transform duration-300">
         <img
           src={WhatsAppIcon}
           alt="WhatsApp"
-          className="w-[8h] h-[8vh] 2xl:w-12 2xl:h-12"
+          className="w-[8h] h-[8vh] 2xl:w-16 2xl:h-16"
         />
       </div>
     </a>

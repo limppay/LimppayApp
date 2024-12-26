@@ -124,7 +124,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                               <a href={button.link} key={index}>
                                   <Button
                                       onClick={button.OnClick}
-                                      className='bg-white text-center text-prim border border-trans hover:border-bord hover:text-sec'
+                                      className='bg-white text-center 2xl:text-lg text-prim border border-trans hover:border-bord hover:text-sec'
                                   >
                                       {button.text}
                                   </Button>
@@ -147,9 +147,9 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                         alt="User Avatar"
                         size='sm'
                         onClick={HandleNavigateUser}
-                        className='cursor-pointer'
+                        className='cursor-pointer w-8 h-8 2xl:w-12 2xl:h-12'
                       />
-                      <span className='text-prim font-semibold'>Olá, {firstName}</span>
+                      <span className='text-prim font-semibold 2xl:text-xl'>Olá, {firstName}</span>
                     </div>
                     <div>
                       <Button

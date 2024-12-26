@@ -122,7 +122,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen w-full h-full 2xl:text-md  2xl:max-w-[90vh]">
+    <div className="bg-gray-50 min-h-screen w-full h-full 2xl:text-md  max-w-[110vh]">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl mx-auto ">
         {/* Coluna principal */}
         <div className="lg:col-span-2">
@@ -177,12 +177,12 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
           </div>
 
           <div className="mt-6 bg-white shadow-md rounded-lg p-4 flex flex-col gap-2">
-            <h3 className="text-center text-lg font-semibold text-prim ">Não encontrou o que queria?</h3>
+            <h3 className="text-center text-lg font-semibold text-prim 2xl:text-2xl">Não encontrou o que queria?</h3>
             <form className='flex flex-col gap-5' onSubmit={handleSubmit(onSubmit)}>
               <div className='flex flex-col justify-start'>
                 <input 
                   type='text' 
-                  className='w-full rounded-md border border-bord p-2 focus:outline-ter text-prim' 
+                  className='w-full rounded-md border border-bord p-2 2xl:p-4 focus:outline-prim text-prim' 
                   placeholder='Nome do serviço'
                   {...register("serviceName")}
                 
@@ -195,7 +195,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
               <div className='flex flex-col justify-start'>
                 <textarea
                   placeholder="Nos envie uma sugestão de serviço que você gostaria de contratar"
-                  className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 focus:outline-ter text-prim w-full max-h-1"
+                  className="border rounded-md border-bord p-3 min-h-20 lg:min-h-40 2xl:min-h-60 focus:outline-prim text-prim w-full max-h-1"
                   rows="3"
                   {...register("description")}
                 ></textarea>
@@ -204,7 +204,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
                 )}
 
               </div>
-              <Button className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec" type='submit' isDisabled={creating}>
+              <Button className="w-full bg-des text-white p-2 2xl:p-4 rounded-lg hover:bg-sec" type='submit' isDisabled={creating}>
                 {creating ? <Spinner/> : "Enviar sugestão "}
               </Button>
 

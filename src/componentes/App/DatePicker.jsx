@@ -375,7 +375,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
   };
 
   return (
-    <div className="flex flex-col justify-center items-center pt-4 min-w-[38vh] max-w-[55vh] md:min-w-11/12 md:max-w-1/12 sm:w-[50vh] md:w-11/12 lg:w-7/12 xl:w-6/12 2xl:w-6/12">
+    <div className="flex flex-col justify-center items-center pt-4 min-w-[38vh] max-w-[55vh] md:min-w-11/12 md:max-w-1/12 sm:w-[50vh] md:w-11/12 lg:w-7/12 xl:w-6/12 2xl:min-w-[50vh] 2xl:max-w-[50vh] 2xl:text-xl">
       <motion.div
         className="w-full bg-white shadow-xl rounded-xl border-2 border-opacity-50 border-desSec lg:h-[60vh]"
         key={`${currentDate.toISOString()}-${currentYearPage}-${showMonths}-${showYears}`} // Key para reiniciar a animação
@@ -386,12 +386,12 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       >
         <div className="flex justify-between items-center mb-4 p-3 border-b-2 border-desSec border-opacity-50 cursor-pointer">
           <button onClick={handlePrev} className="text-blue-500">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des 2xl:size-8">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
           </button>
           <h2
-            className={`text-lg font-semibold text-desSec ${showYears ? 'cursor-default' : 'cursor-pointer'}`}
+            className={`text-lg 2xl:text-xl font-semibold text-desSec ${showYears ? 'cursor-default' : 'cursor-pointer'}`}
             onClick={() => {
               if (!showYears) {
                 handleMonthYearClick();
@@ -400,8 +400,8 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
           >
             {getCalendarTitle()}
           </h2>
-          <button onClick={handleNext} className="text-blue-500">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
+          <button onClick={handleNext} className="text-blue-500 ">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 2xl:size-8 text-des">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 19.5 15.75 12l-7.5-7.5" />
             </svg>
           </button>
@@ -423,7 +423,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
 
       <div className="flex justify-center mt-4">
         <Button
-          className={`bg-des text-white p-2 rounded-md ${selectedDates.length ? '' : 'opacity-50 cursor-not-allowed'}`}
+          className={`bg-des text-white p-2 2xl:p-4 2xl:text-xl rounded-md ${selectedDates.length ? '' : 'opacity-50 cursor-not-allowed'}`}
           isDisabled={!selectedDates.length}
           onClick={() => setShowTimePicker(true)} // Abre o pop-up
         >

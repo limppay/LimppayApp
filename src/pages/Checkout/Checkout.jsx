@@ -351,11 +351,11 @@ export default function Checkout() {
 
         ) : (
           <>
-            <main className="relative p-4 flex lg:justify-between lg:pl-20 lg:pr-20 justify-center gap-5">
-              <div className='flex flex-col p-10  min-w-[45vh] max-w-[45vh] lg:min-w-[120vh] lg:max-w-[120vh] md:min-w-[80vh] md:max-w-[80vh] sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl lg:min-h-[150vh] min-h-[90vh]'>
+            <main className="relative sm:p-4 flex flex-col sm:flex-row lg:justify-between lg:pl-10 lg:pr-10 justify-center gap-5 sm:pb-20">
+              <div className='flex flex-col p-10 md:min-w-90vh]  md:max-w-[90vh]  min-w-[45vh] max-w-[45vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] 2xl:min-w-[100vh] 2xl:max-w-[100vh] lg:min-w-[100vh] lg:max-w-[100vh]  sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl lg:min-h-[95vh] min-h-[90vh] '>
                 <div className="mb-6 flex flex-col">
                   <div className='pb-4' >
-                    <h1 className='text-prim font-semibold text-lg'>Método de pagamento</h1>
+                    <h1 className='text-prim font-semibold text-lg 2xl:text-xl'>Método de pagamento</h1>
                   </div>
                   <div className='flex w-full gap-5'>
                     <div>
@@ -574,7 +574,7 @@ export default function Checkout() {
                                     closeDelay: 0
                                   }} 
                                 >
-                                  <div className='max-w-80 lg:max-w-xl'>
+                                  <div className='max-w-60  lg:max-w-[60vh]'>
                                     <div className='p-2 flex flex-row overflow-x-scroll '>
                                       <p className='text-prim whitespace-nowrap '>{pixChave}</p>
                                     </div>
@@ -598,98 +598,138 @@ export default function Checkout() {
                 )}
               </div>
 
-              <div className="hidden lg:block pt-[4vh] w-4/12 ">
-                <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pb-10  flex flex-col items-center gap-7">
-                    <div className='w-full flex justify-between items-center border-b p-12 pb-2 pt-16 pl-7 pr-7'>
-                        <h3 className="text-xl flex flex-wrap ">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 font-semibold">
+              <div className="h-screen w-full flex flex-col justify-start items-center ">
+                <div className='2xl:min-w-[80vh]  2xl:max-w-[80vh] xl:min-w-[90vh]  xl:max-w-[90vh]  xl:pt-[10vh] flex flex-col pt-5 p-10 min-w-[45vh] max-w-[50vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] lg:min-w-[60vh]  lg:max-w-[60vh] md:min-w-[50vh]  md:max-w-[50vh] shadow-lg sm:pt-20 rounded-xl    text-prim  '>
+
+                  <div className='w-full flex flex-col justify-between items-center border-bord pb-2 border-b xl:pt-[2vh] '>
+                      <div className='flex justify-center items-center w-full '>
+                        <h3 className="text-2xl flex flex-wrap text-prim font-semibold justify-center items-center ">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 font-semibold ">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                             </svg>
 
-                            Valor a ser pago
+                            Resumo do Pedido
                             
-                        </h3>
-                        <p className='text-lg ' >{checkoutData ? formatarMoeda(checkoutData[0].valorLiquido) : "R$ 0,00"}</p>
+                        </h3>                        
+                      </div>
 
-                    </div>
-                    <div className='flex flex-col gap-7 w-full pl-7 pr-7'>
-                        {checkoutData ?(
-                            <div className='w-full flex flex-col  gap-2 justify-between'>
-                                <p className='text-lg font-semibold'>Serviço selecionado:</p>
-                                <p className='text-base'>{checkoutData[0].Servico}</p>
-                            </div>
-                        ):(
-                            <div className='w-full flex flex-col  gap-2'>
-                                <p className='text-lg font-semibold'>Serviço selecionado:</p>
-                                <p className='text-base'>Nenhum serviço selecionado.</p>
-                            </div>
-                        )}
-
-                        {/*Exibe as datas e horários selecionados */}
-                        {selectedDates.length > 0 ? (
-                            <div className='w-full flex flex-col gap-2 justify-between'>
-                                <p className='text-md font-semibold'> Data(s) selecionado(s):</p>
-                                <ul>
-                                    {selectedDates.map((date, index) => (
-                                        <li key={index} className="flex gap-5 items-center justify-between w-1/2">
-                                            {/* Formata a data */}
-                                            <span>{new Date(date).toLocaleDateString()}</span>
-                                            {/* Exibe o horário correspondente à data */}
-                                            {selectedTimes ? (
-                                            (() => {
-                                                const formattedDate = new Date(date).toDateString();
-                                                const times = selectedTimes[formattedDate];
-                                                return <span>{times ? times : "--:--"}</span>;
-                                            })()
-                                            ) : (
-                                                <span> --:-- </span>
-                                            )}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ):(
-                            <div className='w-full flex flex-col  gap-2'>
-                                <p className='text-lg font-semibold'>Data(s) selecionada(o):</p>
-                                <p className='text-base'>Nenhuma data selecionada</p>
-                            </div>
-                        )}
-
-                        {selectedProvider ? (
-                            <div className='w-full flex flex-col  gap-2'>
-                                <p className='text-md font-semibold'> Prestador selecionado:</p>
-                                <div className='flex w-full items-center gap-2'>
-                                    <Avatar src={selectedProvider.avatarUrl?.avatarUrl || ""} size="md"/>
-                                    <p className='text-base'>{selectedProvider.name}</p>
-                                </div>
-                            </div>
-                        ):(
-                            <div className='w-full flex flex-col  gap-2'>
-                                <p className='text-lg font-semibold'>Prestador selecionado</p>
-                                <p className='text-base'>Nenhum prestador selecionado.</p>
-                            </div>
-                        )}
-
-                        {checkoutData ?(
-                            <div className='w-full flex flex-col  gap-2'>
-                                <p className='text-md font-semibold'> Observação:</p>
-                                <div className='flex w-full items-center gap-2'>
-                                    <p className='text-base'>{checkoutData.observacao}</p>
-                                    {/*Mostra o avatar do prestador */}
-                                </div>
-                            </div>
-                        ):(
-                            <div className='w-full flex flex-col  gap-2'>
-                                <p className='text-lg font-semibold'>Observação:</p>
-                                <p className='text-base'>Nenhuma</p>
-                            </div>
-                        )}
-
-                    </div>
                   </div>
+                  
+                  <div className='flex flex-col gap-7 w-full pt-5'>
+                    <div>
+                      <div className='w-full flex flex-col gap-5'>
+                        <div className='pt-2'>
+                          <div className='w-full flex justify-between'>
+                            <p>Quantidade: </p>
+                            <span> {checkoutData?.length} </span>
+                          </div>
+                          <div className='w-full flex justify-between'>
+                            <p>Valor Serviço: </p>
+                            <span> {formatarMoeda(checkoutData[0]?.valorServico)} </span>
+                          </div>
+                          <div className='w-full flex justify-between'>
+                            <p>Total: </p>
+                            <span> {formatarMoeda(checkoutData[0]?.valorBruto)} </span>
+                          </div>
+
+                        </div>
+
+                        <div className='w-full shadow-md  text-prim p-2 rounded-md flex flex-col gap-2'>
+                          <div className='w-full flex justify-between'>
+                            <p>Desconto Total: </p>
+                            <span> {formatarMoeda(checkoutData[0]?.descontoTotal)} </span>
+                          </div>
+                          <div className='w-full flex justify-between'>
+                            <p>Valor a ser pago: </p>
+                            <span> {formatarMoeda(checkoutData[0]?.valorLiquido)} </span>
+                          </div>
+
+                        </div>
+
+
+                      </div>
+                    </div>
+
+                      {checkoutData ?(
+                        <div className="flex flex-col gap-2">
+                          <div className='w-full flex flex-col  gap-2 justify-between'>
+                              <p className='text-lg font-semibold'>Serviço selecionado:</p>
+                              <div className='flex items-center w-full justify-between'>
+                                  <p className='text-base'>{checkoutData[0].Servico}</p>
+                                  <p className='text-base'>{formatarMoeda(checkoutData[0].valorServico)}</p>
+                              </div>
+                          </div>
+                        </div>
+                      ):(
+                          <div className='w-full flex flex-col  gap-2'>
+                              <p className='text-lg font-semibold'>Serviço selecionado:</p>
+                              <p className='text-base'>Nenhum serviço selecionado.</p>
+                          </div>
+                      )}
+
+                      {/*Exibe as datas e horários selecionados */}
+                      {checkoutData.length > 0 ? (
+                          <div className='w-full flex flex-col gap-2 justify-between'>
+                              <p className='text-md font-semibold'> Data(s) selecionado(s):</p>
+                              <ul>
+                                  {checkoutData.map((date, index) => (
+                                      <li key={index} className="flex gap-5 items-center justify-between w-1/2">
+                                          {/* Formata a data */}
+                                          <span>{new Date(date.dataServico).toLocaleDateString()}</span>
+                                          {/* Exibe o horário correspondente à data */}
+                                          <span>{date.horaServico ? date.horaServico : "--:--"}</span>
+
+                                      </li>
+                                  ))}
+                              </ul>
+                          </div>
+                      ):(
+                          <div className='w-full flex flex-col  gap-2'>
+                              <p className='text-lg font-semibold'>Data(s) selecionada(o):</p>
+                              <p className='text-base'>Nenhuma data selecionada</p>
+                          </div>
+                      )}
+
+                      {selectedProvider ? (
+                          <div className='w-full flex flex-col  gap-2'>
+                              <p className='text-md font-semibold'> Prestador selecionado:</p>
+                              <div className='flex w-full items-center gap-2'>
+                                  <Avatar src={selectedProvider.avatarUrl?.avatarUrl || ""} size="md"/>
+                                  <p className='text-base'>{selectedProvider.name}</p>
+                              </div>
+                          </div>
+                      ):(
+                          <div className='w-full flex flex-col  gap-2'>
+                              <p className='text-lg font-semibold'>Prestador selecionado</p>
+                              <p className='text-base'>Nenhum prestador selecionado.</p>
+                          </div>
+                      )}
+
+                      {checkoutData ?(
+                          <div className='w-full flex flex-col  gap-2'>
+                              <p className='text-md font-semibold'> Observação:</p>
+                              <div className='flex w-full items-center gap-2'>
+                                  <p className='text-base'>{checkoutData[0].observacao}</p>
+                                  {/*Mostra o avatar do prestador */}
+                              </div>
+                          </div>
+                      ):(
+                          <div className='w-full flex flex-col  gap-2'>
+                              <p className='text-lg font-semibold'>Observação:</p>
+                              <p className='text-base'>Nenhuma</p>
+                          </div>
+                      )}
+
+                  </div>
+
+                  
+                                    
+                </div>
               </div> 
+
               </main>
               <Footer/>
+
               <Dialog open={isPayment} onClose={() => {}} className="relative z-10">
                 <DialogBackdrop
                   transition
@@ -758,81 +798,6 @@ export default function Checkout() {
                   </div>
                 </div>
               </Dialog>
-
-              {/* resumo da compra */}
-              <div className={`sm:hidden fixed bottom-0 left-0 min-w-[45vh] max-w-[45vh]  transition-all duration-300 ease-in-out ${isExpanded ? 'h-[60vh]' : 'h-[10vh]'} bg-white border-2 border-desSec  rounded-t-3xl p-2  text-prim shadow-2xl  `}>
-                <div
-                    className="cursor-pointer bg-white  p-4 text-center  font-semibold rounded-t-lg"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                >
-                    <div className="flex justify-between items-center border-b pb-2">
-                        <h3 className="text-xl font-semibold text-prim">Total</h3>
-                        <div className='flex gap-2 items-center'>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 text-sec">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                            </svg>
-
-                            <p className="text-lg text-sec">{checkoutData ? formatarMoeda(checkoutData[0].valorServico) : "R$ 0,00"}</p>
-
-                        </div>
-                    </div>
-                    
-                    
-
-                </div>
-
-                <div className={`overflow-y-auto p-4 ${isExpanded ? 'block' : 'hidden'}`}>
-                    <div className="flex flex-col gap-4">
-                        {/* Valor total */}
-                        
-
-                        {/* Serviço selecionado */}
-                        <div className="flex flex-col gap-2">
-                            <p className="text-lg font-semibold">Serviço selecionado:</p>
-                            <p className="text-base">{checkoutData[0]?.Servico || 'Nenhum serviço selecionado.'}</p>
-                        </div>
-
-                        {/* Datas e horários */}
-                        <div className="flex flex-col gap-2">
-                            <p className="text-lg font-semibold">Data(s) selecionada(s):</p>
-                            {selectedDates.length > 0 ? (
-                                <ul>
-                                    {selectedDates.map((date, index) => (
-                                        <li key={index} className="flex justify-between">
-                                            <span>{new Date(date).toLocaleDateString()}</span>
-                                            <span>{selectedTimes ? selectedTimes[new Date(date).toDateString()] || '--:--' : '--:--'}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-base">Nenhuma data selecionada.</p>
-                            )}
-                        </div>
-
-                        {/* Prestador selecionado */}
-                        <div className="flex flex-col gap-2">
-                            <p className="text-lg font-semibold">Prestador selecionado:</p>
-                            {selectedProvider ? (
-                                <div className="flex items-center gap-2">
-                                    <Avatar src={selectedProvider?.avatarUrl?.avatarUrl || ""} size="sm" />
-                                    <p className="text-base">{selectedProvider.name}</p>
-                                </div>
-                            ) : (
-                                <p className="text-base">Nenhum prestador selecionado.</p>
-                            )}
-                        </div>
-
-                        {/* Observação */}
-                        <div className="flex flex-col gap-2">
-                            <p className="text-lg font-semibold">Observação:</p>
-                            <p className="text-base">{checkoutData.observacao || 'Nenhuma'}</p>
-                        </div>
-                    </div>
-                </div>
-              </div>
-          
-          
-          
           </>
           
         )}

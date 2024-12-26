@@ -651,7 +651,7 @@ export default function ContrateOnline() {
             </Helmet>
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
-            <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 2xl:pt-[3vh]  ">
+            <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 2xl:pt-[3vh] min-h-[100vh] pb-20 ">
                 
                 <div className='flex flex-col items-center text-center min-w-[30vh] max-w-[50vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] xl:max-w-[100vh] 2xl:min-w-[110vh] 2xl:max-w-[130vh]    '>
 
@@ -697,11 +697,11 @@ export default function ContrateOnline() {
                                     </div>
                                 ) : (
                                     enderecoDefaultCliente.length > 0 ? ( 
-                                        <div>
-                                            <div className='grid lg:grid-cols-2 min-w-[35vh] max-w-[45vh] sm:min-w-[100vh] sm:max-w-[80vh] sm:w-[80vh] lg:w-full
+                                        <div className='flex flex-col justify-between min-h-[75vh] max-h-[75vh]'>
+                                            <div className='grid justify-between lg:grid-cols-2  min-w-[35vh]  max-w-[45vh] sm:min-w-[100vh] sm:max-w-[80vh] sm:w-[80vh] lg:w-full
                                             md:grid-cols-2
                                             sm:grid-cols-2
-                                            pt-5 gap-10 overflow-auto max-h-[60vh] sm:max-h-[100vh] 
+                                            pt-5 gap-10 overflow-auto max-h-[65vh] sm:max-h-[100vh] 
                                             pr-5 pl-5
                                             scrollbar-hide
                                             justify-items-center
@@ -979,6 +979,7 @@ export default function ContrateOnline() {
 
  
                                             </div>
+
                                             {selectedEnderecoCliente && (
                                                 <div className='flex justify-center pt-5 border-b border-bord'>
                                                     <Button
@@ -1072,17 +1073,18 @@ export default function ContrateOnline() {
                                             </label>
                                         </div>
 
-                                        <div className='flex flex-col justify-between h-[55vh]'>
-                                            <div className={` grid ${filteredProviders.length > 0 ? "        lg:grid-cols-2  grid-cols-1 min-h-[20vh] max-h-[35vh] overflow-y-auto min-w-[40vh] max-w-[45vh] sm:min-w-[80vh] sm:max-w-[100vh]  " : "grid-none"}  pt-3 gap-10`}>
+                                        <div className='flex flex-col justify-between min-h-[62vh] max-h-[62vh]'>
+                                            <div className={` grid ${filteredProviders.length > 0 ? "        lg:grid-cols-2  grid-cols-1 min-h-[20vh] max-h-[50vh] overflow-y-auto min-w-[40vh] max-w-[45vh] sm:min-w-[80vh] sm:max-w-[100vh]  " : "grid-none"}  pt-3 gap-10`}>
                                                 {filteredProviders.length > 0 ? (
                                                     filteredProviders.map((provider) => (
                                                         <>
                                                     
                                                             <div key={provider.id} className='flex flex-col gap-3 '>
-                                                                <div 
-                                                                className={`shadow-sm flex gap-3 p-2 items-center cursor-pointer transition-all duration-200
-                                                                border rounded-lg 
-                                                                ${selectedProvider && selectedProvider.id === provider.id ? ' border-sec' : 'hover:border-sec border-trans'}`}
+                                                                <Button 
+                                                                className={`shadow-md  flex gap-3  items-center cursor-pointer transition-all duration-200   
+                                                                border rounded-lg bg-white py-10
+                                                                ${selectedProvider && selectedProvider.id === provider.id ? ' border-sec ' : 'hover:border-sec border-trans'}`}
+                                                                
                                                                 
                                                                 onClick={() => {
                                                                     setSelectedProvider(provider); // Armazena o provider selecionado
@@ -1127,7 +1129,7 @@ export default function ContrateOnline() {
                                                                         </Button>
                                                                     </div>
 
-                                                                </div>
+                                                                </Button>
 
                                                                 
 
@@ -1326,84 +1328,91 @@ export default function ContrateOnline() {
 
                     {currentStep == 4 && (
                         <>
-                            <div className='w-full flex flex-col justify-between p-2 gap-5 sm:p-10 sm:pl-20 sm:pr-20 pt-5 shadow-md rounded-md pb-0 h-[60vh]'>
-                                <div className='flex flex-col gap-14'>
-                                    <div className='w-full flex flex-col gap-3'>
-                                        <h2 className='text-desSec font-semibold text-xl'>Observação</h2>
-                                        <textarea
-                                        placeholder="Se necessário, deixe-nos uma observação"
-                                        className="border rounded-md border-bord p-3 min-h-20 lg:min-h-50 focus:outline-ter text-prim w-full max-h-1"
-                                        rows="3"
-                                        value={observacao}  // Valor vinculado ao estado
-                                        onChange={(e) => setObservacao(e.target.value)}  // Atualiza o estado quando o valor mudar
-                                        ></textarea>
-                                    </div>
-                                    
-                                    <div className='w-full flex flex-col gap-3'>
-                                        <h2 className='text-desSec font-semibold text-xl'>Cupom de desconto</h2>
-                                        <div className='flex gap-5'>
-                                            <form onSubmit={handleSubmitCupom(handleApplyCupom)} className='flex gap-5 w-full'>
-                                                <div className='w-full flex flex-col items-center gap-2'>
-                                                    <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' 
-                                                        {...registerCupom("code")}
-                                                    />
-                                                    <span className='text-error'>{cupomError}</span>
-
-
-                                                </div>
-                                                <Button 
-                                                type='submit'
-                                                className="p-2 rounded-md 
-                                                text-center
-                                                text-white 
-                                                bg-des         
-                                                hover:text-white transition-all
-                                                duration-200
-                                                hover:bg-sec hover:bg-opacity-75
-                                                hover:border-trans
-                                                flex 
-                                                items-center
-                                                justify-center
-                                                text-sm
-                                                gap-2
-                                                w-4/12
-                                                "
-                                                isDisabled={apply}
-                                                >
-                                                    {apply ? <Spinner/> : "Utilizar"}
-                                                </Button>
-
-                                            </form>
+                            <div className='w-full  flex flex-col items-center  justify-between  p-2 gap-5 sm:p-10 sm:pl-20 sm:pr-20 pt-5 shadow-md rounded-md pb-0 h-[60vh]'>
+                                <div className='w-full 2xl:min-w-[70vh]'>
+                                    <div className='flex flex-col gap-14 '>
+                                        <div className='w-full flex flex-col gap-3'>
+                                            <h2 className='text-desSec font-semibold text-xl'>Observação</h2>
+                                            <textarea
+                                            placeholder="Se necessário, deixe-nos uma observação"
+                                            className="border rounded-md border-bord p-3 min-h-20 lg:min-h-24 2xl:min-h-36 focus:outline-ter text-prim w-full max-h-1"
+                                            rows="3"
+                                            value={observacao}  // Valor vinculado ao estado
+                                            onChange={(e) => setObservacao(e.target.value)}  // Atualiza o estado quando o valor mudar
+                                            ></textarea>
                                         </div>
                                         
+                                        <div className='w-full flex flex-col gap-3'>
+                                            <h2 className='text-desSec font-semibold text-xl'>Cupom de desconto</h2>
+                                            <div className='flex gap-5'>
+                                                <form onSubmit={handleSubmitCupom(handleApplyCupom)} className='flex gap-5 w-full'>
+                                                    <div className='w-full flex flex-col items-center gap-2'>
+                                                        <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' 
+                                                            {...registerCupom("code")}
+                                                        />
+                                                        <span className='text-error'>{cupomError}</span>
+
+
+                                                    </div>
+                                                    <Button 
+                                                    type='submit'
+                                                    className="p-2 rounded-md 
+                                                    text-center
+                                                    text-white 
+                                                    bg-des         
+                                                    hover:text-white transition-all
+                                                    duration-200
+                                                    hover:bg-sec hover:bg-opacity-75
+                                                    hover:border-trans
+                                                    flex 
+                                                    items-center
+                                                    justify-center
+                                                    text-sm
+                                                    gap-2
+                                                    w-4/12
+                                                    "
+                                                    isDisabled={apply}
+                                                    >
+                                                        {apply ? <Spinner/> : "Utilizar"}
+                                                    </Button>
+
+                                                </form>
+                                            </div>
+                                            
+                                        </div>
+
                                     </div>
 
                                 </div>
+                                <div className=' w-full 2xl:min-w-[70vh]'>
+                                    <div className='w-full flex flex-col gap-5 pt-5 pb-5 '>
+                                        <Button 
+                                        className="
+                                        p-5 rounded-md 
+                                        text-center
+                                        text-white 
+                                        bg-sec         
+                                        hover:text-white transition-all
+                                        duration-200
+                                        hover:bg-sec hover:bg-opacity-75
+                                        hover:border-trans
+                                        flex 
+                                        items-center
+                                        justify-center
+                                        text-sm
+                                        gap-2
+                                        w-full
+                                        
+                                        "
+                                        onClick={HandleNavigateCheckout}
 
-                                <div className='w-full flex flex-col gap-5 pt-5 pb-5'>
-                                    <Button 
-                                    className="
-                                    p-5 rounded-md 
-                                    text-center
-                                    text-white 
-                                    bg-sec         
-                                    hover:text-white transition-all
-                                    duration-200
-                                    hover:bg-sec hover:bg-opacity-75
-                                    hover:border-trans
-                                    flex 
-                                    items-center
-                                    justify-center
-                                    text-sm
-                                    gap-2
-                                    w-full
-                                    "
-                                    onClick={HandleNavigateCheckout}
-
-                                    >
-                                        Conferir e solicitar serviço
-                                    </Button>
+                                        >
+                                            Conferir e solicitar serviço
+                                        </Button>
+                                    </div>
                                 </div>
+
+                                
 
                             </div>
                         </>
@@ -1416,9 +1425,9 @@ export default function ContrateOnline() {
                     <div className="hidden md:block lg:block  lg:pt-[5vh] ">
                         <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pt-[12vh] md:pt-[13vh] lg:pt-[0vh] xl:pt-[0vh] p-4 flex flex-col items-center gap-10 max-w-[50vh] xl:max-w-[60vh] xl:min-w-[60vh] text-justify min-h-[80vh]  ">
 
-                            <div className='w-full flex justify-between items-start border-b p-12 pt-0 pb-2 lg:pt-12 xl:pt-16 pl-7 pr-7 '>
-                                <h3 className="text-xl flex flex-wrap">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 font-semibold">
+                            <div className='w-full flex justify-between items-center border-b p-12 pt-0 pb-2 lg:pt-12 xl:pt-16 pl-7 pr-7 '>
+                                <h3 className="text-xl 2xl:text-2xl flex flex-wrap items-end ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 font-semibold 2xl:size-10">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                     </svg>
                                     Total
@@ -1438,14 +1447,14 @@ export default function ContrateOnline() {
                                                     </p>
 
                                                 </div>
-                                                <p className="text-md font-semibold text-green-500">
+                                                <p className="text-md 2xl:text-2xl font-semibold text-green-500">
                                                     {formatarMoeda(valorLiquido)}
                                                 </p>
 
                                             </div>
                                         </>
                                     ) : (
-                                        <p className="text-lg">{formatarMoeda(valorLiquido)}</p>
+                                        <p className="text-lg 2xl:text-2xl">{formatarMoeda(valorLiquido)}</p>
                                     )}
                                 </div>
                             </div>
@@ -1454,23 +1463,23 @@ export default function ContrateOnline() {
                                 <div className='flex flex-col gap-7 w-full pl-7 pr-7'>
                                     {selectedService?(
                                         <div className='w-full flex flex-col  gap-2 justify-between'>
-                                            <p className='text-lg font-semibold'>Serviço selecionado:</p>
+                                            <p className='text-lg 2xl:text-xl font-semibold'>Serviço selecionado:</p>
                                             <div className='flex items-center w-full justify-between'>
-                                                <p className='text-base'>{selectedService}</p>
-                                                <p className='text-base'>{formatarMoeda(serviceValue)}</p>
+                                                <p className='text-base 2xl:text-xl'>{selectedService}</p>
+                                                <p className='text-base 2xl:text-xl'>{formatarMoeda(serviceValue)}</p>
                                             </div>
                                         </div>
                                     ):(
                                         <div className='w-full flex flex-col  gap-2'>
-                                            <p className='text-lg font-semibold'>Serviço selecionado:</p>
-                                            <p className='text-base'>Nenhum serviço selecionado.</p>
+                                            <p className='text-lg font-semibold 2xl:text-xl'>Serviço selecionado:</p>
+                                            <p className='text-base 2xl:text-xl'>Nenhum serviço selecionado.</p>
                                         </div>
                                     )}
 
                                     {/*Exibe as datas e horários selecionados */}
                                     {selectedDates.length > 0 ? (
                                         <div className='w-full flex flex-col gap-2 justify-between'>
-                                            <p className='text-md font-semibold'> Data(s) selecionado(s):</p>
+                                            <p className='text-md 2xl:text-xl font-semibold'> Data(s) selecionado(s):</p>
                                             <ul>
                                                 {selectedDates.map((date, index) => (
                                                     <li key={index} className="flex gap-5 items-center justify-between w-1/2">
@@ -1491,41 +1500,41 @@ export default function ContrateOnline() {
                                             </ul>
                                         </div>
                                     ):(
-                                        <div className='w-full flex flex-col  gap-2'>
-                                            <p className='text-lg font-semibold'>Data(s) selecionada(o):</p>
-                                            <p className='text-base'>Nenhuma data selecionada</p>
+                                        <div className='w-full flex flex-col   gap-2'>
+                                            <p className='text-lg font-semibold 2xl:text-xl'>Data(s) selecionada(o):</p>
+                                            <p className='text-base 2xl:text-xl'>Nenhuma data selecionada</p>
                                         </div>
                                     )}
 
                                     {/* Exibe o prestador selecionado*/}
                                     {selectedProvider?(
                                         <div className='w-full flex flex-col  gap-2'>
-                                            <p className='text-md font-semibold'> Prestador selecionado:</p>
+                                            <p className='text-md font-semibold 2xl:text-xl'> Prestador selecionado:</p>
                                             <div className='flex w-full items-center gap-2'>
                                                 <Avatar src={selectedProvider?.avatarUrl?.avatarUrl} size="md"/>
-                                                <p className='text-base'>{selectedProvider.name}</p>
+                                                <p className='text-base 2xl:text-xl'>{selectedProvider.name}</p>
                                                 {/*Mostra o avatar do prestador */}
                                             </div>
                                         </div>
                                     ):(
                                         <div className='w-full flex flex-col  gap-2'>
-                                            <p className='text-lg font-semibold'>Prestador selecionado</p>
-                                            <p className='text-base'>Nenhum prestador selecionado.</p>
+                                            <p className='text-lg font-semibold 2xl:text-xl'>Prestador selecionado</p>
+                                            <p className='text-base 2xl:text-xl'>Nenhum prestador selecionado.</p>
                                         </div>
                                     )}
 
                                     {observacao?(
                                         <div className='w-full flex flex-col  gap-2'>
-                                            <p className='text-md font-semibold'> Observação:</p>
+                                            <p className='text-md font-semibold 2xl:text-xl'> Observação:</p>
                                             <div className='flex w-full items-center gap-2'>
-                                                <p className='text-base'>{observacao}</p>
+                                                <p className='text-base 2xl:text-xl'>{observacao}</p>
                                                 {/*Mostra o avatar do prestador */}
                                             </div>
                                         </div>
                                     ):(
                                         <div className='w-full flex flex-col  gap-2'>
-                                            <p className='text-lg font-semibold'>Observação:</p>
-                                            <p className='text-base'>Nenhuma</p>
+                                            <p className='text-lg font-semibold 2xl:text-xl'>Observação:</p>
+                                            <p className='text-base 2xl:text-xl'>Nenhuma</p>
                                         </div>
                                     )}
 
@@ -1535,15 +1544,15 @@ export default function ContrateOnline() {
                 )}
                     
                 {currentStep == 0 &&(
-                    <div className="hidden md:block lg:block  lg:pt-[5vh] ">
-                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pt-[12vh] md:pt-[13vh] lg:pt-[10vh] p-4 flex flex-col items-center gap-10 max-w-[50vh] xl:max-w-[60vh] text-justify min-h-[80vh] ">
-                            <h3 className="text-xl font-bold flex flex-wrap">Olá, agende um serviço conosco é fácil e rápido!</h3>
+                    <div className="hidden md:block lg:block  lg:pt-[5vh]   ">
+                        <div className="bg-desSec text-white shadow-md rounded-t-none rounded-lg pt-[12vh] md:pt-[13vh] lg:pt-[10vh] p-4 flex flex-col items-center gap-10 max-w-[50vh] xl:max-w-[60vh] 2xl:max-w-[65vh] 2xl:pl-10 2xl:pr-10 text-justify min-h-[80vh] ">
+                            <h3 className="text-xl 2xl:text-2xl font-bold flex flex-wrap">Olá, agende um serviço conosco é fácil e rápido!</h3>
                             <img
                             src={Banner}
                             alt="Ilustração de limpeza"
                             className="xl:w-[50vh] mb-4"
                             />
-                            <ul className="text-sm">
+                            <ul className="text-sm 2xl:text-xl">
                                 <li className="mb-2">
                                     <i className="fas fa-calendar-alt mr-2"></i> Para agendar um serviço...
                                 </li>

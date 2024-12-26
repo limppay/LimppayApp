@@ -71,11 +71,11 @@ const ServiceCard = ({HandleSetServiceValue, icon, title, description, value, is
       <div className="flex flex-col gap-3 md:flex-row md:items-center pb-5 ">
         <div className={`text-3xl flex gap-4 w-full ${isExpanded ? 'text-white' : 'text-sec'}`}>
           <IconComponent iconName={icon} />
-          <h3 className={`text-lg  font-semibold ${isExpanded ? 'text-white' : 'text-sec'} mb-2`}>{title}</h3>
+          <h3 className={`text-lg 2xl:text-2xl  font-semibold ${isExpanded ? 'text-white' : 'text-sec'} mb-2`}>{title}</h3>
         </div>
       </div>
 
-      <p className={`text-sm ${isExpanded ? 'text-white' : 'text-prim'} text-justify mb-4`}>
+      <p className={`text-sm 2xl:text-lg ${isExpanded ? 'text-white' : 'text-prim'} text-justify mb-4`}>
         {description}
       </p>
 
