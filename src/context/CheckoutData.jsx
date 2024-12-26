@@ -7,6 +7,8 @@ export const CheckoutProvider = ({ children }) => {
   // Use um estado para manter os dados do checkout e inicialize com os dados dos cookies se existirem
   const [checkoutData, setCheckoutDataState] = useState(() => {
     const storedData = Cookies.get("checkoutData");
+    console.log("Cookie do agendamentoData: ", storedData)
+
     return storedData ? JSON.parse(storedData) : {
       userId: null,
       clienteId: null,
@@ -26,7 +28,6 @@ export const CheckoutProvider = ({ children }) => {
   // Função para atualizar tanto o estado quanto o cookie
   const setCheckoutData = (data) => {
     setCheckoutDataState(data);
-    Cookies.set("checkoutData", JSON.stringify(data), { expires: 1 }); // Expira em 1 dia
   };
 
   return (

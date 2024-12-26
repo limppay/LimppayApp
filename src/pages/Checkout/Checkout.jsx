@@ -32,11 +32,6 @@ export default function Checkout() {
   const {checkoutData, setCheckoutData} = useCheckout()
   console.log("Dados recebidos para o checkout: ", checkoutData)
 
-
-
-  
-
-
   const schemaDadosCartao = yup.object({
     numero: yup.number("Número do cartão é obrigatório.").required("Número do cartão é obrigatório.").typeError("Número do cartão dever ser um número válido."),
     cvc: yup.number().required("Código de segurança é obrigatório."),

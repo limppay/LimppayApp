@@ -4,7 +4,7 @@ import {Logo, Footer } from '../../componentes/imports';
 import ServiceSelection from '../../componentes/App/ServiceSelection';
 import CustomCalendar from '../../componentes/App/DatePicker';
 import ProgressBar from '../../componentes/App/ProgressBar';
-import { applyCoupom, createAgendamento, CreateEnderecosCliente, deleteEnderecosCliente, getAvaliacoesByPrestador, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
+import { applyCoupom, createAgendamento, createCheckout, CreateEnderecosCliente, deleteEnderecosCliente, getAvaliacoesByPrestador, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile } from '../../services/api';
 import {Avatar, Spinner, spinner} from "@nextui-org/react";
 'use client'
 import {CircularProgress} from "@nextui-org/progress";
@@ -597,7 +597,8 @@ export default function ContrateOnline() {
 
     
     const HandleNavigateCheckout = async () => {
-        
+
+
         // Cria um array com os dados de todos os agendamentos
         const agendamentos = selectedDates.map((date) => {
             const FormDate = new Date(date).toDateString(); // Formata a data
@@ -622,6 +623,15 @@ export default function ContrateOnline() {
                 ...(selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id }),
             };
         });
+
+        try {
+            const response = await createCheckout(agendamentos)
+            console.log("Dados do checkout enviado com sucesso! ", response)
+
+        } catch (error) {
+            console.log(error)
+            
+        }
     
         await setCheckoutData(agendamentos)
         navigate("/checkout-pagamento");

@@ -527,4 +527,28 @@ export const updateServico = async (id, data) => {
   
 }
 
+export const createCheckout = async (data) => {
+  try {
+    const response = await api.post(`/checkout-data/create`, data )
+
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  
+  }
+}
+
+export const verifyCheckout = async () => {
+  try {
+    const response = await api.post(`/checkout-data/verify`)
+
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  
+  }
+}
+
 export default api;
