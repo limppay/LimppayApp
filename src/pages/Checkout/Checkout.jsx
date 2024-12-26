@@ -348,9 +348,17 @@ export default function Checkout() {
     if (checkoutData.clienteId === null) {
       console.log("Dados do checkout não encontrados. Redirecionando...");
       navigate("/contrate-online");
+
     } else {
+      if(errorValidate) {
+        window.alert("O sistema identificou que os dados do seu pedido foram adulterados!");
+        navigate("/contrate-online");
+        
+      } else {
+        setLoadingCheckout(false);
+
+      }
       // Quando os dados estão disponíveis, parar o loading
-      setLoadingCheckout(false);
     }
   }, [checkoutData, navigate]);
   
