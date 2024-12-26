@@ -27,7 +27,7 @@ export const CheckoutProvider = ({ children }) => {
 
   // Função para atualizar tanto o estado quanto o cookie
   const setCheckoutData = (data) => {
-    setCheckoutDataState(data);
+    setCheckoutDataState(data?.data);
   };
 
   return (

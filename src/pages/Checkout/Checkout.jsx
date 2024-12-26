@@ -8,7 +8,7 @@ import { useSelectedProvider } from '../../context/SelectedProvider';
 import { useSelectedDates } from '../../context/SelectedDates';
 import { useSelectedTimes } from '../../context/SelectedTimes';
 import { Avatar } from '@nextui-org/avatar'
-import { createAgendamento, criarFaturaCartao, criarFaturaPix } from '../../services/api';
+import { createAgendamento, criarFaturaCartao, criarFaturaPix, verifyCheckout } from '../../services/api';
 import { obterTokenCartao } from '../../services/iuguApi';
 import { useUser } from '../../context/UserProvider';
 import { Button, Input, Spinner } from '@nextui-org/react';
@@ -88,6 +88,28 @@ export default function Checkout() {
     data.setDate(data.getDate() + diasParaVencer); // Adiciona os dias
     return data.toISOString().split('T')[0]; // Retorna a data no formato YYYY-MM-DD
   }
+
+  const [errorValidate, setErrorValidate] = useState(false)
+  useEffect(() => {
+      const validate = async () => {
+        setErrorValidate(false)
+    
+        try {
+          const response = await verifyCheckout()
+    
+          console.log("Dados verificado com sucesso! ", response)
+          setErrorValidate(false)
+        } catch (error) {
+          console.log("ocorreu um erro ao tentar validar o cookie do checkout ", error)
+          setErrorValidate(true)
+          
+        }
+        
+      }
+
+      validate()
+
+  }, [checkoutData, setCheckoutData])
 
   const [sessionCode, setSessionCode] = useState(null);
   // gera o codigo de sessao unica
