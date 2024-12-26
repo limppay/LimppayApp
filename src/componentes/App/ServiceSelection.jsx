@@ -122,12 +122,12 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen w-full h-full  ">
+    <div className="bg-gray-50 min-h-screen w-full h-full 2xl:text-md  2xl:max-w-[90vh]">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl mx-auto ">
         {/* Coluna principal */}
         <div className="lg:col-span-2">
           <div className="bg-white sm:shadow-md rounded-lg p-4 w-full">
-            <h2 className="text-center text-xl font-semibold text-desSec mb-4">Escolha o serviço</h2>
+            <h2 className="text-center text-xl 2xl:text-2xl font-semibold text-desSec mb-4">Escolha o serviço</h2>
 
             <div className="relative mb-4">
               <input
