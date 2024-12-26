@@ -653,7 +653,7 @@ export default function ContrateOnline() {
 
             <main className="relative p-4 flex justify-center md:justify-around lg:justify-around gap-5 2xl:pt-[3vh]  ">
                 
-                <div className='flex flex-col items-center text-center min-w-[45vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] md:min-w-[60vh]  shadow-lg pt-0 p-4 rounded-xl min-h-[100vh] sm:min-h-[80vh] 2xl:max-w-[100vh] 2xl:min-w-[100vh]  '>
+                <div className='flex flex-col items-center text-center min-w-[45vh] max-w-[55vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh]   '>
 
                     <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -1558,7 +1558,7 @@ export default function ContrateOnline() {
                     </div>
                 )}
 
-                <div className={`${currentStep >= 1 ? "" : "hidden"} sm:hidden fixed bottom-0 left-0 w-full transition-all duration-300 ease-in-out ${isExpanded ? 'h-[60vh]' : 'h-[8vh]'} bg-white p-2  text-prim  shadow-[0_-4px_10px_rgba(0,0,0,0.3)] rounded-t-[2vh]`}>
+                <div className={`${currentStep >= 1 ? "" : "hidden"} sm:hidden fixed bottom-0 left-0 w-full transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[65vh] max-h-[65vh]' : 'min-h-[8vh] max-h-[12vh]'} bg-white p-2  text-prim  shadow-[0_-4px_10px_rgba(0,0,0,0.3)] rounded-t-[2vh]`}>
                     <div
                         className="cursor-pointer  bg-white pt-2 p-4 text-center  font-semibold rounded-t-lg border-b border-bord"
                         onClick={() => setIsExpanded(!isExpanded)}
