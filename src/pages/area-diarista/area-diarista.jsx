@@ -23,6 +23,7 @@ import { findAllDiasBloqueados } from '../../services/api.js';
 import { updateDiasDisponveis } from '../../services/api.js';
 import InputMask from "react-input-mask"
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 
 
 const AreaDiarista = () => {
@@ -35,6 +36,7 @@ const AreaDiarista = () => {
     
     const [userInfo, setUserInfo] = useState(null);
     const[Open, SetOpen] = useState(false)
+    const navigate = useNavigate()
 
     const [agendamentos, setAgendamentos] = useState([])
     const [avaliacoes, setAvaliacoes] = useState([])
@@ -174,9 +176,10 @@ const AreaDiarista = () => {
         }).format(valor);
     }
 
-
+    const [errorLogin, setErrorLogin] = useState(false)
     useEffect(() => {
         const fetchUserInfo = async () => {
+            setErrorLogin(false)
             try {
                 const user = await axios.get(baseURL, {
                     withCredentials: true
@@ -196,6 +199,7 @@ const AreaDiarista = () => {
                 setOld(user.Old)
             } catch (error) {
                 console.error('Erro ao buscar informações do usuário:', error);
+                setErrorLogin(true)
             }
         };
         
@@ -679,6 +683,19 @@ const AreaDiarista = () => {
 
     console.log("Status da migração: ", old) // migrate ou null - identifica se o usuario veio do sistema antigo ou nao
     console.log(errors)
+
+    useEffect(() => {
+        const HandleVerify = async () => {
+
+            if(errorLogin) {
+              navigate("/seja-diarista")
+            }
+            
+        }
+
+        HandleVerify()
+    
+    }, [errorLogin, setErrorLogin])
 
     return (
         <>

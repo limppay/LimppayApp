@@ -217,7 +217,7 @@ export default function FormDiarista() {
     console.log(required)
 
     const closeModal = () => {
-        setModalIsOpen(false)
+        // setModalIsOpen(false)
         navigate("/diarista-login")
     }
 

@@ -6,7 +6,7 @@ import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import EditClienteModal from './EditClienteModal.jsx';
 import { CreateEnderecosCliente, createReview, deleteEnderecosCliente, getAvaliacoes, getEnderecoDefaultCliente, getPrestadorMaisContratado, getSolicitacoesDoMes, getSolicitacoesTotal, getGastoMes } from '../../services/api.js';
 import HeaderWebApp from '../../componentes/App/HeaderWebApp.jsx';
-import { Avatar, ScrollShadow, Spinner } from '@nextui-org/react';
+import { Avatar, ScrollShadow, Spinner,  } from '@nextui-org/react';
 import { getAgendamentos } from '../../services/api.js';
 'use client'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
@@ -20,6 +20,8 @@ import * as yup from "yup"
 
 import InputMask from "react-input-mask"
 import { Helmet } from 'react-helmet-async';
+import { useUser } from '../../context/UserProvider';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -32,6 +34,8 @@ const AreaCliente = () => {
     : 'https://limppay-api-production.up.railway.app/cliente/me';
 
     const [userInfo, setUserInfo] = useState(null);
+    const { user, setUser  } = useUser();
+    
     const[Open, SetOpen] = useState(false)
 
     const [adressDefault, setAdressDefault] = useState([])
@@ -47,6 +51,7 @@ const AreaCliente = () => {
     const [rating, setRating] = useState(0); // Estado para armazenar o valor da avaliação
     // Função para atualizar a avaliação
     const [prestadorId, setPrestadorId] = useState('')
+    const navigate = useNavigate()
 
     const [screenSelected, setScreenSelected] = useState("painel")
     const [isOpen, setIsOpen] = useState(true)
@@ -544,6 +549,24 @@ useEffect(() => {
 
     return local
   }
+
+  
+  
+  // verificar se o login existe antes de carregar a página
+    useEffect(() => {
+        const HandleVerify = async () => {
+            const cliente = user
+
+            if(!cliente) {
+              navigate("/contrate-online")
+            }
+            
+        }
+
+        HandleVerify()
+    
+    }, [])
+    
 
     return (
         <div>

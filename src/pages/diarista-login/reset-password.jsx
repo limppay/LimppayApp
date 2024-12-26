@@ -62,7 +62,7 @@ export default function ResetPassword() {
       setErrorMessage(null);
       setOpen(true);
       setTimeout(() => {
-        navigate('/diarista-login');
+        navigate('/');
       }, 3000);
     } else {
       setLoading(false);

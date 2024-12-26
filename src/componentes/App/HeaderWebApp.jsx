@@ -87,19 +87,17 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
     try {
       const response = await loggoutCliente()
       console.log("Loggout executado com sucesso!", response)
+      setUser()
       setLoggout(false)
 
     } catch (error) {
       console.log(error)
       
     } finally {
-      setUser(null);
-      window.location.reload()
       navigate("/contrate-online")
+      window.location.reload()
     }
-    
-
-    
+        
   };
 
   const HandleNavigateUser = () => {
@@ -168,6 +166,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                         rounded-md text-error
                         '
                         onClick={HandleExitUser}
+                        isDisabled={loggout}
                       >
                         {loggout ? <Spinner className='text-white' color='danger'/> : "Sair"}
                       </Button>

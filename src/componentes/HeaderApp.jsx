@@ -103,6 +103,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                                             rounded-md text-error
                                             '
                                             onClick={HandleExitUser}
+                                            isDisabled={loggout}
                                         >
                                             {loggout ? <Spinner className='text-white' color='danger'/> : "Sair"}
                                         </Button>

@@ -9,11 +9,15 @@ import axios from "axios"
 import InputMask from "react-input-mask"
 
 'use client'
-import { Dialog, DialogBackdrop, DialogPanel, Input } from '@headlessui/react'
+import {  Dialog, DialogBackdrop, DialogPanel, Input } from '@headlessui/react'
 import {useNavigate } from 'react-router-dom';
 import { Logo } from "../imports.jsx"
 
 import User from "../../assets/img/diarista-cadastro/user.png"
+import { Spinner } from "@nextui-org/react"
+import {Button} from "@nextui-org/react";
+import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
+
 
 export default function FormCliente() {
     const navigate = useNavigate();
@@ -133,18 +137,19 @@ export default function FormCliente() {
     console.log(errors)
 
     const closeModal = () => {
-        setModalIsOpen(false)
+        // setModalIsOpen(false)
         navigate("/login-cliente")
     }
 
     // Funções
     // Função de ativar o botão quando o termo for clicado
+    // Função de ativar o botão quando o termo for clicado
+    const [termosCheck, setTermosCheck] = useState(true)
     useEffect(() => {
-        const buttonSubmit = document.getElementById("buttonSubmit")
         const checkTermos = document.getElementById("termo")
+
         checkTermos.onclick = () => {
-            buttonSubmit.toggleAttribute("disabled")
-            buttonSubmit.classList.toggle("opacity-50")
+            setTermosCheck(!termosCheck)
         }
     })
 
@@ -727,24 +732,29 @@ export default function FormCliente() {
                 </div>
             </div>
             <div className="mt-4 pl-9 pr-9 pb-9 space-y-5">
-                <button type="submit" className="text-center w-full lg:w-1/2  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 opacity-50" id="buttonSubmit" disabled>{loading ? 'Criando conta...' : 'Cadastrar'}</button>
+                <Button  type="submit" className="text-center w-full lg:w-1/2  bg-des rounded-md text-white p-2 hover:bg-sec transition-all duration-100 " id="buttonSubmit" isDisabled={loading || termosCheck}  >
+                    {loading ? <Spinner/> : 'Cadastrar'}
+                </Button>
                 <p className="text-md text-error text-center lg:text-start">{message}</p>
             </div>
         </form>
 
-
-        <Dialog open={modalIsOpen} onClose={setModalIsOpen} className="relative z-10">
-            <DialogBackdrop
-                transition
-                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-            />
-            <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-prim bg-opacity-50">
-                <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
-                    <DialogPanel
-                        transition
-                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
-                    >
-                        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+        <Modal 
+            backdrop="opaque" 
+            isOpen={modalIsOpen} 
+            onOpenChange={setModalIsOpen}
+            placement='center'
+            classNames={{
+                backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 "
+            }}
+            className="min-w-[35] max-w-[40vh] sm:max-w-[60vh] "
+        >
+            <ModalContent>
+                {(onClose) => (
+                <>
+                    <ModalHeader className="flex flex-col gap-1 text-desSec p-0"></ModalHeader>
+                    <ModalBody>
+                        <div className="bg-white sm:pb-4">
                             <div className="sm:flex sm:items-start justify-center">
                                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                     <div className="mt-2 lg:flex h-1/2 ">
@@ -765,20 +775,20 @@ export default function FormCliente() {
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gray-50 px-4 py-3 sm:px-6 justify-center flex ">
-                            <button
-                                type="button"
-                                data-autofocus
-                                onClick={closeModal}
-                                className="flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            >
-                                Fazer Login
-                            </button>
-                        </div>
-                    </DialogPanel>
-                </div>
-            </div>
-        </Dialog>
+
+                    
+        
+                    </ModalBody>
+                    <ModalFooter className="bg-none shadow-none">
+                        
+                        <Button className='bg-desSec text-white' onPress={closeModal} >
+                            Confirmar
+                        </Button>
+                    </ModalFooter>
+                </>
+                )}
+            </ModalContent>
+        </Modal>
     </>
   )
 }
