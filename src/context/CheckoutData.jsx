@@ -4,31 +4,31 @@ import Cookies from "js-cookie";
 const CheckoutContext = createContext();
 
 export const CheckoutProvider = ({ children }) => {
-  // Use um estado para manter os dados do checkout e inicialize com os dados dos cookies se existirem
+  // Inicializar o estado com o array "data" do cookie, se existir
   const [checkoutData, setCheckoutDataState] = useState(() => {
     const storedData = Cookies.get("checkoutData");
-    console.log("Cookie do agendamentoData: ", storedData)
+    console.log("Cookie do agendamentoData: ", storedData);
 
-    return storedData ? JSON.parse(storedData) : {
-      userId: null,
-      clienteId: null,
-      servicoId: null,
-      dataServico: null,
-      Servico: null,
-      horaServico: null,
-      valorServico: null,
-      valorBruto: null,
-      valorCupom: null,
-      descontoTotal: null,
-      valorLiquido: null,
-      observacao: null,
-    };
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(storedData);
+        return parsedData.data || []; // Retorna apenas o array "data"
+      } catch (error) {
+        console.error("Erro ao parsear o cookie:", error);
+        return [];
+      }
+    }
+
+    return []; // Estado inicial vazio se o cookie não existir
   });
 
-  // Função para atualizar tanto o estado quanto o cookie
+  // Função para atualizar o estado e cookie com somente o array "data"
   const setCheckoutData = (data) => {
-    console.log("Dados sendo setados no context: ", data)
+    console.log("Dados sendo setados no context: ", data);
     setCheckoutDataState(data);
+
+    // Atualizar o cookie com a nova estrutura, incluindo o "hash" (opcional)
+    Cookies.set("checkoutData", JSON.stringify({ data, hash: "hash-opcional" }));
   };
 
   return (
