@@ -89,27 +89,6 @@ export default function Checkout() {
     return data.toISOString().split('T')[0]; // Retorna a data no formato YYYY-MM-DD
   }
 
-  const [errorValidate, setErrorValidate] = useState(false)
-  useEffect(() => {
-      const validate = async () => {
-        setErrorValidate(false)
-    
-        try {
-          const response = await verifyCheckout()
-    
-          console.log("Dados verificado com sucesso! ", response)
-          setErrorValidate(false)
-        } catch (error) {
-          console.log("ocorreu um erro ao tentar validar o cookie do checkout ", error)
-          setErrorValidate(true)
-          
-        }
-        
-      }
-
-      validate()
-
-  }, [checkoutData, setCheckoutData])
 
   const [sessionCode, setSessionCode] = useState(null);
   // gera o codigo de sessao unica
@@ -341,26 +320,49 @@ export default function Checkout() {
     setMetodoPagamento("pix")
   }
 
-  const [loadingCheckout, setLoadingCheckout] = useState(true)
-
+  const [loadingCheckout, setLoadingCheckout] = useState(true);
+  const [errorValidate, setErrorValidate] = useState(false);
+    
   useEffect(() => {
-    // Durante o carregamento dos dados, manter o loading
-    if (checkoutData.clienteId === null) {
+    const validateAndRedirect = async () => {
+      setLoadingCheckout(true); // Inicia o carregamento
+      setErrorValidate(false); // Reseta o erro
+  
+      try {  
+        // Verifica adulteração nos dados do checkout
+        const response = await verifyCheckout();
+        console.log("Dados verificados com sucesso!", response);
+  
+        if (!response) {
+          console.warn("Dados adulterados detectados.");
+          setErrorValidate(true);
+          window.alert("O sistema identificou que os dados do seu pedido foram adulterados!");
+          navigate("/contrate-online");
+          return;
+        }
+  
+        // Tudo está válido
+        setLoadingCheckout(false);
+      } catch (error) {
+        console.error("Ocorreu um erro ao validar o cookie do checkout:", error);
+        setErrorValidate(true);
+        navigate("/contrate-online");
+      }
+    };
+  
+    // Só executa a validação se checkoutData existir
+    if (checkoutData) {
+      validateAndRedirect();
+    } else {
       console.log("Dados do checkout não encontrados. Redirecionando...");
       navigate("/contrate-online");
-
-    } else {
-      if(errorValidate) {
-        window.alert("O sistema identificou que os dados do seu pedido foram adulterados!");
-        navigate("/contrate-online");
-        
-      } else {
-        setLoadingCheckout(false);
-
-      }
-      // Quando os dados estão disponíveis, parar o loading
+      return;
     }
+
   }, [checkoutData, navigate]);
+  
+  
+  
   
 
   return (

@@ -12,14 +12,14 @@ export const CheckoutProvider = ({ children }) => {
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
-        return parsedData.data || []; // Retorna apenas o array "data"
+        return parsedData.data || null; // Retorna apenas o array "data"
       } catch (error) {
         console.error("Erro ao parsear o cookie:", error);
-        return [];
+        return null;
       }
     }
 
-    return []; // Estado inicial vazio se o cookie não existir
+    return null; // Estado inicial vazio se o cookie não existir
   });
 
   // Função para atualizar o estado e cookie com somente o array "data"
@@ -28,7 +28,7 @@ export const CheckoutProvider = ({ children }) => {
     setCheckoutDataState(data);
 
     // Atualizar o cookie com a nova estrutura, incluindo o "hash" (opcional)
-    Cookies.set("checkoutData", JSON.stringify({ data, hash: "hash-opcional" }));
+    // Cookies.set("checkoutData", JSON.stringify({ data, hash: "hash-opcional" }));
   };
 
   return (
