@@ -567,6 +567,15 @@ useEffect(() => {
     
     }, [])
     
+    const EstadoCivil = [
+        { text: "Solteiro(a)", value: 1 },
+        { text: "Casado(a)", value: 2 },
+        { text: "Divorciado(a)", value: 3 },
+        { text: "Viúvo(a)", value: 4 },
+        { text: "Separado(a)", value: 5 },
+    ];
+
+    const estadoCivilTexto = EstadoCivil.find(item => item.value === userInfo?.estadoCivil)?.text || '';
 
     return (
         <div>
@@ -779,11 +788,29 @@ useEffect(() => {
                                             </div>
                                             <div className="grid gap-2">
                                                 <label htmlFor="telefone" className="text-neutral-500">Telefone 1</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.telefone_1} />
+                                                <InputMask
+                                                    ref={inputRef}
+                                                    mask="(99) 99999-9999" 
+                                                    maskChar={null}
+                                                    className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
+                                                    id="telefone_1" 
+                                                    type="text" 
+                                                    placeholder="(00) 00000-0000" 
+                                                    value={userInfo?.telefone_1}
+                                                />
                                             </div>
                                             <div className="grid gap-2">
                                                 <label htmlFor="telefone" className="text-neutral-500">Telefone 2</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.telefone_2} />
+                                                <InputMask
+                                                    ref={inputRef}
+                                                    mask="(99) 99999-9999" 
+                                                    maskChar={null}
+                                                    className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
+                                                    id="telefone_2" 
+                                                    type="text" 
+                                                    placeholder="(00) 00000-0000" 
+                                                    value={userInfo?.telefone_2}
+                                                />
                                             </div>
 
                                         </div>
@@ -791,8 +818,8 @@ useEffect(() => {
                                         <div className="grid  sm:grid-cols-2 gap-5 pt-5">
 
                                             <div className="grid gap-2">
-                                            <label htmlFor="rg" className="text-neutral-500">Estado Civil</label>
-                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.estadoCivil} />
+                                                <label htmlFor="rg" className="text-neutral-500">Estado Civil</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={estadoCivilTexto} />
                                             </div>
 
                                             <div className="grid gap-2">
@@ -808,7 +835,18 @@ useEffect(() => {
 
                                             <div className="grid gap-2">
                                                 <label htmlFor="cep" className="text-prim">CEP</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cep} />
+
+                                                <InputMask 
+                                                ref={inputRef}
+                                                mask="99999-999"
+                                                maskChar={null}
+                                                className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
+                                                id="cep" 
+                                                type="text" 
+                                                placeholder="CEP" 
+                                                value={userInfo.cep}
+                                                
+                                                />
                                             </div>
 
                                             <div className="grid gap-2">
@@ -1277,8 +1315,11 @@ useEffect(() => {
                                             ))
 
                                         ) : (
-                                            <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
-                                                <p>Você não fez nenhuma avaliação.</p>
+                                            <div className='h-[60vh] w-full'>
+                                                <div className='text-prim text-center flex flex-col justify-center items-center h-full '>
+                                                    <p>Você não fez nenhuma avaliação</p>
+                                                </div>
+
                                             </div>
                                         )}
                                         
@@ -1290,57 +1331,67 @@ useEffect(() => {
                             {screenSelected == "enderecos" && (
                                 <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5'>
-                                        <h2 className='text-xl font-semibold text-des text-center sm:text-start'>Endereços cadastrados</h2>
+                                        <h2 className='text-xl font-semibold text-desSec text-center sm:text-start'>Endereços cadastrados</h2>
 
-                                        <div className='pt-5'>
+                                        <div className='pt-5 flex flex-col justify-center w-full'>
                                             {userInfo.EnderecosCliente.length == 0 ? (
-                                                <div className='
-                                                
-                                                border-2 border-sec  rounded-lg 
-                                                
-                                                2xl:min-h-[32vh] 
-                                                2xl:max-h-[32vh]  
-                                                2xl:max-w-[32vh] 
-                                                2xl:min-w-[32vh]
-
-                                                xl:min-h-[38vh] 
-                                                xl:max-h-[38vh]  
-                                                xl:max-w-[38vh] 
-                                                xl:min-w-[38vh] 
-
-                                                lg:min-h-[36vh] 
-                                                lg:max-h-[36vh] 
-                                                lg:max-w-[36vh] 
-                                                lg:min-w-[36vh] 
-
-                                                min-h-[30vh] 
-                                                max-h-[30vh] 
-                                                min-w-[30vh] 
-                                                max-w-[30vh] 
-
-                                                flex flex-col justify-center items-center  transition-all '
-                                                onClick={() => (
+                                                <div className='grid
+                                                  sm:grid-cols-3
+                                                  gap-10
+                                                  pt-5
+                                                  justify-items-center
+                                                  w-full
+                                                  
+                                                  scrollbar-hide'>
+                                                    <div className='
                                                     
-                                                    setOpenCreateAdress(true)
+                                                    border-2 border-sec  rounded-lg 
+                                                    
+                                                    2xl:min-h-[32vh] 
+                                                    2xl:max-h-[32vh]  
+                                                    2xl:max-w-[32vh] 
+                                                    2xl:min-w-[32vh]
 
-                                                ) }
-                                                >
-                                                    <button 
-                                                        className='p-2 text-des rounded-md bg-trans text-sm'
-                                                        type="button"
-                                                        onClick={() => (
-                                                            
-                                                            setOpenCreateAdress(true)
+                                                    xl:min-h-[38vh] 
+                                                    xl:max-h-[38vh]  
+                                                    xl:max-w-[38vh] 
+                                                    xl:min-w-[38vh] 
 
-                                                        )}
-                                                    >
+                                                    lg:min-h-[36vh] 
+                                                    lg:max-h-[36vh] 
+                                                    lg:max-w-[36vh] 
+                                                    lg:min-w-[36vh] 
+
+                                                    min-h-[30vh] 
+                                                    max-h-[30vh] 
+                                                    min-w-[30vh] 
+                                                    max-w-[30vh] 
+
+                                                    flex flex-col justify-center items-center  transition-all '
+                                                    onClick={() => (
                                                         
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                        </svg>
+                                                        setOpenCreateAdress(true)
 
-                                                    
-                                                    </button>
+                                                    ) }
+                                                    >
+                                                        <Button 
+                                                            className='p-2 text-des rounded-md bg-trans text-sm'
+                                                            type="button"
+                                                            onClick={() => (
+                                                                
+                                                                setOpenCreateAdress(true)
+
+                                                            )}
+                                                        >
+                                                            
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                                            </svg>
+
+                                                        
+                                                        </Button>
+                                                    </div>
+
                                                 </div>
                                             ) : (
                                               <div className='sm:p-5'>
@@ -1649,7 +1700,7 @@ useEffect(() => {
                                                         Cancelar
                                                         </Button>
                                                     
-                                                        <Button type="submit" className="bg-desSec text-white min-w-[18vh]" isDisabled={loadingEdit ? true : false}>
+                                                        <Button type="submit" className="bg-desSec text-white min-w-[18vh]" isDisabled={creating}>
                                                         {creating ? <Spinner/> : "Criar endereço"}
                                                         </Button>
                                                     </ModalFooter>
