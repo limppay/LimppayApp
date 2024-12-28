@@ -27,8 +27,7 @@ export default function DiaristaCadastro() {
             AcessPrim: "Página Inicial",
             LinkPrim: "/",
             AcessSec: "Área Diarista",
-            LinkSec: "#",
-            OnClickSec: () => SetOpenLogin(true)
+            LinkSec: "/diarista-login",
         }
     ]
 

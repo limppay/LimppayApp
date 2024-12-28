@@ -676,10 +676,7 @@ const AreaDiarista = () => {
 
     console.log("Serviços selecionados: ", selectedServices)
 
-    const Banco = [
-        {text: "Santander", value: 1}
 
-    ]
 
     console.log("Status da migração: ", old) // migrate ou null - identifica se o usuario veio do sistema antigo ou nao
     console.log(errors)
@@ -696,6 +693,22 @@ const AreaDiarista = () => {
         HandleVerify()
     
     }, [errorLogin, setErrorLogin])
+
+    const EstadoCivil = [
+        { text: "Solteiro(a)", value: 1 },
+        { text: "Casado(a)", value: 2 },
+        { text: "Divorciado(a)", value: 3 },
+        { text: "Viúvo(a)", value: 4 },
+        { text: "Separado(a)", value: 5 },
+    ];
+
+    const Banco = [
+        {text: "Santander", value: 1}
+
+    ]
+
+    const estadoCivilTexto = EstadoCivil.find(item => item.value === userInfo?.estadoCivil)?.text || '';
+    const bancoTexto = Banco.find(item => item.value === userInfo?.banco)?.text || '';
 
     return (
         <>
@@ -1270,7 +1283,16 @@ const AreaDiarista = () => {
                                                         </div>
                                                         <div className="grid gap-2">
                                                             <label htmlFor="telefone" className="text-neutral-500">Telefone</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.telefone} />
+                                                            <InputMask
+                                                                ref={inputRef}
+                                                                mask="(99) 99999-9999" 
+                                                                maskChar={null}
+                                                                className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
+                                                                id="telefone_1" 
+                                                                type="text" 
+                                                                placeholder="(00) 00000-0000" 
+                                                                value={userInfo?.telefone}
+                                                            />
                                                         </div>
 
                                                     </div>
@@ -1279,7 +1301,8 @@ const AreaDiarista = () => {
 
                                                         <div className="grid gap-2">
                                                         <label htmlFor="rg" className="text-neutral-500">Estado Civil</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.estadoCivil} />
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled 
+                                                        value={estadoCivilTexto} />
                                                         </div>
 
                                                         <div className="grid gap-2">
@@ -1293,7 +1316,7 @@ const AreaDiarista = () => {
                                                     <div className="grid sm:grid-cols-4 gap-5 pt-2">
                                                         <div className="grid gap-2">
                                                         <label htmlFor="telefone" className="text-neutral-500">Banco</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.banco} />
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={bancoTexto} />
                                                         </div>
 
                                                         <div className="grid gap-2">
@@ -1432,7 +1455,17 @@ const AreaDiarista = () => {
 
                                                         <div className="grid gap-2">
                                                             <label htmlFor="cep" className="text-prim">CEP</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cep} />
+                                                            <InputMask 
+                                                            ref={inputRef}
+                                                            mask="99999-999"
+                                                            maskChar={null}
+                                                            className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
+                                                            id="cep" 
+                                                            type="text" 
+                                                            placeholder="CEP" 
+                                                            value={userInfo.cep}
+                                                            
+                                                            />
                                                         </div>
 
                                                         <div className="grid gap-2">
@@ -1487,7 +1520,7 @@ const AreaDiarista = () => {
                                                         
                                                         agendamentos.map((agendamento) => (
                                                             <>
-                                                                <div className='flex flex-col gap-3  shadow-md rounded-md p-5 justify-center items-start'>
+                                                                <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
                                                                     <div className='flex flex-col lg:flex-row gap-5 items-start w-full justify-between'>
                                                                         <div className='flex flex-col gap-2 w-full'>
                                                                             <div className="overflow-y-auto  bg-white p-3 rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between">
@@ -1579,13 +1612,14 @@ const AreaDiarista = () => {
                                                 {avaliacoes.length > 0 ? (
                                                     avaliacoes.map((avaliacao) => (
                                                         
-                                                        <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full'>
-                                                            <div className=' avaliacao flex gap-3 shadow-md bg-opacity-30 rounded-md p-5'>
+                                                        <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full shadow-lg shadow-bord rounded-md'>
+
+                                                            <div className=' avaliacao flex gap-3   bg-opacity-30 rounded-md  '>
                                                                 <div className='flex flex-col w-full'>
-                                                                    <div className="overflow-y-auto max-h-32 bg-white p-3 rounded-md w-full min-h-20">
-                                                                        <p className='text-prim'>{avaliacao?.comment === "" ? "O cliente não fez um comentário do serviço": avaliacao.comment}</p>
+                                                                    <div className="overflow-y-auto max-h-52 bg-white pt-2 rounded-md w-full min-h-20">
+                                                                        <p className='text-prim'>{avaliacao?.comment === "" ? <span className='text-prim text-opacity-40'>Nenhum comentário</span>: avaliacao.comment}</p>
                                                                     </div>
-                                                                    <div className='flex justify-center gap-10'>
+                                                                    <div className='flex justify-center sm:justify-start gap-10'>
                                                                         {[1, 2, 3, 4, 5].map((star) => (
                                                                             <StarReview
                                                                             key={star}

@@ -473,17 +473,12 @@ export default function ContrateOnline() {
         setAvaliacoes([]) // Limpa as avaliações para o novo provider
         setMediaStars()
     
-        try {
-            const avaliacoes = await getAvaliacoesByPrestador(providerId)
-            setAvaliacoes(avaliacoes)
-            const totalStars = avaliacoes.reduce((acc, avaliacao) => acc + avaliacao.stars, 0);
-            const averageStars = totalStars / avaliacoes.length;
-            setMediaStars(averageStars)
-        } catch (error) {
-            // console.log(error)
-        } finally {
-            setLoadingReview(false) // Termina o carregamento
-        }
+        setAvaliacoes(selectedProvider?.Review)
+        const totalStars = avaliacoes.reduce((acc, avaliacao) => acc + avaliacao.stars, 0);
+        const averageStars = totalStars / avaliacoes.length;
+        setMediaStars(averageStars)
+
+        setLoadingReview(false) // Termina o carregamento
     }
 
     // UseEffect para carregar as avaliações quando providerId mudar
@@ -595,8 +590,9 @@ export default function ContrateOnline() {
         })
     }
 
-    
+    const [loadingCheckout, setLoadingCheckout] = useState(false)
     const HandleNavigateCheckout = async () => {
+        setLoadingCheckout(true)
 
 
         // Cria um array com os dados de todos os agendamentos
@@ -627,14 +623,17 @@ export default function ContrateOnline() {
         try {
             const response = await createCheckout(agendamentos)
             console.log("Dados do checkout enviado com sucesso! ", response)
+            setLoadingCheckout(false)
 
         } catch (error) {
             console.log(error)
             
+        } finally {
+            await setCheckoutData(agendamentos)
+            navigate("/checkout-pagamento");
+
         }
     
-        await setCheckoutData(agendamentos)
-        navigate("/checkout-pagamento");
     };
     
 
@@ -653,6 +652,19 @@ export default function ContrateOnline() {
     console.log("Servico selecionado: ", selectedService)
     console.log("Prestador selecionado: ", selectedProvider)
 
+    const calcularMediaStars = (reviews) => {
+        if (!reviews || reviews.length === 0) return 0; // Retorna 0 caso não tenha avaliações
+        const totalStars = reviews.reduce((acc, avaliacao) => acc + avaliacao.stars, 0);
+        const averageStars = totalStars / reviews.length;
+        return averageStars;
+    };
+
+    // Ordena os providers com base na média de estrelas (ordem decrescente)
+    const sortedProviders = filteredProviders.sort((a, b) => {
+        const mediaA = calcularMediaStars(a?.Review);
+        const mediaB = calcularMediaStars(b?.Review);
+        return mediaB - mediaA; // Ordem decrescente, do maior para o menor
+    });
 
     return (
         <>
@@ -1084,16 +1096,17 @@ export default function ContrateOnline() {
                                         </div>
 
                                         <div className='flex flex-col justify-between min-h-[62vh] max-h-[62vh]'>
-                                            <div className={` grid ${filteredProviders.length > 0 ? "        lg:grid-cols-2  grid-cols-1 min-h-[20vh] max-h-[50vh] overflow-y-auto min-w-[40vh] max-w-[45vh] sm:min-w-[80vh] sm:max-w-[100vh]  " : "grid-none"}  pt-3 gap-10`}>
+                                            <div className={` grid ${filteredProviders.length > 0 ? " pb-2       lg:grid-cols-2  grid-cols-1 min-h-[20vh] max-h-[50vh] overflow-y-auto min-w-[40vh] max-w-[45vh] sm:min-w-[80vh] sm:max-w-[100vh]  " : "grid-none"}  pt-3 gap-10`}>
                                                 {filteredProviders.length > 0 ? (
-                                                    filteredProviders.map((provider) => (
+                                                    sortedProviders.map((provider) => (
                                                         <>
                                                     
                                                             <div key={provider.id} className='flex flex-col gap-3 '>
                                                                 <Button 
                                                                 className={`shadow-md  flex gap-3  items-center cursor-pointer transition-all duration-200   
-                                                                border rounded-lg bg-white py-10
-                                                                ${selectedProvider && selectedProvider.id === provider.id ? ' border-sec ' : 'hover:border-sec border-trans'}`}
+                                                                border rounded-lg bg-white py-10 
+                                                                ${selectedProvider && selectedProvider.id === provider.id ? ' border-desSec ' : 'hover:border-desSec border-trans'}`}
+                                                                
                                                                 
                                                                 
                                                                 onClick={() => {
@@ -1114,28 +1127,43 @@ export default function ContrateOnline() {
                                                                         text-prim
                                                                         text-start
                                                                         '>{provider.name}</p>
-                                                                        <Button className='p-1 rounded-md w-full max-w-full text-center
-                                                                        bg-white
-                                                                        text-sec 
-                                                                        border-sec
-                                                                        border
-                                                                        hover:text-white transition-all hover:bg-sec hover:bg-opacity-75
-                                                                        hover:border-trans
-                                                                        flex 
-                                                                        items-center
-                                                                        justify-center
-                                                                        gap-2
-                                                                        '
+                                                                        <Button 
+                                                                            className='
+                                                                            p-2  w-full max-w-full text-center
+                                                                            bg-white
+                                                                            text-des 
+                                                                            shadow-sm
+                                                                            shadow-bord
+                                                                            border
+                                                                            border-bord
+                                                                            border-opacity-60
+                                                                            
+                                                                            transition-all  
+                                                                            hover:border-trans
+                                                                            flex 
+                                                                            items-center
+                                                                            justify-center
+                                                                            gap-2
+                                                                            '
 
-                                                                        onClick={() => {
-                                                                            setSelectedProvider(provider)
-                                                                            setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
-                                                                            setOpen(true)
-                                                                        }}                                                         
+                                                                            onClick={() => {
+                                                                                setSelectedProvider(provider)
+                                                                                setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
+                                                                                setOpen(true)
+                                                                            }}                                                         
                                                                         
                                                                         >
-                                                                            <i className="fa-solid fa-star" ></i>
-                                                                            Perfil
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                                                            </svg>
+
+                                                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                                                <StarReview
+                                                                                    key={star}
+                                                                                    filled={star <= calcularMediaStars(provider?.Review)}
+                                                                                />
+                                                                            ))}
+                                                                            
                                                                         </Button>
                                                                     </div>
 
@@ -1156,6 +1184,7 @@ export default function ContrateOnline() {
                                                         <p className="text-prim">Nenhum prestador encontrado.</p>
                                                     </>
                                                 )}
+                                                
                                                 <Modal 
                                                     backdrop="opaque" 
                                                     isOpen={open} 
@@ -1196,7 +1225,7 @@ export default function ContrateOnline() {
                                                                                 {[1, 2, 3, 4, 5].map((star) => (
                                                                                     <StarReview
                                                                                         key={star}
-                                                                                        filled={star <= mediaStars}
+                                                                                        filled={star <= calcularMediaStars(selectedProvider?.Review)}
                                                                                     />
                                                                                 ))}
                                                                             </div>
@@ -1217,23 +1246,23 @@ export default function ContrateOnline() {
                                                                                 <div className='p-5'>
                                                                                     <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
                                                                                         <Accordion   >
-                                                                                            <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${avaliacoes.length} )`} classNames={{title: 'text-prim text-md '}} >
+                                                                                            <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${selectedProvider.Review.length} )`} classNames={{title: 'text-prim text-md '}} >
                                                                                                 <div className='flex flex-col gap-5'>
-                                                                                                    {avaliacoes && (
-                                                                                                        avaliacoes.length == 0 ? (
+                                                                                                    {selectedProvider && (
+                                                                                                        selectedProvider.Review.length == 0 ? (
                                                                                                             <div className=' p-5 text-prim flex flex-col justify-center text-center'>
                                                                                                                 <h3 className='font-semibold'>Sem avaliações</h3>
                                                                                                             </div>
                                                                                                             
                                                                                                         ) : (
-                                                                                                            avaliacoes.map((avaliacao) => (
+                                                                                                            selectedProvider?.Review.map((avaliacao) => (
                                                                                                                 <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
                                                                                                                     <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
                                                                                                                         day: '2-digit',
                                                                                                                         month: 'long',
                                                                                                                         year: 'numeric'
                                                                                                                     })}</h3>
-                                                                                                                    <p>"{avaliacao?.comment}"</p>
+                                                                                                                    <p className='text-prim'>{avaliacao?.comment === "" ? <span className='text-prim text-opacity-40'>Nenhum comentário</span>: avaliacao.comment}</p>
                                                                                                                     <div className='flex justify-start items-center gap-2 pr-5 pt-2'>
                                                                                                                         {[1, 2, 3, 4, 5].map((star) => (
                                                                                                                             <StarReview
@@ -1415,9 +1444,10 @@ export default function ContrateOnline() {
                                         
                                         "
                                         onClick={HandleNavigateCheckout}
+                                        isDisabled={loadingCheckout}
 
                                         >
-                                            Conferir e solicitar serviço
+                                            {loadingCheckout ? <Spinner/> : "Conferir e solicitar serviço"}
                                         </Button>
                                     </div>
                                 </div>

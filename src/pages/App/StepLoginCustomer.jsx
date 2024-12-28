@@ -18,25 +18,17 @@ export default function StepLoginCustomer() {
     try {
       const user = await loginCliente(email, senha);
 
-      // Obtendo os endereços do cliente
-      // const enderecosCliente = await getEnderecosCliente(userId);
-      // if (!enderecosCliente) {
-      //   setError('Erro ao buscar endereços do cliente');
-      //   return;
-      // }
 
       if (!user) {
         setError('Erro ao fazer login');
       } else {
         
-        // setUser({ userId, urls, enderecos: enderecosCliente });
-
         console.log("Login efetuado com sucesso! ", user)
         setUser({user});
 
       }
     } catch (err) {
-      setError('Erro ao fazer login');
+      setError(err.message);
       console.error(err);
     } finally {
       setLoading(false);

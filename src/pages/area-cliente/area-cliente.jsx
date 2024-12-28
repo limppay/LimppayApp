@@ -322,9 +322,11 @@ const AreaCliente = () => {
     };
 
 
-
+    const [errorLogin, setErrorLogin] = useState(false)
+    
     useEffect(() => {
         const fetchUserInfo = async () => {
+            setErrorLogin(false)
             try {
                 const response = await axios.get(baseURL, {
                     withCredentials: true
@@ -363,10 +365,12 @@ const AreaCliente = () => {
                 
                 setUserInfo(combineData);
                 const status = localStorage.setItem("status", response.data.ativa)
-
+                setErrorLogin(false)
                 
             } catch (error) {
                 console.error('Erro ao buscar informações do usuário:', error);
+                setErrorLogin(true)
+
             }
         };
         
@@ -551,13 +555,10 @@ useEffect(() => {
   }
 
   
-  
-  // verificar se o login existe antes de carregar a página
     useEffect(() => {
         const HandleVerify = async () => {
-            const cliente = user
 
-            if(!cliente) {
+            if(errorLogin) {
               navigate("/contrate-online")
             }
             
@@ -565,7 +566,7 @@ useEffect(() => {
 
         HandleVerify()
     
-    }, [])
+    }, [errorLogin, setErrorLogin])
     
     const EstadoCivil = [
         { text: "Solteiro(a)", value: 1 },
@@ -948,7 +949,7 @@ useEffect(() => {
                                     })   
                                         .map((agendamento) => (
                                             <>
-                                                <div className='flex flex-col gap-3  shadow-lg rounded-md p-5 justify-center items-start'>
+                                                <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
                                                     <div className='flex flex-col  gap-5 items-start w-full justify-between p-2'>
                                                         <div className='w-full flex gap-2 items-center '
                                                             // onClick={() => {
@@ -1279,7 +1280,7 @@ useEffect(() => {
 
                                                         <div className='flex flex-col w-full'>
                                                             <div className="overflow-y-auto max-h-52 bg-white pt-2 rounded-md w-full min-h-20">
-                                                                <p className='text-prim'>"{avaliacao?.comment}"</p>
+                                                                <p className='text-prim'>{avaliacao?.comment === "" ? <span className='text-prim text-opacity-40'>Nenhum comentário</span>: avaliacao.comment}</p>
                                                             </div>
                                                         </div>
 
