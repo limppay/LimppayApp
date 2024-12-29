@@ -49,11 +49,6 @@ const CheckoutNotification = () => {
 
   };
 
-  const HandleContinuar = () => {
-    navigate("/checkout-pagamento");
-    window.location.reload()
-  };
-
   return (
     <div
       className={`fixed bottom-4 w-full flex justify-center items-center transition-transform duration-300 ${
@@ -67,9 +62,11 @@ const CheckoutNotification = () => {
             <Button className="bg-white text-error shadow-md " onClick={handleCloseNotification} isDisabled={loading}>
               Cancelar
             </Button>
-            <Button className="bg-white border-desSec border shadow-md text-desSec" onClick={HandleContinuar}>
-              Continuar
-            </Button>
+            <a href="/checkout-pagamento">
+              <Button className="bg-white border-desSec border shadow-md text-desSec">
+                Continuar
+              </Button>
+            </a>
           </div>
         </div>
       </div>
