@@ -51,6 +51,7 @@ const CheckoutNotification = () => {
 
   const HandleContinuar = () => {
     navigate("/checkout-pagamento");
+    window.location.reload()
   };
 
   return (
