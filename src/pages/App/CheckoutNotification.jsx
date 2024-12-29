@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
 import { useCheckout } from "../../context/CheckoutData";
+import { removeCheckout } from "../../services/api";
 
 const CheckoutNotification = () => {
   const [showNotification, setShowNotification] = useState(false);
@@ -25,13 +26,22 @@ const CheckoutNotification = () => {
     }
   }, []);
 
-  const handleCloseNotification = () => {
+  const handleCloseNotification = async () => {
+    try {
+      const response = await removeCheckout()
 
-    // Oculta a notificação
-    setShowNotification(false);
+      console.log(response)
+      // Oculta a notificação
+      setShowNotification(false);
 
-    // Remove a notificação após o tempo da animação
-    setTimeout(() => setShowNotification(false), 1000);
+      // Remove a notificação após o tempo da animação
+      setTimeout(() => setShowNotification(false), 1000);
+
+    } catch (error) {
+      console.log(error)
+      
+    }
+
   };
 
   const HandleContinuar = () => {

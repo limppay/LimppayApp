@@ -551,4 +551,20 @@ export const verifyCheckout = async () => {
   }
 }
 
+export const removeCheckout = async () => {
+  try {
+    const response = await api.get("/checkout-data/remove_checkout", {
+      withCredentials: true
+    })
+    
+    return response.data
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+
+    throw new Error(errorMessage);
+  }
+  
+}
+
 export default api;
