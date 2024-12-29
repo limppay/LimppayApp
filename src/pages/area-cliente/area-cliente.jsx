@@ -578,6 +578,13 @@ useEffect(() => {
 
     const estadoCivilTexto = EstadoCivil.find(item => item.value === userInfo?.estadoCivil)?.text || '';
 
+    const calcularMediaStars = (reviews) => {
+        if (!reviews || reviews.length === 0) return 0; // Retorna 0 caso não tenha avaliações
+        const totalStars = reviews.reduce((acc, avaliacao) => acc + avaliacao.stars, 0);
+        const averageStars = totalStars / reviews.length;
+        return averageStars;
+    };
+
     return (
         <div>
             <Helmet>
@@ -952,11 +959,11 @@ useEffect(() => {
                                                 <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
                                                     <div className='flex flex-col  gap-5 items-start w-full justify-between p-2'>
                                                         <div className='w-full flex gap-2 items-center '
-                                                            // onClick={() => {
-                                                            //     setSelectedAgendamento(agendamento); // Armazena o provider selecionado
-                                                            //     console.log("agendamento selecionado:", agendamento)
-                                                            //     setOpenPerfil(true); // Abre o modal
-                                                            // }}
+                                                            onClick={() => {
+                                                                setSelectedAgendamento(agendamento); // Armazena o provider selecionado
+                                                                console.log("agendamento selecionado:", agendamento)
+                                                                setOpenPerfil(true); // Abre o modal
+                                                            }}
                                                         >
                                                                 <Avatar 
                                                                     src={agendamento.user.avatarUrl} 
@@ -964,87 +971,7 @@ useEffect(() => {
                                                                     size='lg'
                                                                 />
                                                                 <h3 className='text-prim font-semibold flex flex-wrap text-center'>{agendamento.user.name}</h3>
-                                                                
-                                                                <Dialog open={openPerfil} onClose={() => (setOpenPerfil(false))} className="relative z-10">
-                                                                    <DialogBackdrop
-                                                                        transition
-                                                                        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-                                                                    />
-                                                                    <div className="fixed inset-0 z-10 p-5  overflow-y-auto bg-prim bg-opacity-50">
-                                                                        <div className=" flex min-h-full items-center justify-center text-center sm:items-center ">
-                                                                            <DialogPanel
-                                                                                transition
-                                                                                className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full"
-                                                                            >
-                                                                                <div className="bg-white pb-4 pt-5 ">
-                                                                                    <div className="sm:flex sm:items-start flex-col">
-                                                                                        <div className="text-center sm:mt-0 sm:text-left border-b border-bord w-full pb-4">
-                                                                                            <DialogTitle as="h3" className="font-semibold text-desSec text-2xl text-center">
-                                                                                                Perfil Prestador
-                                                                                            </DialogTitle>
-                                                                                        </div>
-                                                                                        {selectedAgendamento && ( 
-                                                                                            <div className="pt-0 flex flex-col gap-5 w-full bg-pri">
-                                                                                                <div className='flex flex-col gap-2 justify-start'>
-                                                                                                    <div className="flex items-center space-x-10 lg:pl-10 pl-5 p-20 pb-5 bg-desSec  ">
-                                                                                                        {/* Container do Avatar */}
-                                                                                                        <div className="absolute">
-                                                                                                            <Avatar src={selectedAgendamento.user?.avatarUrl} size="lg"    
-                                                                                                            className="w-24 h-24 text-large
-                                                                                                            border-white
-                                                                                                            border-5
-                                                                                                            "
-                                                                                                            />
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <div className='p-5'>
-                                                                                                    <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5'>
-                                                                                                        <h1 className='text-prim font-semibold text-xl'>{selectedAgendamento.user?.name}</h1>
-                                                                                                        <p className='text-prim text-[0.8rem]'>
-                                                                                                            {calcularIdade(selectedAgendamento.user?.data)} anos
-                                                                                                        </p>
-                                                                                                        <p className='text-[0.8rem] text-prim pb-2'>{selectedAgendamento.user?.genero}</p>
-                                                                                                        <div className='overflow-y-auto h-[18vh]'>
-                                                                                                            <p className='text-prim text-start pt-4'>{selectedAgendamento.user?.sobre}</p>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )}
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className=" px-4 py-3 sm:flex sm:px-6 flex justify-end gap-3 border-t border-bord">
-                
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        data-autofocus
-                                                                                        className="p-2 rounded-md 
-                                                                                        text-center
-                                                                                        text-white 
-                                                                                        bg-des         
-                                                                                        hover:text-white transition-all
-                                                                                        duration-200
-                                                                                        hover:bg-sec hover:bg-opacity-75
-                                                                                        hover:border-trans
-                                                                                        flex 
-                                                                                        items-center
-                                                                                        justify-center
-                                                                                        text-sm
-                                                                                        gap-2"
-                                                                                        onClick={() => setOpenPerfil(false)}
-
-
-                                                                                        
-                                                                                    >
-                                                                                        Fechar
-                                                                                    </button>
-                                                                                </div>
-                                                                            </DialogPanel>
-                                                                        </div>
-                                                                    </div>
-                                                                </Dialog>
-                                                            
+                                                                                                                               
                                                         </div>
 
                                                         <div className='flex flex-col gap-2 w-full  '>
@@ -1252,6 +1179,121 @@ useEffect(() => {
                                         </div>
 
                                     )}
+
+                                    <Modal 
+                                        backdrop="opaque" 
+                                        isOpen={openPerfil} 
+                                        onOpenChange={setOpenPerfil}
+                                        placement='center'
+                                        classNames={{
+                                            backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 "
+                                        }}
+                                        className='max-w-[40vh] sm:max-w-[80vh]'
+                                    >
+                                        <ModalContent>
+                                            {(onClose) => (
+                                            <>
+                                                <ModalHeader className="flex flex-col gap-1 p-0 text-desSec"></ModalHeader>
+                                                <ModalBody className='p-0'>
+
+                                                <div className="bg-white pb-4 pt-0 p-0 ">
+                                                    <div className="sm:flex sm:items-start flex-col">
+                                                        
+                                                        {selectedAgendamento?.user && ( // Renderiza as informações do provider selecionado
+                                                            <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[60vh] sm:max-h-[65vh]">
+                                                                <div className='flex flex-col gap-2 justify-start'>
+                                                                    <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
+                                                                        {/* Container do Avatar */}
+                                                                        <div className="absolute">
+                                                                            <Avatar src={selectedAgendamento?.user?.avatarUrl} size="lg"    
+                                                                            className="w-24 h-24 text-large
+                                                                            border-white
+                                                                            border-5
+                                                                            "
+                                                                            />
+                                                                        </div>
+                                                                        
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
+                                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                                        <StarReview
+                                                                            key={star}
+                                                                            filled={star <= calcularMediaStars(selectedAgendamento?.user.Review)}
+                                                                        />
+                                                                    ))}
+                                                                </div>
+                                                                
+                                                                <div className='overflow-y-auto max-h-[80vh] '>
+                                                                    <div className='p-5 pb-1'>
+                                                                        <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
+                                                                            <h1 className='text-prim font-semibold text-xl'>{selectedAgendamento?.user?.name}</h1>
+                                                                            <p className='text-prim text-[0.8rem]'>
+                                                                                {calcularIdade(selectedAgendamento?.user?.data)} anos
+                                                                            </p>
+                                                                            <p className='text-[0.8rem] text-prim pb-2'>{selectedAgendamento?.user?.genero}</p>
+                                                                            <div className='overflow-y-auto lg:h-[20vh]'>
+                                                                                <p className='text-prim text-start pt-4 text-sm'>{selectedAgendamento?.user?.sobre}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className='p-5'>
+                                                                        <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
+                                                                            <Accordion   >
+                                                                                <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${selectedAgendamento?.user?.Review.length} )`} classNames={{title: 'text-prim text-md '}} >
+                                                                                    <div className='flex flex-col gap-5'>
+                                                                                        {selectedAgendamento?.user && (
+                                                                                            selectedAgendamento?.user?.Review.length == 0 ? (
+                                                                                                <div className=' p-5 text-prim flex flex-col justify-center text-center'>
+                                                                                                    <h3 className='font-semibold'>Sem avaliações</h3>
+                                                                                                </div>
+                                                                                                
+                                                                                            ) : (
+                                                                                                selectedAgendamento?.user?.Review.map((avaliacao) => (
+                                                                                                    <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
+                                                                                                        <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
+                                                                                                            day: '2-digit',
+                                                                                                            month: 'long',
+                                                                                                            year: 'numeric'
+                                                                                                        })}</h3>
+                                                                                                        <p className='text-prim'>{avaliacao?.comment === "" ? <span className='text-prim text-opacity-40'>Nenhum comentário</span>: avaliacao.comment}</p>
+                                                                                                        <div className='flex justify-start items-center gap-2 pr-5 pt-2'>
+                                                                                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                                                                                <StarReview
+                                                                                                                    key={star}
+                                                                                                                    filled={star <= avaliacao.stars}
+                                                                                                                />
+                                                                                                            ))}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                ))
+                                                                                            )
+                                                                                        )}
+                                                                                    </div>
+                                                                                </AccordionItem>
+                                                                            </Accordion>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                    </div>
+                                                </div>
+                                                                                                
+
+                                    
+                                                </ModalBody>
+                                                <ModalFooter>
+                                                <Button className='bg-desSec text-white' onPress={onClose}  >
+                                                    Fechar
+                                                </Button>
+                                                </ModalFooter>
+                                            </>
+                                            )}
+                                        </ModalContent>
+                                    </Modal>
                                         
                                     </div>
                                 </section>
@@ -1715,8 +1757,6 @@ useEffect(() => {
                                 </section>
                             )}
                             
-
-
                         </div>
                         
                     </>       
