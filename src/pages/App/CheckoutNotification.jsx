@@ -26,7 +26,10 @@ const CheckoutNotification = () => {
     }
   }, []);
 
+  const [loading, setLoading] = useState(false)
   const handleCloseNotification = async () => {
+    setLoading(true)
+
     try {
       const response = await removeCheckout()
 
@@ -36,6 +39,8 @@ const CheckoutNotification = () => {
 
       // Remove a notificação após o tempo da animação
       setTimeout(() => setShowNotification(false), 1000);
+      setLoading(false)
+
 
     } catch (error) {
       console.log(error)
@@ -58,8 +63,8 @@ const CheckoutNotification = () => {
         <div className="flex flex-col w-full sm:flex-row justify-between items-center gap-5 p-2">
           <span>Você tem um pedido em andamento no checkout</span>
           <div className="flex gap-2">
-            <Button className="bg-white text-error shadow-md " onClick={handleCloseNotification}>
-              Fechar
+            <Button className="bg-white text-error shadow-md " onClick={handleCloseNotification} isDisabled={loading}>
+              Cancelar
             </Button>
             <Button className="bg-white border-desSec border shadow-md text-desSec" onClick={HandleContinuar}>
               Continuar
