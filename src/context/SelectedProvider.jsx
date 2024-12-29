@@ -15,11 +15,7 @@ export const SelectedProvider = ({ children }) => {
         // Atualiza o cookie sempre que o selectedProvider mudar
         if (selectedProvider !== null) {
             Cookies.set('selectedProvider', JSON.stringify(selectedProvider), { 
-                httpOnly: false, 
-                secure: import.meta.env.VITE_ENV === 'development', // Somente HTTPS em produção
-                domain: "up.railway.app",
-                sameSite: 'none',
-                path: '/'
+                expires: 7,  
             });
         }
     }, [selectedProvider]);
