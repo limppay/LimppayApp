@@ -22,6 +22,7 @@ import InputMask from "react-input-mask"
 import { Helmet } from 'react-helmet-async';
 import { useUser } from '../../context/UserProvider';
 import { useNavigate } from 'react-router-dom';
+import CheckoutNotification from '../App/CheckoutNotification.jsx';
 
 
 
@@ -1770,7 +1771,10 @@ useEffect(() => {
                         </section>
                     </>
                 )}
+                
             </main>
+            <CheckoutNotification/>         
+                
         </div>
     );
 };
