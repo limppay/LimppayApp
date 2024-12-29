@@ -18,7 +18,7 @@ export const SelectedProvider = ({ children }) => {
                 expires: 7,  
             });
         }
-    }, []);
+    }, [selectedProvider, setSelectedProvider]);
 
     return (
         <SelectedProviderContext.Provider value={{ selectedProvider, setSelectedProvider }}>
