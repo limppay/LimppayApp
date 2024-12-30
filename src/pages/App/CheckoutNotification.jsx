@@ -18,7 +18,7 @@ const CheckoutNotification = () => {
     };
 
     // Verifique se o cookie "checkoutData" está presente
-    const checkoutCookie = getCookie("checkoutData");
+    const checkoutCookie = getCookie("checkoutSession");
 
     // Se o cookie estiver presente e tiver dados, exibe a notificação
     if (checkoutCookie) {

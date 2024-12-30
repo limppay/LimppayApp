@@ -8,7 +8,7 @@ import { useSelectedProvider } from '../../context/SelectedProvider';
 import { useSelectedDates } from '../../context/SelectedDates';
 import { useSelectedTimes } from '../../context/SelectedTimes';
 import { Avatar } from '@nextui-org/avatar'
-import { createAgendamento, criarFaturaCartao, criarFaturaPix, verifyCheckout } from '../../services/api';
+import { createAgendamento, criarFaturaCartao, criarFaturaPix, removeCheckout, verifyCheckout } from '../../services/api';
 import { obterTokenCartao } from '../../services/iuguApi';
 import { useUser } from '../../context/UserProvider';
 import { Button, Input, Spinner } from '@nextui-org/react';
@@ -29,8 +29,9 @@ import axios from 'axios';
 
 export default function Checkout() {
   const {user} = useUser()
-  const {checkoutData, setCheckoutData} = useCheckout()
-  console.log("Dados recebidos para o checkout: ", checkoutData)
+  const {checkoutData , setCheckoutData, isLoadingCheckout} = useCheckout()
+  console.log("Dados recuperados pelo checkout: ", checkoutData)
+
 
   const schemaDadosCartao = yup.object({
     numero: yup.number("Número do cartão é obrigatório.").required("Número do cartão é obrigatório.").typeError("Número do cartão dever ser um número válido."),
@@ -90,13 +91,13 @@ export default function Checkout() {
   }
 
 
-  const [sessionCode, setSessionCode] = useState(null);
+  const [sessionCodePix, setSessionCodePix] = useState(null);
   // gera o codigo de sessao unica
   const getCodeSession = async (id) => {
     try {
       const response = await axios.get(`https://limppay-api-production.up.railway.app/checkout/session/${id}`)
       console.log("Codigo da sessão: ", response.data)
-      setSessionCode(response.data.sessionCode)
+      setSessionCodePix(response.data.sessionCode)
 
     } catch (error) {
       console.log(error)
@@ -143,11 +144,11 @@ export default function Checkout() {
 
   // efeito para atualizar a pagina ao efetuar o pagamento via pix
   useEffect(() => {
-    if (!sessionCode) return;
+    if (!sessionCodePix) return;
   
     // Conectar ao WebSocket
     const socket = io('https://limppay-api-production.up.railway.app', {
-      query: { sessionCode }, // Código da sessão como parâmetro
+      query: { sessionCodePix }, // Código da sessão como parâmetro
     });
   
     console.log("Conexão WebSocket estabelecida:", socket);
@@ -176,6 +177,14 @@ export default function Checkout() {
             console.error("Alguns agendamentos falharam:", rejected);
             alert("Alguns agendamentos não foram criados. Contate o suporte.");
           } else {
+            try {
+              const response = await removeCheckout()
+
+              console.log("Sessao finalizada com sucesso!", response)
+            } catch (error) {
+              console.log(error)
+              
+            }
             console.log("Todos os agendamentos foram criados com sucesso!");
           }
         } catch (error) {
@@ -195,7 +204,7 @@ export default function Checkout() {
     return () => {
       socket.disconnect();
     };
-  }, [sessionCode]);
+  }, [sessionCodePix]);
 
 
 
@@ -265,6 +274,15 @@ export default function Checkout() {
                 // Informar o usuário
                 alert("Pagamento realizado com sucesso, mas houve falha ao criar alguns agendamentos. Nossa equipe já foi notificada e resolveremos o problema.");
             } else {
+                try {
+                  const response = await removeCheckout()
+
+                  console.log("Sessao finalizada com sucesso!", response)
+                } catch (error) {
+                  console.log(error)
+                  
+                }
+
                 console.log("Todos os agendamentos criados com sucesso.");
             }
 
@@ -320,47 +338,24 @@ export default function Checkout() {
     setMetodoPagamento("pix")
   }
 
-  const [loadingCheckout, setLoadingCheckout] = useState(true);
-  const [errorValidate, setErrorValidate] = useState(false);
-    
-  useEffect(() => {
-    const validateAndRedirect = async () => {
-      setLoadingCheckout(true); // Inicia o carregamento
-      setErrorValidate(false); // Reseta o erro
-  
-      try {  
-        // Verifica adulteração nos dados do checkout
-        const response = await verifyCheckout();
-        console.log("Dados verificados com sucesso!", response);
-  
-        if (!response) {
-          console.warn("Dados adulterados detectados.");
-          setErrorValidate(true);
-          window.alert("O sistema identificou que os dados do seu pedido foram adulterados!");
-          navigate("/contrate-online");
-          return;
-        }
-  
-        // Tudo está válido
-        setLoadingCheckout(false);
-      } catch (error) {
-        console.error("Ocorreu um erro ao validar o cookie do checkout:", error);
-        setErrorValidate(true);
-        navigate("/contrate-online");
-      }
-    };
-  
-    // Só executa a validação se checkoutData existir
-    if (checkoutData) {
-      validateAndRedirect();
-    } else {
-      console.log("Dados do checkout não encontrados. Redirecionando...");
-      navigate("/contrate-online");
-      return;
-    }
+  console.log("Carregando.....", isLoadingCheckout)
 
-  }, [checkoutData, navigate]);
-  
+
+
+  useEffect(() => {
+    console.log("Carregando.....", isLoadingCheckout)
+
+    if(!isLoadingCheckout ) {
+      if (!checkoutData) {
+        console.log("Dados do checkout não encontrados. Redirecionando...");
+        navigate("/contrate-online");
+        return;
+        
+      } 
+
+    }
+      
+  }, [isLoadingCheckout]);
   
   
   
@@ -369,7 +364,7 @@ export default function Checkout() {
     <>
       <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
       <>
-        {loadingCheckout ? (
+        {isLoadingCheckout || !checkoutData ? (
           <div className='w-full h-screen flex items-center justify-center text-white'>
             <Spinner/>
 
@@ -378,7 +373,7 @@ export default function Checkout() {
 
         ) : (
           <>
-            <main className="relative sm:p-4 flex flex-col sm:flex-row lg:justify-between lg:pl-10 lg:pr-10 justify-center gap-5 sm:pb-20">
+            <main className="relative sm:p-4 flex flex-col sm:flex-row lg:justify-between lg:pl-10 lg:pr-10 justify-center gap-5 sm:pb-25 ">
               <div className='flex flex-col p-10 md:min-w-90vh]  md:max-w-[90vh]  min-w-[45vh] max-w-[45vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] 2xl:min-w-[100vh] 2xl:max-w-[100vh] lg:min-w-[100vh] lg:max-w-[100vh]  sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl lg:min-h-[95vh] min-h-[90vh] '>
                 <div className="mb-6 flex flex-col">
                   <div className='pb-4' >
@@ -625,8 +620,8 @@ export default function Checkout() {
                 )}
               </div>
 
-              <div className="h-screen w-full flex flex-col justify-start items-center ">
-                <div className='2xl:min-w-[80vh]  2xl:max-w-[80vh] xl:min-w-[90vh]  xl:max-w-[90vh]  xl:pt-[10vh] flex flex-col pt-5 p-10 min-w-[45vh] max-w-[50vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] lg:min-w-[60vh]  lg:max-w-[60vh] md:min-w-[50vh]  md:max-w-[50vh] shadow-lg sm:pt-20 rounded-xl    text-prim  '>
+              <div className="  w-full flex flex-col justify-start items-center ">
+                <div className='2xl:min-w-[80vh]  2xl:max-w-[80vh] xl:min-w-[90vh]  xl:pt-[10vh] flex flex-col pt-5 p-10 min-w-[45vh] max-w-[50vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] lg:min-w-[60vh]  lg:max-w-[60vh] md:min-w-[50vh]  md:max-w-[50vh] shadow-lg sm:pt-20 rounded-xl    text-prim  '>
 
                   <div className='w-full flex flex-col justify-between items-center border-bord pb-2 border-b xl:pt-[2vh] '>
                       <div className='flex justify-center items-center w-full '>
@@ -696,7 +691,7 @@ export default function Checkout() {
 
                       {/*Exibe as datas e horários selecionados */}
                       {checkoutData.length > 0 ? (
-                          <div className='w-full flex flex-col gap-2 justify-between'>
+                          <div className='w-full flex flex-col gap-2 justify-between overflow-y-auto max-h-[40vh]'>
                               <p className='text-md font-semibold'> Data(s) selecionado(s):</p>
                               <ul>
                                   {checkoutData.map((date, index) => (

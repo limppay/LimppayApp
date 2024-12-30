@@ -1,38 +1,54 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import axios from "axios"; // Certifique-se de importar o axios
+import { verifyCheckout } from "../services/api"; // Verifique se o verifyCheckout é importado corretamente
 
 const CheckoutContext = createContext();
 
 export const CheckoutProvider = ({ children }) => {
-  // Inicializar o estado com o array "data" do cookie, se existir
-  const [checkoutData, setCheckoutDataState] = useState(() => {
-    const storedData = Cookies.get("checkoutData");
-    console.log("Cookie do agendamentoData: ", storedData);
-
-    if (storedData) {
-      try {
-        const parsedData = JSON.parse(storedData);
-        return parsedData.data || null; // Retorna apenas o array "data"
-      } catch (error) {
-        console.error("Erro ao parsear o cookie:", error);
-        return null;
-      }
-    }
-
-    return null; // Estado inicial vazio se o cookie não existir
+  // Inicializa o sessionCode a partir do cookie
+  const [sessionCode, setSessionCodeState] = useState(() => {
+    const storedSessionCode = Cookies.get("checkoutSession");
+    console.log("Cookie de sessionCode: ", storedSessionCode);
+    return storedSessionCode || null;
   });
 
-  // Função para atualizar o estado e cookie com somente o array "data"
-  const setCheckoutData = (data) => {
-    console.log("Dados sendo setados no context: ", data);
-    setCheckoutDataState(data);
+  // Estado para armazenar os dados de checkout
+  const [checkoutData, setCheckoutData] = useState(null);
+  const [isLoadingCheckout, setiIsLoadingCheckout] = useState(true); // Para controlar o estado de carregamento
 
-    // Atualizar o cookie com a nova estrutura, incluindo o "hash" (opcional)
-    // Cookies.set("checkoutData", JSON.stringify({ data, hash: "hash-opcional" }));
-  };
+  // Fazer a requisição para recuperar os dados do checkout usando o sessionCode
+  useEffect(() => {
+    
+    const fetchCheckoutData = async () => {
+      if(sessionCode) {
+        setiIsLoadingCheckout(true); // Inicia o carregamento
+        try {
+          const response = await verifyCheckout(sessionCode); // Envia o sessionCode para a API
+          console.log("Dados do checkout recuperados com sucesso! ", response.data.data);
+          setCheckoutData(response.data.data); // Atualiza com os dados retornados
+  
+        } catch (error) {
+          console.error("Erro ao recuperar os dados de checkout:", error);
+          
+        } finally {
+          setiIsLoadingCheckout(false)
+        }
+
+      } else {
+        setiIsLoadingCheckout(false)
+      }
+        
+    }
+    
+    
+    fetchCheckoutData();
+
+    
+  }, [sessionCode]);
 
   return (
-    <CheckoutContext.Provider value={{ checkoutData, setCheckoutData }}>
+    <CheckoutContext.Provider value={{ sessionCode, checkoutData, isLoadingCheckout, setCheckoutData }}>
       {children}
     </CheckoutContext.Provider>
   );
