@@ -338,12 +338,7 @@ export default function Checkout() {
     setMetodoPagamento("pix")
   }
 
-  console.log("Carregando.....", isLoadingCheckout)
-
-
-
   useEffect(() => {
-    console.log("Carregando.....", isLoadingCheckout)
 
     if(!isLoadingCheckout ) {
       if (!checkoutData) {
