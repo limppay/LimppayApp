@@ -98,19 +98,19 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
       <UserProvider>
-        <CheckoutProvider>
-          <AgendamentoData>
-            <SelectedProvider>
-              <SelectedDates>
-                <SelectedTimes>
-                  <ScreenSelect>
-                    <RouterProvider router={router}/>
-                  </ScreenSelect>
-                </SelectedTimes>
-              </SelectedDates>
-            </SelectedProvider>
-          </AgendamentoData>
-        </CheckoutProvider>
+        <SelectedProvider>
+          <CheckoutProvider>
+            <AgendamentoData>
+                <SelectedDates>
+                  <SelectedTimes>
+                    <ScreenSelect>
+                      <RouterProvider router={router}/>
+                    </ScreenSelect>
+                  </SelectedTimes>
+                </SelectedDates>
+            </AgendamentoData>
+          </CheckoutProvider>
+        </SelectedProvider>  
       </UserProvider>
     </HelmetProvider>
   </React.StrictMode>,

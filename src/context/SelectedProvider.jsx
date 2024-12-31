@@ -8,17 +8,10 @@ export const SelectedProvider = ({ children }) => {
     const [selectedProvider, setSelectedProvider] = useState(() => {
         // Busca o valor inicial do cookie (se existir)
         const storedValue = Cookies.get('selectedProvider');
+        console.log("Stored Value: ", storedValue)
+
         return storedValue ? JSON.parse(storedValue) : null;
     });
-
-    useEffect(() => {
-        // Atualiza o cookie sempre que o selectedProvider mudar
-        if (selectedProvider !== null) {
-            Cookies.set('selectedProvider', JSON.stringify(selectedProvider), { 
-                expires: 7,  
-            });
-        }
-    }, [selectedProvider, setSelectedProvider]);
 
     return (
         <SelectedProviderContext.Provider value={{ selectedProvider, setSelectedProvider }}>

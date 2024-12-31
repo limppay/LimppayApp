@@ -251,6 +251,8 @@ export default function ContrateOnline() {
 
     const { agendamentoData, setAgendamentoData } = useAgendamentoData()
     const { selectedProvider, setSelectedProvider } = useSelectedProvider()
+    const [provider, setProvider] = useState()
+
     const { selectedDates, setSelectedDates } = useSelectedDates([])
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -307,7 +309,7 @@ export default function ContrateOnline() {
     // função para resetar o agendamento, toda vez que sair de checkout e voltar para contrate
     useEffect(() => {
         setAgendamentoData([]);
-        setSelectedProvider(null)
+        setProvider(null)
         setSelectedDates([])
         setSelectedTimes([])
 
@@ -355,9 +357,9 @@ export default function ContrateOnline() {
     };
 
     const HandleSelectedRandomProvider = () => {
-        if (!selectedProvider) {
+        if (!provider) {
             const randomProvider = selectRandomProvider();
-            setSelectedProvider(randomProvider);
+            setProvider(randomProvider);
             // // console.log(randomProvider); // Log do provedor selecionado aleatoriamente
         } else {
             // // console.log(selectedProvider); // Log do provedor já selecionado
@@ -413,7 +415,7 @@ export default function ContrateOnline() {
         if (index < currentStep) {
 
             if ( index < 2 ) {
-                setSelectedProvider(null)
+                setProvider(null)
                 setSelectedEnderecoCliente(enderecoDefaultCliente[0]?.id)
                 setEstado(enderecoDefaultCliente[0]?.estado)
                 setCidade(enderecoDefaultCliente[0]?.cidade)
@@ -421,13 +423,13 @@ export default function ContrateOnline() {
             
 
             if ( index < 3 ) {
-                setSelectedProvider(null)
+                setProvider(null)
                 setProviders([])
             }
 
             if ( index < 1 ) {
                 setSelectedDates([])
-                setSelectedProvider(null)
+                setProvider(null)
             }
 
             setCurrentStep(index);
@@ -473,7 +475,7 @@ export default function ContrateOnline() {
         setAvaliacoes([]) // Limpa as avaliações para o novo provider
         setMediaStars()
     
-        setAvaliacoes(selectedProvider?.Review)
+        setAvaliacoes(provider?.Review)
         const totalStars = avaliacoes.reduce((acc, avaliacao) => acc + avaliacao.stars, 0);
         const averageStars = totalStars / avaliacoes.length;
         setMediaStars(averageStars)
@@ -601,7 +603,7 @@ export default function ContrateOnline() {
             const times = selectedTimes[FormDate]; // Obtém o horário correspondente
     
             return {
-                userId: selectedProvider.id,
+                userId: provider.id,
                 clienteId: clienteId,
                 servicoId: servicoId,
                 dataServico: FormDate,
@@ -630,6 +632,7 @@ export default function ContrateOnline() {
             
         } finally {
             await setCheckoutData(agendamentos)
+            await setSelectedProvider(provider)
             navigate("/checkout-pagamento");
 
         }
@@ -650,7 +653,7 @@ export default function ContrateOnline() {
     }
 
     console.log("Servico selecionado: ", selectedService)
-    console.log("Prestador selecionado: ", selectedProvider)
+    console.log("Prestador selecionado: ", provider)
 
     const calcularMediaStars = (reviews) => {
         if (!reviews || reviews.length === 0) return 0; // Retorna 0 caso não tenha avaliações
@@ -1105,12 +1108,12 @@ export default function ContrateOnline() {
                                                                 <Button 
                                                                 className={`shadow-md  flex gap-3  items-center cursor-pointer transition-all duration-200   
                                                                 border rounded-lg bg-white py-10 
-                                                                ${selectedProvider && selectedProvider.id === provider.id ? ' border-desSec ' : 'hover:border-desSec border-trans'}`}
+                                                                ${provider && provider.id === provider.id ? ' border-desSec ' : 'hover:border-desSec border-trans'}`}
                                                                 
                                                                 
                                                                 
                                                                 onClick={() => {
-                                                                    setSelectedProvider(provider); // Armazena o provider selecionado
+                                                                    setProvider(provider); // Armazena o provider selecionado
                                                                     // // console.log(provider.id);
                                                                 }}
 
@@ -1147,7 +1150,7 @@ export default function ContrateOnline() {
                                                                             '
 
                                                                             onClick={() => {
-                                                                                setSelectedProvider(provider)
+                                                                                setProvider(provider)
                                                                                 setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
                                                                                 setOpen(true)
                                                                             }}                                                         
@@ -1204,13 +1207,13 @@ export default function ContrateOnline() {
                                                             <div className="bg-white pb-4 pt-0 p-0 ">
                                                                 <div className="sm:flex sm:items-start flex-col">
                                                                     
-                                                                    {selectedProvider && ( // Renderiza as informações do provider selecionado
+                                                                    {provider && ( // Renderiza as informações do provider selecionado
                                                                         <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[60vh] sm:max-h-[65vh]">
                                                                             <div className='flex flex-col gap-2 justify-start'>
                                                                                 <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
                                                                                     {/* Container do Avatar */}
                                                                                     <div className="absolute">
-                                                                                        <Avatar src={selectedProvider?.avatarUrl.avatarUrl} size="lg"    
+                                                                                        <Avatar src={provider?.avatarUrl.avatarUrl} size="lg"    
                                                                                         className="w-24 h-24 text-large
                                                                                         border-white
                                                                                         border-5
@@ -1225,7 +1228,7 @@ export default function ContrateOnline() {
                                                                                 {[1, 2, 3, 4, 5].map((star) => (
                                                                                     <StarReview
                                                                                         key={star}
-                                                                                        filled={star <= calcularMediaStars(selectedProvider?.Review)}
+                                                                                        filled={star <= calcularMediaStars(provider?.Review)}
                                                                                     />
                                                                                 ))}
                                                                             </div>
@@ -1233,29 +1236,29 @@ export default function ContrateOnline() {
                                                                             <div className='overflow-y-auto max-h-[80vh] '>
                                                                                 <div className='p-5 pb-1'>
                                                                                     <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
-                                                                                        <h1 className='text-prim font-semibold text-xl'>{selectedProvider.name}</h1>
+                                                                                        <h1 className='text-prim font-semibold text-xl'>{provider.name}</h1>
                                                                                         <p className='text-prim text-[0.8rem]'>
-                                                                                            {calcularIdade(selectedProvider.data)} anos
+                                                                                            {calcularIdade(provider.data)} anos
                                                                                         </p>
-                                                                                        <p className='text-[0.8rem] text-prim pb-2'>{selectedProvider.genero}</p>
+                                                                                        <p className='text-[0.8rem] text-prim pb-2'>{provider.genero}</p>
                                                                                         <div className='overflow-y-auto lg:h-[20vh]'>
-                                                                                            <p className='text-prim text-start pt-4 text-sm'>{selectedProvider.sobre}</p>
+                                                                                            <p className='text-prim text-start pt-4 text-sm'>{provider.sobre}</p>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className='p-5'>
                                                                                     <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
                                                                                         <Accordion   >
-                                                                                            <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${selectedProvider.Review.length} )`} classNames={{title: 'text-prim text-md '}} >
+                                                                                            <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${provider.Review.length} )`} classNames={{title: 'text-prim text-md '}} >
                                                                                                 <div className='flex flex-col gap-5'>
-                                                                                                    {selectedProvider && (
-                                                                                                        selectedProvider.Review.length == 0 ? (
+                                                                                                    {provider && (
+                                                                                                        provider.Review.length == 0 ? (
                                                                                                             <div className=' p-5 text-prim flex flex-col justify-center text-center'>
                                                                                                                 <h3 className='font-semibold'>Sem avaliações</h3>
                                                                                                             </div>
                                                                                                             
                                                                                                         ) : (
-                                                                                                            selectedProvider?.Review.map((avaliacao) => (
+                                                                                                            provider?.Review.map((avaliacao) => (
                                                                                                                 <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
                                                                                                                     <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
                                                                                                                         day: '2-digit',
@@ -1305,7 +1308,7 @@ export default function ContrateOnline() {
                                             </div>
 
                                             <div className='flex justify-center pt-5 border-b border-bord'>
-                                                {selectedProvider ? (
+                                                {provider ? (
                                                     <Button
                                                         type="button"
                                                         data-autofocus
@@ -1547,12 +1550,12 @@ export default function ContrateOnline() {
                                     )}
 
                                     {/* Exibe o prestador selecionado*/}
-                                    {selectedProvider?(
+                                    {provider?(
                                         <div className='w-full flex flex-col  gap-2'>
                                             <p className='text-md font-semibold 2xl:text-xl'> Prestador selecionado:</p>
                                             <div className='flex w-full items-center gap-2'>
-                                                <Avatar src={selectedProvider?.avatarUrl?.avatarUrl} size="md"/>
-                                                <p className='text-base 2xl:text-xl'>{selectedProvider.name}</p>
+                                                <Avatar src={provider?.avatarUrl?.avatarUrl} size="md"/>
+                                                <p className='text-base 2xl:text-xl'>{provider.name}</p>
                                                 {/*Mostra o avatar do prestador */}
                                             </div>
                                         </div>
@@ -1705,10 +1708,10 @@ export default function ContrateOnline() {
                             {/* Prestador selecionado */}
                             <div className="flex flex-col gap-2">
                                 <p className="text-lg font-semibold">Prestador selecionado:</p>
-                                {selectedProvider ? (
+                                {provider ? (
                                     <div className="flex items-center gap-2">
-                                        <Avatar src={selectedProvider.avatarUrl?.avatarUrl} size="sm" />
-                                        <p className="text-base">{selectedProvider.name}</p>
+                                        <Avatar src={provider.avatarUrl?.avatarUrl} size="sm" />
+                                        <p className="text-base">{provider.name}</p>
                                     </div>
                                 ) : (
                                     <p className="text-base">Nenhum prestador selecionado.</p>
