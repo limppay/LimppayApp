@@ -41,8 +41,9 @@ export const CheckoutProvider = ({ children }) => {
         
     }
     
-    
+    setiIsLoadingCheckout(false)
     fetchCheckoutData();
+
 
     
   }, [sessionCode]);

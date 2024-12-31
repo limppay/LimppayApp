@@ -75,9 +75,11 @@ export default function Checkout() {
   const [qrCodePix, setQrCodePix] = useState('');  // Estado para armazenar o QR Code PIX
   const [pixChave, setPixChave] = useState('');    // Estado para armazenar a chave PIX
   const [isLoading, setIsLoading] = useState(false)
-  const [isPayment, setIsPayment] = useState(false) 
-  const [isPaymentFinally, setIsPaymentFinally] = useState(false) 
-  const [isPaymentFailed, setIsPaymentFailed] = useState(false)
+
+  
+  const [isPayment, setIsPayment] = useState(false) // abre o modal de loading
+  const [isPaymentFinally, setIsPaymentFinally] = useState(false) // define se o pagamento foi finalizado
+  const [isPaymentFailed, setIsPaymentFailed] = useState(false) // define se houve erro ou nao ao processar pagamento
 
   const [paymentStatus, setPaymentStatus] = useState(null);
 
@@ -209,9 +211,9 @@ export default function Checkout() {
 
 
   const handleFinalizarCompra = async (data) => {
-    setIsPaymentFailed(false);
-    setIsPaymentFinally(false);
     setIsPayment(true);
+    setIsPaymentFinally(false);
+    setIsPaymentFailed(false);
 
     console.log("Valor total: ", checkoutData[0]?.valorLiquido || 0);
     console.log("Dados do cartão recebido: ", data);
@@ -286,19 +288,19 @@ export default function Checkout() {
                 console.log("Todos os agendamentos criados com sucesso.");
             }
 
-            // Redirecionar usuário
-            navigate("/area-cliente");
-            setCheckoutData(null);
-            setIsPayment(false);
+            reset()
+            setIsPaymentFinally(true)
+            setIsPaymentFailed(false)
         }
     } catch (error) {
         console.error("Erro no pagamento ou criação da fatura:", error);
+        setIsPaymentFinally(true)
         setIsPaymentFailed(true);
 
-    } finally {
-        setIsPaymentFinally(true);
     }
+
   };
+
 
   
   const handleInputChange = (e) => {
@@ -796,6 +798,18 @@ export default function Checkout() {
                                   <div>
                                     <p className='text-prim text-sm text-center' >Obrigado por agendar um serviço na Limppay, volte sempre! Para mais detalhes sobre seu agendamento, entre no seu perfil</p>
                                   </div>
+                                </div>
+                                <div className='w-full flex justify-center gap-5'>
+                                  <a href="/contrate-online">
+                                    <Button className='bg-white text-sec border border-sec ' onClick={() =>        setCheckoutData(null)}>
+                                      Novo pedido
+                                    </Button>
+                                  </a>
+                                  <a href="/area-cliente">
+                                    <Button className='bg-white text-sec border border-sec' onClick={() =>        setCheckoutData(null)}>
+                                      Continuar
+                                    </Button>
+                                  </a>
                                 </div>
                               </>
                             )}
