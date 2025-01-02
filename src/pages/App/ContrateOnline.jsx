@@ -1101,26 +1101,26 @@ export default function ContrateOnline() {
                                         <div className='flex flex-col justify-between min-h-[62vh] max-h-[62vh]'>
                                             <div className={` grid ${filteredProviders.length > 0 ? " pb-2       lg:grid-cols-2  grid-cols-1 min-h-[20vh] max-h-[50vh] overflow-y-auto min-w-[40vh] max-w-[45vh] sm:min-w-[80vh] sm:max-w-[100vh]  " : "grid-none"}  pt-3 gap-10`}>
                                                 {filteredProviders.length > 0 ? (
-                                                    sortedProviders.map((provider) => (
+                                                    sortedProviders.map((prestador) => (
                                                         <>
                                                     
-                                                            <div key={provider.id} className='flex flex-col gap-3 '>
-                                                                <Button 
+                                                            <div key={prestador.id} className='flex flex-col gap-3 '>
+                                                                <div 
                                                                 className={`shadow-md  flex gap-3  items-center cursor-pointer transition-all duration-200   
-                                                                border rounded-lg bg-white py-10 
-                                                                ${provider && provider.id === provider.id ? ' border-desSec ' : 'hover:border-desSec border-trans'}`}
+                                                                border rounded-lg bg-white  p-2 
+                                                                ${provider && provider.id === prestador.id ? ' border-sec ' : 'hover:border-sec border-trans'}`}
                                                                 
                                                                 
                                                                 
                                                                 onClick={() => {
-                                                                    setProvider(provider); // Armazena o provider selecionado
-                                                                    // // console.log(provider.id);
+                                                                    setProvider(prestador); // Armazena o provider selecionado
+                                                                    // console.log("Prestador selecionado: ", prestador);
                                                                 }}
 
                                                                 >
                                                                     <div>
                                                                         <Avatar 
-                                                                        src={provider?.avatarUrl.avatarUrl}
+                                                                        src={prestador?.avatarUrl.avatarUrl}
                                                                         size="lg"
                                                                         />
                                                                     </div>
@@ -1129,7 +1129,7 @@ export default function ContrateOnline() {
                                                                         <p className='
                                                                         text-prim
                                                                         text-start
-                                                                        '>{provider.name}</p>
+                                                                        '>{prestador.name}</p>
                                                                         <Button 
                                                                             className='
                                                                             p-2  w-full max-w-full text-center
@@ -1150,8 +1150,8 @@ export default function ContrateOnline() {
                                                                             '
 
                                                                             onClick={() => {
-                                                                                setProvider(provider)
-                                                                                setProviderId(provider.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
+                                                                                setProvider(prestador)
+                                                                                setProviderId(prestador.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
                                                                                 setOpen(true)
                                                                             }}                                                         
                                                                         
@@ -1163,14 +1163,14 @@ export default function ContrateOnline() {
                                                                             {[1, 2, 3, 4, 5].map((star) => (
                                                                                 <StarReview
                                                                                     key={star}
-                                                                                    filled={star <= calcularMediaStars(provider?.Review)}
+                                                                                    filled={star <= calcularMediaStars(prestador?.Review)}
                                                                                 />
                                                                             ))}
                                                                             
                                                                         </Button>
                                                                     </div>
 
-                                                                </Button>
+                                                                </div>
 
                                                                 
 

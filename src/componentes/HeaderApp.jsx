@@ -4,6 +4,7 @@ import {Button, Spinner} from "@nextui-org/react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useScreenSelected } from '../context/ScreenSelect';
 import { loggoutUser } from '../services/api';
+import Banner from './Banner';
 
 
 export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2,  }) {
@@ -58,7 +59,8 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
 
     return (
         <>
-            <header className="pt-3 pb-3 shadow-md lg:pt-2 lg:pb-2 lg:pr-12 lg:pl-12 fixed w-full bg-white z-10">
+            <Banner/>
+            <header className="pt-3 pb-3 shadow-md lg:pt-2 lg:pb-2 lg:pr-12 lg:pl-12 absolute w-full bg-white z-10">
                 <nav className="flex items-center justify-around lg:justify-between px-2 lg:px-12">
                     <a href="/" className='w-3/12 sm:w-5/12 md:w-4/12 lg:w-3/12 lg:block '>
                         <img src={img} alt={alt} className="w-11/12 2xl:w-[16vh] lg:w-5/12 md:w-5/12 sm:w-5/12" />
