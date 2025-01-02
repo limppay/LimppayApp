@@ -1120,9 +1120,12 @@ export default function ContrateOnline() {
                                                                 >
                                                                     <div>
                                                                         <Avatar 
-                                                                        src={prestador?.avatarUrl.avatarUrl}
-                                                                        size="lg"
+                                                                            src={prestador?.avatarUrl.avatarUrl}
+                                                                            size="lg"
+                                                                            sizes="(max-width: 768px) 50px, 100px"
+                                                                            loading='lazy'
                                                                         />
+                                                                        
                                                                     </div>
 
                                                                     <div className='flex justify-start flex-col w-full'>
@@ -1218,6 +1221,7 @@ export default function ContrateOnline() {
                                                                                         border-white
                                                                                         border-5
                                                                                         "
+                                                                                        loading='lazy'
                                                                                         />
                                                                                     </div>
                                                                                     

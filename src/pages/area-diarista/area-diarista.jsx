@@ -181,7 +181,7 @@ const AreaDiarista = () => {
     const [endDate, setEndDate] = useState(null);
     
       
-    const agendamentosFiltrados = agendamentos.filter((agendamento) => {
+    const agendamentosFiltrados = agendamentos && agendamentos.filter((agendamento) => {
         const nameMatch = agendamento.Servico.toLowerCase().includes(searchTerm.toLowerCase());
         const dateMatch = (!startDate || new Date(agendamento.dataServico) >= new Date(startDate)) &&
                           (!endDate || new Date(agendamento.dataServico) <= new Date(endDate));
