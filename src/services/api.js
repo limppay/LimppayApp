@@ -567,4 +567,13 @@ export const removeCheckout = async () => {
   
 }
 
+export const getClienteMaisFrequente = async (userId) => {
+  try {
+    const response = await api.get(`agendamentos/cliente-maisFrequente/${userId}`);
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
+  }
+}
 export default api;

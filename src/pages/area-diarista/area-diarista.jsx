@@ -11,7 +11,7 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico } from '../../services/api.js';
+import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getClienteMaisFrequente } from '../../services/api.js';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
@@ -175,6 +175,34 @@ const AreaDiarista = () => {
             currency: 'BRL' 
         }).format(valor);
     }
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    
+      
+    const agendamentosFiltrados = agendamentos.filter((agendamento) => {
+        const nameMatch = agendamento.Servico.toLowerCase().includes(searchTerm.toLowerCase());
+        const dateMatch = (!startDate || new Date(agendamento.dataServico) >= new Date(startDate)) &&
+                          (!endDate || new Date(agendamento.dataServico) <= new Date(endDate));
+    
+        return nameMatch && dateMatch;
+    });
+    
+
+    const [ClienteMaisFrequente, setClienteMaisFrequente] = useState()
+    useEffect(() => {
+        const handlePrestadorMaisContratado = async() => {
+            try {
+                const response = await getPrestadorMaisContratado(userInfo?.id)
+                // console.log("RESPOSTA", response)
+                setPrestadorMaisContratado(response)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        handlePrestadorMaisContratado()
+      }, [userInfo?.id, userInfo]);
 
     const [errorLogin, setErrorLogin] = useState(false)
     useEffect(() => {
@@ -1216,9 +1244,9 @@ const AreaDiarista = () => {
                                                 </div>
 
                                                 {/* tela para o dashboard */}
-                                                {/* <div>
+                                                <div>
                                                     <Button
-                                                    className='w-full border border-des bg-trans text-des'
+                                                    className='w-full border border-des bg-trans text-des justify-start'
                                                     onClick={() => setScreenSelected("painel")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -1229,7 +1257,7 @@ const AreaDiarista = () => {
                                                         {isOpen ? "Painel" : ""}
                                                         
                                                     </Button>
-                                                </div> */}
+                                                </div> 
 
                                             </div>
                                                 
@@ -1515,10 +1543,39 @@ const AreaDiarista = () => {
                                         {screenSelected == "pedidos" && (
                                             <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                                 <div className='p-5 flex flex-col gap-5'>
-                                                    
-                                                    {agendamentos.length > 0 ? (
-                                                        
-                                                        agendamentos.map((agendamento) => (
+                                                <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Pesquisar"
+                                                            value={searchTerm}
+                                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                                            className="border p-2 rounded-lg w-full border-bord focus:outline-bord"
+                                                        />
+
+                                                        <div className='flex justify-between w-full gap-5 items-center'>
+                                                            <input
+                                                                type="date"
+                                                                value={startDate}
+                                                                onChange={(e) => setStartDate(e.target.value)}
+                                                                className="border p-2 rounded-lg w-full border-bord focus:outline-bord"
+                                                                placeholder="Início"
+                                                            />
+                                                            <input
+                                                                type="date"
+                                                                value={endDate}
+                                                                onChange={(e) => setEndDate(e.target.value)}
+                                                                className="border p-2 rounded-lg w-full border-bord focus:outline-bord"
+                                                                placeholder="Fim"
+                                                            />
+
+                                                        </div>
+
+
+                                                </div>
+
+                                                {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
+                                                    agendamentosFiltrados.map((agendamento) => (
+
                                                             <>
                                                                 <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
                                                                     <div className='flex flex-col lg:flex-row gap-5 items-start w-full justify-between'>
@@ -1882,6 +1939,69 @@ const AreaDiarista = () => {
                                                 </div>
                                             </section>
                                         )}
+
+                                         {screenSelected === "painel" && (
+                                                                        <div className="md:pt-28 flex-1 p-6 ">
+                                                                            {/* Header do painel */}
+                                        
+                                                                            {/* Grid do dashboard */}
+                                                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                                                {/* Prestador mais contratado */}
+                                                                                <div className="bg-white  shadow-md rounded-lg p-6">
+                                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Cliente Mais Frequente</h2>
+                                                                                <div className="flex items-center">
+                                                                                    <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
+                                                                                    <Avatar
+                                                                                        src={ClienteMaisFrequente?.avatarUrl?.avatarUrl}
+                                                                                        alt={ClienteMaisFrequente?.name}
+                                                                                        className="w-full h-full object-cover"
+                                                                                    />
+                                                                                    </div>
+                                                                                    <span className="text-desSec  font-medium">
+                                                                                    {ClienteMaisFrequente?.name || <span className='text-white'> <Spinner/> </span>}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                        
+                                        
+                                                                            {/* Solicitações do mês */}
+                                                                            {/* <div className="bg-white  shadow-md rounded-lg p-6">
+                                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                                                    Solicitações do Mês
+                                                                                </h2>
+                                                                                <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                                                    {SolicitacoesDoMes || 0}
+                                                                                </p>
+                                                                            </div> */}
+                                        
+                                                                            {/* Total de agendamentos */}
+                                                                            {/* <div className="bg-white  shadow-md rounded-lg p-6">
+                                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
+                                                                                <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
+                                                                            </div> 
+                                                                        </div> */}
+                                        
+                                                                            {/* Total de gastos no mês */}
+                                                                            {/* <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
+                                                                                <div className='bg-white  shadow-md rounded-lg p-6 mt-10 h-44'>
+                                                                                    <h2 className='text-desSec text-lg font-semibold text-gray-600 mb-4'>Gasto no mês</h2>
+                                                                                    <p className='text-desSec text-3xl font-bold text-gray-800'>R$ {GastoMes.toFixed(2) || "0.00"}</p>
+                                                                                </div> */}
+                                        
+                                                                                {/* Componente de Nível */}
+                                                                                {/* <div className="bg-white border border-desSec shadow-md rounded-md p-6 mt-10 h-44">
+                                                                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Nível</h2>
+                                                                                    <div className="flex flex-col justify-center items-center">
+                                                                                        <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                                                                                            <div className="bg-desSec h-3 rounded-full"/>
+                                                                                        </div>
+                                                                                        <span className="text-desSec text-xl font-semibold"> "Nível 1"</span>
+                                                                                        <span className="text-desSec text-sm text-gray-600">Experiência: 0%</span>
+                                                                                    </div>
+                                                                                </div>  */}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
 
                                     </div>
 
