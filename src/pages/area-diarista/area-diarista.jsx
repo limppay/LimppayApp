@@ -11,7 +11,7 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getClienteMaisFrequente } from '../../services/api.js';
+import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getSolicitacoesGeraisPrestador, getSolicitacoesTotalPrestador, getFaturamentoMes } from '../../services/api.js';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
@@ -188,20 +188,44 @@ const AreaDiarista = () => {
     
         return nameMatch && dateMatch;
     });
-    
 
-    const [ClienteMaisFrequente, setClienteMaisFrequente] = useState()
-    useEffect(() => {
-        const handlePrestadorMaisContratado = async() => {
+      const [SolicitacoesTotalPrestador, setSolicitacoesTotalPrestador] = useState()
+      useEffect(() => {
+        const handleSolicitacoesTotalPrestador = async() => {
             try {
-                const response = await getPrestadorMaisContratado(userInfo?.id)
-                // console.log("RESPOSTA", response)
-                setPrestadorMaisContratado(response)
-            } catch (error) {
+                const response = await getSolicitacoesTotalPrestador(userInfo?.id)
+                setSolicitacoesTotalPrestador(response)
+            } catch (error){
                 console.log(error)
             }
         }
-        handlePrestadorMaisContratado()
+        handleSolicitacoesTotalPrestador()
+      }, [userInfo?.id, userInfo]);
+
+      const [SolicitacoesGeraisPrestador, setSolicitacoesGeraisPrestador] = useState()
+      useEffect(() => {
+        const handleSolicitacoesGeraisPrestador = async() => {
+            try {
+                const response = await getSolicitacoesGeraisPrestador(userInfo?.id)
+                setSolicitacoesGeraisPrestador(response)
+            } catch (error){
+                console.log(error)
+            }
+        }
+        handleSolicitacoesGeraisPrestador()
+      }, [userInfo?.id, userInfo]);
+
+      const [FaturamentoMes, setFaturamentoMes] = useState()
+      useEffect(() => {
+        const handleFaturamentoMes = async() => {
+            try {
+                const response = await getFaturamentoMes(userInfo?.id)
+                setFaturamentoMes(response)
+            } catch (error){
+                console.log(error)
+            }
+        }
+        handleFaturamentoMes()
       }, [userInfo?.id, userInfo]);
 
     const [errorLogin, setErrorLogin] = useState(false)
@@ -1941,66 +1965,35 @@ const AreaDiarista = () => {
                                         )}
 
                                          {screenSelected === "painel" && (
-                                                                        <div className="md:pt-28 flex-1 p-6 ">
-                                                                            {/* Header do painel */}
-                                        
-                                                                            {/* Grid do dashboard */}
-                                                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                                                {/* Prestador mais contratado */}
-                                                                                <div className="bg-white  shadow-md rounded-lg p-6">
-                                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Cliente Mais Frequente</h2>
-                                                                                <div className="flex items-center">
-                                                                                    <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
-                                                                                    <Avatar
-                                                                                        src={ClienteMaisFrequente?.avatarUrl?.avatarUrl}
-                                                                                        alt={ClienteMaisFrequente?.name}
-                                                                                        className="w-full h-full object-cover"
-                                                                                    />
+                                                                        <div className="md:pt-28 flex-1 p-6 ">                                        
+                                                                                {/* Grid do dashboard */}
+                                                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">                                        
+                                                                                    {/* Solicitações do mês */}
+                                                                                    <div className="bg-white  shadow-md rounded-lg p-6">
+                                                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                                                            Solicitações do Mês
+                                                                                        </h2>
+                                                                                        <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                                                            {SolicitacoesTotalPrestador || 0}
+                                                                                        </p>
                                                                                     </div>
-                                                                                    <span className="text-desSec  font-medium">
-                                                                                    {ClienteMaisFrequente?.name || <span className='text-white'> <Spinner/> </span>}
-                                                                                    </span>
+                                                
+                                                                                    {/* Total de agendamentos */}
+                                                                                    <div className="bg-white  shadow-md rounded-lg p-6">
+                                                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
+                                                                                        <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesGeraisPrestador || 0}</p>
+                                                                                    </div> 
+                                                                                
+                                                
+                                                                                    {/* Total de gastos no mês */}
+                                                                                    
+                                                                                    <div className='bg-white  shadow-md rounded-lg p-6'>
+                                                                                        <h2 className='text-desSec text-lg font-semibold text-gray-600 mb-4'>Gasto no mês</h2>
+                                                                                        <p className='text-desSec text-3xl font-bold text-gray-800'>R$ {FaturamentoMes.toFixed(2) || "0.00"}</p>
+                                                                                    </div> 
                                                                                 </div>
-                                                                            </div>
-                                        
-                                        
-                                                                            {/* Solicitações do mês */}
-                                                                            {/* <div className="bg-white  shadow-md rounded-lg p-6">
-                                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
-                                                                                    Solicitações do Mês
-                                                                                </h2>
-                                                                                <p className="text-desSec text-3xl font-bold text-gray-800">
-                                                                                    {SolicitacoesDoMes || 0}
-                                                                                </p>
-                                                                            </div> */}
-                                        
-                                                                            {/* Total de agendamentos */}
-                                                                            {/* <div className="bg-white  shadow-md rounded-lg p-6">
-                                                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
-                                                                                <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
-                                                                            </div> 
-                                                                        </div> */}
-                                        
-                                                                            {/* Total de gastos no mês */}
-                                                                            {/* <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
-                                                                                <div className='bg-white  shadow-md rounded-lg p-6 mt-10 h-44'>
-                                                                                    <h2 className='text-desSec text-lg font-semibold text-gray-600 mb-4'>Gasto no mês</h2>
-                                                                                    <p className='text-desSec text-3xl font-bold text-gray-800'>R$ {GastoMes.toFixed(2) || "0.00"}</p>
-                                                                                </div> */}
-                                        
-                                                                                {/* Componente de Nível */}
-                                                                                {/* <div className="bg-white border border-desSec shadow-md rounded-md p-6 mt-10 h-44">
-                                                                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Nível</h2>
-                                                                                    <div className="flex flex-col justify-center items-center">
-                                                                                        <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-                                                                                            <div className="bg-desSec h-3 rounded-full"/>
-                                                                                        </div>
-                                                                                        <span className="text-desSec text-xl font-semibold"> "Nível 1"</span>
-                                                                                        <span className="text-desSec text-sm text-gray-600">Experiência: 0%</span>
-                                                                                    </div>
-                                                                                </div>  */}
-                                                                            </div>
                                                                         </div>
+                                                                        
                                                                     )}
 
                                     </div>

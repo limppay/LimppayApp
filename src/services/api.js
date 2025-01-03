@@ -567,13 +567,36 @@ export const removeCheckout = async () => {
   
 }
 
-export const getClienteMaisFrequente = async (userId) => {
-  try {
-    const response = await api.get(`agendamentos/cliente-maisFrequente/${userId}`);
+export const getSolicitacoesTotalPrestador = async (userId) =>{
+  try{
+    const response = await api.get(`solicitacoes-TotalPrestador/${userId}`);
     return response.data;
-  } catch (error) {
+  }catch(error){
     const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
     throw new Error(errorMessage);
   }
 }
+
+export const getSolicitacoesGeraisPrestador = async (userId) =>{
+  try{
+    const response = await api.get(`agendamentos/solicitacoes-GeraisPrestador/${userId}`);
+    return response.data;
+  }catch(error){
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
+  }
+}
+
+export const getFaturamentoMes = async (userId) => {
+  try{
+    const response = await api.get(`agendamentos/faturamento-Mes/${userId}`);
+    return response.data;
+  }catch (error){
+    const errorMessage = error.response?.data?.message || 'Problemas de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
+  }
+}
+
 export default api;
+
+
