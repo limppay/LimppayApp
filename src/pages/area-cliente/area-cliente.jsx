@@ -695,7 +695,7 @@ useEffect(() => {
                             </div>
 
                             {screenSelected === "painel" && (
-                                <div className="md:pt-28 flex-1 p-6 pt-[10vh] overflow-y-auto  ">
+                                <div className="md:pt-28 flex-1 p-6 pb-[8vh] pt-[10vh] overflow-y-auto  ">
                                     {/* Header do painel */}
 
                                     {/* Grid do dashboard */}
@@ -758,7 +758,7 @@ useEffect(() => {
                             )}
 
                             {screenSelected == "perfil" && (
-                                <section className='w-full gap-1 pt-[8vh]  sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                <section className='w-full gap-1 pb-[8vh] pt-[8vh]  sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='lg:flex flex-col max-w-50 min-w-72 min-h-60 p-10 pt-5 w-full 
                                     '>
                                         <div className='flex flex-col lg:flex-row lg:justify-between w-full'>
@@ -912,7 +912,7 @@ useEffect(() => {
                             )}
 
                             {screenSelected == "pedidos" && (
-                                <section className='w-full gap-1 pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5 flex flex-col gap-5'>
                                     <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
                                             <input
@@ -1302,7 +1302,7 @@ useEffect(() => {
                             )}
 
                             {screenSelected == "avaliacoes" && (
-                                <section className='w-full gap-1 pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5 flex flex-col gap-5'>
 
                                         {avaliacoes ? (
@@ -1374,7 +1374,7 @@ useEffect(() => {
                             )}
 
                             {screenSelected == "enderecos" && (
-                                <section className='w-full gap-1 pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5'>
                                         <h2 className='text-xl font-semibold text-desSec text-center sm:text-start'>Endereços cadastrados</h2>
 
