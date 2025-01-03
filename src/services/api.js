@@ -597,6 +597,11 @@ export const getFaturamentoMes = async (userId) => {
   }
 }
 
+export const getPicoDeAgendamentos = async (userId, periodo) => {
+  const response = await api.get(`agendamentos/pico-agendamentos?userId=${userId}&periodo=${periodo}`);
+  return response.data;
+};
+
 export default api;
 
 
