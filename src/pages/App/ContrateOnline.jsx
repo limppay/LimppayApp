@@ -199,7 +199,7 @@ export default function ContrateOnline() {
 
 
     const buttons = [
-        { link: "#quem-somos", text: "Quem somos" },
+        { link: "#quem-somos", text: "Quem Somos" },
         { link: "#duvidas", text: "Dúvidas" },
     ];
 

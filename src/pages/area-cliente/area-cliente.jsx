@@ -23,6 +23,7 @@ import { Helmet } from 'react-helmet-async';
 import { useUser } from '../../context/UserProvider';
 import { useNavigate } from 'react-router-dom';
 import CheckoutNotification from '../App/CheckoutNotification.jsx';
+import Navigation from './Navigation.jsx';
 
 
 
@@ -423,9 +424,9 @@ const AreaCliente = () => {
     // const avatarUrl = urls ? Object.values(urls)[0] : null;
 
     const buttons = [
-        { link: "/", text: "Dúvidas"},
-        { link: "/", text: "Quem Somos"},
         { link: "/contrate-online", text: "Contrate Online"},
+        { link: "/", text: "Quem Somos"},
+        { link: "/", text: "Dúvidas"},
     ]
 
     const btnAcess = [
@@ -598,7 +599,7 @@ useEffect(() => {
                     <>
                         <div className='flex flex-col lg:flex-row h-screen'>
                             {/* menu lateral */}
-                            <div className={` lg:flex flex-col pt-[7vh] min-h-[15vh]  lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
+                            <div className={`hidden lg:flex flex-col pt-[7vh] min-h-[15vh]  lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
                             isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[15vh] xl:max-w-[15vh] 2xl:min-w-[12vh] 2xl:max-w-[12vh] "
                             }`}>
                                 
@@ -694,7 +695,7 @@ useEffect(() => {
                             </div>
 
                             {screenSelected === "painel" && (
-                                <div className="md:pt-28 flex-1 p-6 ">
+                                <div className="md:pt-28 flex-1 p-6 pt-[10vh] overflow-y-auto  ">
                                     {/* Header do painel */}
 
                                     {/* Grid do dashboard */}
@@ -757,7 +758,7 @@ useEffect(() => {
                             )}
 
                             {screenSelected == "perfil" && (
-                                <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                <section className='w-full gap-1 pt-[8vh]  sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='lg:flex flex-col max-w-50 min-w-72 min-h-60 p-10 pt-5 w-full 
                                     '>
                                         <div className='flex flex-col lg:flex-row lg:justify-between w-full'>
@@ -911,7 +912,7 @@ useEffect(() => {
                             )}
 
                             {screenSelected == "pedidos" && (
-                                <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                <section className='w-full gap-1 pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5 flex flex-col gap-5'>
                                     <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
                                             <input
@@ -1301,7 +1302,7 @@ useEffect(() => {
                             )}
 
                             {screenSelected == "avaliacoes" && (
-                                <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                <section className='w-full gap-1 pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5 flex flex-col gap-5'>
 
                                         {avaliacoes ? (
@@ -1373,7 +1374,7 @@ useEffect(() => {
                             )}
 
                             {screenSelected == "enderecos" && (
-                                <section className='w-full gap-1 sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                <section className='w-full gap-1 pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5'>
                                         <h2 className='text-xl font-semibold text-desSec text-center sm:text-start'>Endereços cadastrados</h2>
 
@@ -1758,6 +1759,7 @@ useEffect(() => {
                                 </section>
                             )}
                             
+                            <Navigation screenSelected={screenSelected} setScreenSelected={setScreenSelected}/>
                         </div>
                         
                     </>       

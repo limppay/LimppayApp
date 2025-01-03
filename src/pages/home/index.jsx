@@ -18,11 +18,11 @@ import CookieBanner from '../../componentes/App/CookieBanner.jsx';
 
 export default function App() {
   const buttons = [
+    {link: "#duvidas", text: "Dúvidas"},
     {link: "#quem-somos", text: "Quem somos"},
     {link: "#servicos", text: "Serviços"},
-    {link: "#duvidas", text: "Dúvidas"},
-    {link: "#", text: "Blog"},
     {link: "#contatos", text: "Contato"},
+    {link: "#", text: "Blog"},
   ]
 
   const btnAcess = [
