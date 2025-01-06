@@ -122,9 +122,8 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen w-full h-full 2xl:text-md  max-w-[110vh]">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl mx-auto ">
-        {/* Coluna principal */}
+    <div className="min-h-screen w-full h-full max-w-[110vh] 2xl:text-md">
+      <div className="grid gap-4 max-w-7xl mx-auto lg:grid-cols-2 ">
         <div className="lg:col-span-2">
           <div className="bg-white sm:shadow-md rounded-lg p-4 w-full">
             <h2 className="text-center text-xl 2xl:text-2xl font-semibold text-desSec mb-4">Escolha o serviço</h2>
@@ -145,9 +144,9 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
               </label>
             </div>
 
-            <div className={`max-h-80 overflow-y-auto grid grid-cols-1  lg:grid-cols-2  gap-4 min-h-[60vh] md:min-h-[45vh] ${loading ? "items-center" : ""} `}>
+            <div className={`min-w-[35vh] min-h-[35vh] max-h-[35vh] overflow-y-auto grid grid-cols-1  lg:grid-cols-2  gap-4 md:min-h-[45vh] ${loading ? "items-center" : ""} `}>
               {loading ? (
-                <div className='col-span-2 text-white min-w-[20vh] '>
+                <div className='col-span-2 text-white w-full '>
                   <Spinner size='lg' />
 
                 </div>
@@ -212,6 +211,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
           </div>
 
         </div>
+
       </div>
     </div>
   );
