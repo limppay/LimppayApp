@@ -659,7 +659,7 @@ export default function ContrateOnline() {
         if (!reviews || reviews.length === 0) return 0; // Retorna 0 caso não tenha avaliações
         const totalStars = reviews.reduce((acc, avaliacao) => acc + avaliacao.stars, 0);
         const averageStars = totalStars / reviews.length;
-        return averageStars;
+        return Math.round(averageStars * 10) / 10
     };
 
     // Ordena os providers com base na média de estrelas (ordem decrescente)
@@ -1107,9 +1107,9 @@ export default function ContrateOnline() {
                                                         
                                                                 <div key={prestador.id} className='flex flex-col gap-3 '>
                                                                     <div 
-                                                                    className={`shadow-md  flex gap-5  items-center cursor-pointer transition-all duration-200   
+                                                                    className={`shadow-md  flex gap-3  items-center cursor-pointer transition-all duration-200   
                                                                     border rounded-lg bg-white  p-2 
-                                                                    ${provider && provider.id === prestador.id ? ' border-des ' : 'hover:border-sec border-trans'}`}
+                                                                    ${provider && provider.id === prestador.id ? ' border-sec ' : 'hover:border-sec border-trans'}`}
                                                                     
                                                                     
                                                                     
@@ -1161,11 +1161,8 @@ export default function ContrateOnline() {
                                                                             
                                                                             >
                                                                                 <div className='flex items-center gap-2'>
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                                                                    </svg>
                                                                                     <span
-                                                                                        className={`text-2xl text-des`}
+                                                                                        className={`text-4xl text-des`}
                                                                                     >
                                                                                         ★
                                                                                     </span>
@@ -1175,7 +1172,15 @@ export default function ContrateOnline() {
 
 
                                                                                 </div>
-                                                                                
+                                                                                <div className=''>
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                                                                    </svg>
+                                                                                    <span>
+
+                                                                                    </span>
+
+                                                                                </div>
 
 
                                                                                 

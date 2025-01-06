@@ -41,7 +41,7 @@
     "chart.js": "^4.4.7",
     "date-fns-tz": "^3.2.0",
     "dotenv": "^16.4.7",
-    "framer-motion": "^11.11.4",
+    "framer-motion": "^11.15.0",
     "iugu": "^0.0.6",
     "js-cookie": "^3.0.5",
     "react": "^18.3.1",
