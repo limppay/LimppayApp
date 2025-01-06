@@ -2011,6 +2011,7 @@ const AreaDiarista = () => {
                 </p>
             </div> 
         </div>
+        
 
         {/* Próximo agendamento e média de estrelas */}
         <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4 pt-5">
@@ -2086,9 +2087,6 @@ const AreaDiarista = () => {
         </div>
     </div>
 )}
-
-
-
                                         <NavigationDiarista screenSelected={screenSelected} setScreenSelected={setScreenSelected}/>
 
                                     </div>
