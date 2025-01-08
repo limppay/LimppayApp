@@ -26,6 +26,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
+import { v4 as uuidv4 } from 'uuid';
 
 import InputMask from "react-input-mask"
 import axios from 'axios';
@@ -592,6 +593,25 @@ export default function ContrateOnline() {
         })
     }
 
+    const gerarCodigoAleatorio = () => {
+        const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let codigo = '';
+        for (let i = 0; i < 6; i++) {
+          codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+        }
+        return codigo;
+    };
+      
+
+    const gerarIDGrupo = () => {
+        const prefixo = 'COMBO';
+        const codigo = gerarCodigoAleatorio()
+        const aleatorio = gerarCodigoAleatorio(); // Gera um número aleatório
+        const novoGrupoID = `${prefixo}${aleatorio}-${codigo}`; // Combina os elementos
+        
+        return novoGrupoID
+    };
+
     const [loadingCheckout, setLoadingCheckout] = useState(false)
     const HandleNavigateCheckout = async () => {
         setLoadingCheckout(true)
@@ -599,6 +619,7 @@ export default function ContrateOnline() {
 
         // Cria um array com os dados de todos os agendamentos
         const agendamentos = selectedDates.map((date) => {
+            
             const FormDate = new Date(date).toDateString(); // Formata a data
             const times = selectedTimes[FormDate]; // Obtém o horário correspondente
     
@@ -618,8 +639,15 @@ export default function ContrateOnline() {
                 valorLiquido: valorLiquido || sumValueService,
 
                 observacao: observacao,
-                ...(selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id }),
+                ...(
+                    selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id },
+                    selectedDates.length > 1 && { isCombo: true },
+                    selectedDates.length > 1 && { comboId: gerarIDGrupo()} // codigos gerados aqui
+                ),
+                    
+                
             };
+
         });
 
         try {
