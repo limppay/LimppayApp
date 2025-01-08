@@ -604,10 +604,9 @@ export default function ContrateOnline() {
       
 
     const gerarIDGrupo = () => {
-        const prefixo = 'COMBO';
+        const prefixo = 'CB';
         const codigo = gerarCodigoAleatorio()
-        const aleatorio = gerarCodigoAleatorio(); // Gera um número aleatório
-        const novoGrupoID = `${prefixo}${aleatorio}-${codigo}`; // Combina os elementos
+        const novoGrupoID = `${prefixo}${codigo}`; // Combina os elementos
         
         return novoGrupoID
     };
