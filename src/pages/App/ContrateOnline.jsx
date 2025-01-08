@@ -615,7 +615,7 @@ export default function ContrateOnline() {
     const [loadingCheckout, setLoadingCheckout] = useState(false)
     const HandleNavigateCheckout = async () => {
         setLoadingCheckout(true)
-
+        const codeComb = gerarIDGrupo()
 
         // Cria um array com os dados de todos os agendamentos
         const agendamentos = selectedDates.map((date) => {
@@ -641,8 +641,7 @@ export default function ContrateOnline() {
                 observacao: observacao,
                 ...(
                     selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id },
-                    selectedDates.length > 1 && { isCombo: true },
-                    selectedDates.length > 1 && { comboId: gerarIDGrupo()} // codigos gerados aqui
+                    selectedDates.length > 1 && { comboId: codeComb }
                 ),
                     
                 
