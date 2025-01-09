@@ -735,26 +735,89 @@ useEffect(() => {
                                     </div> 
                                 </div>
 
-                                    {/* Total de gastos no mês */}
-                                    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
-                                        <div className='bg-white  shadow-md rounded-lg p-6 mt-10 h-44'>
-                                            <h2 className='text-desSec text-lg font-semibold text-gray-600 mb-4'>Gasto no mês</h2>
-                                            <p className='text-desSec text-3xl font-bold text-gray-800'>R$ {GastoMes.toFixed(2) || "0.00"}</p>
-                                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                                {/* Total de gastos no mês */}
+                                <div className="bg-white shadow-md rounded-lg p-6">
+                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
+                                    <p className="text-desSec text-3xl font-bold text-gray-800">
+                                        R$ {GastoMes.toFixed(2) || "0.00"}
+                                    </p>
+                                </div>
 
-                                        {/* Componente de Nível */}
-                                        {/* <div className="bg-white border border-desSec shadow-md rounded-md p-6 mt-10 h-44">
-                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Nível</h2>
-                                            <div className="flex flex-col justify-center items-center">
-                                                <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-                                                    <div className="bg-desSec h-3 rounded-full"/>
-                                                </div>
-                                                <span className="text-desSec text-xl font-semibold"> "Nível 1"</span>
-                                                <span className="text-desSec text-sm text-gray-600">Experiência: 0%</span>
-                                            </div>
-                                        </div>  */}
+                                {/* Próximo Agendamento */}
+                                <div className="bg-white shadow-md rounded-lg p-4">
+                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-2">Próximo Agendamento</h2>
+                                    <div className="flex flex-col gap-6">
+                                        {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
+                                            (() => {
+                                                const hoje = new Date();
+
+                                                // Filtrar apenas agendamentos futuros com status "Agendado"
+                                                const agendamentosFuturos = agendamentosFiltrados.filter(
+                                                    agendamento =>
+                                                        new Date(agendamento.dataServico) >= hoje &&
+                                                        agendamento.status === "Agendado"
+                                                );
+
+                                                if (agendamentosFuturos.length === 0) {
+                                                    return <p className="text-prim flex-1">Nenhum agendamento futuro encontrado com status "Agendado".</p>;
+                                                }
+
+                                                // Ordenar por data e hora
+                                                const agendamentosOrdenados = agendamentosFuturos.sort((a, b) => {
+                                                    const dataA = new Date(a.dataServico).setHours(...a.horaServico.split(':').map(Number));
+                                                    const dataB = new Date(b.dataServico).setHours(...b.horaServico.split(':').map(Number));
+                                                    return dataA - dataB;
+                                                });
+
+                                                // Selecionar o primeiro agendamento e todos com a mesma data e horário
+                                                const primeiroAgendamento = agendamentosOrdenados[0];
+                                                const agendamentosComMesmoHorario = agendamentosOrdenados.filter(agendamento => {
+                                                    const dataHoraA = new Date(agendamento.dataServico).setHours(...agendamento.horaServico.split(':').map(Number));
+                                                    const dataHoraB = new Date(primeiroAgendamento.dataServico).setHours(...primeiroAgendamento.horaServico.split(':').map(Number));
+                                                    return dataHoraA === dataHoraB;
+                                                });
+
+                                                return (
+                                                    <div className="flex flex-col gap-6 flex-1">
+                                                        {agendamentosComMesmoHorario.map((agendamento, index) => (
+                                                            <div key={index} className="flex flex-col gap-3 shadow-lg rounded-lg p-5">
+                                                                <p><b>Serviço:</b> {agendamento.Servico}</p>
+                                                                <p>
+                                                                    <b>Data:</b> {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
+                                                                        day: '2-digit',
+                                                                        month: 'long',
+                                                                        year: 'numeric'
+                                                                    })}
+                                                                </p>
+                                                                <p><b>Hora:</b> {agendamento.horaServico}</p>
+                                                                <p><b>Preço:</b> {formatarMoeda(agendamento.valorServico)}</p>
+                                                                <p><b>Status:</b> {agendamento.status}</p>
+                                                                <p><b>Endereço:</b> {agendamento.enderecoCliente}</p>
+                                                                <a
+                                                                    href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                >
+                                                                    <Button className="w-full bg-sec text-white mt-4">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                                                        </svg>
+                                                                        Abrir com o Google Maps
+                                                                    </Button>
+                                                                </a>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                );
+                                            })()
+                                        ) : (
+                                            <p className="text-prim flex-1">Nenhum agendamento encontrado.</p>
+                                        )}
                                     </div>
                                 </div>
+                            </div>
+                            </div>
                             )}
 
                             {screenSelected == "perfil" && (
@@ -1700,39 +1763,33 @@ useEffect(() => {
                                                                     <span className="text-error opacity-75">{errors.bairro?.message}</span>}
                                                                 </div>
 
-                                                            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                <label htmlFor="cidade" className="text-prim">Cidade</label>
-                                                                <input 
-                                                                className="placeholder:text-neutral-600 border rounded-md border-bord bg-neutral-700 p-3 pt-2 pb-2 focus:outline-neutral-600 text-prim "
-                                                                id="cidade" 
-                                                                type="text" 
-                                                                placeholder="" 
-                                                                {...register("cidade")}
-                                                                readOnly
-                                                                />
-                                                                {errors.cidade && 
-                                                                <span className="text-error opacity-75">{errors.cidade?.message}</span>}
-                                                            </div>
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="cidade" className="text-prim">Cidade</label>
+                                                                    <input 
+                                                                    className="placeholder:text-neutral-600 border rounded-md border-bord bg-neutral-700 p-3 pt-2 pb-2 focus:outline-neutral-600 text-prim "
+                                                                    id="cidade" 
+                                                                    type="text" 
+                                                                    placeholder="" 
+                                                                    {...register("cidade")}
+                                                                    readOnly
+                                                                    />
+                                                                    {errors.cidade && 
+                                                                    <span className="text-error opacity-75">{errors.cidade?.message}</span>}
+                                                                </div>
 
-                                                            <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                                                                <label htmlFor="estado" className="text-prim">Estado</label>
-                                                                <input 
-                                                                className="placeholder:text-neutral-600 border rounded-md border-bord bg-neutral-700 p-3 pt-2 pb-2 focus:outline-neutral-600 text-prim "
-                                                                id="estado" 
-                                                                type="text" 
-                                                                placeholder=""
-                                                                {...register("estado")}
-                                                                readOnly
-                                                                />
-                                                                {errors.estado && 
-                                                                <span className="text-error opacity-75">{errors.estado?.message}</span>}
-                                                            </div>
-                                                                
-                                                   
-                                                            
-
-                                                            
-                                                                                            
+                                                                <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                                                                    <label htmlFor="estado" className="text-prim">Estado</label>
+                                                                    <input 
+                                                                    className="placeholder:text-neutral-600 border rounded-md border-bord bg-neutral-700 p-3 pt-2 pb-2 focus:outline-neutral-600 text-prim "
+                                                                    id="estado" 
+                                                                    type="text" 
+                                                                    placeholder=""
+                                                                    {...register("estado")}
+                                                                    readOnly
+                                                                    />
+                                                                    {errors.estado && 
+                                                                    <span className="text-error opacity-75">{errors.estado?.message}</span>}
+                                                                </div>                                
                                                         </div>
                                                     </div>
                                                     

@@ -569,7 +569,7 @@ export const removeCheckout = async () => {
 
 export const getSolicitacoesTotalPrestador = async (userId) =>{
   try{
-    const response = await api.get(`solicitacoes-TotalPrestador/${userId}`);
+    const response = await api.get(`agendamentos/solicitacoes-TotalPrestador/${userId}`);
     return response.data;
   }catch(error){
     const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';

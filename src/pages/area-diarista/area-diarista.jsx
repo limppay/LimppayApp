@@ -1977,116 +1977,116 @@ const AreaDiarista = () => {
                                             </section>
                                         )}
 
-{screenSelected === "painel" && (
-    <div className="md:pt-28 pt-[8vh] flex-1 p-6 ">                                        
-        {/* Grid do dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">                                        
-            {/* Solicitações do mês */}
-            <div className="bg-white shadow-md rounded-lg p-6">
-                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
-                    Solicitações do Mês
-                </h2>
-                <p className="text-desSec text-3xl font-bold text-gray-800">
-                    {SolicitacoesTotalPrestador || 0}
-                </p>
-            </div>
+                                        {screenSelected === "painel" && (
+                                            <div className="md:pt-28 pt-[8vh] flex-1 p-6 ">                                        
+                                                {/* Grid do dashboard */}
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">                                        
+                                                    {/* Solicitações do mês */}
+                                                    <div className="bg-white shadow-md rounded-lg p-6">
+                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                            Solicitações do Mês
+                                                        </h2>
+                                                        <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                            {SolicitacoesTotalPrestador || 0}
+                                                        </p>
+                                                    </div>
 
-            {/* Total de agendamentos */}
-            <div className="bg-white shadow-md rounded-lg p-6">
-                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
-                    Total de Agendamentos
-                </h2>
-                <p className="text-desSec text-3xl font-bold text-gray-800">
-                    {SolicitacoesGeraisPrestador || 0}
-                </p>
-            </div> 
-            
-            {/* Total de faturamento no mês */}
-            <div className="bg-white shadow-md rounded-lg p-6">
-                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
-                    Faturamento no mês 
-                </h2>
-                <p className="text-desSec text-3xl font-bold text-gray-800">
-                    R$ {FaturamentoMes.toFixed(2) || "0.00"}
-                </p>
-            </div> 
-        </div>
-        
+                                                    {/* Total de agendamentos */}
+                                                    <div className="bg-white shadow-md rounded-lg p-6">
+                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                            Total de Agendamentos
+                                                        </h2>
+                                                        <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                            {SolicitacoesGeraisPrestador || 0}
+                                                        </p>
+                                                    </div> 
+                                                    
+                                                    {/* Total de faturamento no mês */}
+                                                    <div className="bg-white shadow-md rounded-lg p-6">
+                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                            Faturamento no mês 
+                                                        </h2>
+                                                        <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                            R$ {FaturamentoMes.toFixed(2) || "0.00"}
+                                                        </p>
+                                                    </div> 
+                                                </div>
+                                                
 
-        {/* Próximo agendamento e média de estrelas */}
-        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4 pt-5">
-            Próximo Agendamento
-        </h2>
-        <div className="flex flex-col md:flex-row gap-6">
-            {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
-                (() => {
-                    const hoje = new Date();
-                    const proximoAgendamento = agendamentosFiltrados
-                        .filter(
-                            agendamento => 
-                                new Date(agendamento.dataServico) >= hoje && // Data futura ou atual
-                                agendamento.status === "Agendado" // Status "Agendado"
-                        )
-                        .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
+                                                {/* Próximo agendamento e média de estrelas */}
+                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4 pt-5">
+                                                    Próximo Agendamento
+                                                </h2>
+                                                <div className="flex flex-col md:flex-row gap-6">
+                                                    {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
+                                                        (() => {
+                                                            const hoje = new Date();
+                                                            const proximoAgendamento = agendamentosFiltrados
+                                                                .filter(
+                                                                    agendamento => 
+                                                                        new Date(agendamento.dataServico) >= hoje && // Data futura ou atual
+                                                                        agendamento.status === "Agendado" // Status "Agendado"
+                                                                )
+                                                                .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
 
-                    return proximoAgendamento ? (
-                        <div className="flex-1">
-                            <div className="flex flex-col gap-3 shadow-lg rounded-lg p-5">
-                                <p><b>Serviço:</b> {proximoAgendamento.Servico}</p>
-                                <p><b>Data:</b> {new Date(proximoAgendamento.dataServico).toLocaleDateString('pt-BR', {
-                                    day: '2-digit',
-                                    month: 'long',
-                                    year: 'numeric'
-                                })}</p>
-                                <p><b>Hora:</b> {proximoAgendamento.horaServico}</p>
-                                <p><b>Preço:</b> {formatarMoeda(proximoAgendamento.valorServico)}</p>
-                                <p><b>Status:</b> {proximoAgendamento.status}</p>
-                                <p><b>Endereço:</b> {proximoAgendamento.enderecoCliente}</p>
-                                <a 
-                                    href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                >
-                                    <Button className="w-full bg-sec text-white mt-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-                                        </svg>
-                                        Abrir com o Google Maps
-                                    </Button>
-                                </a>
-                            </div>
-                        </div>
-                    ) : (
-                        <p className="text-prim flex-1">Nenhum agendamento futuro encontrado com status "Agendado".</p>
-                    );
-                })()
-            ) : (
-                <p className="text-prim flex-1">Nenhum agendamento encontrado.</p>
-            )}
+                                                            return proximoAgendamento ? (
+                                                                <div className="flex-1">
+                                                                    <div className="flex flex-col gap-3 shadow-lg rounded-lg p-5">
+                                                                        <p><b>Serviço:</b> {proximoAgendamento.Servico}</p>
+                                                                        <p><b>Data:</b> {new Date(proximoAgendamento.dataServico).toLocaleDateString('pt-BR', {
+                                                                            day: '2-digit',
+                                                                            month: 'long',
+                                                                            year: 'numeric'
+                                                                        })}</p>
+                                                                        <p><b>Hora:</b> {proximoAgendamento.horaServico}</p>
+                                                                        <p><b>Preço:</b> {formatarMoeda(proximoAgendamento.valorServico)}</p>
+                                                                        <p><b>Status:</b> {proximoAgendamento.status}</p>
+                                                                        <p><b>Endereço:</b> {proximoAgendamento.enderecoCliente}</p>
+                                                                        <a 
+                                                                            href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
+                                                                            target="_blank" 
+                                                                            rel="noopener noreferrer"
+                                                                        >
+                                                                            <Button className="w-full bg-sec text-white mt-4">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                                                                </svg>
+                                                                                Abrir com o Google Maps
+                                                                            </Button>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-prim flex-1">Nenhum agendamento futuro encontrado com status "Agendado".</p>
+                                                            );
+                                                        })()
+                                                    ) : (
+                                                        <p className="text-prim flex-1">Nenhum agendamento encontrado.</p>
+                                                    )}
 
-            {/* Média de estrelas */}
-            <div className="flex-1 bg-white shadow-md rounded-lg p-6">
-                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
-                    Média de Estrelas
-                </h2>
-                <div className="flex flex-col gap-6">
-                    {avaliacoes && avaliacoes.length > 0 ? (
-                        (() => {
-                            const totalEstrelas = avaliacoes.reduce((sum, avaliacao) => sum + (avaliacao.stars || 0), 0);
-                            const mediaEstrelas = (totalEstrelas / avaliacoes.length).toFixed(1);
+                                                    {/* Média de estrelas */}
+                                                    <div className="flex-1 bg-white shadow-md rounded-lg p-6">
+                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                            Média de Estrelas
+                                                        </h2>
+                                                        <div className="flex flex-col gap-6">
+                                                            {avaliacoes && avaliacoes.length > 0 ? (
+                                                                (() => {
+                                                                    const totalEstrelas = avaliacoes.reduce((sum, avaliacao) => sum + (avaliacao.stars || 0), 0);
+                                                                    const mediaEstrelas = (totalEstrelas / avaliacoes.length).toFixed(1);
 
-                            return (
-                                <p className="text-desSec text-3xl font-bold text-gray-800">{mediaEstrelas} ★</p>
-                            );
-                        })()
-                    ) : (
-                        <p className="text-prim">Nenhuma avaliação recebida ainda.</p>
-                    )}
-                </div>
-            </div>
-        </div>
-    </div>
-)}
+                                                                    return (
+                                                                        <p className="text-desSec text-3xl font-bold text-gray-800">{mediaEstrelas} ★</p>
+                                                                    );
+                                                                })()
+                                                            ) : (
+                                                                <p className="text-prim">Nenhuma avaliação recebida ainda.</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                         <NavigationDiarista screenSelected={screenSelected} setScreenSelected={setScreenSelected}/>
 
                                     </div>
