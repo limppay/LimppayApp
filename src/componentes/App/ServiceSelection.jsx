@@ -25,13 +25,11 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
         try {
   
           const response = await findAllServicos()
-          console.log("Servicos", response)
   
           setServicos(response)
           setLoading(false)
     
         } catch (error) {
-          console.log(error)
   
         } 
   
@@ -53,7 +51,6 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
     valueHora: servico.valorUmaHora
   }));
 
-  console.log("Serviços: ", servicos)
   
     
   const filteredServices = services.filter(service =>
@@ -80,7 +77,6 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
     onProceed(); // Prossegue para a próxima etapa
   };
 
-  console.log("Servicos filtrados: ", filteredServices)
 
   const [creating, setCreating] = useState(false)
 
@@ -105,17 +101,14 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   })
 
   const onSubmit = async (data) => {
-    console.log("Dados recebidos", data)
     setCreating(true)
 
     try {
       const response = await createSugestao(data)
-      console.log("Sugestao enviada com sucesso!", response.data)
       setCreating(false)
       reset()
       
     } catch (error) {
-      console.log(error)
       
     }
     

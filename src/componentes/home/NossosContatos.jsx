@@ -34,18 +34,15 @@ export default function NossosContatos() {
     })
 
     const onSubmit = async (data) => {
-        console.log(data)
         setLoading(true)
 
         try {
             const response = await sendMailContact(data)
 
-            console.log("Email enviado com sucesso! ", response.message)
             setMessage(response.message)
             setLoading(false)
             reset()
         } catch (error) {
-            console.log(error)
             
         }
         

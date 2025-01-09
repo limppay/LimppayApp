@@ -27,7 +27,6 @@ const CookieBanner = () => {
   };
 
   const enableNonEssentialCookies = () => {
-    console.log("Cookies essenciais ativados!");
   };
 
   if (!showBanner) return null;

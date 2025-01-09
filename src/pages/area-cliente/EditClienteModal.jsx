@@ -14,7 +14,6 @@ import { Button, Spinner } from '@nextui-org/react';
 
 const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
-  console.log("Edit modal", userInfo)
   
 
   const schema = yup.object({
@@ -74,7 +73,6 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
       const cepSemMascara = removerMascara(data.cep);
 
 
-      console.log(data)
 
       const formData = new FormData()
       formData.append('name', data.name)
@@ -97,11 +95,9 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
       formData.append('referencia', data.referencia)
 
       // Anexa o arquivo da foto de perfil ao FormData
-      console.log('Arquivo anexado:', data.arquivoFoto); // Verifique se o arquivo existe aqui
       formData.append('arquivoFoto', file)
 
       for (let pair of formData.entries()) {
-        console.log(pair[0]+ ', ' + pair[1]); 
       }
 
       try {
@@ -109,10 +105,8 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
         if (updatedCliente) {
           
-          console.log('Cliente atualizado com sucesso:', updatedCliente);
           setLoading(false)
           const userInforUpdate = updatedCliente.EnderecoDefault
-          console.log("teste", userInforUpdate)
 
           onUserUpdated(updatedCliente);
           SetOpen(false); // Fechar o modal após o sucesso
@@ -128,7 +122,6 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
   };
 
-  console.log(errors)
 
   const [genero, setGenero] = useState('');
   const [outroGenero, setOutroGenero] = useState('');
@@ -147,7 +140,6 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
       const imageUrl = URL.createObjectURL(file);
       setImage(imageUrl);
       trigger("arquivoFoto");
-      console.log("Arquivo selecionado:", file);
     }
   };
 
@@ -184,7 +176,6 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
     setValue('genero', value);
   };
 
-  console.log(userInfo.genero)
 
   const estados = {
     "AC": "Acre",

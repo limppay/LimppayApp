@@ -46,12 +46,10 @@ export default function ContrateOnline() {
 
     const { checkoutData, setCheckoutData } = useCheckout()
 
-    console.log("Dados do context checkout: ", checkoutData)
 
     const prestadorId = localStorage.getItem("prestadorId");
     const { user } = useUser();
     const clienteId = user?.id;
-    console.log("Id do cliente: ", clienteId)
 
     if (prestadorId && clienteId) {
         console.warn("Conflito: Dois logins abertos detectados!");
@@ -60,7 +58,6 @@ export default function ContrateOnline() {
     }
 
     if (prestadorId) {
-        console.log("Existe um login aberto como prestador.");
         localStorage.clear()
     }
 
@@ -110,11 +107,9 @@ export default function ContrateOnline() {
     const onSubmit = async (data) => {
         setIsCreatingAdress(true)
 
-        // // console.log(data)
 
         try {
           const response = await CreateEnderecosCliente(data);
-          // // console.log("Endereço criado com sucesso!",response);
 
           setEnderecosCliente((prevEnderecos) => [...prevEnderecos, response])
         
@@ -130,7 +125,6 @@ export default function ContrateOnline() {
     }
 
 
-    // // console.log(errors)
 
     const estados = {
         "AC": "Acre",
@@ -236,7 +230,6 @@ export default function ContrateOnline() {
         }
     }, [enderecoDefaultCliente]);
     
-    // // console.log("Endereço padrao foi selecionado",selectedEnderecoCliente);
 
     const [observacao, setObservacao ] = useState('')
     const [providers, setProviders] = useState([])
@@ -260,8 +253,6 @@ export default function ContrateOnline() {
 
     const status = localStorage.getItem("status")
     const ativo = user?.ativa
-    console.log(ativo)
-    console.log("Status da conta: ", status)
 
     if(status == "false" || ativo == "false") {
         return (
@@ -290,7 +281,6 @@ export default function ContrateOnline() {
     useEffect(() => {
 
         if(status == "false" || ativo == "false") {
-            console.log("sua conta esta desativada, entre em contato com o suporte")
             return 
             
         }
@@ -304,7 +294,6 @@ export default function ContrateOnline() {
     const [avaliacoes, setAvaliacoes] = useState([])
     const [mediaStars, setMediaStars] = useState(0)
     const [loadingReview, setLoadingReview] = useState(false)
-    // console.log("Avaliacoes do prestador selecionado", avaliacoes)
 
 
     // função para resetar o agendamento, toda vez que sair de checkout e voltar para contrate
@@ -345,12 +334,10 @@ export default function ContrateOnline() {
         setSelectedService(service); // Atualiza o serviço selecionado
         setServicoId(id)
 
-        console.log(service, id)
     };
 
     const handleTimeChange = (time) => {
         setSelectedTimes(time)
-        // // console.log(time)
     }
 
     const selectRandomProvider = () => {
@@ -361,9 +348,7 @@ export default function ContrateOnline() {
         if (!provider) {
             const randomProvider = selectRandomProvider();
             setProvider(randomProvider);
-            // // console.log(randomProvider); // Log do provedor selecionado aleatoriamente
         } else {
-            // // console.log(selectedProvider); // Log do provedor já selecionado
         }
 
         setCurrentStep(prevStep => Math.min(prevStep + 1, 4));
@@ -372,7 +357,6 @@ export default function ContrateOnline() {
     // Tela dos prestadores: faz a requisição para buscar somente os prestadores disponíveis
     const handleProceed = async () => {
         setFinding(true);
-        console.log("Local do cliente", cidade, estado, selectedService);
 
         try {
             if (selectedDates.length > 0) {
@@ -382,7 +366,6 @@ export default function ContrateOnline() {
                 // Faz a requisição para a API enviando o array de datas
                 const response = await getDisponiveis(formattedDates, servicoId, cidade, estado);
 
-                console.log("Resposta da API:", response.data);
 
                 // Inicialmente, define os providers sem as URLs de avatar
                 setProviders(response.data);
@@ -396,7 +379,6 @@ export default function ContrateOnline() {
                     );
 
                     setProviders(updatedProviders); // Atualiza o estado com os providers incluindo seus avatares
-                    console.log(updatedProviders);
                 } else {
                     console.error("Nenhum prestador disponível encontrado");
                 }
@@ -453,7 +435,6 @@ export default function ContrateOnline() {
             setEnderecosCliente(prevEnderecos => prevEnderecos.filter(endereco => endereco.id !== enderecoId));
             setSelectedEnderecoCliente(enderecoDefaultCliente[0].id)
             
-            // // console.log(`Endereço ${enderecoId} excluído com sucesso!`);
         } catch (error) {
             console.error("Erro ao excluir o endereço: ", error);
         } finally {
@@ -463,7 +444,6 @@ export default function ContrateOnline() {
     
     //função que recebe as informações de data e serviço, para retorna os prestadores disponveis 
     const handleConfirmSelection = async () => {
-        // // console.log('Datas selecionadas:', selectedDates);
         setCurrentStep(currentStep + 1);
         setShowCalendar(false);
 
@@ -538,7 +518,6 @@ export default function ContrateOnline() {
     }, [sumValueService])
 
     const handleApplyCupom = async (data) => {
-        console.log("Cupom utilizado: ", data);
         setApply(true);
         setCupomError(null); // Limpa erros anteriores
 
@@ -547,8 +526,6 @@ export default function ContrateOnline() {
             setApply(false);
 
             if (response && response.data) {
-                console.log("Cupom adicionado com sucesso!", response.data);
-                console.log("Desconto total: ", response.data.discountedAmount);
 
                 // Atualiza o valor total do pedido com o valor descontado
                 setDescontoTotal(response.data.discount);
@@ -558,7 +535,6 @@ export default function ContrateOnline() {
                 setCupomError("Não foi possível adicionar este cupom");
             }
         } catch (error) {
-            console.log("Erro ao aplicar cupom:", error.message);
             setApply(false);
             setCupomError("Ocorreu um erro ao tentar aplicar o cupom");
         }
@@ -571,10 +547,6 @@ export default function ContrateOnline() {
 
 
     // Exibe o valor atualizado no console ou na interface
-    console.log("Valor do servico: ", serviceValue)
-    console.log("Valor bruto: ", sumValueService)
-    console.log("Valor total do desconto: ", Number(descontoTotal));
-    console.log("Valor Liquido: ", valorLiquido || sumValueService);
 
 
     const formatarMoeda = (valor) => {
@@ -589,7 +561,6 @@ export default function ContrateOnline() {
             const formateDate = new Date(date).toDateString()
             const times = selectedTimes[formateDate]
 
-            // // console.log(times)
         })
     }
 
@@ -650,11 +621,9 @@ export default function ContrateOnline() {
 
         try {
             const response = await createCheckout(agendamentos)
-            console.log("Dados do checkout enviado com sucesso! ", response)
             setLoadingCheckout(false)
 
         } catch (error) {
-            console.log(error)
             
         } finally {
             await setCheckoutData(agendamentos)
@@ -678,8 +647,6 @@ export default function ContrateOnline() {
         );
     }
 
-    console.log("Servico selecionado: ", selectedService)
-    console.log("Prestador selecionado: ", provider)
 
     const calcularMediaStars = (reviews) => {
         if (!reviews || reviews.length === 0) return 0; // Retorna 0 caso não tenha avaliações
@@ -767,7 +734,6 @@ export default function ContrateOnline() {
 
                                                 onClick={() => {
                                                     setSelectedEnderecoCliente(enderecoDefaultCliente[0].id)
-                                                    // console.log(enderecoDefaultCliente[0].id)
                                                     setCidade(enderecoDefaultCliente[0].cidade)
                                                     setEstado(enderecoDefaultCliente[0].estado)
                                                 }}
@@ -816,7 +782,6 @@ export default function ContrateOnline() {
 
                                                     onClick={() => {
                                                         setSelectedEnderecoCliente(endereco)
-                                                        console.log(endereco.id, endereco.cidade, endereco.estado)
                                                         setCidade(endereco.cidade)
                                                         setEstado(endereco.estado)
                                                     }}
@@ -1141,7 +1106,6 @@ export default function ContrateOnline() {
                                                                     
                                                                     onClick={() => {
                                                                         setProvider(prestador); // Armazena o provider selecionado
-                                                                        // console.log("Prestador selecionado: ", prestador);
                                                                     }}
 
                                                                     >

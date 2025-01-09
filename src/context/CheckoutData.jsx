@@ -10,7 +10,6 @@ export const CheckoutProvider = ({ children }) => {
   // Inicializa o sessionCode a partir do cookie
   const [sessionCode, setSessionCodeState] = useState(() => {
     const storedSessionCode = Cookies.get("checkoutSession");
-    console.log("Cookie de sessionCode: ", storedSessionCode);
     return storedSessionCode || null;
   });
   
@@ -28,7 +27,6 @@ export const CheckoutProvider = ({ children }) => {
         setiIsLoadingCheckout(true); // Inicia o carregamento
         try {
           const response = await verifyCheckout(sessionCode); // Envia o sessionCode para a API
-          console.log("Dados do checkout recuperados com sucesso! ", response);
           setCheckoutData(response.data.data); // Atualiza com os dados retornados
           setSelectedProvider(response?.data.user)
           

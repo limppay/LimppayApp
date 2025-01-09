@@ -121,7 +121,6 @@ export default function FormDiarista() {
     })
 
     const WatchGenero = watch("genero")
-    console.log("Genero: ", WatchGenero)
 
     useEffect(() => {
         if (selectedServices) {
@@ -137,7 +136,6 @@ export default function FormDiarista() {
     // onSubmit do Forms
     const onSubmit = async (data) => {
 
-        console.log(data.genero)
         setLoading(true)
         setMessage(null)
         setRequired(null)
@@ -160,7 +158,6 @@ export default function FormDiarista() {
 
         const dataNascimento = birthDate.toISOString(); //Formatação da data
 
-        console.log(data)
         const formData = new FormData()
         formData.append('name', data.name)
         formData.append('genero', data.genero)
@@ -194,13 +191,11 @@ export default function FormDiarista() {
 
         formData.append('arquivoCurriculo', data.arquivoCurriculo);
         
-        console.log(formData)
         try {
             
             const response = await createUser(formData);
             reset()
 
-            console.log('Usuário criado com sucesso:', response.data);
             setModalIsOpen(true)
 
         } catch (error) {
@@ -213,8 +208,6 @@ export default function FormDiarista() {
 
       };
 
-    console.log(errors)
-    console.log(required)
 
     const closeModal = () => {
         // setModalIsOpen(false)
@@ -317,7 +310,6 @@ export default function FormDiarista() {
     const [outroGenero, setOutroGenero] = useState('');
 
     const[cpfCnpj, setcpfCnpj]=useState('')
-    console.log(cpfCnpj)
     const inputRef = useRef(null)
     
     const watchCep = watch("cep");
@@ -328,12 +320,10 @@ export default function FormDiarista() {
         const handleGetServicos = async () => {
         try {
             const response = await findAllServicos()
-            console.log("Servicos", response)
 
             setServicos(response)
     
         } catch (error) {
-            console.log(error)
 
         } 
 
@@ -343,7 +333,6 @@ export default function FormDiarista() {
 
     }, [])
 
-    console.log("state",servicos)
 
     const [selectedKeys, setSelectedKeys] = React.useState(new Set(["Limpeza"]));
 
@@ -489,7 +478,6 @@ export default function FormDiarista() {
     const handleToggleService = () => setIsOpenService(!isOpenService);
     const handleToggleDia = () => setIsOpenDia (!isOpenDia);
 
-    console.log("Serviços selecionados: ", selectedServices)
   return (
     <>
         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>

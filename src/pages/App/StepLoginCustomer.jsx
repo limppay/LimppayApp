@@ -23,7 +23,6 @@ export default function StepLoginCustomer() {
         setError('Erro ao fazer login');
       } else {
         
-        console.log("Login efetuado com sucesso! ", user)
         setUser({user});
 
       }

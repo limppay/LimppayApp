@@ -437,7 +437,6 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
         selectedDates={selectedDates}
         onClose={() => setShowTimePicker(false)}
         onConfirm={(times) => {
-          console.log(times); // Aqui você pode fazer o que precisar com os horários
           setShowTimePicker(false);
           setSelectedTimes(times);
           onConfirmSelection();

@@ -86,12 +86,10 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
 
     try {
       const response = await loggoutCliente()
-      console.log("Loggout executado com sucesso!", response)
       setUser()
       setLoggout(false)
 
     } catch (error) {
-      console.log(error)
       
     } finally {
       navigate("/contrate-online")

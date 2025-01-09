@@ -33,7 +33,6 @@ const CheckoutNotification = () => {
     try {
       const response = await removeCheckout()
 
-      console.log(response)
       // Oculta a notificação
       setShowNotification(false);
 
@@ -43,7 +42,6 @@ const CheckoutNotification = () => {
 
 
     } catch (error) {
-      console.log(error)
       
     }
 

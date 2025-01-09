@@ -90,7 +90,6 @@ export default function FormCliente() {
         const telefone_2_SemMascara = removerMascara(data.telefone_2);
         const cepSemMascara = removerMascara(data.cep);
 
-        console.log(data)
         const formData = new FormData()
         formData.append('name', data.name)
         formData.append('genero', data.genero)
@@ -122,7 +121,6 @@ export default function FormCliente() {
           const response = await createCliente(formData);
           reset()
 
-          console.log('Cliente criado com sucesso:', response.data);
           setModalIsOpen(true)
           setLoading(false)
           
@@ -134,7 +132,6 @@ export default function FormCliente() {
 
       };
 
-    console.log(errors)
 
     const closeModal = () => {
         // setModalIsOpen(false)
@@ -204,7 +201,6 @@ export default function FormCliente() {
     const [outroGenero, setOutroGenero] = useState('');
 
     const[cpfCnpj, setcpfCnpj]=useState('')
-    console.log(cpfCnpj)
 
     const inputRef = useRef(null)
     

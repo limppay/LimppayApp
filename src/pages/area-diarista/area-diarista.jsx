@@ -65,25 +65,19 @@ const AreaDiarista = () => {
     const formattedDates = selectedDates?.map(date => {
         return new Date(date).toISOString().split('T')[0];
     });
-    console.log("Datas selecionadas: ", formattedDates)
-    console.log("Dias bloqueados: ", datasBloqueadas)
     const [old, setOld] = useState('')
 
-    console.log(userInfo)
 
     const HandleGetDiasBloqueados = async () => {
         try {
             const response = await findAllDiasBloqueados(userInfo?.id)
-            console.log("Dias bloqueados atualizados: ", response.data)
             setDatasBloqueadas(response.data)
 
         } catch (error) {
-            console.log(error)
         }
     }
 
     const blockDates = async () => {
-        console.log("Iniciando bloqueio de datas: ", formattedDates)
 
         for(const date of formattedDates ) {
 
@@ -94,12 +88,10 @@ const AreaDiarista = () => {
             
             try {
                 const response = await bloquearData(data)
-                console.log("Data(s) bloqueada(s) com sucesso!", response.data)
                 // Atualize os dias bloqueados após o desbloqueio
                 HandleGetDiasBloqueados();
     
             } catch (error) {
-                console.log(error)
                 
             }
 
@@ -109,16 +101,12 @@ const AreaDiarista = () => {
     }
 
     const unlockDate = async (data) => {
-        console.log("Iniciando desbloqueio da data: ", data);
     
         const date = new Date(data).toISOString().split('T')[0]
     
-        console.log("Dados enviados ", date);
-        console.log("Id do cliente: ", userInfo?.id)
     
         try {
             const response = await desbloquearData(userInfo?.id, date );
-            console.log("Data(s) desbloqueada(s) com sucesso!", response.data);
     
             // Atualize os dias bloqueados após o desbloqueio
             HandleGetDiasBloqueados();
@@ -154,16 +142,13 @@ const AreaDiarista = () => {
     })
 
     const handleUpdateDiasDisponveis = async (data) => {
-        console.log("Dados enviados", data)
         setLoadingDay(true)
 
         try {
             const response = await updateDiasDisponveis(userInfo?.id, data)
-            console.log("Dias disponíveis atualizado com sucesso! ", response.data)
             setLoadingDay(false)
 
         } catch (error) {
-            console.log(error)
             
         } 
         
@@ -197,7 +182,6 @@ const AreaDiarista = () => {
                 const response = await getSolicitacoesTotalPrestador(userInfo?.id)
                 setSolicitacoesTotalPrestador(response)
             } catch (error){
-                console.log(error)
             }
         }
         handleSolicitacoesTotalPrestador()
@@ -210,7 +194,6 @@ const AreaDiarista = () => {
                 const response = await getSolicitacoesGeraisPrestador(userInfo?.id)
                 setSolicitacoesGeraisPrestador(response)
             } catch (error){
-                console.log(error)
             }
         }
         handleSolicitacoesGeraisPrestador()
@@ -223,7 +206,6 @@ const AreaDiarista = () => {
                 const response = await getFaturamentoMes(userInfo?.id)
                 setFaturamentoMes(response)
             } catch (error){
-                console.log(error)
             }
         }
         handleFaturamentoMes()
@@ -241,9 +223,6 @@ const AreaDiarista = () => {
                 const agendamentos = await getAgendamentos(user.data.id)
                 const avaliacoes = await getAvaliacoesByPrestador(user.data.id)
                 const datasBloqueadas = user.data.DiasBloqueados
-                console.log("Prestador: ", user.data)
-                // console.log("Avaliações: ", avaliacoes)
-                // console.log(agendamentos)
 
                 setAvaliacoes(avaliacoes)
                 setAgendamentos(agendamentos)
@@ -260,11 +239,9 @@ const AreaDiarista = () => {
 
     }, [ ]);
 
-    console.log("Datas bloqueadas: ", datasBloqueadas )
 
 
     useEffect(() => {
-        // console.log("Informações do usuário atualizadas:", userInfo);
     }, [userInfo]); // Isso vai logar as informações do usuário toda vez que mudarem
     
 
@@ -322,7 +299,6 @@ const AreaDiarista = () => {
 
     }, [userInfo, setUserInfo])
 
-    // console.log("Situação atual da conta: ", cadastroCompleto, entrevistaAprovada, etapaCadastro)
 
 
     const schema = yup.object({
@@ -448,7 +424,6 @@ const AreaDiarista = () => {
         setLoading(true)
         setMessage(null)
 
-        // console.log(data)
         const cepSemMascara = removerMascara(data.cep);
 
 
@@ -506,7 +481,6 @@ const AreaDiarista = () => {
           setLoading(false)
           setOpenSucess(true)
 
-          // console.log('Usuário atualizado com sucesso:', response.data);
           
         } catch (error) {
             setLoading(false)
@@ -638,7 +612,6 @@ const AreaDiarista = () => {
     const firstName = fullName?.split(' ')[0]
     const status = userInfo?.ativa
     
-    // console.log(status)
     const servicosSchema = yup.object({
         servicosSelecionados: yup.array().required("Selecione um servico")
     })
@@ -658,24 +631,20 @@ const AreaDiarista = () => {
 
 
     const handleUpdateServicos = async (data) => {
-        console.log("Dados enviados", data)
         setLoadingServico(true)
         
         const req = {
             servicosSelecionados: JSON.stringify(selectedServices)
         }
 
-        console.log("Array de serviços enviado: ", req.servicosSelecionados)
         
 
         try {
             const response = await updateServico(userInfo?.id, data)
-            console.log("Serviços atualizados com sucesso! ", response)
             setLoadingServico(false)
             setServiceMessage("Enviado com sucesso!")
 
         } catch (error) {
-            console.log(error)
             setServiceMessage(error)
         } 
         
@@ -701,13 +670,11 @@ const AreaDiarista = () => {
         const handleGetServicos = async () => {
         try {
             const response = await findAllServicos()
-            console.log("Servicos", response)
 
             setServicos(response)
             
     
         } catch (error) {
-            console.log(error)
             
 
         } 
@@ -727,12 +694,9 @@ const AreaDiarista = () => {
         }
     }, [selectedServices, reset]);
 
-    console.log("Serviços selecionados: ", selectedServices)
 
 
 
-    console.log("Status da migração: ", old) // migrate ou null - identifica se o usuario veio do sistema antigo ou nao
-    console.log(errors)
 
     useEffect(() => {
         const HandleVerify = async () => {

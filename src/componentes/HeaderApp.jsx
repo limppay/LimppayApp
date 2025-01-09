@@ -10,7 +10,6 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
     const location = useLocation()
     const navigate = useNavigate()
 
-    console.log("Localização atual", location.pathname)
 
     useEffect(() => {
         const hamburguerButton = document.getElementById("hamburguerButton");
@@ -43,12 +42,10 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
 
         try {
             const response = await loggoutUser()
-            console.log("Loggout executado com sucesso!", response)
             setLoggout(false)
             navigate("/")
 
         } catch (error) {
-            console.log(error)
             
         } 
         

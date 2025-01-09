@@ -49,7 +49,6 @@ export default function DaristaLogin() {
         
         try {
             const response = await login(email, senha);
-            console.log("Usuário logado com sucesso! ", response.data)
 
             if (!response) {
                 setError("Erro ao fazer o login");

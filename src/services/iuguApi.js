@@ -26,7 +26,6 @@ export const obterTokenCartao = async (dadosCartao) => {
         year: dadosCartao.anoExpiracao,
       },
     });
-    console.log(response.data);
     return response.data.id; // Retorna o token do cartão
   } catch (error) {
     console.error('Erro ao obter token do cartão:', error.response?.data || error.message);

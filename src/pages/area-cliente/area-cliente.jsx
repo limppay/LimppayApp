@@ -83,7 +83,6 @@ const AreaCliente = () => {
                 withCredentials: true
             });
 
-            console.log("Conta do cliente: ", response.data)
 
             const enderecoDefault = await getEnderecoDefaultCliente(response.data.id)
             const agendamentos = await getAgendamentos(response.data.id)
@@ -105,7 +104,6 @@ const AreaCliente = () => {
                 bairro: enderecoDefault[0].bairro
             }
 
-            console.log(endereco)
 
             setAdressDefault([endereco])
             
@@ -151,12 +149,10 @@ const AreaCliente = () => {
 
     // Criar endereço do cliente
     const onSubmit = async (data) => {
-        console.log(data)
         setCreating(true)
 
         try {
             const response = await CreateEnderecosCliente(data);
-            console.log("Endereço criado com sucesso!",response);
             setCreating(false)
             setOpenCreateAdress(false)
 
@@ -180,7 +176,6 @@ const AreaCliente = () => {
             // Realiza a exclusão do endereço na API
             const DeleteEndereco = await deleteEnderecosCliente(enderecoId);
             
-            console.log(`Endereço ${enderecoId} excluído com sucesso!`);
     
             
             setDeleting(false)
@@ -305,16 +300,13 @@ const AreaCliente = () => {
             comment: review,
         };
 
-        console.log("Avaliação", reviewData);
         
         try {
             const response = await createReview(reviewData);
-            console.log(response);
             setRating(0)
             setReview('')
             setLoadingReview(false)
         } catch (error) {
-            console.log(error);
         } finally {
             const avaliacoes = await getAvaliacoes(userInfo?.id)
             setAvaliacoes(avaliacoes)
@@ -334,7 +326,6 @@ const AreaCliente = () => {
                     withCredentials: true
                 });
 
-                console.log("Conta do cliente: ", response.data)
 
                 const enderecoDefault = await getEnderecoDefaultCliente(response.data.id)
                 const agendamentos = await getAgendamentos(response.data.id)
@@ -356,7 +347,6 @@ const AreaCliente = () => {
                     bairro: enderecoDefault[0].bairro
                 }
 
-                console.log(endereco)
 
                 setAdressDefault([endereco])
                 
@@ -381,17 +371,11 @@ const AreaCliente = () => {
     }, []);
 
     const status = localStorage.getItem("status")
-    console.log("Status da conta: ", status)
 
     
-    console.log("Endereco padrao", adressDefault)
-    console.log("Dados combinados do cliente: ", userInfo)
-    console.log("Meus Agendamentos",agendamentos)
-    console.log("Minhas avaliaçoes",avaliacoes)
 
 
     useEffect(() => {
-        console.log("Informações do usuário atualizadas:", userInfo);
     }, [userInfo]); // Isso vai logar as informações do usuário toda vez que mudarem
 
     
@@ -464,10 +448,8 @@ useEffect(() => {
     const handlePrestadorMaisContratado = async() => {
         try {
             const response = await getPrestadorMaisContratado(userInfo?.id)
-            // console.log("RESPOSTA", response)
             setPrestadorMaisContratado(response)
         } catch (error) {
-            console.log(error)
         }
     }
     handlePrestadorMaisContratado()
@@ -480,7 +462,6 @@ useEffect(() => {
             const solMes = await getSolicitacoesDoMes(userInfo?.id)
             setSolicitacoesDoMes(solMes)
         }catch(error){
-            console.log(error)
         }
     }
     handleSolicitacoesDoMes()
@@ -493,7 +474,6 @@ useEffect(() => {
             const solTotal = await getSolicitacoesTotal(userInfo?.id)
             setSolicitacoesTotal(solTotal)
         }catch(error){
-            console.log(error)
         }
     }
     handleSolicitacoesTotal()
@@ -506,13 +486,11 @@ useEffect(() => {
             const fatMes = await getGastoMes(userInfo?.id)
             setGastoMes(fatMes)
         }catch(error){
-            console.log(error)
         }
     }
     handleGastoMes()
   }, [userInfo?.id, userInfo]);
 
-  console.log("Prestador mais solicitado: ", PrestadorMaisContratado)
 
   const calcularValorLiquido = (valorLiquido, desconto, valorServico) => {
     const ValorBruto =  valorLiquido + desconto
@@ -551,7 +529,6 @@ useEffect(() => {
 
   const MapsLocate = (logradouro, numero, bairro, cidade, estado, cep) => {
     const local = `${logradouro}, ${numero} - ${bairro}, ${cidade} - ${estado}, ${cep} `
-    console.log(local)
 
     return local
   }
@@ -1026,7 +1003,6 @@ useEffect(() => {
                                                         <div className='w-full flex gap-2 items-center '
                                                             onClick={() => {
                                                                 setSelectedAgendamento(agendamento); // Armazena o provider selecionado
-                                                                console.log("agendamento selecionado:", agendamento)
                                                                 setOpenPerfil(true); // Abre o modal
                                                             }}
                                                         >

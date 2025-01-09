@@ -30,7 +30,6 @@ import axios from 'axios';
 export default function Checkout() {
   const {user} = useUser()
   const {checkoutData , setCheckoutData, isLoadingCheckout} = useCheckout()
-  console.log("Dados recuperados pelo checkout: ", checkoutData)
 
 
   const schemaDadosCartao = yup.object({
@@ -50,7 +49,6 @@ export default function Checkout() {
       resolver: yupResolver(schemaDadosCartao),
   })
 
-  console.log(errors)
 
   const {selectedProvider, setSelectedProvider} = useSelectedProvider()
   const {selectedDates, setSelectedDates} = useSelectedDates()
@@ -84,7 +82,6 @@ export default function Checkout() {
   const [paymentStatus, setPaymentStatus] = useState(null);
 
   const AgendamenteDataQtd = [checkoutData]
-  console.log(AgendamenteDataQtd.length)
 
   function calcularDataValidade(diasParaVencer, dataInicial = new Date()) {
     const data = new Date(dataInicial); // Cria uma cópia da data inicial
@@ -98,11 +95,9 @@ export default function Checkout() {
   const getCodeSession = async (id) => {
     try {
       const response = await axios.get(`https://limppay-api-production.up.railway.app/checkout/session/${id}`)
-      console.log("Codigo da sessão: ", response.data)
       setSessionCodePix(response.data.sessionCode)
 
     } catch (error) {
-      console.log(error)
       
     }
     
@@ -129,10 +124,6 @@ export default function Checkout() {
       }
     );
     
-    console.log(response.data.pix.qrcode)
-    console.log(response.data.pix.qrcode_text)
-    console.log("Id unico do pix", response.data.id)
-    console.log("Id unico do pix", response)
 
     getCodeSession(response.data.id)
     setQrCodePix(response.data.pix.qrcode)
@@ -153,11 +144,9 @@ export default function Checkout() {
       query: { sessionCodePix }, // Código da sessão como parâmetro
     });
   
-    console.log("Conexão WebSocket estabelecida:", socket);
   
     // Escutar eventos do status de pagamento
     socket.on('payment_status', async (data) => {
-      console.log("Status de pagamento recebido:", data);
   
       if (data.status === 'paid') {
         try {
@@ -167,7 +156,6 @@ export default function Checkout() {
             pixId: data.pixEndToEndId,
           });
   
-          console.log("Agendamentos:", checkoutData);
   
           const results = await Promise.allSettled(
             checkoutData.map((agendamento) => createAgendamento(agendamento))
@@ -182,12 +170,9 @@ export default function Checkout() {
             try {
               const response = await removeCheckout()
 
-              console.log("Sessao finalizada com sucesso!", response)
             } catch (error) {
-              console.log(error)
               
             }
-            console.log("Todos os agendamentos foram criados com sucesso!");
           }
         } catch (error) {
           console.error("Erro ao criar os agendamentos:", error);
@@ -215,8 +200,6 @@ export default function Checkout() {
     setIsPaymentFinally(false);
     setIsPaymentFailed(false);
 
-    console.log("Valor total: ", checkoutData[0]?.valorLiquido || 0);
-    console.log("Dados do cartão recebido: ", data);
 
     try {
         // Obter token do cartão
@@ -225,7 +208,6 @@ export default function Checkout() {
             throw new Error("Falha ao gerar o token do cartão. Tente novamente.");
         }
 
-        console.log(token);
 
         if (metodoPagamento === 'credit_card') {
             // Criar fatura
@@ -254,7 +236,6 @@ export default function Checkout() {
                 },
             });
 
-            console.log('Fatura criada com sucesso:', response);
 
             // Criar agendamentos
             const agendamentoPromises = checkoutData.map(agendamento => createAgendamento(agendamento));
@@ -279,13 +260,10 @@ export default function Checkout() {
                 try {
                   const response = await removeCheckout()
 
-                  console.log("Sessao finalizada com sucesso!", response)
                 } catch (error) {
-                  console.log(error)
                   
                 }
 
-                console.log("Todos os agendamentos criados com sucesso.");
             }
 
             reset()
@@ -344,7 +322,6 @@ export default function Checkout() {
 
     if(!isLoadingCheckout ) {
       if (!checkoutData) {
-        console.log("Dados do checkout não encontrados. Redirecionando...");
         navigate("/contrate-online");
         return;
         

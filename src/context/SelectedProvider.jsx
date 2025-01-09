@@ -8,7 +8,6 @@ export const SelectedProvider = ({ children }) => {
     const [selectedProvider, setSelectedProvider] = useState(() => {
         // Busca o valor inicial do cookie (se existir)
         const storedValue = Cookies.get('selectedProvider');
-        console.log("Stored Value: ", storedValue)
 
         return storedValue ? JSON.parse(storedValue) : null;
     });
