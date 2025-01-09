@@ -1,13 +1,17 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import viteCompression from 'vite-plugin-compression';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    minify: 'terser',
+    minify: 'esbuild',
+    target: 'es2015',
     sourcemap: false,
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    viteCompression({ algorithm: 'brotliCompress' }),
+  ],
   server: {
     host: '0.0.0.0',
     port: 5173,
@@ -16,8 +20,8 @@ export default defineConfig({
       '/api': {
         target: 'https://api.iugu.com/v1',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // Reescreve a URL
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
-})
+});

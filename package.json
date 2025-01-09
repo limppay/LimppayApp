@@ -14,7 +14,7 @@
     "@emotion/styled": "^11.13.0",
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@headlessui/react": "^2.1.4",
+    "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
     "@mui/icons-material": "^6.1.4",
@@ -36,7 +36,8 @@
     "@nextui-org/tooltip": "^2.0.41",
     "@react-native-picker/picker": "^2.8.1",
     "@tailwindcss/forms": "^0.5.8",
-    "axios": "^1.7.7",
+    "axios": "^0.21.1",
+    "axios-cache-adapter": "^2.7.3",
     "buffer": "^6.0.3",
     "chart.js": "^4.4.7",
     "date-fns-tz": "^3.2.0",
@@ -66,7 +67,7 @@
   "devDependencies": {
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.3",
@@ -74,6 +75,7 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "postcss": "^8.4.41",
     "tailwindcss": "^3.4.10",
-    "vite": "^5.3.4"
+    "vite": "^5.3.4",
+    "vite-plugin-compression": "^0.5.1"
   }
 }
