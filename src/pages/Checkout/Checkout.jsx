@@ -358,7 +358,7 @@ export default function Checkout() {
                       <div>
                           <Button
                           className='p-2 border bg-white sm:min-w-[30vh] border-bord rounded-md text-prim  text-start w-full flex items-center gap-2 justify-between'
-                          onClick={HandleCreditCard}
+                          onPress={() => HandleCreditCard()}
                           >
                             <div className='flex items-center gap-2'>
                               <i className='fas fa-credit-card font-semibold text-ter'></i>
@@ -376,7 +376,7 @@ export default function Checkout() {
                       <div className='w-12/12'>
                         <Button
                         className='sm:min-w-[30vh]  p-2 border bg-white border-bord rounded-md text-prim lg:w-6/12 w-full text-start flex gap-2 items-center justify-between'
-                        onClick={handlePix}
+                        onPress={() => handlePix()}
                         >
                           <div className='flex gap-2'>
                             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
@@ -778,12 +778,12 @@ export default function Checkout() {
                                 </div>
                                 <div className='w-full flex justify-center gap-5'>
                                   <a href="/contrate-online">
-                                    <Button className='bg-white text-sec border border-sec ' onClick={() =>        setCheckoutData(null)}>
+                                    <Button className='bg-white text-sec border border-sec ' onPress={() =>        setCheckoutData(null)}>
                                       Novo pedido
                                     </Button>
                                   </a>
                                   <a href="/area-cliente">
-                                    <Button className='bg-white text-sec border border-sec' onClick={() =>        setCheckoutData(null)}>
+                                    <Button className='bg-white text-sec border border-sec' onPress={() =>        setCheckoutData(null)}>
                                       Continuar
                                     </Button>
                                   </a>

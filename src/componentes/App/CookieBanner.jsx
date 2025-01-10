@@ -49,7 +49,7 @@ const CookieBanner = () => {
         </div>
         <div className="flex gap-2">
           <Button
-            onClick={handleDecline}
+            onPress={() => handleDecline()}
             auto
             flat
             className="text-prim border-bord border bg-white"
@@ -57,7 +57,7 @@ const CookieBanner = () => {
             Recusar
           </Button>
           <Button
-            onClick={handleAccept}
+            onPress={() => handleAccept()}
             auto
             className="bg-desSec text-white"
           >

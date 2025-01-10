@@ -57,7 +57,7 @@ const CheckoutNotification = () => {
         <div className="flex flex-col w-full sm:flex-row justify-between items-center gap-5 p-2">
           <span>Você tem um pedido em andamento no checkout</span>
           <div className="flex gap-2">
-            <Button className="bg-white text-error shadow-md " onClick={handleCloseNotification} isDisabled={loading}>
+            <Button className="bg-white text-error shadow-md " onPress={() => handleCloseNotification()} isDisabled={loading}>
               Cancelar
             </Button>
             <a href="/checkout-pagamento">

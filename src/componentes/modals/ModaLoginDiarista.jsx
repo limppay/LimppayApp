@@ -123,7 +123,7 @@ export default function ModalLoginDiarista({OpenLogin, SetOpenLogin}) {
                             <Button
                               type="button"
                               data-autofocus
-                              onClick={() => (SetOpenLogin(false), setError(''))}
+                              onPress={() => (SetOpenLogin(false), setError(''))}
                               className="p-2 rounded-md sm:w-[20vh] max-w-full text-center border-des border bg-trans text-des  transition-all "
                             >
                               Fechar

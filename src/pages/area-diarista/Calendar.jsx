@@ -275,7 +275,7 @@ const Calendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSele
         <Button
           className={`bg-des text-white p-2 rounded-md ${selectedDates.length ? '' : 'opacity-50 cursor-not-allowed'}`}
           isDisabled={!selectedDates.length}
-          onClick={() => blockDates()}
+          onPress={() => blockDates()}
         >
           {selectedDates.length > 1 ? "Bloquear dias selecionados" : "Bloquear dia selecionado" }
         </Button>

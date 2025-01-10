@@ -822,7 +822,7 @@ export default function ContrateOnline() {
                                                 flex items-center justify-center'>
                                                     <Button 
                                                     className='p-2 bg-des rounded-md text-white text-sm'
-                                                    onClick={() => setOpenCreateAdress(true)}
+                                                    onPress={() => setOpenCreateAdress(true)}
                                                     >Cadastrar novo endereço</Button>
                                                 </div>
 
@@ -1016,7 +1016,7 @@ export default function ContrateOnline() {
                                                         gap-2
                                                         w-full
                                                         "
-                                                        onClick={handleProceed}
+                                                        onPress={() => handleProceed()}
                                                         isDisabled={finding}
                                                     >
                                                        {finding ? <Spinner /> : "Selecionar e prosseguir"}  
@@ -1143,7 +1143,7 @@ export default function ContrateOnline() {
                                                                                 gap-2
                                                                                 '
 
-                                                                                onClick={() => {
+                                                                                onPress={() => {
                                                                                     setProvider(prestador)
                                                                                     setProviderId(prestador.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
                                                                                     setOpen(true)
@@ -1337,7 +1337,7 @@ export default function ContrateOnline() {
                                                         gap-2
                                                         w-full
                                                         "
-                                                        onClick={handleConfirmSelection}
+                                                        onPress={() =>handleConfirmSelection()}
                                                         
                                                     >
                                                         Selecionar e prosseguir
@@ -1361,7 +1361,7 @@ export default function ContrateOnline() {
                                                         gap-2
                                                         w-full
                                                         "
-                                                        onClick={HandleSelectedRandomProvider}
+                                                        onPress={() => HandleSelectedRandomProvider()}
                                                         
                                                     >
                                                         Selecione por mim e prosseguir
@@ -1457,7 +1457,7 @@ export default function ContrateOnline() {
                                         w-full
                                         
                                         "
-                                        onClick={HandleNavigateCheckout}
+                                        onPress={() => HandleNavigateCheckout()}
                                         isDisabled={loadingCheckout}
 
                                         >

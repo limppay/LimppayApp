@@ -513,7 +513,7 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                             <Button
                               type="button"
                               data-autofocus
-                              onClick={() => SetOpen(false)}
+                              onPress={() => SetOpen(false)}
                               className="text-center w-full lg:w-2/12 bg-white  text-prim hover:text-sec transition-all duration-100 border border-bord "
                             >
                               Cancelar

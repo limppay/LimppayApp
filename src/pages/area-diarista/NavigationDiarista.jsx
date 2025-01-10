@@ -23,7 +23,7 @@ export default function NavigationDiarista({screenSelected, setScreenSelected}) 
             key={button.id}
             className={`flex flex-col items-center justify-center p-2 
                         w-full ${screenSelected === button.id ? 'bg-desSec text-white' : 'text-prim bg-trans'}`}
-            onClick={() => setScreenSelected(button.id)}
+            onPress={() => setScreenSelected(button.id)}
           >
             {button.icon}
           </Button>
