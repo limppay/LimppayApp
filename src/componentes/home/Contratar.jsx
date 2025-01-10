@@ -1,6 +1,6 @@
-import ContratacaoRapida from "../../assets/img/contratacao-rapida.png"
-import ValoresDife from "../../assets/img/valores.png"
-import ProfiQuali from "../../assets/img/profissionais-qualificados.png"
+import ContratacaoRapida from "../../assets/img/contratacao-rapida.webp"
+import ValoresDife from "../../assets/img/valores.webp"
+import ProfiQuali from "../../assets/img/profissionais-qualificados.webp"
 
 export default function Contratar() {
     return (

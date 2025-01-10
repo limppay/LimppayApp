@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { HeaderApp, Logo, Footer, ModalQuemSomos, ModalDuvidas} from '../../componentes/imports.jsx'
-import User from "../../assets/img/diarista-cadastro/user.png"
+import User from "../../assets/img/diarista-cadastro/user.webp"
 import EditUserModal from './EditUserModal.jsx';
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import { accordion, Avatar, Button, ScrollShadow, Spinner, Tooltip } from '@nextui-org/react';

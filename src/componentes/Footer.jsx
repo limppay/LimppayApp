@@ -1,7 +1,7 @@
-import Instagram from "../assets/img/redes-sociais/instagram.png"
-import TikTok from "../assets/img/redes-sociais/tiktok.png"
-import Linkedin from "../assets/img/redes-sociais/linkedin.png"
-import YouTube from "../assets/img/redes-sociais/youtube.png"
+import Instagram from "../assets/img/redes-sociais/instagram.webp"
+import TikTok from "../assets/img/redes-sociais/tiktok.webp"
+import Linkedin from "../assets/img/redes-sociais/linkedin.webp"
+import YouTube from "../assets/img/redes-sociais/youtube.webp"
 
 export default function Footer() {
     return(

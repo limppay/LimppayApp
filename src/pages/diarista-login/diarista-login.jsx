@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Logo } from '../../componentes/imports';
-import painel from "../../assets/img/two-young-professional-housewives-cleaning-the-hou-2023-11-27-05-06-46-utc.jpg";
+import painel from "../../assets/img/two-young-professional-housewives-cleaning-the-hou-2023-11-27-05-06-46-utc.webp";
 import { login } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { Button, Spinner } from '@nextui-org/react';

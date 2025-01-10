@@ -13,7 +13,7 @@ import {  Dialog, DialogBackdrop, DialogPanel, Input } from '@headlessui/react'
 import {useNavigate } from 'react-router-dom';
 import { Logo } from "../imports.jsx"
 
-import User from "../../assets/img/diarista-cadastro/user.png"
+import User from "../../assets/img/diarista-cadastro/user.webp"
 import { Spinner } from "@nextui-org/react"
 import {Button} from "@nextui-org/react";
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";

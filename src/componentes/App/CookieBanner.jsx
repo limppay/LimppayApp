@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import CookiePng from "../../assets/img/icons8-cookie-50.png";
+import CookiePng from "../../assets/img/icons8-cookie-50.webp";
 import { Button } from "@nextui-org/react";
 
 const CookieBanner = () => {

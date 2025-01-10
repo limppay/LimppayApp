@@ -7,7 +7,7 @@ import React, { useRef } from "react"
 import { createUser, findAllServicos } from "../../services/api.js"
 import axios from "axios"
 import InputMask from "react-input-mask"
-import User from "../../assets/img/diarista-cadastro/user.png"
+import User from "../../assets/img/diarista-cadastro/user.webp"
 import {Tooltip} from "@nextui-org/tooltip";
 import { Spinner } from "@nextui-org/react"
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";

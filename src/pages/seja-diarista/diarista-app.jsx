@@ -3,7 +3,7 @@ import '../../styles/index.css'
 import '../../styles/font.css'
 import '../../styles/duvidas.css'
 import "../../styles/footer.css"
-import Banner from "../../assets/img/seja-diarista/banner-02-1.jpg"
+import Banner from "../../assets/img/seja-diarista/banner-02-1.webp"
 
 export default function DiaristaApp() {
     const buttons = [

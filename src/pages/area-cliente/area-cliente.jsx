@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { HeaderApp, Logo,Footer} from '../../componentes/imports.jsx'
-import User from "../../assets/img/diarista-cadastro/user.png"
+import User from "../../assets/img/diarista-cadastro/user.webp"
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import EditClienteModal from './EditClienteModal.jsx';
 import { CreateEnderecosCliente, createReview, deleteEnderecosCliente, getAvaliacoes, getEnderecoDefaultCliente, getPrestadorMaisContratado, getSolicitacoesDoMes, getSolicitacoesTotal, getGastoMes } from '../../services/api.js';

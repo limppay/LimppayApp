@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import axios from "axios"
 import { updateCliente } from '../../services/api';
-import User from "../../assets/img/diarista-cadastro/user.png"
+import User from "../../assets/img/diarista-cadastro/user.webp"
 
 import InputMask from "react-input-mask"
 import { Button, Spinner } from '@nextui-org/react';

@@ -9,7 +9,7 @@ import {Avatar, Spinner, spinner} from "@nextui-org/react";
 'use client'
 import {CircularProgress} from "@nextui-org/progress";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
-import Banner from "../../assets/img/App/limpando.png"
+import Banner from "../../assets/img/App/limpando.webp"
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 import StepLoginCustomer from './StepLoginCustomer';
 import {ScrollShadow} from "@nextui-org/scroll-shadow";
@@ -35,7 +35,7 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { Button } from '@nextui-org/react';
 import CookieBanner from '../../componentes/App/CookieBanner';
 import WhatsappButton from '../../componentes/WhatsAppContact';
-import WhatsAppIcon from "../../assets/img/whatsapp.png"
+import WhatsAppIcon from "../../assets/img/whatsapp.webp"
 import { Helmet } from 'react-helmet-async';
 
 import { useCheckout } from '../../context/CheckoutData';

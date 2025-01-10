@@ -1,7 +1,7 @@
 import { useState} from "react"
 
 export default function Perfil(){
-    const [image, setImage] = useState("src/assets/img/diarista-cadastro/user.png")
+    const [image, setImage] = useState("src/assets/img/diarista-cadastro/user.webp")
     
     // estou transformando o objeto/arquivo ( imagem ), em um link, para depois utilizar ele
     const handleImageChange = (event) => {

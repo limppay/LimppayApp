@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Logo } from '../../componentes/imports';
-import painel from "../../assets/img/banner-diarista.jpg";
+import painel from "../../assets/img/banner-diarista.webp";
 import { loginCliente } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserProvider';

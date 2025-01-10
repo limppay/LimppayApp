@@ -4,7 +4,7 @@ import { Logo } from '../../componentes/imports';
 import { resetPassword } from '../../services/api';
 import axios from 'axios';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
-import notFoundToken from "../../assets/img/botao-x.png"
+import notFoundToken from "../../assets/img/botao-x.webp"
 import LoadingSpinner from '../../componentes/FormCadastro/Loading';
 
 import { useForm } from "react-hook-form"

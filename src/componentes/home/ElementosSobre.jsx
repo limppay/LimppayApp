@@ -1,7 +1,7 @@
-import LocalServico from "../../assets/img/localeservico.png";
-import DataHora from "../../assets/img/datehora.png";
-import Profissional from "../../assets/img/profissional.png";
-import SolicitarServico from "../../assets/img/localeservico.png";
+import LocalServico from "../../assets/img/localeservico.webp";
+import DataHora from "../../assets/img/datehora.webp";
+import Profissional from "../../assets/img/profissional.webp";
+import SolicitarServico from "../../assets/img/localeservico.webp";
 
 export default function ElementosSobre() {
     return (

@@ -7,7 +7,7 @@ import { useUser } from '../../context/UserProvider';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Spinner } from "@nextui-org/react";
 import {Button} from "@nextui-org/react";
-import User from "../../assets/img/diarista-cadastro/user.png"
+import User from "../../assets/img/diarista-cadastro/user.webp"
 import { loggoutCliente } from '../../services/api';
 
 

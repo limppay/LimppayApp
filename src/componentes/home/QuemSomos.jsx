@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Banner from "../../assets/img/seja-diarista/banner-02-1.jpg"
+import Banner from "../../assets/img/seja-diarista/banner-02-1.webp"
 import { Logo } from '../imports';
 
 export default function QuemSomos() {
