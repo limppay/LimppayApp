@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import CheckoutNotification from '../App/CheckoutNotification.jsx';
 import Navigation from './Navigation.jsx';
 
-
+import { io } from 'socket.io-client';
 
 const AreaCliente = () => {
 
@@ -120,6 +120,19 @@ const AreaCliente = () => {
             console.error('Erro ao buscar informações do usuário:', error);
         }
     };
+
+    const prod = "https://limppay-api-production.up.railway.app/"
+    const local = 'http://localhost:3000'
+      
+    // Conectando ao servidor WebSocket
+    const socket = io(prod)
+    console.log("Conectado ao servidor: ", socket)
+  
+    socket.on('data-updated', (data) => {
+      console.log('Data updated:', data);
+  
+      fetchUserInfo()
+    })
 
 
     const schema = yup.object().shape({

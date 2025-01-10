@@ -18,6 +18,7 @@ import { Logo } from "../imports.jsx"
 
 import {Button} from "@nextui-org/react";
 
+import { io } from 'socket.io-client';
 
 
 
@@ -314,10 +315,7 @@ export default function FormDiarista() {
     
     const watchCep = watch("cep");
 
-    // função para fazer as requisições
-    useEffect(() => {
-
-        const handleGetServicos = async () => {
+    const handleGetServicos = async () => {
         try {
             const response = await findAllServicos()
 
@@ -327,11 +325,39 @@ export default function FormDiarista() {
 
         } 
 
+    }
+
+    // função para fazer as requisições
+    useEffect(() => {
+
+        const handleGetServicos = async () => {
+            try {
+                const response = await findAllServicos()
+
+                setServicos(response)
+        
+            } catch (error) {
+
+            } 
+
         }
 
         handleGetServicos()
 
     }, [])
+
+    const prod = "https://limppay-api-production.up.railway.app/"
+    const local = 'http://localhost:3000'
+        
+    // Conectando ao servidor WebSocket
+    const socket = io(prod)
+    console.log("Conectado ao servidor: ", socket)
+    
+    socket.on('data-updated', (data) => {
+        console.log('Data updated:', data);
+    
+        handleGetServicos()
+    })
 
 
     const [selectedKeys, setSelectedKeys] = React.useState(new Set(["Limpeza"]));

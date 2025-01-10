@@ -26,6 +26,8 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import NavigationDiarista from './NavigationDiarista.jsx';
 
+import { io } from 'socket.io-client';
+
 
 const AreaDiarista = () => {
 
@@ -238,6 +240,41 @@ const AreaDiarista = () => {
         fetchUserInfo()
 
     }, [ ]);
+
+    const fetchUserInfo = async () => {
+        setErrorLogin(false)
+        try {
+            const user = await axios.get(baseURL, {
+                withCredentials: true
+            });
+
+            const agendamentos = await getAgendamentos(user.data.id)
+            const avaliacoes = await getAvaliacoesByPrestador(user.data.id)
+            const datasBloqueadas = user.data.DiasBloqueados
+
+            setAvaliacoes(avaliacoes)
+            setAgendamentos(agendamentos)
+            setDatasBloqueadas(datasBloqueadas)
+            setUserInfo(user.data)
+            setOld(user.Old)
+        } catch (error) {
+            console.error('Erro ao buscar informações do usuário:', error);
+            setErrorLogin(true)
+        }
+    };
+
+    const prod = "https://limppay-api-production.up.railway.app/"
+    const local = 'http://localhost:3000'
+        
+    // Conectando ao servidor WebSocket
+    const socket = io(prod)
+    console.log("Conectado ao servidor: ", socket)
+    
+    socket.on('data-updated', (data) => {
+        console.log('Data updated:', data);
+    
+        fetchUserInfo()
+    })
 
 
 

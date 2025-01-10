@@ -8,6 +8,9 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
+import { io } from 'socket.io-client';
+
+
 const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setServiceValue }) => {
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,28 +19,56 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   const [servicos, setServicos] = useState([])
 
   const [loading, setLoading] = useState(false)
+
+  const handleGetServicos = async () => {
+    setLoading(true)
+    try {
+
+      const response = await findAllServicos()
+
+      setServicos(response)
+      setLoading(false)
+
+    } catch (error) {
+
+    } 
+
+  }
+
+  // função para fazer as requisições
+  useEffect(() => {
+    setLoading(true)
+
+    const handleGetServicos = async () => {
+      try {
+
+        const response = await findAllServicos()
+
+        setServicos(response)
+        setLoading(false)
   
-    // função para fazer as requisições
-    useEffect(() => {
-      setLoading(true)
-  
-      const handleGetServicos = async () => {
-        try {
-  
-          const response = await findAllServicos()
-  
-          setServicos(response)
-          setLoading(false)
+      } catch (error) {
+
+      } 
+
+    }
+
+    handleGetServicos()
+
+  }, [])
+
+  const prod = "https://limppay-api-production.up.railway.app/"
+  const local = 'http://localhost:3000'
     
-        } catch (error) {
-  
-        } 
-  
-      }
-  
-      handleGetServicos()
-  
-    }, [])
+  // Conectando ao servidor WebSocket
+  const socket = io(prod)
+  console.log("Conectado ao servidor: ", socket)
+
+  socket.on('data-updated', (data) => {
+    console.log('Data updated:', data);
+
+    handleGetServicos()
+  })
 
   const services = servicos.filter((servico) => servico.status === true) // Filtra apenas os com status true
   .map((servico) => ({
