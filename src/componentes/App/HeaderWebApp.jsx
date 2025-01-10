@@ -121,7 +121,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                               
                               <a href={button.link} key={index}>
                                   <Button
-                                      onPress={button.onPress}
+                                      onPress={() => button.onPress()}
                                       className='bg-white text-center 2xl:text-lg text-prim border border-trans hover:border-bord hover:text-sec'
                                   >
                                       {button.text}
@@ -144,7 +144,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                         src={user?.AvatarUrl?.avatarUrl ? user?.AvatarUrl?.avatarUrl : User}
                         alt="User Avatar"
                         size='sm'
-                        onPress={HandleNavigateUser}
+                        onClick={HandleNavigateUser}
                         className='cursor-pointer w-8 h-8 2xl:w-12 2xl:h-12'
                       />
                       <span className='text-prim font-semibold 2xl:text-xl'>Olá, {firstName}</span>
@@ -163,7 +163,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                         border-error
                         rounded-md text-error
                         '
-                        onPress={HandleExitUser}
+                        onPress={() => HandleExitUser()}
                         isDisabled={loggout}
                       >
                         {loggout ? <Spinner className='text-white' color='danger'/> : "Sair"}
@@ -222,7 +222,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                     
                     <a href={button.link} key={index}>
                         <Button
-                            onPress={button.onPress}
+                            onPress={() => button.onPress()}
                             className={`${button.text == "Contrate Online" ? "border-desSec text-desSec bg-white" : "bg-white text-desSec border-trans"} shadow-sm  text-center border  hover:border-bord hover:text-sec justify-start w-full`}
                         >
                             {button.text == "Contrate Online" && (

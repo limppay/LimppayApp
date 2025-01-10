@@ -54,7 +54,7 @@ export default function ClienteLogin() {
                 setError("Não foi possivel realizar o login");
             } else {                
                 setUser({user})
-                navigate("/area-cliente");
+                navigate("/contrate-online");
             }
         } catch (err) {
             setError(err.message);
