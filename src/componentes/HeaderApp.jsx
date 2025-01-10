@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import "../styles/menu-hamburguer.css";
-import {Button, Spinner} from "@nextui-org/react";
+import { Spinner} from "@nextui-org/react";
+import {Button} from "@nextui-org/button";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useScreenSelected } from '../context/ScreenSelect';
 import { loggoutUser } from '../services/api';
@@ -62,13 +63,13 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                     </a>
                     <div className="flex items-center gap-3">
                         <div className='hidden items-center lg:flex'>
-                            <ul className='flex gap-2'>
+                            <div className='flex gap-2'>
                                 {buttons.map((button, index) => (
                                     <>
                                         
-                                        <a href={button.link} key={index}>
+                                        <a href={button.link} key={index} >
                                             <Button
-                                                onClick={button.OnClick}
+                                                onPress={button.OnClick}
                                                 className='bg-white text-center text-prim border border-trans hover:border-bord hover:text-sec'
                                             >
                                                 {button.text}
@@ -78,7 +79,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                                     
                                     </>
                                 ))}
-                            </ul>
+                            </div>
                         </div>
 
                         {/* botões de acesso */}
@@ -99,7 +100,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                                             border-error
                                             rounded-md text-error
                                             '
-                                            onClick={HandleExitUser}
+                                            onPress={HandleExitUser}
                                             isDisabled={loggout}
                                         >
                                             {loggout ? <Spinner className='text-white' color='danger'/> : "Sair"}
@@ -108,13 +109,13 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
 
                                 </>
                             ) : (
-                                <ul className='flex w-full gap-2'>
+                                <div className='flex w-full gap-2'>
                                     {btnAcess.map((acess, index) => (
                                         <>
-                                            <a href={acess.LinkPrim} key={index}>
+                                            <a href={acess.LinkPrim} key={index} onClick={acess.OnClickPrim}>
                                                 <Button
                                                     
-                                                    onClick={acess.OnClickPrim}
+                                                    onPress={() => acess.OnClickPrim()}
                                                     className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white'
                                                     
                                                     
@@ -124,9 +125,9 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                                                 </Button>
                                             </a>
 
-                                            <a href={acess.LinkSec} key={index}>
+                                            <a href={acess.LinkSec} key={index} onClick={acess.OnClickSec}>
                                                 <Button
-                                                    onClick={acess.OnClickSec}
+                                                    onPress={() => acess.OnClickSec()}
                                                     className='bg-des hover:bg-sec text-white'
                                                 >
                                                     {acess.AcessSec}
@@ -138,7 +139,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
 
                                         
                                     ))} 
-                                </ul>
+                                </div>
 
                             )}
                         </div>
@@ -158,7 +159,7 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
                                         
                                         <a href={button.link} key={index}>
                                             <Button
-                                                onClick={button.OnClick}
+                                                onPress={button.OnClick}
                                                 className={`${button.text == "Contrate Online" ? "border-desSec text-desSec bg-white" : "bg-white text-desSec border-trans"} shadow-sm  text-center border  hover:border-bord hover:text-sec justify-start w-full`}
                                             >
                                                 {button.text == "Contrate Online" && (
