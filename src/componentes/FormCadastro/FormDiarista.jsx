@@ -350,14 +350,23 @@ export default function FormDiarista() {
     const local = 'http://localhost:3000'
         
     // Conectando ao servidor WebSocket
-    const socket = io(prod)
-    console.log("Conectado ao servidor: ", socket)
-    
-    socket.on('data-updated', (data) => {
-        console.log('Data updated:', data);
-    
-        handleGetServicos()
-    })
+    useEffect(() => {
+        // Configuração do socket
+        const socket = io(prod);
+        console.log('Conectado ao servidor WebSocket:', socket);
+
+        // Escuta atualizações de dados
+        socket.on('data-updated', (data) => {
+            console.log('Notificação recebida:', data);
+            handleGetServicos(); // Atualiza os dados ao receber o evento
+        });
+
+        // Limpa a conexão ao desmontar o componente
+        return () => {
+            console.log('Desconectando do WebSocket...');
+            socket.disconnect();
+        };
+    }, [])
 
 
     const [selectedKeys, setSelectedKeys] = React.useState(new Set(["Limpeza"]));

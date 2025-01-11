@@ -61,14 +61,23 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   const local = 'http://localhost:3000'
     
   // Conectando ao servidor WebSocket
-  const socket = io(prod)
-  console.log("Conectado ao servidor: ", socket)
+    useEffect(() => {
+        // Configuração do socket
+        const socket = io(prod);
+        console.log('Conectado ao servidor WebSocket:', socket);
 
-  socket.on('data-updated', (data) => {
-    console.log('Data updated:', data);
+        // Escuta atualizações de dados
+        socket.on('data-updated', (data) => {
+            console.log('Notificação recebida:', data);
+            handleGetServicos(); // Atualiza os dados ao receber o evento
+        });
 
-    handleGetServicos()
-  })
+        // Limpa a conexão ao desmontar o componente
+        return () => {
+            console.log('Desconectando do WebSocket...');
+            socket.disconnect();
+        };
+    }, [])
 
   const services = servicos.filter((servico) => servico.status === true) // Filtra apenas os com status true
   .map((servico) => ({

@@ -9,10 +9,12 @@ import { Avatar, Spinner } from "@nextui-org/react";
 import {Button} from "@nextui-org/react";
 import User from "../../assets/img/diarista-cadastro/user.webp"
 import { loggoutCliente } from '../../services/api';
+import { io } from 'socket.io-client';
 
 
 export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
-
+    const prod = "https://limppay-api-production.up.railway.app/"
+    const local = 'http://localhost:3000'
       // Determina a URL com base no NODE_ENV
     const baseURL =
       import.meta.env.VITE_ENV === 'development'
@@ -58,6 +60,24 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
       return null;
     }
   };
+
+  useEffect(() => {
+    // Configuração do socket
+    const socket = io(prod);
+    console.log('Conectado ao servidor WebSocket:', socket);
+
+    // Escuta atualizações de dados
+    socket.on('data-updated', (data) => {
+      console.log('Notificação recebida:', data);
+      fetchUserInfo(); // Atualiza os dados ao receber o evento
+    });
+
+    // Limpa a conexão ao desmontar o componente
+    return () => {
+      console.log('Desconectando do WebSocket...');
+      socket.disconnect();
+    };
+  }, [])
 
   useEffect(() => {
     const hamburguerButton = document.getElementById("hamburguerButton");
