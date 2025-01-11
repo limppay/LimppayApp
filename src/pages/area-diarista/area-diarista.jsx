@@ -269,8 +269,19 @@ const AreaDiarista = () => {
     // Conectando ao servidor WebSocket
     useEffect(() => {
         // Configuração do socket
-        const socket = io(prod);
+        const socket = io(prod, {
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            timeout: 20000,
+        });
+
         console.log('Conectado ao servidor WebSocket:', socket);
+
+        socket.on('ping', () => {
+            console.log("Ping recebido, enviado pong...")
+            socket.emit('pong'); // Envia resposta 'pong' para o servidor
+        });
 
         // Escuta atualizações de dados
         socket.on('data-updated', (data) => {

@@ -125,23 +125,31 @@ const AreaCliente = () => {
     const local = 'http://localhost:3000'
       
     // Conectando ao servidor WebSocket
-    useEffect(() => {
-        // Configuração do socket
-        const socket = io(prod);
-        console.log('Conectado ao servidor WebSocket:', socket);
+  useEffect(() => {
+      const socket = io(prod, {
+          reconnection: true,
+          reconnectionAttempts: 5,
+          reconnectionDelay: 1000,
+          timeout: 20000,
+      });
 
-        // Escuta atualizações de dados
-        socket.on('data-updated', (data) => {
-            console.log('Notificação recebida:', data);
-            fetchUserInfo(); // Atualiza os dados ao receber o evento
-        });
+      console.log('Conectado ao servidor WebSocket:', socket);
 
-        // Limpa a conexão ao desmontar o componente
-        return () => {
-            console.log('Desconectando do WebSocket...');
-            socket.disconnect();
-        };
-    }, [])
+      socket.on('ping', () => {
+          console.log("Ping recebido, enviado pong...")
+          socket.emit('pong'); // Envia resposta 'pong' para o servidor
+      });
+
+      socket.on('data-updated', (data) => {
+          console.log('Notificação recebida:', data);
+          fetchUserInfo(); // Atualiza os dados ao receber o evento
+      });
+
+      return () => {
+          console.log('Desconectando do WebSocket...');
+          socket.disconnect();
+      };
+  }, []);
 
 
     const schema = yup.object().shape({
