@@ -62,7 +62,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
     
   // Conectando ao servidor WebSocket
   useEffect(() => {
-      const socket = io(prod, {
+      const socket = io(local, {
           reconnection: true,
           reconnectionAttempts: 5,
           reconnectionDelay: 1000,
@@ -71,10 +71,21 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
 
       console.log('Conectado ao servidor WebSocket:', socket);
 
+      const pingInterval = setInterval(() => {
+        socket.emit('ping');
+      }, 25000); // Envia ping a cada 25 segundos para evitar desconexões
+
       socket.on('ping', () => {
-          console.log("Ping recebido, enviado pong...")
-          socket.emit('pong'); // Envia resposta 'pong' para o servidor
+        if (socket.connected) {
+            console.log('Ping recebido, enviado pong...');
+            socket.emit('pong');
+
+        } else {
+          console.log('Tentando enviar pong, mas o cliente não está conectado');
+          
+        }
       });
+    
 
       socket.on('data-updated', (data) => {
           console.log('Notificação recebida:', data);
@@ -82,6 +93,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
       });
 
       return () => {
+          clearInterval(pingInterval); // Limpa o intervalo ao desmontar
           console.log('Desconectando do WebSocket...');
           socket.disconnect();
       };

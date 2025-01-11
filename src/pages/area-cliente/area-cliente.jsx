@@ -125,31 +125,43 @@ const AreaCliente = () => {
     const local = 'http://localhost:3000'
       
     // Conectando ao servidor WebSocket
-  useEffect(() => {
-      const socket = io(prod, {
-          reconnection: true,
-          reconnectionAttempts: 5,
-          reconnectionDelay: 1000,
-          timeout: 20000,
-      });
+    useEffect(() => {
+        const socket = io(local, {
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            timeout: 20000,
+        });
 
-      console.log('Conectado ao servidor WebSocket:', socket);
+        console.log('Conectado ao servidor WebSocket:', socket);
 
-      socket.on('ping', () => {
-          console.log("Ping recebido, enviado pong...")
-          socket.emit('pong'); // Envia resposta 'pong' para o servidor
-      });
+        const pingInterval = setInterval(() => {
+            socket.emit('ping');
+        }, 25000); // Envia ping a cada 25 segundos para evitar desconexões
 
-      socket.on('data-updated', (data) => {
-          console.log('Notificação recebida:', data);
-          fetchUserInfo(); // Atualiza os dados ao receber o evento
-      });
+        socket.on('ping', () => {
+            if (socket.connected) {
+                console.log('Ping recebido, enviado pong...');
+                socket.emit('pong');
 
-      return () => {
-          console.log('Desconectando do WebSocket...');
-          socket.disconnect();
-      };
-  }, []);
+            } else {
+            console.log('Tentando enviar pong, mas o cliente não está conectado');
+            
+            }
+        });
+        
+
+        socket.on('data-updated', (data) => {
+            console.log('Notificação recebida:', data);
+            fetchUserInfo(); // Atualiza os dados ao receber o evento
+        });
+
+        return () => {
+            clearInterval(pingInterval); // Limpa o intervalo ao desmontar
+            console.log('Desconectando do WebSocket...');
+            socket.disconnect();
+        };
+    }, []);
 
 
     const schema = yup.object().shape({

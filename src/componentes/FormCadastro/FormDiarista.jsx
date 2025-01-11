@@ -351,33 +351,42 @@ export default function FormDiarista() {
         
     // Conectando ao servidor WebSocket
     useEffect(() => {
-        // Configuração do socket
-      const socket = io(prod, {
-          reconnection: true,
-          reconnectionAttempts: 5,
-          reconnectionDelay: 1000,
-          timeout: 20000,
-      });
+        const socket = io(local, {
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            timeout: 20000,
+        });
 
         console.log('Conectado ao servidor WebSocket:', socket);
 
-        socket.on('ping', () => {
-            console.log("Ping recebido, enviado pong...")
-            socket.emit('pong'); // Envia resposta 'pong' para o servidor
-        });
+        const pingInterval = setInterval(() => {
+            socket.emit('ping');
+        }, 25000); // Envia ping a cada 25 segundos para evitar desconexões
 
-        // Escuta atualizações de dados
+        socket.on('ping', () => {
+            if (socket.connected) {
+                console.log('Ping recebido, enviado pong...');
+                socket.emit('pong');
+
+            } else {
+            console.log('Tentando enviar pong, mas o cliente não está conectado');
+            
+            }
+        });
+        
+
         socket.on('data-updated', (data) => {
             console.log('Notificação recebida:', data);
             handleGetServicos(); // Atualiza os dados ao receber o evento
         });
 
-        // Limpa a conexão ao desmontar o componente
         return () => {
+            clearInterval(pingInterval); // Limpa o intervalo ao desmontar
             console.log('Desconectando do WebSocket...');
             socket.disconnect();
         };
-    }, [])
+    }, []);
 
 
     const [selectedKeys, setSelectedKeys] = React.useState(new Set(["Limpeza"]));
