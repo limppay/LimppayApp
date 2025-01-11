@@ -268,7 +268,7 @@ const AreaDiarista = () => {
         
     // Conectando ao servidor WebSocket
     useEffect(() => {
-        const socket = io(local, {
+        const socket = io(prod, {
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,

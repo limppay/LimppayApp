@@ -20,20 +20,6 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
 
   const [loading, setLoading] = useState(false)
 
-  const handleGetServicos = async () => {
-    setLoading(true)
-    try {
-
-      const response = await findAllServicos()
-
-      setServicos(response)
-      setLoading(false)
-
-    } catch (error) {
-
-    } 
-
-  }
 
   // função para fazer as requisições
   useEffect(() => {
@@ -60,9 +46,30 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   const prod = "https://limppay-api-production.up.railway.app/"
   const local = 'http://localhost:3000'
     
+  const handleGetServicos = async () => {
+    console.log("Executando requisição...")
+    try {
+      // Espera pela resposta da requisição
+      const response = await findAllServicos();
+      console.log("dados atualizados: ", response)
+  
+      // Verifica se a resposta foi bem-sucedida
+      if (response) {
+        setServicos(response);
+      } else {
+        console.error('Erro ao obter serviços: resposta vazia');
+      }
+    } catch (error) {
+      console.error('Erro ao obter serviços:', error);
+    } finally {
+      setLoading(false); // Garante que o loading seja desativado
+    }
+  };
+  
+
   // Conectando ao servidor WebSocket
   useEffect(() => {
-      const socket = io(local, {
+      const socket = io(prod, {
           reconnection: true,
           reconnectionAttempts: 5,
           reconnectionDelay: 1000,
@@ -82,14 +89,15 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
 
         } else {
           console.log('Tentando enviar pong, mas o cliente não está conectado');
-          
+
         }
       });
     
 
       socket.on('data-updated', (data) => {
-          console.log('Notificação recebida:', data);
-          handleGetServicos(); // Atualiza os dados ao receber o evento
+        console.log('Notificação recebida:', data);
+        setLoading(true);
+        handleGetServicos(); // Atualiza os dados ao receber o evento
       });
 
       return () => {
@@ -98,6 +106,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
           socket.disconnect();
       };
   }, []);
+  
 
 
   const services = servicos.filter((servico) => servico.status === true) // Filtra apenas os com status true
