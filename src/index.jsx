@@ -31,6 +31,7 @@ import { SelectedDates } from './context/SelectedDates'
 import { SelectedTimes } from './context/SelectedTimes'
 import { ScreenSelect } from './context/ScreenSelect'
 import { CheckoutProvider } from './context/CheckoutData';
+import { WebSocketProvider } from './context/WebSocketContext';
 
 // 3 - rotas
 
@@ -97,21 +98,23 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
-      <UserProvider>
-        <SelectedProvider>
-          <CheckoutProvider>
-            <AgendamentoData>
-                <SelectedDates>
-                  <SelectedTimes>
-                    <ScreenSelect>
-                      <RouterProvider router={router}/>
-                    </ScreenSelect>
-                  </SelectedTimes>
-                </SelectedDates>
-            </AgendamentoData>
-          </CheckoutProvider>
-        </SelectedProvider>  
-      </UserProvider>
+      <WebSocketProvider>
+        <UserProvider>
+          <SelectedProvider>
+            <CheckoutProvider>
+              <AgendamentoData>
+                  <SelectedDates>
+                    <SelectedTimes>
+                      <ScreenSelect>
+                        <RouterProvider router={router}/>
+                      </ScreenSelect>
+                    </SelectedTimes>
+                  </SelectedDates>
+              </AgendamentoData>
+            </CheckoutProvider>
+          </SelectedProvider>  
+        </UserProvider>
+      </WebSocketProvider>
     </HelmetProvider>
   </React.StrictMode>,
 )
