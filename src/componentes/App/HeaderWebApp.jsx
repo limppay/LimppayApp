@@ -61,23 +61,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
     }
   };
 
-  useEffect(() => {
-    // Configuração do socket
-    const socket = io(prod);
-    console.log('Conectado ao servidor WebSocket:', socket);
 
-    // Escuta atualizações de dados
-    socket.on('data-updated', (data) => {
-      console.log('Notificação recebida:', data);
-      fetchUserInfo(); // Atualiza os dados ao receber o evento
-    });
-
-    // Limpa a conexão ao desmontar o componente
-    return () => {
-      console.log('Desconectando do WebSocket...');
-      socket.disconnect();
-    };
-  }, [])
 
   useEffect(() => {
     const hamburguerButton = document.getElementById("hamburguerButton");
