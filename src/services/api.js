@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { setupCache } from 'axios-cache-adapter';
+// import { setupCache } from 'axios-cache-adapter';
 
-const cache = setupCache({
-  maxAge: 15 * 60 * 1000, // Cache de 15 minutos
-});
+// const cache = setupCache({
+//   maxAge: 15 * 60 * 1000, // Cache de 15 minutos
+// });
 
 // Carrega as variáveis de ambiente do arquivo .env
 
@@ -14,7 +14,7 @@ const baseURL =
     : 'https://limppay-api-production.up.railway.app';
 
 const api = axios.create({
-  adapter: cache.adapter,
+  // adapter: cache.adapter,
   baseURL,
   withCredentials: true, // Habilita o envio de cookies
 });
