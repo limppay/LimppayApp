@@ -67,7 +67,12 @@ const router = createBrowserRouter([
     },
     {
       path: "area-diarista",
-      element: <AreaDiarista/>
+      element: (
+        <WebSocketProvider>
+          <AreaDiarista/>
+        </WebSocketProvider>
+      )
+
     },
     {
       path: "contrate-online",
@@ -83,7 +88,11 @@ const router = createBrowserRouter([
     },
     {
       path: "area-cliente",
-      element: <AreaCliente/>
+      element: (
+        <WebSocketProvider>
+          <AreaCliente/>
+        </WebSocketProvider>
+      )
     },
     {
       path: "checkout-pagamento",
@@ -98,23 +107,22 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
-      <WebSocketProvider>
-        <UserProvider>
-          <SelectedProvider>
-            <CheckoutProvider>
-              <AgendamentoData>
-                  <SelectedDates>
-                    <SelectedTimes>
-                      <ScreenSelect>
-                        <RouterProvider router={router}/>
-                      </ScreenSelect>
-                    </SelectedTimes>
-                  </SelectedDates>
-              </AgendamentoData>
-            </CheckoutProvider>
-          </SelectedProvider>  
-        </UserProvider>
-      </WebSocketProvider>
+      <UserProvider>
+        <SelectedProvider>
+          <CheckoutProvider>
+            <AgendamentoData>
+                <SelectedDates>
+                  <SelectedTimes>
+                    <ScreenSelect>
+                      <RouterProvider router={router}/>
+                    </ScreenSelect>
+                  </SelectedTimes>
+                </SelectedDates>
+            </AgendamentoData>
+          </CheckoutProvider>
+        </SelectedProvider>  
+      </UserProvider>
+      
     </HelmetProvider>
   </React.StrictMode>,
 )

@@ -214,6 +214,7 @@ const AreaDiarista = () => {
         handleFaturamentoMes()
       }, [userInfo?.id, userInfo]);
 
+    const { socket, setAppId, setUsername } = useWebSocket();
     const [errorLogin, setErrorLogin] = useState(false)
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -230,6 +231,9 @@ const AreaDiarista = () => {
                 setAvaliacoes(avaliacoes)
                 setAgendamentos(agendamentos)
                 setDatasBloqueadas(datasBloqueadas)
+                setAppId(user.data.id)
+                setUsername(user.data.name)
+
                 setUserInfo(user.data)
                 setOld(user.Old)
             } catch (error) {
@@ -253,6 +257,9 @@ const AreaDiarista = () => {
             const avaliacoes = await getAvaliacoesByPrestador(user.data.id)
             const datasBloqueadas = user.data.DiasBloqueados
 
+            setAppId(user.data.id)
+            setUsername(user.data.name)
+
             setAvaliacoes(avaliacoes)
             setAgendamentos(agendamentos)
             setDatasBloqueadas(datasBloqueadas)
@@ -264,7 +271,6 @@ const AreaDiarista = () => {
         }
     };
 
-    const socket = useWebSocket();
     useEffect(() => {
       if (!socket) return;
   
@@ -276,7 +282,7 @@ const AreaDiarista = () => {
       return () => {
         socket.off('data-updated')
       };
-    }, []);
+    }, [userInfo]);
 
 
 

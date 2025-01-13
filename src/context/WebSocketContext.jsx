@@ -5,29 +5,23 @@ const WebSocketContext = createContext();
 
 export const WebSocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-
-//   const requestNotificationPermission = async () => {
-//     if (Notification.permission !== "granted") {
-//       const permission = await Notification.requestPermission();
-//       if (permission === "granted") {
-//         console.log("Permissão para notificações concedida.");
-//       } else {
-//         console.log("Permissão para notificações negada.");
-//       }
-//     }
-//   };
-
-//   const showNotification = (title, body) => {
-//     if (Notification.permission === "granted") {
-//       new Notification(title, { body });
-//     }
-//   };
+  const [appId, setAppId] = useState(null);
+  const [username, setUsername] = useState(null);
 
   useEffect(() => {
     // requestNotificationPermission()
-    
+    if (!appId && !username) return;
+
+    console.log("App Id:", appId)
+  
     const prod = "https://limppay-api-production.up.railway.app/";
-    const newSocket = io(prod, {
+    const local = "http://localhost:3000/";
+
+    const newSocket = io(local, {
+      query: {
+        appId,
+        username
+      },
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
@@ -62,10 +56,10 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     
-  }, []);
+  }, [appId, username]);
 
   return (
-    <WebSocketContext.Provider value={socket}>
+    <WebSocketContext.Provider value={{socket, setAppId, setUsername}}>
       {children}
     </WebSocketContext.Provider>
   );
@@ -73,10 +67,6 @@ export const WebSocketProvider = ({ children }) => {
 
 export const useWebSocket = () => {
   const context = useContext(WebSocketContext);
-
-  // if (!context) {
-  //   throw new Error('useWebSocket must be used within a WebSocketProvider');
-  // }
 
   return context;
 };

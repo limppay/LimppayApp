@@ -78,6 +78,8 @@ const AreaCliente = () => {
         return idade;
     };
 
+    const { socket, setAppId, setUsername } = useWebSocket();
+
     const fetchUserInfo = async () => {
         try {
             const response = await axios.get(baseURL, {
@@ -113,6 +115,9 @@ const AreaCliente = () => {
                 ...endereco,
             }
             
+            setAppId(response.data.id)
+            setUsername(response.data.name)
+            console.log("Nome: ", response.data.name)
             setUserInfo(combineData);
             const status = localStorage.setItem("status", response.data.ativa)
 
@@ -122,9 +127,8 @@ const AreaCliente = () => {
         }
     };
 
-    const socket = useWebSocket();
     useEffect(() => {
-      if (!socket) return;
+      if (!socket ) return;
   
       socket.on('data-updated', (data) => {
           console.log('Notificação recebida:', data);
@@ -134,7 +138,7 @@ const AreaCliente = () => {
       return () => {
         socket.off('data-updated')
       };
-    }, []);
+    }, [userInfo]);
 
 
     const schema = yup.object().shape({
@@ -369,7 +373,11 @@ const AreaCliente = () => {
                     ...response.data,
                     ...endereco,
                 }
-                
+
+                console.log("Setando app id: ", response.data.id)
+                setAppId(response.data.id)
+                setUsername(response.data.name)
+
                 setUserInfo(combineData);
                 const status = localStorage.setItem("status", response.data.ativa)
                 setErrorLogin(false)
