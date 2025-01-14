@@ -604,16 +604,6 @@ export const getFaturamentoMes = async (userId) => {
   }
 }
 
-export const getFaturamentoAgendamento = async (userId, servicoId) => {
-  try {
-    const response = await api.get(`agendamentos/faturamento-Agendamento/${userId}/${servicoId}`);
-    return response.data;
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || 'Problemas de conexão, tente novamente mais tarde';
-    throw new Error(errorMessage);
-  }
-};
-
 export default api;
 
 
