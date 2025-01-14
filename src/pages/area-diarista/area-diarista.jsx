@@ -11,7 +11,7 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getSolicitacoesGeraisPrestador, getSolicitacoesTotalPrestador, getFaturamentoMes } from '../../services/api.js';
+import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getSolicitacoesGeraisPrestador, getSolicitacoesTotalPrestador, getFaturamentoMes, getFaturamentoAgendamento} from '../../services/api.js';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
@@ -213,6 +213,30 @@ const AreaDiarista = () => {
         }
         handleFaturamentoMes()
       }, [userInfo?.id, userInfo]);
+
+      const [faturamentos, setFaturamentos] = useState({}); // Armazena os faturamentos por servicoId
+
+    //   useEffect(() => {
+    //     const handleFaturamentoAgendamentos = async () => {
+    //         try {
+    //             const faturamentosTemp = {};
+    //             for (const agendamento of agendamentosFiltrados || []) {
+    //                 const response = await getFaturamentoAgendamento(userInfo?.id, agendamento.servicoId);
+    //                 faturamentosTemp[agendamento.servicoId] = response;
+    //             }
+    //             console.log("Faturamentos carregados:", faturamentosTemp);
+    //             setFaturamentos(faturamentosTemp);
+    //         } catch (error) {
+    //             console.error("Erro ao buscar faturamentos:", error);
+    //         }
+    //     };
+    
+    //     if (agendamentosFiltrados?.length > 0 && userInfo?.id) {
+    //         handleFaturamentoAgendamentos();
+    //     }
+    // }, [agendamentosFiltrados, userInfo?.id]);
+    
+      
 
     const { socket, setAppId, setUsername } = useWebSocket();
     const [errorLogin, setErrorLogin] = useState(false)
@@ -772,6 +796,24 @@ const AreaDiarista = () => {
     const estadoCivilTexto = EstadoCivil.find(item => item.value === userInfo?.estadoCivil)?.text || '';
     const bancoTexto = Banco.find(item => item.value === userInfo?.banco)?.text || '';
 
+    const calcularDetalhesAgendamento = (agendamento) => {
+        const taxaPrestador = (valor) => valor * (75 / 100);
+    
+        // Realizando os cálculos
+        const ValorBruto = agendamento.valorLiquido + agendamento.descontoTotal;
+        const qtdAgendamentos = ValorBruto / agendamento.valorServico;
+        const descontoPorServico = agendamento.descontoTotal / qtdAgendamentos;
+        const valorLiquidoServico = agendamento.valorServico - descontoPorServico;
+    
+        return {
+            taxaPrestador: taxaPrestador(agendamento.valorServico),
+            ValorBruto,
+            qtdAgendamentos,
+            descontoPorServico,
+            valorLiquidoServico,
+        };
+    };
+    
     return (
         <>
             <Helmet>
@@ -1619,91 +1661,122 @@ const AreaDiarista = () => {
 
                                                 </div>
 
-                                                {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
-                                                    agendamentosFiltrados.map((agendamento) => (
+                                               {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
+                                                agendamentosFiltrados.map((agendamento) => {
+                                                    // Lógica de cálculo
+                                                    const taxaPrestador = (valor) => valor * 0.75;
+                                                    const ValorBruto = agendamento.valorLiquido + agendamento.descontoTotal;
+                                                    const qtdAgendamentos = ValorBruto / agendamento.valorServico;
+                                                    const descontoPorServico = agendamento.descontoTotal / qtdAgendamentos;
+                                                    const valorLiquidoServico = agendamento.valorServico - descontoPorServico;
 
-                                                            <>
-                                                                <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
-                                                                    <div className='flex flex-col lg:flex-row gap-5 items-start w-full justify-between'>
-                                                                        <div className='flex flex-col gap-2 w-full'>
-                                                                            <div className="overflow-y-auto  bg-white p-3 rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between">
-                                                                                <p>
-                                                                                    {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
-                                                                                        day: '2-digit',
-                                                                                        month: 'long',
-                                                                                        year: 'numeric'
-                                                                                    })}
-                                                                                </p>
-                                                                                <p>Subtotal: {formatarMoeda(agendamento.valorServico)}</p>
-                                                                                <div className='w-4/12 sm:w-auto text-center pt-2 sm:pt-0'>
-                                                                                    <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
+                                                    return (
+                                                        <>
+                                                            <div className="flex flex-col gap-3 shadow-lg shadow-bord rounded-lg p-5 justify-center items-start">
+                                                                <div className="flex flex-col lg:flex-row gap-5 items-start w-full justify-between">
+                                                                    <div className="flex flex-col gap-2 w-full">
+                                                                        <div className="overflow-y-auto bg-white p-3 rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between">
+                                                                            <p>
+                                                                                {agendamento.Servico} - {agendamento.horaServico} -{" "}
+                                                                                {new Date(agendamento?.dataServico).toLocaleDateString("pt-BR", {
+                                                                                    day: "2-digit",
+                                                                                    month: "long",
+                                                                                    year: "numeric",
+                                                                                })}
+                                                                            </p>
+                                                                            <p>Subtotal: {formatarMoeda(taxaPrestador(valorLiquidoServico))}</p>
+                                                                            <div className="w-4/12 sm:w-auto text-center pt-2 sm:pt-0">
+                                                                                <div
+                                                                                    className={`p-2 rounded-md text-white ${
+                                                                                        agendamento.status === "Agendado"
+                                                                                            ? "bg-des"
+                                                                                            : agendamento.status === "Iniciado"
+                                                                                            ? "bg-desSec"
+                                                                                            : agendamento.status === "Cancelado"
+                                                                                            ? "bg-error"
+                                                                                            : agendamento.status === "Realizado"
+                                                                                            ? "text-sec bg-sec"
+                                                                                            : ""
+                                                                                    } `}
+                                                                                >
+                                                                                    {agendamento.status}
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                
-                                                                        
                                                                     </div>
-                                                                    <Accordion isCompact itemClasses={{title: "text-prim"}}>
-                                                                        <AccordionItem key={agendamento.id} title="Detalhes" >
-                                                                            <div className="mt-2">
-                                                                                <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
-                                                                                    <div className='text-justify flex flex-col gap-2'>
-
-                                                                                        <p><b>Serviço:</b> {agendamento?.Servico}</p>
-
-                                                                                        <p><b>Observação:</b> {agendamento?.observacao ? agendamento.observacao : "Nenhuma obervação."}</p>
-
-                                                                                        <p><b>Preço:</b> {formatarMoeda(agendamento?.valorServico)}</p>
-
-                                                                                        <p><b>Data:</b> {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
-                                                                                            day: '2-digit',
-                                                                                            month: 'long',
-                                                                                            year: 'numeric'
-                                                                                        })}</p>
-                                                                                        <div className='flex flex-col gap-2 max-w-[100vh]'>
-                                                                                            <p><b>Endereço:</b> {agendamento?.enderecoCliente}</p>
-                                                                                            <a 
-                                                                                                href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento?.enderecoCliente)}`} 
-                                                                                                target="_blank" 
-                                                                                                rel="noopener noreferrer"
-                                                                                            >
-                                                                                                <Button className='w-full bg-sec text-white'>
-                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-                                                                                                    </svg>
-
-                                                                                                    Abrir com o Google Maps
-
-                                                                                                </Button>
-                                                                                            </a>
-
-                                                                                        </div>
-
-                                                                                    </div> 
-
-                                                                                                                                                                    
+                                                                </div>
+                                                                <Accordion isCompact itemClasses={{ title: "text-prim" }}>
+                                                                    <AccordionItem key={agendamento.id} title="Detalhes">
+                                                                        <div className="mt-2">
+                                                                            <div className="flex flex-col gap-7 text-prim overflow-y-auto max-h-[60vh]">
+                                                                                <div className="text-justify flex flex-col gap-2">
+                                                                                    <p>
+                                                                                        <b>Serviço:</b> {agendamento?.Servico}
+                                                                                    </p>
+                                                                                    <p>
+                                                                                        <b>Observação:</b>{" "}
+                                                                                        {agendamento?.observacao
+                                                                                            ? agendamento.observacao
+                                                                                            : "Nenhuma observação."}
+                                                                                    </p>
+                                                                                    <p>
+                                                                                        <b>Preço:</b> {formatarMoeda(taxaPrestador(valorLiquidoServico))}
+                                                                                    </p>
+                                                                                    <p>
+                                                                                        <b>Data:</b>{" "}
+                                                                                        {new Date(agendamento?.dataServico).toLocaleDateString(
+                                                                                            "pt-BR",
+                                                                                            {
+                                                                                                day: "2-digit",
+                                                                                                month: "long",
+                                                                                                year: "numeric",
+                                                                                            }
+                                                                                        )}
+                                                                                    </p>
+                                                                                    <div className="flex flex-col gap-2 max-w-[100vh]">
+                                                                                        <p>
+                                                                                            <b>Endereço:</b> {agendamento?.enderecoCliente}
+                                                                                        </p>
+                                                                                        <a
+                                                                                            href={`https://www.google.com/maps/place/${encodeURIComponent(
+                                                                                                agendamento?.enderecoCliente
+                                                                                            )}`}
+                                                                                            target="_blank"
+                                                                                            rel="noopener noreferrer"
+                                                                                        >
+                                                                                            <Button className="w-full bg-sec text-white">
+                                                                                                <svg
+                                                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                                                    fill="none"
+                                                                                                    viewBox="0 0 24 24"
+                                                                                                    strokeWidth="1.5"
+                                                                                                    stroke="currentColor"
+                                                                                                    className="size-6"
+                                                                                                >
+                                                                                                    <path
+                                                                                                        strokeLinecap="round"
+                                                                                                        strokeLinejoin="round"
+                                                                                                        d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
+                                                                                                    />
+                                                                                                </svg>
+                                                                                                Abrir com o Google Maps
+                                                                                            </Button>
+                                                                                        </a>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-
-
-                                                                        </AccordionItem>
-                                                                    </Accordion>
-                                                                </div>
-                                                            
-                                                            </>
-                                                        ))
-                                                    
-                                                        
-                                                    ) : (
-                                                        <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
-                                                            <p>Você não possui nenhum agendamento</p>
-                                                        </div>
-
-                                                    )}
-
-                                                   
-                                                    
-
+                                                                        </div>
+                                                                    </AccordionItem>
+                                                                </Accordion>
+                                                            </div>
+                                                        </>
+                                                    );
+                                                })
+                                            ) : (
+                                                <div className="text-prim text-center flex flex-col justify-center items-center h-[70vh]">
+                                                    <p>Você não possui nenhum agendamento</p>
+                                                </div>
+                                            )}
                                                 </div>
                                                 
                                             </section>
