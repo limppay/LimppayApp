@@ -740,7 +740,7 @@ useEffect(() => {
                                 <div className="bg-white shadow-md rounded-lg p-6">
                                     <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
                                     <p className="text-desSec text-3xl font-bold text-gray-800">
-                                        R$ {GastoMes.toFixed(2) || "0.00"}
+                                        {formatarMoeda(GastoMes.toFixed(2) || "0.00")}
                                     </p>
                                 </div>
 

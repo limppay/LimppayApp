@@ -2016,7 +2016,7 @@ const AreaDiarista = () => {
                                                             Faturamento no mês 
                                                         </h2>
                                                         <p className="text-desSec text-3xl font-bold text-gray-800">
-                                                            R$ {FaturamentoMes.toFixed(2) || "0.00"}
+                                                            {formatarMoeda(FaturamentoMes.toFixed(2) || "0.00")}
                                                         </p>
                                                     </div> 
                                                 </div>
