@@ -11,7 +11,7 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getSolicitacoesGeraisPrestador, getSolicitacoesTotalPrestador, getFaturamentoMes, getFaturamentoAgendamento} from '../../services/api.js';
+import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getSolicitacoesGeraisPrestador, getSolicitacoesTotalPrestador, getFaturamentoMes} from '../../services/api.js';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
