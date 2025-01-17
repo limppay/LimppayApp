@@ -732,14 +732,14 @@ useEffect(() => {
                                         </div> 
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
-                                        {/* Total de gastos no mês */}
-                                        <div className="bg-white shadow-md rounded-lg p-6">
-                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
-                                            <p className="text-desSec text-3xl font-bold text-gray-800">
-                                                R$ {GastoMes.toFixed(2) || "0.00"}
-                                            </p>
-                                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                                {/* Total de gastos no mês */}
+                                <div className="bg-white shadow-md rounded-lg p-6">
+                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
+                                    <p className="text-desSec text-3xl font-bold text-gray-800">
+                                        {formatarMoeda(GastoMes.toFixed(2) || "0.00")}
+                                    </p>
+                                </div>
 
                                         {/* Próximo Agendamento */}
                                         <div className="bg-white shadow-md rounded-lg p-4">
