@@ -57,7 +57,7 @@ export default function FormCliente() {
                 return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
             })
             .test("fileType", "Formato de arquivo não suportado", (value) => {
-                return value && ['image/jpeg', 'image/png'].includes(value.type); // Limita os tipos permitidos
+                return value && ['image/jpeg', 'image/png', 'image/webp'].includes(value.type); // Limita os tipos permitidos
         }),
         
     })

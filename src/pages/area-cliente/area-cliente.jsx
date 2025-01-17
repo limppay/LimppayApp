@@ -453,12 +453,11 @@ const [endDate, setEndDate] = useState(null);
 
   
 // Função para filtrar os agendamentos com base no nome e na data
-    const agendamentosFiltrados = agendamentos.length > 0 && agendamentos.filter((agendamento) => {
+const agendamentosFiltrados = agendamentos.length > 0 && agendamentos.filter((agendamento) => {
     const nameMatch = agendamento.user.name.toLowerCase().includes(searchTerm.toLowerCase());
     
     // Filtra pela data, caso as datas de início e fim estejam definidas
-    const dateMatch = (startDate && new Date(agendamento.dataServico) >= new Date(startDate)) &&
-                      (endDate && new Date(agendamento.dataServico) <= new Date(endDate));
+    const dateMatch = (startDate && new Date(agendamento.dataServico) >= new Date(startDate)) && (endDate && new Date(agendamento.dataServico) <= new Date(endDate));
 
     // Retorna true se ambos os filtros (nome e data) coincidirem
     return nameMatch && (!startDate || !endDate || dateMatch);
@@ -696,128 +695,128 @@ useEffect(() => {
 
                             {screenSelected === "painel" && (
                                 <div className="md:pt-28 flex-1 p-6 pb-[8vh] pt-[10vh] overflow-y-auto  ">
-                                    {/* Header do painel */}
-
                                     {/* Grid do dashboard */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {/* Prestador mais contratado */}
                                         <div className="bg-white  shadow-md rounded-lg p-6">
-                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
-                                        <div className="flex items-center">
-                                            <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
-                                            <Avatar
-                                                src={PrestadorMaisContratado?.avatarUrl?.avatarUrl || User}
-                                                alt={PrestadorMaisContratado?.name}
-                                                className="w-full h-full object-cover"
-                                            />
+                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
+                                            <div className="flex items-center">
+                                                <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
+                                                <Avatar
+                                                    src={PrestadorMaisContratado?.avatarUrl?.avatarUrl || User}
+                                                    alt={PrestadorMaisContratado?.name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                </div>
+                                                <span className="text-desSec  font-medium">
+                                                {PrestadorMaisContratado?.name || <span className='text-white'> <Spinner/> </span>}
+                                                </span>
                                             </div>
-                                            <span className="text-desSec  font-medium">
-                                            {PrestadorMaisContratado?.name || <span className='text-white'> <Spinner/> </span>}
-                                            </span>
                                         </div>
+
+
+                                        {/* Solicitações do mês */}
+                                        <div className="bg-white  shadow-md rounded-lg p-6">
+                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                Solicitações do Mês
+                                            </h2>
+                                            <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                {SolicitacoesDoMes || 0}
+                                            </p>
+                                        </div>
+
+                                        {/* Total de agendamentos */}
+                                        <div className="bg-white  shadow-md rounded-lg p-6">
+                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
+                                            <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
+                                        </div> 
                                     </div>
 
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                                        {/* Total de gastos no mês */}
+                                        <div className="bg-white shadow-md rounded-lg p-6">
+                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
+                                            <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                R$ {GastoMes.toFixed(2) || "0.00"}
+                                            </p>
+                                        </div>
 
-                                    {/* Solicitações do mês */}
-                                    <div className="bg-white  shadow-md rounded-lg p-6">
-                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
-                                            Solicitações do Mês
-                                        </h2>
-                                        <p className="text-desSec text-3xl font-bold text-gray-800">
-                                            {SolicitacoesDoMes || 0}
-                                        </p>
-                                    </div>
+                                        {/* Próximo Agendamento */}
+                                        <div className="bg-white shadow-md rounded-lg p-4">
+                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-2">Próximo Agendamento</h2>
+                                            <div className="flex flex-col gap-6">
+                                                {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
+                                                    (() => {
+                                                        const hoje = new Date();
 
-                                    {/* Total de agendamentos */}
-                                    <div className="bg-white  shadow-md rounded-lg p-6">
-                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
-                                        <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
-                                    </div> 
-                                </div>
+                                                        // Filtrar apenas agendamentos futuros com status "Agendado"
+                                                        const agendamentosFuturos = agendamentosFiltrados.filter(
+                                                            agendamento =>
+                                                                new Date(agendamento.dataServico) >= hoje &&
+                                                                agendamento.status === "Agendado"
+                                                        );
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
-                                {/* Total de gastos no mês */}
-                                <div className="bg-white shadow-md rounded-lg p-6">
-                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
-                                    <p className="text-desSec text-3xl font-bold text-gray-800">
-                                        R$ {GastoMes.toFixed(2) || "0.00"}
-                                    </p>
-                                </div>
+                                                        if (agendamentosFuturos.length === 0) {
+                                                            return <p className="text-prim flex-1">Nenhum agendamento futuro encontrado com status "Agendado".</p>;
+                                                        }
 
-                                {/* Próximo Agendamento */}
-                                <div className="bg-white shadow-md rounded-lg p-4">
-                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-2">Próximo Agendamento</h2>
-                                    <div className="flex flex-col gap-6">
-                                        {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
-                                            (() => {
-                                                const hoje = new Date();
+                                                        // Ordenar por data e hora
+                                                        const agendamentosOrdenados = agendamentosFuturos.sort((a, b) => {
+                                                            const dataA = new Date(a.dataServico).setHours(...a.horaServico.split(':').map(Number));
+                                                            const dataB = new Date(b.dataServico).setHours(...b.horaServico.split(':').map(Number));
+                                                            return dataA - dataB;
+                                                        });
 
-                                                // Filtrar apenas agendamentos futuros com status "Agendado"
-                                                const agendamentosFuturos = agendamentosFiltrados.filter(
-                                                    agendamento =>
-                                                        new Date(agendamento.dataServico) >= hoje &&
-                                                        agendamento.status === "Agendado"
-                                                );
+                                                        // Selecionar o primeiro agendamento e todos com a mesma data e horário
+                                                        const primeiroAgendamento = agendamentosOrdenados[0];
+                                                        const agendamentosComMesmoHorario = agendamentosOrdenados.filter(agendamento => {
+                                                            const dataHoraA = new Date(agendamento.dataServico).setHours(...agendamento.horaServico.split(':').map(Number));
+                                                            const dataHoraB = new Date(primeiroAgendamento.dataServico).setHours(...primeiroAgendamento.horaServico.split(':').map(Number));
+                                                            return dataHoraA === dataHoraB;
+                                                        });
 
-                                                if (agendamentosFuturos.length === 0) {
-                                                    return <p className="text-prim flex-1">Nenhum agendamento futuro encontrado com status "Agendado".</p>;
-                                                }
-
-                                                // Ordenar por data e hora
-                                                const agendamentosOrdenados = agendamentosFuturos.sort((a, b) => {
-                                                    const dataA = new Date(a.dataServico).setHours(...a.horaServico.split(':').map(Number));
-                                                    const dataB = new Date(b.dataServico).setHours(...b.horaServico.split(':').map(Number));
-                                                    return dataA - dataB;
-                                                });
-
-                                                // Selecionar o primeiro agendamento e todos com a mesma data e horário
-                                                const primeiroAgendamento = agendamentosOrdenados[0];
-                                                const agendamentosComMesmoHorario = agendamentosOrdenados.filter(agendamento => {
-                                                    const dataHoraA = new Date(agendamento.dataServico).setHours(...agendamento.horaServico.split(':').map(Number));
-                                                    const dataHoraB = new Date(primeiroAgendamento.dataServico).setHours(...primeiroAgendamento.horaServico.split(':').map(Number));
-                                                    return dataHoraA === dataHoraB;
-                                                });
-
-                                                return (
-                                                    <div className="flex flex-col gap-6 flex-1">
-                                                        {agendamentosComMesmoHorario.map((agendamento, index) => (
-                                                            <div key={index} className="flex flex-col gap-3 shadow-lg rounded-lg p-5">
-                                                                <p><b>Serviço:</b> {agendamento.Servico}</p>
-                                                                <p>
-                                                                    <b>Data:</b> {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
-                                                                        day: '2-digit',
-                                                                        month: 'long',
-                                                                        year: 'numeric'
-                                                                    })}
-                                                                </p>
-                                                                <p><b>Hora:</b> {agendamento.horaServico}</p>
-                                                                <p><b>Preço:</b> {formatarMoeda(agendamento.valorServico)}</p>
-                                                                <p><b>Status:</b> {agendamento.status}</p>
-                                                                <p><b>Endereço:</b> {agendamento.enderecoCliente}</p>
-                                                                <a
-                                                                    href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                >
-                                                                    <Button className="w-full bg-sec text-white mt-4">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-                                                                        </svg>
-                                                                        Abrir com o Google Maps
-                                                                    </Button>
-                                                                </a>
+                                                        return (
+                                                            <div className="flex flex-col gap-6 flex-1">
+                                                                {agendamentosComMesmoHorario.map((agendamento, index) => (
+                                                                    <div key={index} className="flex flex-col gap-3 shadow-lg rounded-lg p-5">
+                                                                        <p><b>Serviço:</b> {agendamento.Servico}</p>
+                                                                        <p>
+                                                                            <b>Data:</b> {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
+                                                                                day: '2-digit',
+                                                                                month: 'long',
+                                                                                year: 'numeric'
+                                                                            })}
+                                                                        </p>
+                                                                        <p><b>Hora:</b> {agendamento.horaServico}</p>
+                                                                        <p><b>Preço:</b> {formatarMoeda(agendamento.valorServico)}</p>
+                                                                        <p><b>Status:</b> {agendamento.status}</p>
+                                                                        <p><b>Endereço:</b> {agendamento.enderecoCliente}</p>
+                                                                        <a
+                                                                            href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                        >
+                                                                            <Button className="w-full bg-sec text-white mt-4">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
+                                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                                                                </svg>
+                                                                                Abrir com o Google Maps
+                                                                            </Button>
+                                                                        </a>
+                                                                    </div>
+                                                                ))}
                                                             </div>
-                                                        ))}
-                                                    </div>
-                                                );
-                                            })()
-                                        ) : (
-                                            <p className="text-prim flex-1">Nenhum agendamento encontrado.</p>
-                                        )}
+                                                        );
+                                                    })()
+                                                ) : (
+                                                    <p className="text-prim flex-1">Nenhum agendamento encontrado.</p>
+                                                )}
+                                            </div>
+                                        </div>
+
                                     </div>
+
                                 </div>
-                            </div>
-                            </div>
                             )}
 
                             {screenSelected == "perfil" && (
@@ -970,14 +969,14 @@ useEffect(() => {
                                         Urls={userInfo?.AvatarUrl?.avatarUrl} 
                                     /> 
                                 
-                            </section>
+                                </section>
                                 
                             )}
 
                             {screenSelected == "pedidos" && (
                                 <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5 flex flex-col gap-5'>
-                                    <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
+                                        <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
                                             <input
                                                 type="text"
                                                 placeholder="Pesquisar"
@@ -1003,362 +1002,366 @@ useEffect(() => {
                                                 />
 
                                             </div>
+                                        </div>
+
+                                        {agendamentos.length > 0 ? (
+                                            agendamentosFiltrados.sort((a, b) => {
+                                                const prioridade = (status) => {
+                                                    if (status === "Iniciado") return 1;
+                                                    if (status === "Agendado") return 2;
+                                                    return 3;
+                                                };
+                                                return prioridade(a.status) - prioridade(b.status);
+                                            })   
+                                            .map((agendamento) => (
+                                                <>
+                                                    <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
+                                                        <div className='flex flex-col  gap-5 items-start w-full justify-between p-2'>
+                                                            <div className='w-full flex gap-2 items-center '
+                                                                onClick={() => {
+                                                                    setSelectedAgendamento(agendamento); // Armazena o provider selecionado
+                                                                    setOpenPerfil(true); // Abre o modal
+                                                                }}
+                                                            >
+                                                                    <Avatar 
+                                                                        src={agendamento.user.avatarUrl} 
+                                                                        alt="avatarPrestador"
+                                                                        size='lg'
+                                                                    />
+                                                                    <h3 className='text-prim font-semibold flex flex-wrap text-center'>{agendamento.user.name}</h3>
+                                                                                                                                
+                                                            </div>
+
+                                                            <div className='flex flex-col gap-2 w-full  '>
+                                                                <div className="overflow-y-auto  bg-white  rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5 ">
+                                                                    
+                                                                    <div className='text-prim w-full flex flex-col gap-5'>
+                                                                        <p className='text-justify'>
+                                                                            {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
+                                                                                day: '2-digit',
+                                                                                month: 'long',
+                                                                                year: 'numeric'
+                                                                            })}
+
+                                                                        </p>
+
+                                                                        <div className='flex flex-col w-full gap-5 '>
+                                                                            {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
+                                                                                <div>
+                                                                                    {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
+                                                                                        <div className='w-full flex justify-between'>
+                                                                                            <span>
+                                                                                                Combo:
+                                                                                            </span> 
+                                                                                            {
+
+                                                                                            calcularValorBruto(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico)}
+                                                                                        </div>
 
 
-                                    </div>
 
+                                                                                    )}
 
-                     
+                                                                                    {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
+                                                                                        <div className='w-full flex justify-between'>
+                                                                                            <span>
+                                                                                                Desconto Total:
+                                                                                            </span> 
+                                                                                            {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) ? formatarMoeda(agendamento?.descontoTotal) : "Não"}
+                                                                                        </div>
+                                                                                    )}
 
-                                    {agendamentos.length > 0 ? (
-                                    agendamentosFiltrados.sort((a, b) => {
-                                        const prioridade = (status) => {
-                                            if (status === "Iniciado") return 1;
-                                            if (status === "Agendado") return 2;
-                                            return 3;
-                                        };
-                                        return prioridade(a.status) - prioridade(b.status);
-                                    })   
-                                        .map((agendamento) => (
-                                            <>
-                                                <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
-                                                    <div className='flex flex-col  gap-5 items-start w-full justify-between p-2'>
-                                                        <div className='w-full flex gap-2 items-center '
-                                                            onClick={() => {
-                                                                setSelectedAgendamento(agendamento); // Armazena o provider selecionado
-                                                                setOpenPerfil(true); // Abre o modal
-                                                            }}
-                                                        >
-                                                                <Avatar 
-                                                                    src={agendamento.user.avatarUrl} 
-                                                                    alt="avatarPrestador"
-                                                                    size='lg'
-                                                                />
-                                                                <h3 className='text-prim font-semibold flex flex-wrap text-center'>{agendamento.user.name}</h3>
-                                                                                                                               
-                                                        </div>
+                                                                                    {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
+                                                                                        <div className='w-full flex justify-between'>
+                                                                                            <span>
+                                                                                                Valor pago:
+                                                                                            </span> 
+                                                                                            {formatarMoeda(agendamento?.valorLiquido)}
+                                                                                        </div>
+                                                                                    )}
 
-                                                        <div className='flex flex-col gap-2 w-full  '>
-                                                            <div className="overflow-y-auto  bg-white  rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5 ">
-                                                                
-                                                                <div className='text-prim w-full flex flex-col gap-5'>
-                                                                    <p className='text-justify'>
-                                                                        {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
-                                                                            day: '2-digit',
-                                                                            month: 'long',
-                                                                            year: 'numeric'
-                                                                        })}
+                                                                                    
 
-                                                                    </p>
-                                                                    <div className='flex flex-col w-full gap-5 '>
-                                                                        {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
-                                                                            <div>
-                                                                                {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
+                                                                                </div>
+
+                                                                            )}
+
+                                                                            <div >
+                                                                                {
+                                                                                calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) <= 1 &&
                                                                                     <div className='w-full flex justify-between'>
                                                                                         <span>
-                                                                                            Combo:
+                                                                                            Cupom Desconto:
                                                                                         </span> 
-                                                                                        {
-
-                                                                                        calcularValorBruto(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico)}
+                                                                                        {calcularValorDesconto(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico)}
                                                                                     </div>
-
-
-
-                                                                                )}
-
-                                                                                {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
-                                                                                    <div className='w-full flex justify-between'>
-                                                                                        <span>
-                                                                                            Desconto Total:
-                                                                                        </span> 
-                                                                                        {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) ? formatarMoeda(agendamento?.descontoTotal) : "Não"}
-                                                                                    </div>
-                                                                                )}
-
-                                                                                {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
-                                                                                    <div className='w-full flex justify-between'>
-                                                                                        <span>
-                                                                                            Valor pago:
-                                                                                        </span> 
-                                                                                        {formatarMoeda(agendamento?.valorLiquido)}
-                                                                                    </div>
-                                                                                )}
-
                                                                                 
+                                                                                }
 
-                                                                            </div>
-
-                                                                        )}
-
-                                                                        <div >
-                                                                            {
-                                                                            calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) <= 1 &&
                                                                                 <div className='w-full flex justify-between'>
                                                                                     <span>
-                                                                                        Cupom Desconto:
-                                                                                    </span> 
-                                                                                    {calcularValorDesconto(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico)}
+                                                                                        Valor Serviço: 
+                                                                                    </span>
+                                                                                    {formatarMoeda(agendamento.valorServico)}
                                                                                 </div>
-                                                                            
-                                                                            }
+                                                                                <div className='w-full flex justify-between'>
+                                                                                    <span>
+                                                                                        {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1  ? "Total" : "Valor Pago"}
+                                                                                    </span> 
+                                                                                    {calcularValorLiquido(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico)}
+                                                                                </div>
 
-                                                                            <div className='w-full flex justify-between'>
-                                                                                <span>
-                                                                                    Valor Serviço: 
-                                                                                </span>
-                                                                                {formatarMoeda(agendamento.valorServico)}
                                                                             </div>
-                                                                            <div className='w-full flex justify-between'>
-                                                                                <span>
-                                                                                    {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1  ? "Total" : "Valor Pago"}
-                                                                                </span> 
-                                                                                {calcularValorLiquido(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico)}
-                                                                            </div>
+
+                                                                            
+
 
                                                                         </div>
 
-                                                                        
 
+                                                                        <div className='w-4/12 sm:w-auto text-center pt- sm:pt-0 flex items-center justify-start gap-5'>
+                                                                            <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
+                                                                        </div>
 
-                                                                    </div>
-                                                                    <div className='w-4/12 sm:w-auto text-center pt- sm:pt-0 flex items-center justify-start gap-5'>
-                                                                        <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
                                                                     </div>
                                                                 </div>
                                                             </div>
+
+                                                            
                                                         </div>
 
-                                                        
-                                                    </div>
-                                                    <Accordion isCompact itemClasses={{title: "text-prim"}}>
-                                                        <AccordionItem key={agendamento.id} title="Detalhes" >
-                                                            <div className="mt-2">
+
+
+                                                        <Accordion isCompact itemClasses={{title: "text-prim"}}>
+                                                            <AccordionItem key={agendamento.id} title="Detalhes" >
                                                                 
-                                                                {agendamento.status === "Realizado" && (
-                                                                    <div className=' text-justify pt-2 pb-4 '>
-                                                                        <h2 className='font-semibold text-lg '>Avaliar Prestador</h2>
-                                                                        <label htmlFor="avaliacao">Conte-nos como foi o serviço desse prestador :D <br />
-                                                                        Não se preocupe, sua avaliação é totalmente anônima</label>
-                                                                        <div className='flex flex-col gap-3 pt-2'>
-                                                                            <div className='flex  gap-10'>
-                                                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                                                    <Star
-                                                                                    key={star}
-                                                                                    filled={star <= rating}
-                                                                                    onClick={() => handleRating(star)}
-                                                                                    />
-                                                                                ))}
+                                                                <div className="mt-2">
+                                                                    
+                                                                    {agendamento.status === "Realizado" && (
+                                                                        <div className=' text-justify pt-2 pb-4 '>
+                                                                            <h2 className='font-semibold text-lg '>Avaliar Prestador</h2>
+                                                                            <label htmlFor="avaliacao">Conte-nos como foi o serviço desse prestador :D <br />
+                                                                            Não se preocupe, sua avaliação é totalmente anônima</label>
+                                                                            <div className='flex flex-col gap-3 pt-2'>
+                                                                                <div className='flex  gap-10'>
+                                                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                                                        <Star
+                                                                                        key={star}
+                                                                                        filled={star <= rating}
+                                                                                        onClick={() => handleRating(star)}
+                                                                                        />
+                                                                                    ))}
+                                                                                </div>
+                                                                                <div className='flex flex-col gap-2'>
+                                                                                    <textarea
+                                                                                        placeholder="Avalie com suas palavras como foi o serviço desse prestador"
+                                                                                        className="border rounded-md border-bord p-3 min-h-[20vh] lg:min-h-40 focus:outline-ter text-prim w-full max-h-[20vh]"
+                                                                                        rows="3"
+                                                                                        id="avaliacao"
+                                                                                        value={review}
+                                                                                        onChange={handleReviewChange}
+                                                                                    ></textarea>
+
+                                                                                    <Button 
+                                                                                        className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec transition-all"
+                                                                                        onPress={() => (
+                                                                                            handleCreateReview(agendamento.user.id)
+
+                                                                                        )}
+                                                                                        isDisabled={loadingReview}
+                                                                                    >
+                                                                                        {loadingReview? <Spinner/> : "Enviar Avaliação"}
+                                                                                    </Button>
+                                                                                </div>
                                                                             </div>
-                                                                            <div className='flex flex-col gap-2'>
-                                                                                <textarea
-                                                                                    placeholder="Avalie com suas palavras como foi o serviço desse prestador"
-                                                                                    className="border rounded-md border-bord p-3 min-h-[20vh] lg:min-h-40 focus:outline-ter text-prim w-full max-h-[20vh]"
-                                                                                    rows="3"
-                                                                                    id="avaliacao"
-                                                                                    value={review}
-                                                                                    onChange={handleReviewChange}
-                                                                                ></textarea>
+                                                                            
+                                                                        </div>        
+                                                                    )}
 
-                                                                                <Button 
-                                                                                    className="w-full bg-des text-white py-2 rounded-lg hover:bg-sec transition-all"
-                                                                                    onPress={() => (
-                                                                                        handleCreateReview(agendamento.user.id)
-
-                                                                                    )}
-                                                                                    isDisabled={loadingReview}
-                                                                                >
-                                                                                    {loadingReview? <Spinner/> : "Enviar Avaliação"}
-                                                                                </Button>
-                                                                            </div>
-                                                                        </div>
-                                                                        
-                                                                    </div>        
-                                                                )}
-
-                                                                <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
-                                                                    <p className='font-semibold border-t-2 pt-5 border-bord'>Agendamento feito dia {new Date(agendamento?.dataAgendamento).toLocaleDateString('pt-BR', {
-                                                                        day: '2-digit',
-                                                                        month: 'long',
-                                                                        year: 'numeric'
-                                                                    })}</p>
-                                                                    <div className='text-justify flex flex-col gap-4'>
-
-                                                                        <p><b>Prestador:</b> {agendamento?.user?.name}</p>
-
-                                                                        <p><b>Serviço:</b> {agendamento?.Servico}</p>
-
-                                                                        <p><b>Observação:</b> {agendamento?.observacao ? agendamento.observacao : "Nenhuma obervação."}</p>
-
-
-                                                                        <p><b>Data:</b> {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
+                                                                    <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
+                                                                        <p className='font-semibold border-t-2 pt-5 border-bord'>Agendamento feito dia {new Date(agendamento?.dataAgendamento).toLocaleDateString('pt-BR', {
                                                                             day: '2-digit',
                                                                             month: 'long',
                                                                             year: 'numeric'
                                                                         })}</p>
-                                                                        <div className='flex flex-col gap-2 max-w-[100vh]'>
-                                                                            <p><b>Endereço:</b> {agendamento?.enderecoCliente}</p>
-                                                                            <a 
-                                                                                href={`https://www.google.com/maps/place/${encodeURIComponent(MapsLocate(agendamento?.logradouro, agendamento?.numero, agendamento?.bairro, agendamento?.cidade, agendamento?.estado, agendamento?.cep))}`} 
-                                                                                target="_blank" 
-                                                                                rel="noopener noreferrer"
-                                                                            >
-                                                                                <Button className='w-full bg-sec text-white'>
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-                                                                                    </svg>
+                                                                        <div className='text-justify flex flex-col gap-4'>
 
-                                                                                    Abrir com o Google Maps
+                                                                            <p><b>Prestador:</b> {agendamento?.user?.name}</p>
 
-                                                                                </Button>
-                                                                            </a>
+                                                                            <p><b>Serviço:</b> {agendamento?.Servico}</p>
 
-                                                                        </div>
-
-                                                                    </div> 
-
-                                                                                                                                                    
-                                                                </div>
-                                                            </div>
+                                                                            <p><b>Observação:</b> {agendamento?.observacao ? agendamento.observacao : "Nenhuma obervação."}</p>
 
 
-                                                        </AccordionItem>
-                                                    </Accordion>
-                                                </div>
-                                            
-                                            </>
-                                        ))
-                                    
-                                        
-                                    ) : (
-                                        <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
-                                            <p>Você não possui nenhum agendamento</p>
-                                            <div className='pt-5'>
-                                                <a href="/contrate-online">
-                                                    <Button className='bg-des text-white'>
-                                                        Fazer agendamento
-                                                    </Button>
-                                                </a>
-                                            </div>
-                                        </div>
+                                                                            <p><b>Data:</b> {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
+                                                                                day: '2-digit',
+                                                                                month: 'long',
+                                                                                year: 'numeric'
+                                                                            })}</p>
+                                                                            <div className='flex flex-col gap-2 max-w-[100vh]'>
+                                                                                <p><b>Endereço:</b> {agendamento?.enderecoCliente}</p>
+                                                                                <a 
+                                                                                    href={`https://www.google.com/maps/place/${encodeURIComponent(MapsLocate(agendamento?.logradouro, agendamento?.numero, agendamento?.bairro, agendamento?.cidade, agendamento?.estado, agendamento?.cep))}`} 
+                                                                                    target="_blank" 
+                                                                                    rel="noopener noreferrer"
+                                                                                >
+                                                                                    <Button className='w-full bg-sec text-white'>
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                                                                        </svg>
 
-                                    )}
+                                                                                        Abrir com o Google Maps
 
-                                    <Modal 
-                                        backdrop="opaque" 
-                                        isOpen={openPerfil} 
-                                        onOpenChange={setOpenPerfil}
-                                        placement='center'
-                                        classNames={{
-                                            backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 "
-                                        }}
-                                        className='max-w-[40vh] sm:max-w-[80vh]'
-                                    >
-                                        <ModalContent>
-                                            {(onClose) => (
-                                            <>
-                                                <ModalHeader className="flex flex-col gap-1 p-0 text-desSec"></ModalHeader>
-                                                <ModalBody className='p-0'>
+                                                                                    </Button>
+                                                                                </a>
 
-                                                <div className="bg-white pb-4 pt-0 p-0 ">
-                                                    <div className="sm:flex sm:items-start flex-col">
-                                                        
-                                                        {selectedAgendamento?.user && ( // Renderiza as informações do provider selecionado
-                                                            <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[60vh] sm:max-h-[65vh]">
-                                                                <div className='flex flex-col gap-2 justify-start'>
-                                                                    <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
-                                                                        {/* Container do Avatar */}
-                                                                        <div className="absolute">
-                                                                            <Avatar src={selectedAgendamento?.user?.avatarUrl} size="lg"    
-                                                                            className="w-24 h-24 text-large
-                                                                            border-white
-                                                                            border-5
-                                                                            "
-                                                                            />
-                                                                        </div>
-                                                                        
+                                                                            </div>
+
+                                                                        </div> 
                                                                     </div>
+
+
                                                                 </div>
 
-                                                                <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
-                                                                    {[1, 2, 3, 4, 5].map((star) => (
-                                                                        <StarReview
-                                                                            key={star}
-                                                                            filled={star <= calcularMediaStars(selectedAgendamento?.user.Review)}
-                                                                        />
-                                                                    ))}
-                                                                </div>
-                                                                
-                                                                <div className='overflow-y-auto max-h-[80vh] '>
-                                                                    <div className='p-5 pb-1'>
-                                                                        <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
-                                                                            <h1 className='text-prim font-semibold text-xl'>{selectedAgendamento?.user?.name}</h1>
-                                                                            <p className='text-prim text-[0.8rem]'>
-                                                                                {calcularIdade(selectedAgendamento?.user?.data)} anos
-                                                                            </p>
-                                                                            <p className='text-[0.8rem] text-prim pb-2'>{selectedAgendamento?.user?.genero}</p>
-                                                                            <div className='overflow-y-auto lg:h-[20vh]'>
-                                                                                <p className='text-prim text-start pt-4 text-sm'>{selectedAgendamento?.user?.sobre}</p>
+
+                                                            </AccordionItem>
+                                                        </Accordion>
+
+                                                    </div>
+                                                
+                                                </>
+                                            ))
+                                        
+                                            
+                                        ) : (
+                                            <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
+                                                <p>Você não possui nenhum agendamento</p>
+                                                <div className='pt-5'>
+                                                    <a href="/contrate-online">
+                                                        <Button className='bg-des text-white'>
+                                                            Fazer agendamento
+                                                        </Button>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        )}
+
+                                        <Modal 
+                                            backdrop="opaque" 
+                                            isOpen={openPerfil} 
+                                            onOpenChange={setOpenPerfil}
+                                            placement='center'
+                                            classNames={{
+                                                backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 "
+                                            }}
+                                            className='max-w-[40vh] sm:max-w-[80vh]'
+                                        >
+                                            <ModalContent>
+                                                {(onClose) => (
+                                                <>
+                                                    <ModalHeader className="flex flex-col gap-1 p-0 text-desSec"></ModalHeader>
+                                                    <ModalBody className='p-0'>
+
+                                                    <div className="bg-white pb-4 pt-0 p-0 ">
+                                                        <div className="sm:flex sm:items-start flex-col">
+                                                            
+                                                            {selectedAgendamento?.user && ( // Renderiza as informações do provider selecionado
+                                                                <div className="pt-0 p-0 flex flex-col w-full bg-pri max-h-[60vh] sm:max-h-[65vh]">
+                                                                    <div className='flex flex-col gap-2 justify-start'>
+                                                                        <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
+                                                                            {/* Container do Avatar */}
+                                                                            <div className="absolute">
+                                                                                <Avatar src={selectedAgendamento?.user?.avatarUrl} size="lg"    
+                                                                                className="w-24 h-24 text-large
+                                                                                border-white
+                                                                                border-5
+                                                                                "
+                                                                                />
+                                                                            </div>
+                                                                            
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className='flex justify-end items-center gap-2 pr-5 pt-2'>
+                                                                        {[1, 2, 3, 4, 5].map((star) => (
+                                                                            <StarReview
+                                                                                key={star}
+                                                                                filled={star <= calcularMediaStars(selectedAgendamento?.user.Review)}
+                                                                            />
+                                                                        ))}
+                                                                    </div>
+                                                                    
+                                                                    <div className='overflow-y-auto max-h-[80vh] '>
+                                                                        <div className='p-5 pb-1'>
+                                                                            <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
+                                                                                <h1 className='text-prim font-semibold text-xl'>{selectedAgendamento?.user?.name}</h1>
+                                                                                <p className='text-prim text-[0.8rem]'>
+                                                                                    {calcularIdade(selectedAgendamento?.user?.data)} anos
+                                                                                </p>
+                                                                                <p className='text-[0.8rem] text-prim pb-2'>{selectedAgendamento?.user?.genero}</p>
+                                                                                <div className='overflow-y-auto lg:h-[20vh]'>
+                                                                                    <p className='text-prim text-start pt-4 text-sm'>{selectedAgendamento?.user?.sobre}</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className='p-5'>
+                                                                            <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
+                                                                                <Accordion   >
+                                                                                    <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${selectedAgendamento?.user?.Review.length} )`} classNames={{title: 'text-prim text-md '}} >
+                                                                                        <div className='flex flex-col gap-5'>
+                                                                                            {selectedAgendamento?.user && (
+                                                                                                selectedAgendamento?.user?.Review.length == 0 ? (
+                                                                                                    <div className=' p-5 text-prim flex flex-col justify-center text-center'>
+                                                                                                        <h3 className='font-semibold'>Sem avaliações</h3>
+                                                                                                    </div>
+                                                                                                    
+                                                                                                ) : (
+                                                                                                    selectedAgendamento?.user?.Review.map((avaliacao) => (
+                                                                                                        <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
+                                                                                                            <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
+                                                                                                                day: '2-digit',
+                                                                                                                month: 'long',
+                                                                                                                year: 'numeric'
+                                                                                                            })}</h3>
+                                                                                                            <p className='text-prim'>{avaliacao?.comment === "" ? <span className='text-prim text-opacity-40'>Nenhum comentário</span>: avaliacao.comment}</p>
+                                                                                                            <div className='flex justify-start items-center gap-2 pr-5 pt-2'>
+                                                                                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                                                                                    <StarReview
+                                                                                                                        key={star}
+                                                                                                                        filled={star <= avaliacao.stars}
+                                                                                                                    />
+                                                                                                                ))}
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    ))
+                                                                                                )
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </AccordionItem>
+                                                                                </Accordion>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div className='p-5'>
-                                                                        <div className='border rounded-lg border-bord w-full shadow-md  bg-white p-5 '>
-                                                                            <Accordion   >
-                                                                                <AccordionItem  key="1" aria-label="Accordion 1" title={`Avaliações ( ${selectedAgendamento?.user?.Review.length} )`} classNames={{title: 'text-prim text-md '}} >
-                                                                                    <div className='flex flex-col gap-5'>
-                                                                                        {selectedAgendamento?.user && (
-                                                                                            selectedAgendamento?.user?.Review.length == 0 ? (
-                                                                                                <div className=' p-5 text-prim flex flex-col justify-center text-center'>
-                                                                                                    <h3 className='font-semibold'>Sem avaliações</h3>
-                                                                                                </div>
-                                                                                                
-                                                                                            ) : (
-                                                                                                selectedAgendamento?.user?.Review.map((avaliacao) => (
-                                                                                                    <div key={avaliacao.id} className=' p-5 border border-bord rounded-md text-prim flex flex-col gap-2'>
-                                                                                                        <h3 className='font-semibold'>{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
-                                                                                                            day: '2-digit',
-                                                                                                            month: 'long',
-                                                                                                            year: 'numeric'
-                                                                                                        })}</h3>
-                                                                                                        <p className='text-prim'>{avaliacao?.comment === "" ? <span className='text-prim text-opacity-40'>Nenhum comentário</span>: avaliacao.comment}</p>
-                                                                                                        <div className='flex justify-start items-center gap-2 pr-5 pt-2'>
-                                                                                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                                                                                <StarReview
-                                                                                                                    key={star}
-                                                                                                                    filled={star <= avaliacao.stars}
-                                                                                                                />
-                                                                                                            ))}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                ))
-                                                                                            )
-                                                                                        )}
-                                                                                    </div>
-                                                                                </AccordionItem>
-                                                                            </Accordion>
-                                                                        </div>
-                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        )}
+                                                            )}
 
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                                                                
+                                                                                                    
 
-                                    
-                                                </ModalBody>
-                                                <ModalFooter>
-                                                <Button className='bg-desSec text-white' onPress={onClose}  >
-                                                    Fechar
-                                                </Button>
-                                                </ModalFooter>
-                                            </>
-                                            )}
-                                        </ModalContent>
-                                    </Modal>
                                         
+                                                    </ModalBody>
+                                                    <ModalFooter>
+                                                    <Button className='bg-desSec text-white' onPress={onClose}  >
+                                                        Fechar
+                                                    </Button>
+                                                    </ModalFooter>
+                                                </>
+                                                )}
+                                            </ModalContent>
+                                        </Modal>
+
                                     </div>
                                 </section>
                             )}
