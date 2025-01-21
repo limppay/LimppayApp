@@ -4,7 +4,7 @@ import { HeaderApp, Logo,Footer} from '../../componentes/imports.jsx'
 import User from "../../assets/img/diarista-cadastro/user.webp"
 import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import EditClienteModal from './EditClienteModal.jsx';
-import { CreateEnderecosCliente, createReview, deleteEnderecosCliente, getAvaliacoes, getEnderecoDefaultCliente, getPrestadorMaisContratado, getSolicitacoesDoMes, getSolicitacoesTotal, getGastoMes } from '../../services/api.js';
+import { CreateEnderecosCliente, createReview, deleteEnderecosCliente, getAvaliacoes, getEnderecoDefaultCliente, getPrestadorMaisContratado, getSolicitacoesDoMes, getSolicitacoesTotal, getGastoMes, perfil } from '../../services/api.js';
 import HeaderWebApp from '../../componentes/App/HeaderWebApp.jsx';
 import { Avatar, ScrollShadow, Spinner,  } from '@nextui-org/react';
 import { getAgendamentos } from '../../services/api.js';
@@ -29,31 +29,17 @@ import { io } from 'socket.io-client';
 import { useWebSocket } from '../../context/WebSocketContext.jsx';
 
 const AreaCliente = () => {
-
-    // Determina a URL com base no NODE_ENV
-    const baseURL =
-    import.meta.env.VITE_ENV === 'development'
-    ? 'http://localhost:3000/cliente/me'
-    : 'https://limppay-api-production.up.railway.app/cliente/me';
-
-    const [userInfo, setUserInfo] = useState(null);
     const { user, setUser  } = useUser();
-    
+    const [errorLogin, setErrorLogin] = useState(false)
+
     const[Open, SetOpen] = useState(false)
-
-    const [adressDefault, setAdressDefault] = useState([])
-    const [agendamentos, setAgendamentos] = useState([])
-    const [avaliacoes, setAvaliacoes] = useState([])
-
     const [selectedAgendamento, setSelectedAgendamento] = useState([])
-    const [selectedAvaliacao, setSelectedAvaliacao] = useState([])
 
     const [openPerfil, setOpenPerfil] = useState(false)
     const [openDetalhes, setOpenDetalhes] = useState(false)
 
     const [rating, setRating] = useState(0); // Estado para armazenar o valor da avaliação
     // Função para atualizar a avaliação
-    const [prestadorId, setPrestadorId] = useState('')
     const navigate = useNavigate()
 
     const [screenSelected, setScreenSelected] = useState("painel")
@@ -63,8 +49,8 @@ const AreaCliente = () => {
     const [cepError, setCepError] = useState('')
     const [creating, setCreating] = useState(false)
     const inputRef = useRef(null)
-    const [loadingEdit, setLoadingEdit] = useState(false)
     const [loadingReview, setLoadingReview] = useState(false)
+
     const calcularIdade = (data) =>{
         const hoje = new Date();
         const nascimento = new Date(data);
@@ -78,71 +64,22 @@ const AreaCliente = () => {
         return idade;
     };
 
-    const { socket, setAppId, setUsername } = useWebSocket();
 
     const fetchUserInfo = async () => {
         try {
-            const response = await axios.get(baseURL, {
-                withCredentials: true
-            });
-
-
-            const enderecoDefault = await getEnderecoDefaultCliente(response.data.id)
-            const agendamentos = await getAgendamentos(response.data.id)
-            const avaliacoes = await getAvaliacoes(response.data.id)
-
-            setAgendamentos(agendamentos)
-            setAvaliacoes(avaliacoes)
-
-            const endereco = {
-                iD_Endereco: enderecoDefault[0].id,
-                clienteId: enderecoDefault[0].clienteId,
-                cep: enderecoDefault[0].cep,
-                cidade: enderecoDefault[0].cidade,
-                complemento: enderecoDefault[0].complemento,
-                estado: enderecoDefault[0].estado,
-                logradouro: enderecoDefault[0].logradouro,
-                numero: enderecoDefault[0].numero,
-                referencia: enderecoDefault[0].referencia,
-                bairro: enderecoDefault[0].bairro
-            }
-
-
-            setAdressDefault([endereco])
+            const response = await perfil()
+            console.log(response)
+            setUser(response)
             
-            const combineData = {
-                ...response.data,
-                ...endereco,
-            }
-            
-            setAppId(response.data.id)
-            setUsername(response.data.name)
-            console.log("Nome: ", response.data.name)
-            setUserInfo(combineData);
-            const status = localStorage.setItem("status", response.data.ativa)
-
             
         } catch (error) {
             console.error('Erro ao buscar informações do usuário:', error);
         }
     };
 
-    useEffect(() => {
-      if (!socket ) return;
-  
-      socket.on('data-updated', (data) => {
-          console.log('Notificação recebida:', data);
-          fetchUserInfo(); // Atualiza os dados ao receber o evento
-      });
-  
-      return () => {
-        socket.off('data-updated')
-      };
-    }, [userInfo]);
-
 
     const schema = yup.object().shape({
-        clienteId: yup.string().default(userInfo?.id),
+        clienteId: yup.string().default(user?.id),
         localServico: yup.string().required("Informe o nome do endereço").trim(),
         cep: yup.string().required("Cep é obrigatório"),
         logradouro: yup.string(),
@@ -194,8 +131,6 @@ const AreaCliente = () => {
         try {
             // Realiza a exclusão do endereço na API
             const DeleteEndereco = await deleteEnderecosCliente(enderecoId);
-            
-    
             
             setDeleting(false)
 
@@ -313,7 +248,7 @@ const AreaCliente = () => {
     const handleCreateReview = async (id) => {
         setLoadingReview(true)
         const reviewData = {
-            clientId: userInfo?.id,
+            clientId: user?.id,
             providerId: id,
             stars: rating,
             comment: review,
@@ -326,110 +261,18 @@ const AreaCliente = () => {
             setReview('')
             setLoadingReview(false)
         } catch (error) {
+            console.log(error)
         } finally {
-            const avaliacoes = await getAvaliacoes(userInfo?.id)
-            setAvaliacoes(avaliacoes)
+            fetchUserInfo()
             setOpenDetalhes(false)
 
         }
     };
 
-
-    const [errorLogin, setErrorLogin] = useState(false)
-    
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            setErrorLogin(false)
-            try {
-                const response = await axios.get(baseURL, {
-                    withCredentials: true
-                });
-
-
-                const enderecoDefault = await getEnderecoDefaultCliente(response.data.id)
-                const agendamentos = await getAgendamentos(response.data.id)
-                const avaliacoes = await getAvaliacoes(response.data.id)
-
-                setAgendamentos(agendamentos)
-                setAvaliacoes(avaliacoes)
-
-                const endereco = {
-                    iD_Endereco: enderecoDefault[0].id,
-                    clienteId: enderecoDefault[0].clienteId,
-                    cep: enderecoDefault[0].cep,
-                    cidade: enderecoDefault[0].cidade,
-                    complemento: enderecoDefault[0].complemento,
-                    estado: enderecoDefault[0].estado,
-                    logradouro: enderecoDefault[0].logradouro,
-                    numero: enderecoDefault[0].numero,
-                    referencia: enderecoDefault[0].referencia,
-                    bairro: enderecoDefault[0].bairro
-                }
-
-
-                setAdressDefault([endereco])
-                
-                const combineData = {
-                    ...response.data,
-                    ...endereco,
-                }
-
-                console.log("Setando app id: ", response.data.id)
-                setAppId(response.data.id)
-                setUsername(response.data.name)
-
-                setUserInfo(combineData);
-                const status = localStorage.setItem("status", response.data.ativa)
-                setErrorLogin(false)
-                
-            } catch (error) {
-                console.error('Erro ao buscar informações do usuário:', error);
-                setErrorLogin(true)
-
-            }
-        };
-        
-        fetchUserInfo()
-
-    }, []);
-
-    const status = localStorage.getItem("status")
-
-    
-
-
-    useEffect(() => {
-    }, [userInfo]); // Isso vai logar as informações do usuário toda vez que mudarem
-
-    
-    const handleUserUpdated = (updatedInfo) => {
-        // const enderecoDefault = updatedInfo.updatedCliente.EnderecoDefault[0];
-    
-        // const updatedUserInfo = {
-        //     ...userInfo,
-        //     ...updatedInfo.updatedCliente,
-        //     iD_Endereco: enderecoDefault.id,
-        //     clienteId: enderecoDefault.clienteId,
-        //     cep: enderecoDefault.cep,
-        //     cidade: enderecoDefault.cidade,
-        //     complemento: enderecoDefault.complemento,
-        //     estado: enderecoDefault.estado,
-        //     logradouro: enderecoDefault.logradouro,
-        //     numero: enderecoDefault.numero,
-        //     referencia: enderecoDefault.referencia,
-        //     bairro: enderecoDefault.bairro,
-        // };
-    
-        // // Remover a propriedade EnderecoDefault do objeto principal
-        // delete updatedUserInfo.EnderecoDefault;
-    
+    const handleUserUpdated = (updatedInfo) => {    
         window.location.reload()
-
     };
     
-    // Anexos
-    // const avatarUrl = urls ? Object.values(urls)[0] : null;
-
     const buttons = [
         { link: "/contrate-online", text: "Contrate Online"},
         { link: "/", text: "Quem Somos"},
@@ -446,114 +289,112 @@ const AreaCliente = () => {
             currency: 'BRL' 
         }).format(valor);
     }
+        
+    const [searchTerm, setSearchTerm] = useState("");
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
     
-const [searchTerm, setSearchTerm] = useState("");
-const [startDate, setStartDate] = useState(null);
-const [endDate, setEndDate] = useState(null);
+    // Função para filtrar os agendamentos com base no nome e na data
+    const agendamentosFiltrados = user?.agendamentos.length > 0 && user?.agendamentos.filter((agendamento) => {
+        const nameMatch = agendamento.user.name.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        // Filtra pela data, caso as datas de início e fim estejam definidas
+        const dateMatch = (startDate && new Date(agendamento.dataServico) >= new Date(startDate)) && (endDate && new Date(agendamento.dataServico) <= new Date(endDate));
 
-  
-// Função para filtrar os agendamentos com base no nome e na data
-const agendamentosFiltrados = agendamentos.length > 0 && agendamentos.filter((agendamento) => {
-    const nameMatch = agendamento.user.name.toLowerCase().includes(searchTerm.toLowerCase());
+        // Retorna true se ambos os filtros (nome e data) coincidirem
+        return nameMatch && (!startDate || !endDate || dateMatch);
+    });
+
+    const [PrestadorMaisContratado, setPrestadorMaisContratado] = useState()
+    useEffect(() => {
+        const handlePrestadorMaisContratado = async() => {
+            try {
+                const response = await getPrestadorMaisContratado(user?.id)
+                setPrestadorMaisContratado(response)
+            } catch (error) {
+            }
+        }
+        handlePrestadorMaisContratado()
+    }, [user?.id, user]);
+
+    const [SolicitacoesDoMes, setSolicitacoesDoMes] = useState(0);
+    useEffect(()=>{
+        const handleSolicitacoesDoMes = async()=>{
+            try{
+                const solMes = await getSolicitacoesDoMes(user?.id)
+                setSolicitacoesDoMes(solMes)
+            }catch(error){
+            }
+        }
+        handleSolicitacoesDoMes()
+    }, [user?.id, user]);
+
+    const [SolicitacoesTotal, setSolicitacoesTotal] = useState(0);
+    useEffect(() =>{
+        const handleSolicitacoesTotal = async()=>{
+            try{
+                const solTotal = await getSolicitacoesTotal(user?.id)
+                setSolicitacoesTotal(solTotal)
+            }catch(error){
+            }
+        }
+        handleSolicitacoesTotal()
+    }, [user?.id, user]);
+        
+    const [GastoMes, setGastoMes] = useState(0);
+    useEffect(()=>{
+        const handleGastoMes = async()=>{
+            try{
+                const fatMes = await getGastoMes(user?.id)
+                setGastoMes(fatMes)
+            }catch(error){
+            }
+        }
+        handleGastoMes()
+    }, [user?.id, user]);
+
+
+    const calcularValorLiquido = (valorLiquido, desconto, valorServico) => {
+        const ValorBruto =  valorLiquido + desconto
+        const qtdAgendamentos = ValorBruto / valorServico
+        const descontoPorServico = desconto / qtdAgendamentos
+
+        const descontoTotalServico = valorServico - descontoPorServico
+
+        return formatarMoeda(descontoTotalServico)
+
+    }
+
+    const calcularValorDesconto = (valorLiquido, desconto, valorServico) => {
+        const ValorBruto =  valorLiquido + desconto
+        const qtdAgendamentos = ValorBruto / valorServico
+        const descontoPorServico = desconto / qtdAgendamentos
+
+        return formatarMoeda(descontoPorServico)
+
+    }
+
+    const calcularQtdAgendamentos = (valorLiquido, desconto, valorServico) => {
+        const ValorBruto =  valorLiquido + desconto
+        const qtdAgendamentos = ValorBruto / valorServico
     
-    // Filtra pela data, caso as datas de início e fim estejam definidas
-    const dateMatch = (startDate && new Date(agendamento.dataServico) >= new Date(startDate)) && (endDate && new Date(agendamento.dataServico) <= new Date(endDate));
+        return qtdAgendamentos
 
-    // Retorna true se ambos os filtros (nome e data) coincidirem
-    return nameMatch && (!startDate || !endDate || dateMatch);
-});
-  
-const nivelProgress = 75; // Defina a lógica para calcular o progresso
-const experienciaPercent = 60; // Defina a lógica para calcular o percentual de experiência
-const [PrestadorMaisContratado, setPrestadorMaisContratado] = useState()
-useEffect(() => {
-    const handlePrestadorMaisContratado = async() => {
-        try {
-            const response = await getPrestadorMaisContratado(userInfo?.id)
-            setPrestadorMaisContratado(response)
-        } catch (error) {
-        }
     }
-    handlePrestadorMaisContratado()
-  }, [userInfo?.id, userInfo]);
 
- const [SolicitacoesDoMes, setSolicitacoesDoMes] = useState(0);
-  useEffect(()=>{
-    const handleSolicitacoesDoMes = async()=>{
-        try{
-            const solMes = await getSolicitacoesDoMes(userInfo?.id)
-            setSolicitacoesDoMes(solMes)
-        }catch(error){
-        }
-    }
-    handleSolicitacoesDoMes()
-  }, [userInfo?.id, userInfo]);
-
-  const [SolicitacoesTotal, setSolicitacoesTotal] = useState(0);
-  useEffect(() =>{
-    const handleSolicitacoesTotal = async()=>{
-        try{
-            const solTotal = await getSolicitacoesTotal(userInfo?.id)
-            setSolicitacoesTotal(solTotal)
-        }catch(error){
-        }
-    }
-    handleSolicitacoesTotal()
-  }, [userInfo?.id, userInfo]);
+    const calcularValorBruto = (valorLiquido, desconto, valorServico) => {
+        const ValorBruto =  valorLiquido + desconto
     
-  const [GastoMes, setGastoMes] = useState(0);
-  useEffect(()=>{
-    const handleGastoMes = async()=>{
-        try{
-            const fatMes = await getGastoMes(userInfo?.id)
-            setGastoMes(fatMes)
-        }catch(error){
-        }
+        return formatarMoeda(ValorBruto)
+
     }
-    handleGastoMes()
-  }, [userInfo?.id, userInfo]);
 
+    const MapsLocate = (logradouro, numero, bairro, cidade, estado, cep) => {
+        const local = `${logradouro}, ${numero} - ${bairro}, ${cidade} - ${estado}, ${cep} `
 
-  const calcularValorLiquido = (valorLiquido, desconto, valorServico) => {
-    const ValorBruto =  valorLiquido + desconto
-    const qtdAgendamentos = ValorBruto / valorServico
-    const descontoPorServico = desconto / qtdAgendamentos
-
-    const descontoTotalServico = valorServico - descontoPorServico
-
-    return formatarMoeda(descontoTotalServico)
-
-  }
-
-  const calcularValorDesconto = (valorLiquido, desconto, valorServico) => {
-    const ValorBruto =  valorLiquido + desconto
-    const qtdAgendamentos = ValorBruto / valorServico
-    const descontoPorServico = desconto / qtdAgendamentos
-
-    return formatarMoeda(descontoPorServico)
-
-  }
-
-  const calcularQtdAgendamentos = (valorLiquido, desconto, valorServico) => {
-    const ValorBruto =  valorLiquido + desconto
-    const qtdAgendamentos = ValorBruto / valorServico
-  
-    return qtdAgendamentos
-
-  }
-
-  const calcularValorBruto = (valorLiquido, desconto, valorServico) => {
-    const ValorBruto =  valorLiquido + desconto
-  
-    return formatarMoeda(ValorBruto)
-
-  }
-
-  const MapsLocate = (logradouro, numero, bairro, cidade, estado, cep) => {
-    const local = `${logradouro}, ${numero} - ${bairro}, ${cidade} - ${estado}, ${cep} `
-
-    return local
-  }
+        return local
+    }
 
   
     useEffect(() => {
@@ -577,7 +418,7 @@ useEffect(() => {
         { text: "Separado(a)", value: 5 },
     ];
 
-    const estadoCivilTexto = EstadoCivil.find(item => item.value === userInfo?.estadoCivil)?.text || '';
+    const estadoCivilTexto = EstadoCivil.find(item => item.value === user?.estadoCivil)?.text || '';
 
     const calcularMediaStars = (reviews) => {
         if (!reviews || reviews.length === 0) return 0; // Retorna 0 caso não tenha avaliações
@@ -594,7 +435,7 @@ useEffect(() => {
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
             <main className='h-screen w-screen'>
 
-                {userInfo ? (
+                {user ? (
                     <>
                         <div className='flex flex-col lg:flex-row h-screen'>
                             {/* menu lateral */}
@@ -605,7 +446,7 @@ useEffect(() => {
 
                                 <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
                                     <Avatar
-                                    src={userInfo?.AvatarUrl.avatarUrl || User}
+                                    src={user?.AvatarUrl.avatarUrl || User}
                                     className={`${isOpen ? "" : ""} cursor-pointer`}
                                     onClick={() => setScreenSelected("perfil")}
                                     />
@@ -696,10 +537,39 @@ useEffect(() => {
                             {screenSelected === "painel" && (
                                 <div className="md:pt-28 flex-1 p-6 pb-[8vh] pt-[10vh] overflow-y-auto  ">
                                     {/* Grid do dashboard */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        
+                                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {/* Solicitações do mês */}
+                                        <div className="bg-white  shadow-md rounded-lg p-6">
+                                            <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">
+                                                Solicitações do Mês
+                                            </h2>
+                                            <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                {SolicitacoesDoMes || 0}
+                                            </p>
+                                        </div>
+
+                                        {/* Total de agendamentos */}
+                                        <div className="bg-white  shadow-md rounded-lg p-6">
+                                            <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
+                                            <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
+                                        </div> 
+                                        
+                                    </div>
+
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                                        {/* Total de gastos no mês */}
+                                        <div className="bg-white shadow-md rounded-lg p-6">
+                                            <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
+                                            <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                {formatarMoeda(GastoMes.toFixed(2) || "0.00")}
+                                            </p>
+                                        </div>
+
                                         {/* Prestador mais contratado */}
                                         <div className="bg-white  shadow-md rounded-lg p-6">
-                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
+                                            <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
                                             <div className="flex items-center">
                                                 <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
                                                 <Avatar
@@ -713,33 +583,7 @@ useEffect(() => {
                                                 </span>
                                             </div>
                                         </div>
-
-
-                                        {/* Solicitações do mês */}
-                                        <div className="bg-white  shadow-md rounded-lg p-6">
-                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
-                                                Solicitações do Mês
-                                            </h2>
-                                            <p className="text-desSec text-3xl font-bold text-gray-800">
-                                                {SolicitacoesDoMes || 0}
-                                            </p>
-                                        </div>
-
-                                        {/* Total de agendamentos */}
-                                        <div className="bg-white  shadow-md rounded-lg p-6">
-                                            <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
-                                            <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
-                                        </div> 
-                                    </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
-                                {/* Total de gastos no mês */}
-                                <div className="bg-white shadow-md rounded-lg p-6">
-                                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
-                                    <p className="text-desSec text-3xl font-bold text-gray-800">
-                                        {formatarMoeda(GastoMes.toFixed(2) || "0.00")}
-                                    </p>
-                                </div>
+                                        
 
                                         {/* Próximo Agendamento */}
                                         <div className="bg-white shadow-md rounded-lg p-4">
@@ -778,19 +622,26 @@ useEffect(() => {
                                                         return (
                                                             <div className="flex flex-col gap-6 flex-1">
                                                                 {agendamentosComMesmoHorario.map((agendamento, index) => (
-                                                                    <div key={index} className="flex flex-col gap-3 shadow-lg rounded-lg p-5">
-                                                                        <p><b>Serviço:</b> {agendamento.Servico}</p>
-                                                                        <p>
-                                                                            <b>Data:</b> {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
-                                                                                day: '2-digit',
-                                                                                month: 'long',
-                                                                                year: 'numeric'
-                                                                            })}
-                                                                        </p>
-                                                                        <p><b>Hora:</b> {agendamento.horaServico}</p>
-                                                                        <p><b>Preço:</b> {formatarMoeda(agendamento.valorServico)}</p>
-                                                                        <p><b>Status:</b> {agendamento.status}</p>
-                                                                        <p><b>Endereço:</b> {agendamento.enderecoCliente}</p>
+                                                                    <div key={index} className="flex flex-col gap-3  rounded-lg">
+                                                                        <div className='flex flex-col gap-2'>
+                                                                            <div className='flex justify-between'>
+                                                                                <p>{agendamento.Servico}</p>    
+                                                                                <p>
+                                                                                    {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
+                                                                                        day: '2-digit',
+                                                                                        month: 'long',
+                                                                                        year: 'numeric'
+                                                                                    })}
+                                                                                </p>
+                                                                                <p>{agendamento.horaServico}</p>
+
+                                                                            </div>
+                                                                            <p>{agendamento.enderecoCliente}</p>
+
+
+                                                                        </div>
+
+                                                                        <p>{formatarMoeda(agendamento.valorServico)}</p>
                                                                         <a
                                                                             href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
                                                                             target="_blank"
@@ -813,28 +664,27 @@ useEffect(() => {
                                                 )}
                                             </div>
                                         </div>
-
                                     </div>
 
                                 </div>
                             )}
 
                             {screenSelected == "perfil" && (
-                                <section className='w-full gap-1 pb-[8vh] pt-[8vh]  sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
-                                    <div className='lg:flex flex-col max-w-50 min-w-72 min-h-60 p-10 pt-5 w-full 
+                                <section className='w-full gap-1 pb-[8vh] pt-[7vh]  sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                    <div className='lg:flex flex-col max-w-50 min-w-72 min-h-60 w-full bg-desSec md:bg-white
                                     '>
-                                        <div className='flex flex-col lg:flex-row lg:justify-between w-full'>
-                                            <div className='text-center flex flex-col gap-2'>
+                                        <div className='flex flex-col lg:flex-row lg:justify-between w-full bg-desSec md:bg-white pt-[2vh] pb-[2vh] '>
+                                            <div className='text-center flex flex-col gap-2 md:p-[2vh] md:text-prim text-white'>
                                                 <div className="flex flex-col justify-center items-center gap-2">
                                                     <div className='flex items-center'>
                                                         <div>
-                                                            <p className='text-prim cursor-pointer' onClick={()=> SetOpen(true)}>Editar Perfil</p>
+                                                            <p className=' cursor-pointer' onClick={()=> SetOpen(true)}>Editar Perfil</p>
                                                         </div>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6 text-prim">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6 ">
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                                         </svg>
                                                     </div>
-                                                    <img src={userInfo?.AvatarUrl?.avatarUrl ? userInfo?.AvatarUrl?.avatarUrl : User}
+                                                    <Avatar src={user?.AvatarUrl?.avatarUrl ? user?.AvatarUrl?.avatarUrl : User}
                                                     id='avatar' 
                                                     alt="foto de perfil" 
                                                     className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
@@ -844,129 +694,132 @@ useEffect(() => {
                                                 </div>
                                                 
                                                 <div className='flex flex-col gap-3 h-full max-w-full max-h-full pl-5 pr-5'>
-                                                    <h1 className='text-xl text-ter'>{userInfo.name}</h1>
+                                                    <h1 className='text-xl '>{user?.name}</h1>
 
                                                 </div>
 
                                             </div>
                                         </div>
 
-                                        <h2 className="text-xl pt-10 text-prim font-semibold">Informações Pessoais</h2>
-                                        <div className="grid  sm:grid-cols-3 gap-5 pt-2">
-                                            
-                                            <div className="grid gap-2">
-                                                <label htmlFor="email" className="text-neutral-500">E-mail</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.email} />
-                                            </div>
-                                            <div className="grid gap-2">
-                                                <label htmlFor="telefone" className="text-neutral-500">Telefone 1</label>
-                                                <InputMask
-                                                    ref={inputRef}
-                                                    mask="(99) 99999-9999" 
-                                                    maskChar={null}
-                                                    className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
-                                                    id="telefone_1" 
-                                                    type="text" 
-                                                    placeholder="(00) 00000-0000" 
-                                                    value={userInfo?.telefone_1}
-                                                />
-                                            </div>
-                                            <div className="grid gap-2">
-                                                <label htmlFor="telefone" className="text-neutral-500">Telefone 2</label>
-                                                <InputMask
-                                                    ref={inputRef}
-                                                    mask="(99) 99999-9999" 
-                                                    maskChar={null}
-                                                    className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
-                                                    id="telefone_2" 
-                                                    type="text" 
-                                                    placeholder="(00) 00000-0000" 
-                                                    value={userInfo?.telefone_2}
-                                                />
-                                            </div>
-
-                                        </div>
-
-                                        <div className="grid  sm:grid-cols-2 gap-5 pt-5">
-
-                                            <div className="grid gap-2">
-                                                <label htmlFor="rg" className="text-neutral-500">Estado Civil</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={estadoCivilTexto} />
-                                            </div>
-
-                                            <div className="grid gap-2">
-                                            <label htmlFor="genero" className="text-neutral-500">Gênero</label>
-                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.genero} />
-                                            </div>
-
-                                        </div>
-
-                                        
-                                        <h2 className="text-xl pt-10 text-prim font-semibold">Endereço</h2>
-                                        <div className="grid sm:grid-cols-3 gap-5 pt-2">
-
-                                            <div className="grid gap-2">
-                                                <label htmlFor="cep" className="text-prim">CEP</label>
-
-                                                <InputMask 
-                                                ref={inputRef}
-                                                mask="99999-999"
-                                                maskChar={null}
-                                                className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
-                                                id="cep" 
-                                                type="text" 
-                                                placeholder="CEP" 
-                                                value={userInfo.cep}
+                                        <div className='p-[2vh] rounded-t-2xl bg-white '>
+                                            <h2 className="text-xl text-prim font-semibold">Informações Pessoais</h2>
+                                            <div className="grid  sm:grid-cols-3 gap-5 pt-2">
                                                 
-                                                />
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="email" className="text-neutral-500">E-mail</label>
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.email} />
+                                                </div>
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="telefone" className="text-neutral-500">Telefone 1</label>
+                                                    <InputMask
+                                                        ref={inputRef}
+                                                        mask="(99) 99999-9999" 
+                                                        maskChar={null}
+                                                        className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
+                                                        id="telefone_1" 
+                                                        type="text" 
+                                                        placeholder="(00) 00000-0000" 
+                                                        value={user?.telefone_1}
+                                                    />
+                                                </div>
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="telefone" className="text-neutral-500">Telefone 2</label>
+                                                    <InputMask
+                                                        ref={inputRef}
+                                                        mask="(99) 99999-9999" 
+                                                        maskChar={null}
+                                                        className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
+                                                        id="telefone_2" 
+                                                        type="text" 
+                                                        placeholder="(00) 00000-0000" 
+                                                        value={user?.telefone_2}
+                                                    />
+                                                </div>
+
                                             </div>
 
-                                            <div className="grid gap-2">
-                                                <label htmlFor="logradouro" className="text-prim">Logradouro</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.logradouro} />
+                                            <div className="grid  sm:grid-cols-2 gap-5 pt-5">
+
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="rg" className="text-neutral-500">Estado Civil</label>
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={estadoCivilTexto} />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                <label htmlFor="genero" className="text-neutral-500">Gênero</label>
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.genero} />
+                                                </div>
+
                                             </div>
 
-                                            <div className="grid gap-2">
-                                                <label htmlFor="numero" className="text-prim">Número</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.numero} />
-                                            </div>
-
-                                            <div className="grid gap-2">
-                                                <label htmlFor="complemento" className="text-prim">Complemento</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.complemento} />
-                                            </div>
-
-                                            <div className="grid gap-2">
-                                                <label htmlFor="referencia" className="text-prim">Ponto de referência</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.referencia} />
-                                            </div>
-
-                                            <div className="grid gap-2">
-                                                <label htmlFor="bairro" className="text-prim">Bairro</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.bairro} />
-                                            </div>
-
-                                            <div className="grid gap-2">
-                                                <label htmlFor="cidade" className="text-prim">Cidade</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cidade} />
-                                            </div>
-
-                                            <div className="grid gap-2">
-                                                <label htmlFor="estado" className="text-prim">Estado</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.estado} />
-                                            </div>
                                             
+                                            <h2 className="text-xl pt-10 text-prim font-semibold">Endereço</h2>
+                                            <div className="grid sm:grid-cols-3 gap-5 pt-2">
+
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="cep" className="text-prim">CEP</label>
+
+                                                    <InputMask 
+                                                    ref={inputRef}
+                                                    mask="99999-999"
+                                                    maskChar={null}
+                                                    className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled
+                                                    id="cep" 
+                                                    type="text" 
+                                                    placeholder="CEP" 
+                                                    value={user?.EnderecoDefault[0]?.cep}
+                                                    
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="logradouro" className="text-prim">Logradouro</label>
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.logradouro} />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="numero" className="text-prim">Número</label>
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.numero} />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="complemento" className="text-prim">Complemento</label>
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.complemento} />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="referencia" className="text-prim">Ponto de referência</label>
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.referencia} />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="bairro" className="text-prim">Bairro</label>
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.bairro} />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="cidade" className="text-prim">Cidade</label>
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.cidade} />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <label htmlFor="estado" className="text-prim">Estado</label>
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.estado} />
+                                                </div>
+                                                
+                                            </div>
+
                                         </div>
+
                                         
                                     </div>
                                     {/* Modal de edição */}
                                     <EditClienteModal 
                                         Open={Open}
                                         SetOpen={() => SetOpen(false)} 
-                                        userInfo={userInfo} 
-                                        // token={token} 
+                                        userInfo={user} 
                                         onUserUpdated={handleUserUpdated}
-                                        Urls={userInfo?.AvatarUrl?.avatarUrl} 
+                                        Urls={user?.AvatarUrl?.avatarUrl} 
                                     /> 
                                 
                                 </section>
@@ -1004,7 +857,7 @@ useEffect(() => {
                                             </div>
                                         </div>
 
-                                        {agendamentos.length > 0 ? (
+                                        {user?.agendamentos.length > 0 ? (
                                             agendamentosFiltrados.sort((a, b) => {
                                                 const prioridade = (status) => {
                                                     if (status === "Iniciado") return 1;
@@ -1024,7 +877,7 @@ useEffect(() => {
                                                                 }}
                                                             >
                                                                     <Avatar 
-                                                                        src={agendamento.user.avatarUrl} 
+                                                                        src={agendamento.user.avatarUrl.avatarUrl} 
                                                                         alt="avatarPrestador"
                                                                         size='lg'
                                                                     />
@@ -1272,7 +1125,7 @@ useEffect(() => {
                                                                         <div className="flex items-center space-x-96 lg:pl-10 pl-5 p-20  pb-5 bg-desSec  ">
                                                                             {/* Container do Avatar */}
                                                                             <div className="absolute">
-                                                                                <Avatar src={selectedAgendamento?.user?.avatarUrl} size="lg"    
+                                                                                <Avatar src={selectedAgendamento?.user?.avatarUrl?.avatarUrl} size="lg"    
                                                                                 className="w-24 h-24 text-large
                                                                                 border-white
                                                                                 border-5
@@ -1370,8 +1223,8 @@ useEffect(() => {
                                 <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5 flex flex-col gap-5'>
 
-                                        {avaliacoes ? (
-                                            avaliacoes.map((avaliacao) => (
+                                        {user?.avaliacoes.length > 0 ? (
+                                            user?.avaliacoes?.map((avaliacao) => (
                                                 
                                                 <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full shadow-xl rounded-md'>
 
@@ -1380,7 +1233,7 @@ useEffect(() => {
                                                         
                                                         >
                                                             <Avatar 
-                                                            src={avaliacao.provider?.avatarUrl} 
+                                                            src={avaliacao.provider?.avatarUrl?.avatarUrl} 
                                                             alt="avatarCliente"
                                                             size='lg'
                                                             />
@@ -1444,192 +1297,55 @@ useEffect(() => {
                                         <h2 className='text-xl font-semibold text-desSec text-center sm:text-start'>Endereços cadastrados</h2>
 
                                         <div className='pt-5 flex flex-col justify-center w-full'>
-                                            {userInfo.EnderecosCliente.length == 0 ? (
-                                                <div className='grid
-                                                  sm:grid-cols-3
-                                                  gap-10
-                                                  pt-5
-                                                  justify-items-center
-                                                  w-full
-                                                  
-                                                  scrollbar-hide'>
-                                                    <div className='
-                                                    
-                                                    border-2 border-sec  rounded-lg 
-                                                    
-                                                    2xl:min-h-[32vh] 
-                                                    2xl:max-h-[32vh]  
-                                                    2xl:max-w-[32vh] 
-                                                    2xl:min-w-[32vh]
+                                            <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
+                                                {user?.EnderecosCliente?.length > 0 && (
+                                                    user?.EnderecosCliente?.map((endereco) => (
+                                                        <div key={endereco.id} className='p-5 border rounded-lg border-prim'>
+                                                            <div className='text-start flex flex-col text-prim w-full justify-between'>
+                                                                <h2 className='text-sec font-semibold pb-2'>{endereco?.localServico}</h2>
+                                                                <p>{endereco?.logradouro}, {endereco?.numero}</p> 
+                                                                <p>{endereco?.complemento}</p> 
+                                                                <p>{endereco?.bairro}</p> 
+                                                                <p>{endereco?.cidade}, {endereco?.estado} - {endereco?.cep} </p> 
+                                                                <div className='flex justify-end pt-2 text-red-400'>
+                                                                    <Button
+                                                                        onPress={() => (HandleDeleteEndereco(endereco.id))}
+                                                                        type="button"
+                                                                        className='text-error bg-white justify-end p-0'
+                                                                    >
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                                        </svg>
 
-                                                    xl:min-h-[38vh] 
-                                                    xl:max-h-[38vh]  
-                                                    xl:max-w-[38vh] 
-                                                    xl:min-w-[38vh] 
-
-                                                    lg:min-h-[36vh] 
-                                                    lg:max-h-[36vh] 
-                                                    lg:max-w-[36vh] 
-                                                    lg:min-w-[36vh] 
-
-                                                    min-h-[30vh] 
-                                                    max-h-[30vh] 
-                                                    min-w-[30vh] 
-                                                    max-w-[30vh] 
-
-                                                    flex flex-col justify-center items-center  transition-all '
-                                                    onClick={() => (
-                                                        
-                                                        setOpenCreateAdress(true)
-
-                                                    ) }
-                                                    >
-                                                        <Button 
-                                                            className='p-2 text-des rounded-md bg-trans text-sm'
-                                                            type="button"
-                                                            onPress={() => (
-                                                                
-                                                                setOpenCreateAdress(true)
-
-                                                            )}
-                                                        >
-                                                            
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                            </svg>
-
-                                                        
-                                                        </Button>
-                                                    </div>
-
-                                                </div>
-                                            ) : (
-                                              <div className='sm:p-5'>
-                                                  <div className='grid
-                                                  sm:grid-cols-3
-                                                  gap-10
-                                                  pt-5
-                                                  justify-items-center
-                                                  w-full
-                                                  
-                                                  scrollbar-hide
-                                                  '>
-                                                    
-
-                                                    {userInfo.EnderecosCliente?.map((endereco) => (
-                                                        <div key={endereco.id} className={`
-                                                            border-2 border-sec  rounded-lg 
-
-                                                            2xl:min-h-[32vh] 
-                                                            2xl:max-h-[32vh]  
-                                                            2xl:max-w-[32vh] 
-                                                            2xl:min-w-[32vh]
-
-                                                            xl:min-h-[38vh] 
-                                                            xl:max-h-[38vh]  
-                                                            xl:max-w-[38vh] 
-                                                            xl:min-w-[38vh] 
-
-                                                            lg:min-h-[36vh] 
-                                                            lg:max-h-[36vh] 
-                                                            lg:max-w-[36vh] 
-                                                            lg:min-w-[36vh] 
-
-                                                            min-h-[30vh] 
-                                                            max-h-[30vh] 
-                                                            min-w-[30vh] 
-                                                            max-w-[30vh] 
-
-                                                            flex flex-col justify-center items-center  transition-all 
-                                                        
-                                                        `}
-
-
-                                                        >
-                                                            {deleting ? (
-                                                                <div className='rounded-md w-full h-full flex items-center justify-center  text-white'>
-                                                                    <Spinner size='lg'/>
+                                                                    </Button>
                                                                 </div>
-                                                            ) : (
-                                                                <>
-                                                                    <div className='p-5 text-start flex flex-col text-prim w-full justify-between'>
-                                                                        <h2 className='text-sec font-semibold pb-2'>{endereco?.localServico}</h2>
-                                                                        <p>{endereco?.logradouro}, {endereco?.numero}</p> 
-                                                                        <p>{endereco?.complemento}</p> 
-                                                                        <p>{endereco?.bairro}</p> 
-                                                                        <p>{endereco?.cidade}, {endereco?.estado} - {endereco?.cep} </p> 
-                                                                        <div className='flex justify-end pt-2 text-red-400'>
-                                                                            <Button
-                                                                            onPress={() => (HandleDeleteEndereco(endereco.id))}
-                                                                            type="button"
-                                                                            className='text-error bg-white justify-end p-0'
-                                                                            >
-                                                                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                                              </svg>
-      
-                                                                            </Button>
-                                                                        </div>
-                                                                    </div>
-                                                                </>
-                                                            )}
+                                                            </div>
+
                                                         </div>
-                                                      ))}
 
-                                                      <div className='
-                                                            border-2 border-sec  rounded-lg 
-                                                            
-                                                            2xl:min-h-[32vh] 
-                                                            2xl:max-h-[32vh]  
-                                                            2xl:max-w-[32vh] 
-                                                            2xl:min-w-[32vh]
-
-                                                            xl:min-h-[38vh] 
-                                                            xl:max-h-[38vh]  
-                                                            xl:max-w-[38vh] 
-                                                            xl:min-w-[38vh] 
-
-                                                            lg:min-h-[36vh] 
-                                                            lg:max-h-[36vh] 
-                                                            lg:max-w-[36vh] 
-                                                            lg:min-w-[36vh] 
-
-                                                            min-h-[30vh] 
-                                                            max-h-[30vh] 
-                                                            min-w-[30vh] 
-                                                            max-w-[30vh] 
-
-                                                            flex flex-col justify-center items-center  transition-all '
-                                                      onClick={() => (
-                                                        
+                                                    ))
+                                                )}
+    
+                                                <Button 
+                                                    className='p-2 text-white rounded-md bg-trans text-sm bg-desSec md:col-span-2'
+                                                    type="button"
+                                                    onPress={() => (
                                                         setOpenCreateAdress(true)
 
-                                                      ) }
-                                                      >
-                                                          <button 
-                                                            className='p-2 text-des rounded-md bg-trans text-sm'
-                                                            type="button"
-                                                            onClick={() => (
-                                                                
-                                                                setOpenCreateAdress(true)
-        
-                                                            )}
-                                                          >
-                                                            
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                            </svg>
+                                                    )}
+                                                >
+                                                    
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                                    </svg>                                                
+                                                </Button>
+                                               
+                                          
 
-                                                          
-                                                          </button>
-                                                      </div>
+                                            </div>
 
-                                                      
-                                                  </div>
-                                                  
-                                              </div>
-                                              
-                                            )}
+
+
 
                                         </div>
                                     </div>
@@ -1814,6 +1530,7 @@ useEffect(() => {
                                         )}
                                         </ModalContent>
                                     </Modal>
+
                                 </section>
                             )}
                             

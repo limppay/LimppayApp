@@ -67,6 +67,19 @@ export const loginCliente = async (email, senha) => {
   }
 };
 
+export const perfil = async () => {
+  try {
+    const response = await api.get('/cliente/me');
+
+    return response.data;
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || 'Erro ao entrar no perfil do usuário.';
+
+    throw new Error(errorMessage);
+  }
+};
+
 export const loggoutUser = async () => {
   try {
     const response = await api.get("/users/logout", {

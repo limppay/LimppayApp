@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getEnderecosCliente, loginCliente } from '../../services/api';
+import { getEnderecosCliente, loginCliente, perfil } from '../../services/api';
 import { useUser } from '../../context/UserProvider';
 import { Spinner } from '@nextui-org/react';
 import { Button } from '@nextui-org/react';
@@ -14,23 +14,20 @@ export default function StepLoginCustomer() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    
     try {
-      const user = await loginCliente(email, senha);
+        const login = await loginCliente(email, senha);
+        const profile = await perfil(login)
+        setUser(profile)
+        console.log("Login realizado com sucesso!", profile)
+        navigate("/contrate-online");
 
-
-      if (!user) {
-        setError('Erro ao fazer login');
-      } else {
-        
-        setUser({user});
-
-      }
     } catch (err) {
-      setError(err.message);
-      console.error(err);
+        setError(err.message);
+        console.error(err);
+
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 
@@ -83,17 +80,31 @@ export default function StepLoginCustomer() {
                 />
               </div>
             </div>
-            <div>
-              <Button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                isDisabled={loading}
-              >
-                {loading ? <Spinner size='md'/> : 'Entrar'}
-              </Button>
+            <div className='flex flex-col gap-5'>
+              <div>
+                <Button
+                  type="submit"
+                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  isDisabled={loading}
+                >
+                  {loading ? <Spinner size='md'/> : 'Entrar'}
+                </Button>
+                {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
+              </div>
+              <div>
+                <a href="/cadastro-cliente" target='_blank'>
+                  <Button className='w-full bg-white border-desSec border text-desSec'>
+                    Nova conta
+                  </Button>
+                
+                </a>
+
+              </div>
+
+
             </div>
-            {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
           </form>
+          
         </div>
       </main>
     </div>

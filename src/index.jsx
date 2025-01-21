@@ -89,9 +89,7 @@ const router = createBrowserRouter([
     {
       path: "area-cliente",
       element: (
-        <WebSocketProvider>
-          <AreaCliente/>
-        </WebSocketProvider>
+        <AreaCliente/>
       )
     },
     {
@@ -108,19 +106,21 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
       <UserProvider>
-        <SelectedProvider>
-          <CheckoutProvider>
-            <AgendamentoData>
-                <SelectedDates>
-                  <SelectedTimes>
-                    <ScreenSelect>
-                      <RouterProvider router={router}/>
-                    </ScreenSelect>
-                  </SelectedTimes>
-                </SelectedDates>
-            </AgendamentoData>
-          </CheckoutProvider>
-        </SelectedProvider>  
+        <WebSocketProvider>
+          <SelectedProvider>
+            <CheckoutProvider>
+              <AgendamentoData>
+                  <SelectedDates>
+                    <SelectedTimes>
+                      <ScreenSelect>
+                        <RouterProvider router={router}/>
+                      </ScreenSelect>
+                    </SelectedTimes>
+                  </SelectedDates>
+              </AgendamentoData>
+            </CheckoutProvider>
+          </SelectedProvider>  
+        </WebSocketProvider>
       </UserProvider>
       
     </HelmetProvider>

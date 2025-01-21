@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import { useUser } from './UserProvider';
 
 const WebSocketContext = createContext();
 
@@ -7,20 +8,45 @@ export const WebSocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [appId, setAppId] = useState(null);
   const [username, setUsername] = useState(null);
+  const { user, setUser } = useUser()
+
+  const fetchUserInfo = async () => {
+      try {
+          const response = await perfil()
+          console.log(response)
+          setUser(response)
+          
+          
+      } catch (error) {
+          console.error('Erro ao buscar informações do usuário:', error);
+      }
+  };
+
+  useEffect(() => {
+    if (!socket ) return;
+
+    socket.on('data-updated', (data) => {
+        console.log('Notificação recebida:', data);
+        fetchUserInfo(); // Atualiza os dados ao receber o evento
+    });
+
+    return () => {
+      socket.off('data-updated')
+    };
+
+  }, [user]);
 
   useEffect(() => {
     // requestNotificationPermission()
-    if (!appId && !username) return;
-
-    console.log("App Id:", appId)
+    if (!user) return;
   
     const prod = "https://limppay-api-production.up.railway.app/";
     const local = "http://localhost:3000/";
 
-    const newSocket = io(prod, {
+    const newSocket = io(local, {
       query: {
-        appId,
-        username
+        appId: user?.id,
+        username: user?.name
       },
       reconnection: true,
       reconnectionAttempts: 5,
@@ -56,7 +82,7 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     
-  }, [appId, username]);
+  }, [user]);
 
   return (
     <WebSocketContext.Provider value={{socket, setAppId, setUsername}}>

@@ -1,164 +1,139 @@
 import React, { useEffect, useState } from 'react';
 import { Logo } from '../../componentes/imports';
 import painel from "../../assets/img/banner-diarista.webp";
-import { loginCliente } from '../../services/api';
+import { loginCliente, perfil } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserProvider';
 import { Button } from '@nextui-org/react';
 import { Spinner } from '@nextui-org/react';
 import CookieBanner from '../../componentes/App/CookieBanner';
 import { Helmet } from 'react-helmet-async';
-import axios from 'axios';
 
 export default function ClienteLogin() {
+    const { user, setUser } = useUser();
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { setUser } = useUser();
-
     const navigate = useNavigate();
-
-    const baseURL =
-    import.meta.env.VITE_ENV === 'development'
-        ? 'http://localhost:3000/cliente/me'
-        : 'https://limppay-api-production.up.railway.app/cliente/me';
-    const [errorLogin, setErrorLogin] = useState(false)
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            setErrorLogin(false)
-            try {
-                const user = await axios.get(baseURL, {
-                    withCredentials: true
-                });
-
-                navigate("/area-cliente")
-
-            } catch (error) {
-                console.error('Erro ao buscar informações do usuário:', error);
-                setErrorLogin(true)
-            }
-        };
-        
-        fetchUserInfo()
-
-    }, [ ]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         
         try {
-            const user = await loginCliente(email, senha);
-            if (!user) {
-                setError("Não foi possivel realizar o login");
-            } else {                
-                setUser({user})
-                navigate("/contrate-online");
-            }
+            const login = await loginCliente(email, senha);
+            const profile = await perfil(login)
+            setUser(profile)
+            console.log("Login realizado com sucesso!", profile)
+            navigate("/contrate-online");
+
         } catch (err) {
             setError(err.message);
             console.error(err);
+
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if(user) {
+            navigate('/area-cliente')
+
+        }
+
+    }, [user])
 
     return (
         <>
             <Helmet>
                 <title>Limppay: Cliente</title>
             </Helmet>
-            {errorLogin ? (
-                <div className='flex h-screen justify-center max-w-full'>
-                    <div className='h-screen flex flex-col p-10 w-full lg:w-5/12  bg-center bg-cover'>
-                        <main className='flex flex-col gap-10 lg:shadow-none rounded-md p-5 bg-white'>
-                            <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                                <img
-                                    alt="Limppay"
-                                    src={Logo}
-                                    className="mx-auto h-20 w-auto"
-                                />
-                                <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 text-desSec">
-                                    Entre na sua conta
-                                </h2>
-                                <p className='text-prim'>Entre na sua conta e acesse seu perfil da Limppay! :D</p>
-                            </div>
-                            
-                            <div className=" sm:mx-auto sm:w-full sm:max-w-sm">
-                                <form onSubmit={handleSubmit} className="space-y-6">
-                                    <div>
-                                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-ter">
-                                            Email
+
+            <div className='flex h-screen justify-center max-w-full'>
+                <div className='h-screen flex flex-col p-10 w-full lg:w-5/12  bg-center bg-cover'>
+                    <main className='flex flex-col gap-10 lg:shadow-none rounded-md p-5 bg-white'>
+                        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+                            <img
+                                alt="Limppay"
+                                src={Logo}
+                                className="mx-auto h-20 w-auto"
+                            />
+                            <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 text-desSec">
+                                Entre na sua conta
+                            </h2>
+                            <p className='text-prim'>Entre na sua conta e acesse seu perfil da Limppay! :D</p>
+                        </div>
+                        
+                        <div className=" sm:mx-auto sm:w-full sm:max-w-sm">
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div>
+                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-ter">
+                                        Email
+                                    </label>
+                                    <div className="mt-2">
+                                        <input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            required
+                                            autoComplete="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="flex items-center justify-between">
+                                        <label htmlFor="password" className="block text-sm font-medium leading-6 text-ter">
+                                            Senha
                                         </label>
-                                        <div className="mt-2">
-                                            <input
-                                                id="email"
-                                                name="email"
-                                                type="email"
-                                                required
-                                                autoComplete="email"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
-                                            />
+                                        <div className="text-sm">
+                                            <a href="/request-reset-password-cliente"
+                                            target='_blank'
+                                            className="font-semibold text-ter hover:text-indigo-500">
+                                                Esqueceu sua senha?
+                                            </a>
                                         </div>
                                     </div>
-
-                                    <div>
-                                        <div className="flex items-center justify-between">
-                                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-ter">
-                                                Senha
-                                            </label>
-                                            <div className="text-sm">
-                                                <a href="/request-reset-password-cliente"
-                                                target='_blank'
-                                                className="font-semibold text-ter hover:text-indigo-500">
-                                                    Esqueceu sua senha?
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="mt-2">
-                                            <input
-                                                id="password"
-                                                name="password"
-                                                type="password"
-                                                required
-                                                autoComplete="current-password"
-                                                value={senha}
-                                                onChange={(e) => setSenha(e.target.value)}
-                                                className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
-                                            />
-                                        </div>
+                                    <div className="mt-2">
+                                        <input
+                                            id="password"
+                                            name="password"
+                                            type="password"
+                                            required
+                                            autoComplete="current-password"
+                                            value={senha}
+                                            onChange={(e) => setSenha(e.target.value)}
+                                            className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
+                                        />
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <Button
-                                            type="submit"
-                                            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            isDisabled={loading}
-                                        >
-                                            {loading ? <Spinner/> : 'Entrar'}
-                                        </Button>
-                                    </div>
-                                    {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
-        
-                                </form>
-                            </div>            
-                        </main>
-                    </div>
-                    <img src={painel} alt="" className='hidden lg:flex w-full' />
-
+                                <div>
+                                    <Button
+                                        type="submit"
+                                        className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white bg-desSec shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        isDisabled={loading}
+                                    >
+                                        {loading ? <Spinner/> : 'Entrar'}
+                                    </Button>
+                                </div>
+                                {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
+    
+                            </form>
+                        </div>            
+                    </main>
                 </div>
+                <img src={painel} alt="" className='hidden lg:flex w-full' />
 
-            ) : (
-                <div className='flex h-screen w-full max-w-full justify-center text-white'>
-                    <Spinner size='lg'/>
-                </div>
+            </div>
 
-            )}
+
             <CookieBanner/>
-        
         
         </>
     );

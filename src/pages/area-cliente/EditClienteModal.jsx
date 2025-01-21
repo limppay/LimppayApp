@@ -14,7 +14,25 @@ import { Button, Spinner } from '@nextui-org/react';
 
 const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
-  
+  const userValues = {
+    name: userInfo?.name || '',
+
+    genero: userInfo?.genero || '',
+    estadoCivil: userInfo?.estadoCivil || '',
+
+    telefone_1: userInfo?.telefone_1 || '',
+    telefone_2: userInfo?.telefone_2 || '',
+    email: userInfo?.email,
+
+    cep:  userInfo?.EnderecoDefault[0].cep || '',
+    logradouro:  userInfo?.EnderecoDefault[0].logradouro || '',
+    numero:  userInfo?.EnderecoDefault[0].numero || '',
+    complemento:  userInfo?.EnderecoDefault[0].complemento || '',
+    bairro:  userInfo?.EnderecoDefault[0].bairro || '',
+    cidade:  userInfo?.EnderecoDefault[0].cidade || '',
+    estado: userInfo?.EnderecoDefault[0].estado || '',
+    referencia:  userInfo?.EnderecoDefault[0].referencia || '',
+  }
 
   const schema = yup.object({
     // scheam do prisma na API
@@ -52,14 +70,14 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
       clearErrors
     } = useForm({
       resolver: yupResolver(schema),
-      defaultValues: userInfo
+      defaultValues: userValues
   })
 
   // Efeito para resetar o formulário ao abrir o modal
   useEffect(() => {
     if (Open) {
       setImage(avatarUrl)
-      reset(userInfo); // Restaura os valores padrão sempre que o modal é aberto
+      reset(userValues); // Restaura os valores padrão sempre que o modal é aberto
     }
   }, [Open, userInfo, reset]);
 
@@ -508,7 +526,7 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                           </div>
                           <div className="bg-gray-50 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 lg:gap-10 flex flex-row-reverse gap-5">
                             <Button type='submit'  className="text-center w-full lg:w-2/12  bg-des text-white hover:bg-sec transition-all duration-100 " isDisabled={loading}>
-                              {loading ? <Spinner/> : "Editar"}
+                              {loading ? <Spinner/> : "Enviar"}
                             </Button>
                             <Button
                               type="button"
