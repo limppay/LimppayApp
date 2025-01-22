@@ -57,9 +57,25 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
 
   
     
-  const filteredServices = services.filter(service =>
+  const filteredServices = services
+  .filter(service =>
     service.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  )
+  .sort((a, b) => {
+    // Verifica se o título é "Limpeza Residencial" ou "Limpeza Empresarial"
+    const priorityTitles = ["Limpeza Residencial", "Limpeza Empresarial"];
+    const aIsPriority = priorityTitles.includes(a.title);
+    const bIsPriority = priorityTitles.includes(b.title);
+
+    if (aIsPriority && !bIsPriority) {
+      return -1; // `a` deve vir antes de `b`
+    } else if (!aIsPriority && bIsPriority) {
+      return 1; // `b` deve vir antes de `a`
+    } else {
+      return 0; // Mantém a ordem original se ambos forem prioritários ou não
+    }
+  });
+
 
   const handleServiceClick = (index) => {
     if (selectedServiceIndex !== index) {
