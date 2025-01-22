@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { getEnderecosCliente, loginCliente, perfil } from '../../services/api';
 import { useUser } from '../../context/UserProvider';
 import { Spinner } from '@nextui-org/react';
@@ -10,6 +12,8 @@ export default function StepLoginCustomer() {
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +24,6 @@ export default function StepLoginCustomer() {
         const profile = await perfil(login)
         setUser(profile)
         console.log("Login realizado com sucesso!", profile)
-        navigate("/contrate-online");
 
     } catch (err) {
         setError(err.message);
@@ -30,6 +33,7 @@ export default function StepLoginCustomer() {
         setLoading(false);
     }
   };
+
 
   return (
     <div className='flex flex-col w-full bg-center bg-cover'>
@@ -80,7 +84,7 @@ export default function StepLoginCustomer() {
                 />
               </div>
             </div>
-            <div className='flex flex-col gap-5'>
+            <div className='flex flex-col gap-5 w-full'>
               <div>
                 <Button
                   type="submit"
@@ -91,12 +95,9 @@ export default function StepLoginCustomer() {
                 </Button>
                 {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
               </div>
-              <div>
-                <a href="/cadastro-cliente" target='_blank'>
-                  <Button className='w-full bg-white border-desSec border text-desSec'>
-                    Nova conta
-                  </Button>
-                
+              <div className='w-full p-2 flex'>
+                <a href="/cadastro-cliente" target='_blank' className='border border-desSec p-2  rounded-lg text-desSec w-full'>
+                  Nova Conta
                 </a>
 
               </div>
