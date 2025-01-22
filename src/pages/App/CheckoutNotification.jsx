@@ -47,6 +47,10 @@ const CheckoutNotification = () => {
 
   };
 
+  const HandleContinue = () => {
+    navigate('/checkout-pagamento')
+  }
+
   return (
     <div
       className={`fixed bottom-4 w-full flex justify-center items-center transition-transform duration-300 ${
@@ -61,7 +65,7 @@ const CheckoutNotification = () => {
               Cancelar
             </Button>
             <a href="/checkout-pagamento">
-              <Button className="bg-white border-desSec border shadow-md text-desSec">
+              <Button className="bg-white border-desSec border shadow-md text-desSec" onPress={() => HandleContinue()}>
                 Continuar
               </Button>
             </a>

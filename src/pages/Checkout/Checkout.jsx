@@ -329,7 +329,17 @@ export default function Checkout() {
 
     }
       
-  }, [isLoadingCheckout]);
+  }, [isLoadingCheckout, checkoutData]);
+
+  const HandleContinue = () => {
+    setCheckoutData(null)
+    navigate('/area-cliente')
+  }
+
+  const HandleNew = () => {
+    setCheckoutData(null)
+    navigate('/contrate-online')
+  }
   
   
   
@@ -341,8 +351,6 @@ export default function Checkout() {
         {isLoadingCheckout || !checkoutData ? (
           <div className='w-full h-screen flex items-center justify-center text-white'>
             <Spinner/>
-
-
           </div>
 
         ) : (
@@ -778,12 +786,12 @@ export default function Checkout() {
                                 </div>
                                 <div className='w-full flex justify-center gap-5'>
                                   <a href="/contrate-online">
-                                    <Button className='bg-white text-sec border border-sec ' onPress={() =>        setCheckoutData(null)}>
+                                    <Button className='bg-white text-sec border border-sec ' onPress={() => HandleNew()}>
                                       Novo pedido
                                     </Button>
                                   </a>
                                   <a href="/area-cliente">
-                                    <Button className='bg-white text-sec border border-sec' onPress={() =>        setCheckoutData(null)}>
+                                    <Button className='bg-white text-sec border border-sec' onPress={() => HandleContinue()}>
                                       Continuar
                                     </Button>
                                   </a>
