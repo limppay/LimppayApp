@@ -586,7 +586,7 @@ const AreaCliente = () => {
                                         
 
                                         {/* Próximo Agendamento */}
-                                        <div className="bg-white shadow-md rounded-lg p-4">
+                                        <div className="bg-white  rounded-lg p-4">
                                             <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-2">Próximo Agendamento</h2>
                                             <div className="flex flex-col gap-6">
                                                 {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
@@ -621,41 +621,64 @@ const AreaCliente = () => {
 
                                                         return (
                                                             <div className="flex flex-col gap-6 flex-1">
-                                                                {agendamentosComMesmoHorario.map((agendamento, index) => (
-                                                                    <div key={index} className="flex flex-col gap-3  rounded-lg">
-                                                                        <div className='flex flex-col gap-2'>
-                                                                            <div className='flex justify-between'>
-                                                                                <p>{agendamento.Servico}</p>    
-                                                                                <p>
-                                                                                    {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
-                                                                                        day: '2-digit',
-                                                                                        month: 'long',
-                                                                                        year: 'numeric'
-                                                                                    })}
-                                                                                </p>
-                                                                                <p>{agendamento.horaServico}</p>
+                                                            {agendamentosComMesmoHorario.map((agendamento, index) => (
+                                                                <div key={index} className="flex flex-col gap-4 p-4 bg-gray-100 shadow-md rounded-lg">
+                                                                <div className="flex items-center gap-4">
+                                                                    <Avatar 
+                                                                    src={agendamento.user.avatarUrl.avatarUrl} 
+                                                                    alt="avatarPrestador"
+                                                                    size="lg"
+                                                                    />
+                                                                    <h3 className="text-prim font-semibold text-lg">
+                                                                    {agendamento.user.name}
+                                                                    </h3>
+                                                                </div>
 
-                                                                            </div>
-                                                                            <p>{agendamento.enderecoCliente}</p>
-
-
-                                                                        </div>
-
-                                                                        <p>{formatarMoeda(agendamento.valorServico)}</p>
-                                                                        <a
-                                                                            href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                        >
-                                                                            <Button className="w-full bg-sec text-white mt-4">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
-                                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-                                                                                </svg>
-                                                                                Abrir com o Google Maps
-                                                                            </Button>
-                                                                        </a>
+                                                                <div className="flex flex-col gap-3 mt-2">
+                                                                    <div className="flex justify-between items-center">
+                                                                    <p className="text-gray-700 font-medium">{agendamento.Servico}</p>
+                                                                    <p className="text-gray-500 text-sm">
+                                                                        {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
+                                                                        day: '2-digit',
+                                                                        month: 'long',
+                                                                        year: 'numeric',
+                                                                        })}
+                                                                    </p>
+                                                                    <p className="text-gray-500 text-sm">{agendamento.horaServico}</p>
                                                                     </div>
-                                                                ))}
+                                                                    <p className="text-gray-600 text-sm">{agendamento.enderecoCliente}</p>
+                                                                </div>
+
+                                                                <div className="flex justify-between items-center mt-2">
+                                                                    <p className="text-prim font-semibold">
+                                                                    {formatarMoeda(agendamento.valorServico)}
+                                                                    </p>
+                                                                    <a
+                                                                    href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    >
+                                                                    <Button className="bg-sec text-white flex items-center gap-2">
+                                                                        <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        fill="none"
+                                                                        viewBox="0 0 24 24"
+                                                                        strokeWidth="1.5"
+                                                                        stroke="currentColor"
+                                                                        className="w-5 h-5"
+                                                                        >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
+                                                                        />
+                                                                        </svg>
+                                                                        Abrir no Google Maps
+                                                                    </Button>
+                                                                    </a>
+                                                                </div>
+                                                                </div>
+                                                            ))}
                                                             </div>
                                                         );
                                                     })()
