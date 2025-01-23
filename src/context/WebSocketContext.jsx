@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useUser } from './UserProvider';
+import { usePrestador } from './PrestadorProvider';
+import { perfil, prestadorProfile } from '../services/api';
 
 const WebSocketContext = createContext();
 
@@ -9,16 +11,32 @@ export const WebSocketProvider = ({ children }) => {
   const [appId, setAppId] = useState(null);
   const [username, setUsername] = useState(null);
   const { user, setUser } = useUser()
+  const { prestador, setPrestador } = usePrestador()
+
+  console.log("Usuários", {
+    cliente: user,
+    prestador: prestador
+  })
 
   const fetchUserInfo = async () => {
       try {
-          const response = await perfil()
+          const response = await user ? perfil() : prestadorProfile()
           console.log(response)
-          setUser(response)
+          
+          if(user) {
+            setUser(response)
+
+          } else if (prestador) {
+            setPrestador(response)
+
+          } else {
+            console.log("Nenhum usuário online")
+          }
           
           
       } catch (error) {
           console.error('Erro ao buscar informações do usuário:', error);
+
       }
   };
 
@@ -38,15 +56,15 @@ export const WebSocketProvider = ({ children }) => {
 
   useEffect(() => {
     // requestNotificationPermission()
-    if (!user) return;
+    if (!prestador && !user) return;
   
     const prod = "https://limppay-api-production.up.railway.app/";
     const local = "http://localhost:3000/";
 
     const newSocket = io(prod, {
       query: {
-        appId: user?.id,
-        username: user?.name
+        appId: user?.id || prestador?.id,
+        username: user?.name || prestador?.name
       },
       reconnection: true,
       reconnectionAttempts: 5,
@@ -82,7 +100,7 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     
-  }, [user]);
+  }, [user, prestador]);
 
   return (
     <WebSocketContext.Provider value={{socket, setAppId, setUsername}}>

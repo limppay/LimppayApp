@@ -5,11 +5,13 @@ import {Button} from "@nextui-org/button";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useScreenSelected } from '../context/ScreenSelect';
 import { loggoutUser } from '../services/api';
+import { usePrestador } from '../context/PrestadorProvider';
 
 
 export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2,  }) {
     const location = useLocation()
     const navigate = useNavigate()
+    const { prestador, setPrestador } = usePrestador()
 
 
     useEffect(() => {
@@ -43,10 +45,12 @@ export default function HeaderTeste({img, alt, btnAcess, buttons, text1, text2, 
 
         try {
             const response = await loggoutUser()
+            setPrestador(null)
             setLoggout(false)
             navigate("/")
 
         } catch (error) {
+            console.log(error)
             
         } 
         

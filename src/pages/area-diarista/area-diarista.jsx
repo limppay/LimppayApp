@@ -11,7 +11,7 @@ import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getSolicitacoesGeraisPrestador, getSolicitacoesTotalPrestador, getFaturamentoMes} from '../../services/api.js';
+import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getSolicitacoesGeraisPrestador, getSolicitacoesTotalPrestador, getFaturamentoMes, prestadorProfile} from '../../services/api.js';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import {Progress} from "@nextui-org/progress";
 import ProgressBar from './ProgressBar.jsx';
@@ -28,25 +28,15 @@ import NavigationDiarista from './NavigationDiarista.jsx';
 
 import { io } from 'socket.io-client';
 import { useWebSocket } from '../../context/WebSocketContext.jsx';
+import { usePrestador } from '../../context/PrestadorProvider.jsx';
 
 
 const AreaDiarista = () => {
+    const { prestador, setPrestador } = usePrestador()
 
-        // Determina a URL com base no NODE_ENV
-    const baseURL =
-        import.meta.env.VITE_ENV === 'development'
-        ? 'http://localhost:3000/users/me'
-        : 'https://limppay-api-production.up.railway.app/users/me';
-    
-    const [userInfo, setUserInfo] = useState(null);
     const[Open, SetOpen] = useState(false)
     const navigate = useNavigate()
 
-    const [agendamentos, setAgendamentos] = useState([])
-    const [avaliacoes, setAvaliacoes] = useState([])
-    const [datasBloqueadas, setDatasBloqueadas] = useState([])
-    const [selectedAgendamento, setSelectedAgendamento] = useState([])
-    const [openDetalhes, setOpenDetalhes] = useState(false)
     const [loadingDay, setLoadingDay] = useState(false)
     const [loadingServico, setLoadingServico] = useState(false)
 
@@ -61,9 +51,7 @@ const AreaDiarista = () => {
     const [openSucess, setOpenSucess] = useState(false)
     const [isOpen, setIsOpen] = useState(true)
     const {screenSelected, setScreenSelected} = useScreenSelected()
-    const [openPerfil, setOpenPerfil] = useState(false)
     const [ selectedDates, setSelectedDates ] = useState([])
-    const [selectedDate, setSelectedDate] = useState()
     const [numberOfDays, setNumberOfDays] = useState(0)
     const formattedDates = selectedDates?.map(date => {
         return new Date(date).toISOString().split('T')[0];
@@ -71,50 +59,57 @@ const AreaDiarista = () => {
     const [old, setOld] = useState('')
 
 
-    const HandleGetDiasBloqueados = async () => {
-        try {
-            const response = await findAllDiasBloqueados(userInfo?.id)
-            setDatasBloqueadas(response.data)
-
-        } catch (error) {
-        }
-    }
-
+    const [ errorBlock, setErrorBlock ] = useState('')
+    const [ loadingBlock, setLoadingBlock ] = useState(false)
     const blockDates = async () => {
-
+        setErrorBlock('')
+        setLoadingBlock(true)
         for(const date of formattedDates ) {
-
             const data = {
-                userId: userInfo?.id,
+                userId: prestador?.id,
                 data: date
             }
             
             try {
                 const response = await bloquearData(data)
-                // Atualize os dias bloqueados após o desbloqueio
-                HandleGetDiasBloqueados();
+                await fetchUserInfo()
+                setSelectedDates([])
+                setLoadingBlock(false)
+
     
             } catch (error) {
+                console.error(error.message)
+                setErrorBlock(error.message)
+                setSelectedDates([])
+                setLoadingBlock(false)
                 
             }
 
         }
         
-        // HandleGetDiasBloqueados()
     }
 
+    const [ loadingUnlock, setLoadingUnlock ] = useState(false)
+    const [ errorUnlock, SetErrorUnlock ] = useState('')
     const unlockDate = async (data) => {
-    
+        setLoadingUnlock(true)
+        SetErrorUnlock('')
+
         const date = new Date(data).toISOString().split('T')[0]
-    
-    
+
         try {
-            const response = await desbloquearData(userInfo?.id, date );
-    
-            // Atualize os dias bloqueados após o desbloqueio
-            HandleGetDiasBloqueados();
+            const response = await desbloquearData(prestador?.id, date );
+            await fetchUserInfo()
+            setLoadingUnlock(false)
+
+
+
+        
         } catch (error) {
-            console.error("Erro ao desbloquear data: ", error);
+            console.error("Erro ao desbloquear data: ", error.message);
+            SetErrorUnlock(error.message);
+            setLoadingUnlock(false)
+
         }
     };
 
@@ -148,10 +143,12 @@ const AreaDiarista = () => {
         setLoadingDay(true)
 
         try {
-            const response = await updateDiasDisponveis(userInfo?.id, data)
+            const response = await updateDiasDisponveis(prestador?.id, data)
+            await fetchUserInfo()
             setLoadingDay(false)
 
         } catch (error) {
+            console.log(error)
             
         } 
         
@@ -170,7 +167,7 @@ const AreaDiarista = () => {
     const [endDate, setEndDate] = useState(null);
     
       
-    const agendamentosFiltrados = agendamentos && agendamentos.filter((agendamento) => {
+    const agendamentosFiltrados = prestador?.Agendamentos && prestador?.Agendamentos?.filter((agendamento) => {
         const nameMatch = agendamento.Servico.toLowerCase().includes(searchTerm.toLowerCase());
         const dateMatch = (!startDate || new Date(agendamento.dataServico) >= new Date(startDate)) &&
                           (!endDate || new Date(agendamento.dataServico) <= new Date(endDate));
@@ -178,120 +175,61 @@ const AreaDiarista = () => {
         return nameMatch && dateMatch;
     });
 
-      const [SolicitacoesTotalPrestador, setSolicitacoesTotalPrestador] = useState()
-      useEffect(() => {
-        const handleSolicitacoesTotalPrestador = async() => {
-            try {
-                const response = await getSolicitacoesTotalPrestador(userInfo?.id)
-                setSolicitacoesTotalPrestador(response)
-            } catch (error){
-            }
+    const [SolicitacoesTotalPrestador, setSolicitacoesTotalPrestador] = useState()
+    useEffect(() => {
+    const handleSolicitacoesTotalPrestador = async() => {
+        try {
+            const response = await getSolicitacoesTotalPrestador(prestador?.id)
+            setSolicitacoesTotalPrestador(response)
+        } catch (error){
         }
-        handleSolicitacoesTotalPrestador()
-      }, [userInfo?.id, userInfo]);
+    }
+    handleSolicitacoesTotalPrestador()
+    }, [prestador?.id, prestador]);
 
-      const [SolicitacoesGeraisPrestador, setSolicitacoesGeraisPrestador] = useState()
-      useEffect(() => {
-        const handleSolicitacoesGeraisPrestador = async() => {
-            try {
-                const response = await getSolicitacoesGeraisPrestador(userInfo?.id)
-                setSolicitacoesGeraisPrestador(response)
-            } catch (error){
-            }
+    const [SolicitacoesGeraisPrestador, setSolicitacoesGeraisPrestador] = useState()
+    useEffect(() => {
+    const handleSolicitacoesGeraisPrestador = async() => {
+        try {
+            const response = await getSolicitacoesGeraisPrestador(prestador?.id)
+            setSolicitacoesGeraisPrestador(response)
+        } catch (error){
         }
-        handleSolicitacoesGeraisPrestador()
-      }, [userInfo?.id, userInfo]);
+    }
+    handleSolicitacoesGeraisPrestador()
+    }, [prestador?.id, prestador]);
 
-      const [FaturamentoMes, setFaturamentoMes] = useState()
-      useEffect(() => {
-        const handleFaturamentoMes = async() => {
-            try {
-                const response = await getFaturamentoMes(userInfo?.id)
-                setFaturamentoMes(response)
-            } catch (error){
-            }
+    const [FaturamentoMes, setFaturamentoMes] = useState()
+    useEffect(() => {
+    const handleFaturamentoMes = async() => {
+        try {
+            const response = await getFaturamentoMes(prestador?.id)
+            setFaturamentoMes(response)
+        } catch (error){
         }
-        handleFaturamentoMes()
-      }, [userInfo?.id, userInfo]);
+    }
+    handleFaturamentoMes()
+    }, [prestador?.id, prestador]);
 
-      const [faturamentos, setFaturamentos] = useState({}); // Armazena os faturamentos por servicoId
 
-    //   useEffect(() => {
-    //     const handleFaturamentoAgendamentos = async () => {
-    //         try {
-    //             const faturamentosTemp = {};
-    //             for (const agendamento of agendamentosFiltrados || []) {
-    //                 const response = await getFaturamentoAgendamento(userInfo?.id, agendamento.servicoId);
-    //                 faturamentosTemp[agendamento.servicoId] = response;
-    //             }
-    //             console.log("Faturamentos carregados:", faturamentosTemp);
-    //             setFaturamentos(faturamentosTemp);
-    //         } catch (error) {
-    //             console.error("Erro ao buscar faturamentos:", error);
-    //         }
-    //     };
-    
-    //     if (agendamentosFiltrados?.length > 0 && userInfo?.id) {
-    //         handleFaturamentoAgendamentos();
-    //     }
-    // }, [agendamentosFiltrados, userInfo?.id]);
-    
-      
 
     const { socket, setAppId, setUsername } = useWebSocket();
     const [errorLogin, setErrorLogin] = useState(false)
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            setErrorLogin(false)
-            try {
-                const user = await axios.get(baseURL, {
-                    withCredentials: true
-                });
-
-                const agendamentos = await getAgendamentos(user.data.id)
-                const avaliacoes = await getAvaliacoesByPrestador(user.data.id)
-                const datasBloqueadas = user.data.DiasBloqueados
-
-                setAvaliacoes(avaliacoes)
-                setAgendamentos(agendamentos)
-                setDatasBloqueadas(datasBloqueadas)
-                setAppId(user.data.id)
-                setUsername(user.data.name)
-
-                setUserInfo(user.data)
-                setOld(user.Old)
-            } catch (error) {
-                console.error('Erro ao buscar informações do usuário:', error);
-                setErrorLogin(true)
-            }
-        };
-        
-        fetchUserInfo()
-
-    }, [ ]);
 
     const fetchUserInfo = async () => {
         setErrorLogin(false)
         try {
-            const user = await axios.get(baseURL, {
-                withCredentials: true
-            });
+            const prestador = await prestadorProfile()
 
-            const agendamentos = await getAgendamentos(user.data.id)
-            const avaliacoes = await getAvaliacoesByPrestador(user.data.id)
-            const datasBloqueadas = user.data.DiasBloqueados
+            setPrestador(prestador)
+            setAppId(prestador.data.id)
+            setUsername(prestador.data.name)
+            setOld(prestador.Old)
 
-            setAppId(user.data.id)
-            setUsername(user.data.name)
-
-            setAvaliacoes(avaliacoes)
-            setAgendamentos(agendamentos)
-            setDatasBloqueadas(datasBloqueadas)
-            setUserInfo(user.data)
-            setOld(user.Old)
         } catch (error) {
             console.error('Erro ao buscar informações do usuário:', error);
             setErrorLogin(true)
+
         }
     };
 
@@ -306,17 +244,11 @@ const AreaDiarista = () => {
       return () => {
         socket.off('data-updated')
       };
-    }, [userInfo]);
-
-
-
-    useEffect(() => {
-    }, [userInfo]); // Isso vai logar as informações do usuário toda vez que mudarem
+    }, [prestador]);
     
 
     const handleUserUpdated = () => {
-        window.location.reload()
-
+        fetchUserInfo()
     };
 
 
@@ -358,15 +290,15 @@ const AreaDiarista = () => {
 
 
     useEffect(() => {
-        const cadastro = userInfo?.cadastroCompleto
-        const entrevista = userInfo?.Entrevista
-        const etapa = userInfo?.etapaCadastro
+        const cadastro = prestador?.cadastroCompleto
+        const entrevista = prestador?.Entrevista
+        const etapa = prestador?.etapaCadastro
 
         setCadastroCompleto(cadastro)
         setEntrevistaAprovada(entrevista)
         setEtapaCadastro(etapa)
 
-    }, [userInfo, setUserInfo])
+    }, [prestador, setPrestador])
 
 
 
@@ -545,7 +477,7 @@ const AreaDiarista = () => {
         }
 
         try {
-          const response = await CreateStepTwo(userInfo?.id, formData);
+          const response = await CreateStepTwo(prestador?.id, formData);
           reset()
           setLoading(false)
           setOpenSucess(true)
@@ -677,9 +609,9 @@ const AreaDiarista = () => {
         );
     }
 
-    const fullName = userInfo?.name?.trim()
+    const fullName = prestador?.name?.trim()
     const firstName = fullName?.split(' ')[0]
-    const status = userInfo?.ativa
+    const status = prestador?.ativa
     
     const servicosSchema = yup.object({
         servicosSelecionados: yup.array().required("Selecione um servico")
@@ -709,8 +641,10 @@ const AreaDiarista = () => {
         
 
         try {
-            const response = await updateServico(userInfo?.id, data)
+            const response = await updateServico(prestador?.id, data)
+            await fetchUserInfo()
             setLoadingServico(false)
+            resetService()
             setServiceMessage("Enviado com sucesso!")
 
         } catch (error) {
@@ -793,26 +727,13 @@ const AreaDiarista = () => {
 
     ]
 
-    const estadoCivilTexto = EstadoCivil.find(item => item.value === userInfo?.estadoCivil)?.text || '';
-    const bancoTexto = Banco.find(item => item.value === userInfo?.banco)?.text || '';
+    const estadoCivilTexto = EstadoCivil.find(item => item.value === prestador?.estadoCivil)?.text || '';
+    const bancoTexto = Banco.find(item => item.value === prestador?.banco)?.text || '';
 
-    const calcularDetalhesAgendamento = (agendamento) => {
-        const taxaPrestador = (valor) => valor * (75 / 100);
-    
-        // Realizando os cálculos
-        const ValorBruto = agendamento.valorLiquido + agendamento.descontoTotal;
-        const qtdAgendamentos = ValorBruto / agendamento.valorServico;
-        const descontoPorServico = agendamento.descontoTotal / qtdAgendamentos;
-        const valorLiquidoServico = agendamento.valorServico - descontoPorServico;
-    
-        return {
-            taxaPrestador: taxaPrestador(agendamento.valorServico),
-            ValorBruto,
-            qtdAgendamentos,
-            descontoPorServico,
-            valorLiquidoServico,
-        };
-    };
+    function formatarData(dataISO) {
+        const [ano, mes, dia] = dataISO.split("-"); // Divide "aaaa-mm-dd"
+        return `${dia}/${mes}/${ano}`; // Retorna no formato "dd/mm/aaaa"
+    }
     
     return (
         <>
@@ -823,7 +744,7 @@ const AreaDiarista = () => {
                 <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
                 <main className='h-screen '>
 
-                    {userInfo ? (
+                    {prestador ? (
                         <>
                             <div className='flex'>
                                 {etapaCadastro <= 3 && !entrevistaAprovada && !status && (
@@ -1228,7 +1149,7 @@ const AreaDiarista = () => {
 
                                             <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
                                                 <Avatar
-                                                src={userInfo?.AvatarUrl.avatarUrl}
+                                                src={prestador?.AvatarUrl.avatarUrl}
                                                 className={`${isOpen ? "" : ""} cursor-pointer`}
                                                 onClick={() => setScreenSelected("perfil")}
                                                 />
@@ -1355,7 +1276,7 @@ const AreaDiarista = () => {
                                                                         <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                                                     </svg>
                                                                 </div>
-                                                                <img src={userInfo?.AvatarUrl?.avatarUrl}
+                                                                <img src={prestador?.AvatarUrl?.avatarUrl}
                                                                 id='avatar' 
                                                                 alt="foto de perfil" 
                                                                 className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
@@ -1365,16 +1286,16 @@ const AreaDiarista = () => {
                                                             </div>
                                                             
                                                             <div className='flex flex-col gap-3 h-full max-w-full max-h-full pl-5 pr-5'>
-                                                                <h1 className='text-xl text-ter'>{userInfo.name}</h1>
+                                                                <h1 className='text-xl text-ter'>{prestador?.name}</h1>
                                                                 
                                                                 <p className='text-prim text-center'>
-                                                                    {calcularIdade(userInfo.data)} anos
+                                                                    {calcularIdade(prestador?.data)} anos
                                                                 </p>
                                                             </div>
 
                                                         </div>
                                                         <div >
-                                                            <textarea className='text-prim border border-bord p-2 w-full min-h-[20vh]  lg:w-[80vh] xl:w-[100vh] lg:min-h-[40vh] lg:max-h-[40vh] rounded-md' defaultValue={userInfo?.sobre} disabled ></textarea>
+                                                            <textarea className='text-prim border border-bord p-2 w-full min-h-[20vh]  lg:w-[80vh] xl:w-[100vh] lg:min-h-[40vh] lg:max-h-[40vh] rounded-md' value={prestador?.sobre} disabled ></textarea>
                                                         </div>
                                                     </div>
 
@@ -1383,7 +1304,7 @@ const AreaDiarista = () => {
                                                         
                                                         <div className="grid gap-2">
                                                             <label htmlFor="email" className="text-neutral-500">E-mail</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.email} />
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.email} />
                                                         </div>
                                                         <div className="grid gap-2">
                                                             <label htmlFor="telefone" className="text-neutral-500">Telefone</label>
@@ -1395,7 +1316,7 @@ const AreaDiarista = () => {
                                                                 id="telefone_1" 
                                                                 type="text" 
                                                                 placeholder="(00) 00000-0000" 
-                                                                value={userInfo?.telefone}
+                                                                value={prestador?.telefone}
                                                             />
                                                         </div>
 
@@ -1411,7 +1332,7 @@ const AreaDiarista = () => {
 
                                                         <div className="grid gap-2">
                                                         <label htmlFor="genero" className="text-neutral-500">Gênero</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.genero} />
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.genero} />
                                                         </div>
 
                                                     </div>
@@ -1425,17 +1346,17 @@ const AreaDiarista = () => {
 
                                                         <div className="grid gap-2">
                                                         <label htmlFor="rg" className="text-neutral-500">Agência</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.agencia} />
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.agencia} />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                         <label htmlFor="genero" className="text-neutral-500">Conta</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.conta} />
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.conta} />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                         <label htmlFor="genero" className="text-neutral-500">Pix</label>
-                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.pix} />
+                                                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.pix} />
                                                         </div>
                                                     </div>
 
@@ -1444,7 +1365,7 @@ const AreaDiarista = () => {
                                                         <span className="font-semibold text-prim pt-5 text-lg">Serviços</span>
                                                         <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pb-5 pt-5">
 
-                                                        {userInfo?.UserServico.map((service) => (
+                                                        {prestador?.UserServico.map((service) => (
                                                             <div key={service.id}>
                                                                 <Button className=" border border-bord bg-trans text-prim w-full" isDisabled>
                                                                     {service.servico.nome}
@@ -1463,7 +1384,7 @@ const AreaDiarista = () => {
                                                                 type="checkbox" 
                                                                 id="domingo"
                                                                 className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].dom}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].dom}
                                                                 disabled
                                                                 
                                                                 />
@@ -1475,7 +1396,7 @@ const AreaDiarista = () => {
                                                                 id="segunda" 
                                                                 
                                                                 className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].seg}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].seg}
                                                                 disabled
 
                                                                 />
@@ -1488,7 +1409,7 @@ const AreaDiarista = () => {
                                                                 disabled
                                                                 className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
 
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].ter}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].ter}
                                                                 
 
                                                                 />
@@ -1503,7 +1424,7 @@ const AreaDiarista = () => {
                                                                 disabled
                                                                 className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
 
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].quart}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].quart}
                                                                 
 
                                                                 />
@@ -1516,7 +1437,7 @@ const AreaDiarista = () => {
                                                                 disabled
                                                                 className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
 
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].qui}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].qui}
                                                                 
 
                                                                 />
@@ -1529,7 +1450,7 @@ const AreaDiarista = () => {
                                                                 disabled
                                                                 className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
 
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].sex}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].sex}
                                                                 
 
                                                                 />
@@ -1544,7 +1465,7 @@ const AreaDiarista = () => {
                                                                 disabled
                                                                 className="cursor-pointer bg-neutral-200 placeholder:bg-neutral-200 border border-neutral-600 rounded-lg"
 
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].sab}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].sab}
                                                                 
 
                                                                 />
@@ -1567,44 +1488,44 @@ const AreaDiarista = () => {
                                                             id="cep" 
                                                             type="text" 
                                                             placeholder="CEP" 
-                                                            value={userInfo.cep}
+                                                            value={prestador.cep}
                                                             
                                                             />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <label htmlFor="logradouro" className="text-prim">Logradouro</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.logradouro} />
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.logradouro} />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <label htmlFor="numero" className="text-prim">Número</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.numero} />
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.numero} />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <label htmlFor="complemento" className="text-prim">Complemento</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.complemento} />
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.complemento} />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <label htmlFor="referencia" className="text-prim">Ponto de referência</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.referencia} />
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.referencia} />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <label htmlFor="bairro" className="text-prim">Bairro</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.bairro} />
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.bairro} />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <label htmlFor="cidade" className="text-prim">Cidade</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.cidade} />
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.cidade} />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <label htmlFor="estado" className="text-prim">Estado</label>
-                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={userInfo.estado} />
+                                                            <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={prestador.estado} />
                                                         </div>
 
                                                         </div>
@@ -1785,8 +1706,8 @@ const AreaDiarista = () => {
                                         {screenSelected == "avaliacoes" && (
                                             <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                                 <div className='p-5 flex flex-col gap-5'>
-                                                {avaliacoes.length > 0 ? (
-                                                    avaliacoes.map((avaliacao) => (
+                                                {prestador?.Review.length > 0 ? (
+                                                    prestador?.Review?.map((avaliacao) => (
                                                         
                                                         <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full shadow-lg shadow-bord rounded-md'>
 
@@ -1839,7 +1760,7 @@ const AreaDiarista = () => {
                                                                 id="domingo" 
                                                                 {...registerDay("dom", {required: true})}
                                                                 className="days cursor-pointer"
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].dom}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].dom}
                                                                 />
                                                                 <label htmlFor="domingo">Domingo</label>
                                                             </div>
@@ -1849,7 +1770,7 @@ const AreaDiarista = () => {
                                                                 id="segunda" 
                                                                 {...registerDay("seg")}
                                                                 className="days cursor-pointer"
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].seg}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].seg}
                                                                 />
                                                                 <label htmlFor="segunda">Segunda</label>
                                                             </div>
@@ -1859,7 +1780,7 @@ const AreaDiarista = () => {
                                                                 id="terca" 
                                                                 {...registerDay("ter")}
                                                                 className="days cursor-pointer"
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].ter}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].ter}
                                                                 />
                                                                 <label htmlFor="terca">Terça</label>
                                                             </div>
@@ -1871,7 +1792,7 @@ const AreaDiarista = () => {
                                                                 id="quarta" 
                                                                 {...registerDay("quart")}
                                                                 className="days cursor-pointer"
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].quart}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].quart}
                                                                 />
                                                                 <label htmlFor="quarta">Quarta</label>
                                                             </div>
@@ -1881,7 +1802,7 @@ const AreaDiarista = () => {
                                                                 id="quinta" 
                                                                 {...registerDay("qui")}
                                                                 className="days cursor-pointer"
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].qui}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].qui}
                                                                 />
                                                                 <label htmlFor="quinta">Quinta</label>
                                                             </div>
@@ -1891,7 +1812,7 @@ const AreaDiarista = () => {
                                                                 id="sexta" 
                                                                 {...registerDay("sex")}
                                                                 className="days cursor-pointer"
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].sex}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].sex}
                                                                 />
                                                                 <label htmlFor="sexta">Sexta</label>
                                                             </div>
@@ -1903,7 +1824,7 @@ const AreaDiarista = () => {
                                                                 id="sabado" 
                                                                 {...registerDay("sab")}
                                                                 className="days cursor-pointer"
-                                                                defaultChecked={userInfo?.DiasDisponiveis[0].sab}
+                                                                defaultChecked={prestador?.DiasDisponiveis[0].sab}
                                                                 />
                                                                 <label htmlFor="sabado">Sábado</label>
                                                             </div>
@@ -1936,16 +1857,18 @@ const AreaDiarista = () => {
                                                         setSelectedDates={setSelectedDates}
                                                         maxSelection={numberOfDays} // Defina aqui o número máximo de seleções permitidas
                                                         blockDates={() => blockDates()}
-                                                    
+                                                        loadingBlock={loadingBlock}
+                                                        errorBlock={errorBlock}
 
                                                     />
-                                                    <div className='p-5 rounded-lg shadow-lg border border-desSec md:min-h-[60vh] md:max-h-[50vh] w-full gap-2 flex flex-col max-h-[50vh] '>
+                                                    
+                                                    <div className='rounded-lg  md:min-h-[60vh] md:max-h-[50vh] w-full gap-2 flex flex-col max-h-[50vh] '>
                                                         <div className='w-full justify-center items-center text-center'>
                                                             <h2 className='text-desSec text-xl font-semibold text-center'>Datas Bloqueadas</h2>
                                                             
                                                         </div>
-                                                        <div className='flex flex-col overflow-y-auto gap-2'>
-                                                            {datasBloqueadas.length == 0 ? (
+                                                        <div className='flex flex-col overflow-y-auto pb-2 gap-5'>
+                                                            {prestador?.DiasBloqueados?.length == 0 ? (
                                                                 <div className='flex flex-col w-full max-h-[40vh] text-center justify-center  '>
                                                                     <span className='opacity-30'>
                                                                         Nenuma data bloqueada
@@ -1954,19 +1877,25 @@ const AreaDiarista = () => {
                                                                 </div>
 
                                                             ) : (
-                                                                datasBloqueadas.length > 0 &&
-                                                                    datasBloqueadas.map((dataBloqueada) => (
-                                                                        <div key={dataBloqueada.id} className="p-2">
-                                                                            <div className="border border-desSec bg-white w-full opacity-100 rounded-lg flex items-center p-2 justify-between shadow-md ">
-                                                                                <div>
-                                                                                    {new Date(dataBloqueada.data).toISOString().split('T')[0]}
+                                                                prestador?.DiasBloqueados?.length > 0 &&
+                                                                prestador?.DiasBloqueados?.map((dataBloqueada) => (
+                                                                        <div key={dataBloqueada.id} className=' rounded-lg'>
+                                                                            <div className="  bg-white w-full opacity-100 rounded-lg flex items-center p-2   pb-2 shadow-md justify-between ">
+                                                                                <div className='w-full sm:min-w-min'>
+                                                                                    <span className='text-center'>
+                                                                                        {formatarData(new Date(dataBloqueada.data).toISOString().split('T')[0])}
+                                                                                    </span>
                                                                                 </div>
-                                                                                <div>
+                                                                                <div className='sm:min-w-min'>
                                                                                     <Button
-                                                                                        className="bg-white shadow-sm"
+                                                                                        className="bg-white justify-between min-w-full sm:min-w-min"
                                                                                         onPress={() => unlockDate(dataBloqueada.data)}
+                                                                                        isDisabled={loadingUnlock}
                                                                                     >
-                                                                                        <span className="text-sec">Desbloquear</span>
+                                                                                        <span className="text-sec">
+                                                                                            Desbloquear
+                                                                                        </span>
+
                                                                                         <svg
                                                                                             xmlns="http://www.w3.org/2000/svg"
                                                                                             fill="none"
@@ -2152,10 +2081,10 @@ const AreaDiarista = () => {
                                                             Média de Estrelas
                                                         </h2>
                                                         <div className="flex flex-col gap-6">
-                                                            {avaliacoes && avaliacoes.length > 0 ? (
+                                                            {prestador?.Review && prestador?.Review?.length > 0 ? (
                                                                 (() => {
-                                                                    const totalEstrelas = avaliacoes.reduce((sum, avaliacao) => sum + (avaliacao.stars || 0), 0);
-                                                                    const mediaEstrelas = (totalEstrelas / avaliacoes.length).toFixed(1);
+                                                                    const totalEstrelas = prestador?.Review?.reduce((sum, avaliacao) => sum + (avaliacao.stars || 0), 0);
+                                                                    const mediaEstrelas = (totalEstrelas / prestador?.Review?.length).toFixed(1);
 
                                                                     return (
                                                                         <p className="text-desSec text-3xl font-bold text-gray-800">{mediaEstrelas} ★</p>
@@ -2176,10 +2105,10 @@ const AreaDiarista = () => {
                                     <EditUserModal 
                                         Open={Open}
                                         SetOpen={() => SetOpen(false)} 
-                                        userInfo={userInfo} 
+                                        userInfo={prestador} 
                                         // token={token} 
                                         onUserUpdated={handleUserUpdated}
-                                        Urls={userInfo?.AvatarUrl?.avatarUrl} 
+                                        Urls={prestador?.AvatarUrl?.avatarUrl} 
                                     />                          
                                 </>
                             )}

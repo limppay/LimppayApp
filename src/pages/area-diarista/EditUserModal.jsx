@@ -9,6 +9,7 @@ import { updateUser } from '../../services/api';
 
 import InputMask from "react-input-mask"
 import { Button, Spinner } from '@nextui-org/react';
+import { usePrestador } from '../../context/PrestadorProvider';
 
 
 const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
@@ -103,9 +104,6 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
         const updatedUser = await updateUser(userInfo?.id, formData)
 
         if (updatedUser) {
-          
-          
-          
           SetOpen(false); // Fechar o modal após o sucesso
           onUserUpdated(updatedUser);
           setLoading(false)

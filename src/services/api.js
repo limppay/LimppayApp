@@ -43,6 +43,19 @@ export const login = async (email, senha) => {
   }
 };
 
+export const prestadorProfile = async () => {
+  try {
+    const response = await api.get('/users/me');
+
+    return response.data;
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || 'Erro ao entrar no perfil do usuário.';
+
+    throw new Error(errorMessage);
+  }
+};
+
 // Função para fazer login (Cliente)
 export const loginCliente = async (email, senha) => {
   const cookiesAccepted = localStorage.getItem('cookiesConsent')
@@ -60,8 +73,7 @@ export const loginCliente = async (email, senha) => {
     // Retorne informações úteis para o front-end
     return response;
   } catch (error) {
-    const errorMessage =
-      error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
+    const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
 
     throw new Error(errorMessage);
   }
@@ -428,8 +440,10 @@ export const bloquearData = async (data) => {
 
     return response
   } catch (error) {
-    console.error(error.response?.data.message || error.message);
-    return false; // Retornar false em caso de erro
+    console.error(error.response?.data?.message || error.message)
+    const errorMessage = error.response?.data?.message || error.message;
+
+    throw new Error(errorMessage);
   }
 }
 

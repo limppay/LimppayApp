@@ -5,7 +5,7 @@ import { Select, SelectSection, SelectItem } from "@nextui-org/select";
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
 import { Button } from '@nextui-org/react';
 
-const Calendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSelection, blockDates }) => {
+const Calendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSelection, blockDates, loadingBlock, errorBlock }) => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
   const [showMonths, setShowMonths] = useState(false);
@@ -271,14 +271,17 @@ const Calendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSele
         )}
       </motion.div>
 
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center items-center flex-col gap-4 mt-4 w-full">
         <Button
-          className={`bg-des text-white p-2 rounded-md ${selectedDates.length ? '' : 'opacity-50 cursor-not-allowed'}`}
+          className={`bg-des text-white w-full p-2 rounded-md ${selectedDates.length ? '' : 'opacity-50 cursor-not-allowed'}`}
           isDisabled={!selectedDates.length}
           onPress={() => blockDates()}
+          isLoading={loadingBlock}
         >
-          {selectedDates.length > 1 ? "Bloquear dias selecionados" : "Bloquear dia selecionado" }
+          {selectedDates.length > 1 ? "Bloquear dias selecionados" : "Bloquear dia selecionado" } 
         </Button>
+        <span className='text-error text-justify '>{errorBlock}</span>
+
       </div>
   </div>
   );

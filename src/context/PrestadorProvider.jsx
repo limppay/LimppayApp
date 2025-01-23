@@ -1,26 +1,25 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { perfil } from '../services/api';
+import { perfil, prestadorProfile } from '../services/api';
 import { useWebSocket } from './WebSocketContext';
 
-const UserContext = createContext();
+const PrestadorContext = createContext();
 
-export const UserProvider = ({ children }) => {
-
+export const PrestadorProvider = ({ children }) => {
   const [loadingUser, setLoadingUser] = useState(false)
-  const [user, setUser] = useState(null);
-
+  const [prestador, setPrestador] = useState(null);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
           setLoadingUser(true)
           
-          const user = await perfil()
-          setUser(user)
+          const user = await prestadorProfile()
+          setPrestador(user)
           console.log("Sessão recuperada com sucesso!", user)
 
         } catch (error) {
-          setUser(null)
+            console.log(error)
+            setPrestador(null)
 
         } finally {
           setLoadingUser(false)
@@ -34,10 +33,10 @@ export const UserProvider = ({ children }) => {
 
 
   return (
-    <UserContext.Provider value={{ user, setUser, loadingUser }}>
+    <PrestadorContext.Provider value={{ prestador, setPrestador, loadingUser }}>
       {children}
-    </UserContext.Provider>
+    </PrestadorContext.Provider>
   );
 };
 
-export const useUser = () => useContext(UserContext);
+export const usePrestador = () => useContext(PrestadorContext);
