@@ -9,7 +9,7 @@ import { updateCliente } from '../../services/api';
 import User from "../../assets/img/diarista-cadastro/user.webp"
 
 import InputMask from "react-input-mask"
-import { Button, Spinner } from '@nextui-org/react';
+import { Avatar, Button, Spinner } from '@nextui-org/react';
 
 
 const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
@@ -292,9 +292,9 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
 
                             <div className='lg:flex-row flex flex-col items-center lg:justify-around'>
                                 <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
-                                    <img src={image ? image: User} 
+                                    <Avatar src={image ? image: User} 
                                     alt="foto de perfil" 
-                                    className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
+                                    className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter shadow-md" 
                                     />                  
                                     <input 
                                         type="file" 

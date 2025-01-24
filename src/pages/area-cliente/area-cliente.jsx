@@ -109,12 +109,10 @@ const AreaCliente = () => {
 
         try {
             const response = await CreateEnderecosCliente(data);
+            await fetchUserInfo()
+            reset()
             setCreating(false)
             setOpenCreateAdress(false)
-
-            fetchUserInfo()
-
-            reset()
             
         
         
@@ -130,11 +128,9 @@ const AreaCliente = () => {
 
         try {
             // Realiza a exclusão do endereço na API
-            const DeleteEndereco = await deleteEnderecosCliente(enderecoId);
-            
+            const DeleteEndereco = await deleteEnderecosCliente(enderecoId);            
+            await fetchUserInfo()
             setDeleting(false)
-
-            fetchUserInfo()
     
         } catch (error) {
             console.error("Erro ao excluir o endereço: ", error);
@@ -269,8 +265,8 @@ const AreaCliente = () => {
         }
     };
 
-    const handleUserUpdated = (updatedInfo) => {    
-        window.location.reload()
+    const handleUserUpdated = () => {    
+        fetchUserInfo()
     };
     
     const buttons = [
@@ -427,6 +423,11 @@ const AreaCliente = () => {
         return averageStars;
     };
 
+    function formatarData(dataISO) {
+        const [ano, mes, dia] = dataISO.split("-"); // Divide "aaaa-mm-dd"
+        return `${dia}/${mes}/${ano}`; // Retorna no formato "dd/mm/aaaa"
+    }
+
     return (
         <div>
             <Helmet>
@@ -444,25 +445,25 @@ const AreaCliente = () => {
                             }`}>
                                 
 
-                                <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
+                                <div className="hidden lg:flex items-center justify-between pt-5 pb-2 p-4 ">
                                     <Avatar
                                     src={user?.AvatarUrl.avatarUrl || User}
-                                    className={`${isOpen ? "" : ""} cursor-pointer`}
+                                    className={`${isOpen ? "" : "hidden"} cursor-pointer`}
                                     onClick={() => setScreenSelected("perfil")}
                                     />
 
 
-                                    <Button className="bg- text-des justify-end" onPress={()=> toggleSidebar()} >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
-                                    </svg>
+                                    <Button className="bg-white text-desSec min-w-[1vh] justify-end" onPress={()=> toggleSidebar()} >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
+                                        </svg>
                                     </Button>
                                 </div>
                                 
                                 <div className='flex flex-row lg:grid gap-5 pt-5 p-2 '>
                                     <div>
                                         <Button
-                                        className='w-full border border-des bg-trans text-des justify-start'
+                                        className={`w-full justify-start  transition-all ${screenSelected == 'painel' ? "bg-desSec text-white" : "bg-white text-prim"} ${isOpen ? "w-full" : "min-w-[1vh]"} `}
                                         onPress={() => setScreenSelected("painel")}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -476,7 +477,7 @@ const AreaCliente = () => {
                                     </div> 
                                     <div>
                                         <Button
-                                        className='w-full border shadow-md bg-trans text-des justify-start'
+                                        className={`w-full justify-start  transition-all ${screenSelected == 'pedidos' ? "bg-desSec text-white" : "bg-white text-prim"} ${isOpen ? "w-full" : "min-w-[1vh]"} `}
                                         onPress={() => setScreenSelected("pedidos")}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -489,7 +490,7 @@ const AreaCliente = () => {
                                     </div>
                                     <div>
                                         <Button
-                                        className='w-full border shadow-md bg-trans text-des justify-start'
+                                        className={`w-full justify-start  transition-all ${screenSelected == 'avaliacoes' ? "bg-desSec text-white" : "bg-white text-prim"} ${isOpen ? "w-full" : "min-w-[1vh]"} `}
                                         onPress={() => setScreenSelected("avaliacoes")}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -503,7 +504,7 @@ const AreaCliente = () => {
                                     </div>
                                     <div>
                                         <Button
-                                        className='w-full border shadow-md bg-trans text-des justify-start '
+                                        className={`w-full justify-start  transition-all ${screenSelected == 'perfil' ? "bg-desSec text-white" : "bg-white text-prim"} ${isOpen ? "w-full" : "min-w-[1vh]"} `}
                                         onPress={() => setScreenSelected("perfil")}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -516,7 +517,7 @@ const AreaCliente = () => {
                                     </div>
                                     <div>
                                         <Button
-                                        className='w-full border shadow-md bg-trans text-des justify-start'
+                                        className={`w-full justify-start  transition-all ${screenSelected == 'enderecos' ? "bg-desSec text-white" : "bg-white text-prim"} ${isOpen ? "w-full" : "min-w-[1vh]"} `}
                                         onPress={() => setScreenSelected("enderecos")}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -553,20 +554,20 @@ const AreaCliente = () => {
                                         <div className="bg-white  shadow-md rounded-lg p-6">
                                             <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">Total de Agendamentos</h2>
                                             <p className="text-desSec text-3xl font-bold text-gray-800">{SolicitacoesTotal || 0}</p>
+                                        </div>
+
+                                        {/* Total de gastos no mês */}
+                                        <div className="bg-white shadow-md rounded-lg p-6 col-span-2 lg:col-span-1">
+                                            <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
+                                            <p className="text-desSec text-3xl font-bold text-gray-800">
+                                                {formatarMoeda(GastoMes.toFixed(2) || "0.00")}
+                                            </p>
                                         </div> 
                                         
                                     </div>
 
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
-                                        {/* Total de gastos no mês */}
-                                        <div className="bg-white shadow-md rounded-lg p-6">
-                                            <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">Gasto no mês</h2>
-                                            <p className="text-desSec text-3xl font-bold text-gray-800">
-                                                {formatarMoeda(GastoMes.toFixed(2) || "0.00")}
-                                            </p>
-                                        </div>
-
                                         {/* Prestador mais contratado */}
                                         <div className="bg-white  shadow-md rounded-lg p-6">
                                             <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
@@ -586,7 +587,7 @@ const AreaCliente = () => {
                                         
 
                                         {/* Próximo Agendamento */}
-                                        <div className="bg-white  rounded-lg p-4">
+                                        <div className="bg-white  rounded-lg ">
                                             <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-2">Próximo Agendamento</h2>
                                             <div className="flex flex-col gap-6">
                                                 {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
@@ -623,60 +624,56 @@ const AreaCliente = () => {
                                                             <div className="flex flex-col gap-6 flex-1">
                                                             {agendamentosComMesmoHorario.map((agendamento, index) => (
                                                                 <div key={index} className="flex flex-col gap-4 p-4 bg-gray-100 shadow-md rounded-lg">
-                                                                <div className="flex items-center gap-4">
-                                                                    <Avatar 
-                                                                    src={agendamento.user.avatarUrl.avatarUrl} 
-                                                                    alt="avatarPrestador"
-                                                                    size="lg"
-                                                                    />
-                                                                    <h3 className="text-prim font-semibold text-lg">
-                                                                    {agendamento.user.name}
-                                                                    </h3>
-                                                                </div>
-
-                                                                <div className="flex flex-col gap-3 mt-2">
-                                                                    <div className="flex justify-between items-center">
-                                                                    <p className="text-gray-700 font-medium">{agendamento.Servico}</p>
-                                                                    <p className="text-gray-500 text-sm">
-                                                                        {new Date(agendamento.dataServico).toLocaleDateString('pt-BR', {
-                                                                        day: '2-digit',
-                                                                        month: 'long',
-                                                                        year: 'numeric',
-                                                                        })}
-                                                                    </p>
-                                                                    <p className="text-gray-500 text-sm">{agendamento.horaServico}</p>
-                                                                    </div>
-                                                                    <p className="text-gray-600 text-sm">{agendamento.enderecoCliente}</p>
-                                                                </div>
-
-                                                                <div className="flex justify-between items-center mt-2">
-                                                                    <p className="text-prim font-semibold">
-                                                                    {formatarMoeda(agendamento.valorServico)}
-                                                                    </p>
-                                                                    <a
-                                                                    href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    >
-                                                                    <Button className="bg-sec text-white flex items-center gap-2">
-                                                                        <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        fill="none"
-                                                                        viewBox="0 0 24 24"
-                                                                        strokeWidth="1.5"
-                                                                        stroke="currentColor"
-                                                                        className="w-5 h-5"
-                                                                        >
-                                                                        <path
-                                                                            strokeLinecap="round"
-                                                                            strokeLinejoin="round"
-                                                                            d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
+                                                                    <div className="flex items-center gap-4">
+                                                                        <Avatar 
+                                                                        src={agendamento.user.avatarUrl.avatarUrl} 
+                                                                        alt="avatarPrestador"
+                                                                        size="lg"
                                                                         />
-                                                                        </svg>
-                                                                        Abrir no Google Maps
-                                                                    </Button>
-                                                                    </a>
-                                                                </div>
+                                                                        <h3 className="text-prim font-semibold text-lg">
+                                                                        {agendamento.user.name}
+                                                                        </h3>
+                                                                    </div>
+
+                                                                    <div className="flex flex-col gap-3 mt-2">
+                                                                        <div className="flex justify-between items-center">
+                                                                        <p className="text-prim font-medium">{agendamento.Servico}</p>
+                                                                        <p className="text-prim text-sm">
+                                                                            {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
+                                                                        </p>
+                                                                        <p className="text-prim text-sm">{agendamento.horaServico}</p>
+                                                                        </div>
+                                                                        <p className="text-prim text-sm">{agendamento.enderecoCliente}</p>
+                                                                    </div>
+
+                                                                    <div className="flex justify-between items-center mt-2">
+                                                                        <p className="text-prim font-semibold">
+                                                                        {formatarMoeda(agendamento.valorServico)}
+                                                                        </p>
+                                                                        <a
+                                                                        href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        >
+                                                                        <Button className="bg-sec text-white flex items-center gap-2">
+                                                                            <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            strokeWidth="1.5"
+                                                                            stroke="currentColor"
+                                                                            className="w-5 h-5"
+                                                                            >
+                                                                            <path
+                                                                                strokeLinecap="round"
+                                                                                strokeLinejoin="round"
+                                                                                d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
+                                                                            />
+                                                                            </svg>
+                                                                            Abrir no Google Maps
+                                                                        </Button>
+                                                                        </a>
+                                                                    </div>
                                                                 </div>
                                                             ))}
                                                             </div>
@@ -730,7 +727,7 @@ const AreaCliente = () => {
                                                 
                                                 <div className="grid gap-2">
                                                     <label htmlFor="email" className="text-neutral-500">E-mail</label>
-                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.email} />
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.email} />
                                                 </div>
                                                 <div className="grid gap-2">
                                                     <label htmlFor="telefone" className="text-neutral-500">Telefone 1</label>
@@ -765,12 +762,12 @@ const AreaCliente = () => {
 
                                                 <div className="grid gap-2">
                                                     <label htmlFor="rg" className="text-neutral-500">Estado Civil</label>
-                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={estadoCivilTexto} />
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={estadoCivilTexto} />
                                                 </div>
 
                                                 <div className="grid gap-2">
                                                 <label htmlFor="genero" className="text-neutral-500">Gênero</label>
-                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.genero} />
+                                                <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.genero} />
                                                 </div>
 
                                             </div>
@@ -797,37 +794,37 @@ const AreaCliente = () => {
 
                                                 <div className="grid gap-2">
                                                     <label htmlFor="logradouro" className="text-prim">Logradouro</label>
-                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.logradouro} />
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.EnderecoDefault[0]?.logradouro} />
                                                 </div>
 
                                                 <div className="grid gap-2">
                                                     <label htmlFor="numero" className="text-prim">Número</label>
-                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.numero} />
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.EnderecoDefault[0]?.numero} />
                                                 </div>
 
                                                 <div className="grid gap-2">
                                                     <label htmlFor="complemento" className="text-prim">Complemento</label>
-                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.complemento} />
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.EnderecoDefault[0]?.complemento} />
                                                 </div>
 
                                                 <div className="grid gap-2">
                                                     <label htmlFor="referencia" className="text-prim">Ponto de referência</label>
-                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.referencia} />
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.EnderecoDefault[0]?.referencia} />
                                                 </div>
 
                                                 <div className="grid gap-2">
                                                     <label htmlFor="bairro" className="text-prim">Bairro</label>
-                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.bairro} />
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.EnderecoDefault[0]?.bairro} />
                                                 </div>
 
                                                 <div className="grid gap-2">
                                                     <label htmlFor="cidade" className="text-prim">Cidade</label>
-                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.cidade} />
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.EnderecoDefault[0]?.cidade} />
                                                 </div>
 
                                                 <div className="grid gap-2">
                                                     <label htmlFor="estado" className="text-prim">Estado</label>
-                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled defaultValue={user?.EnderecoDefault[0]?.estado} />
+                                                    <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.EnderecoDefault[0]?.estado} />
                                                 </div>
                                                 
                                             </div>
@@ -1323,8 +1320,8 @@ const AreaCliente = () => {
                                             <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
                                                 {user?.EnderecosCliente?.length > 0 && (
                                                     user?.EnderecosCliente?.map((endereco) => (
-                                                        <div key={endereco.id} className='p-5 border rounded-lg border-prim'>
-                                                            <div className='text-start flex flex-col text-prim w-full justify-between'>
+                                                        <div key={endereco.id} className={`p-5 border rounded-lg border-prim bg-white  ${deleting ? "opacity-30" : ""}`}>
+                                                            <div className='text-start flex flex-col text-prim w-full justify-between '>
                                                                 <h2 className='text-sec font-semibold pb-2'>{endereco?.localServico}</h2>
                                                                 <p>{endereco?.logradouro}, {endereco?.numero}</p> 
                                                                 <p>{endereco?.complemento}</p> 
