@@ -89,7 +89,8 @@ export const WebSocketProvider = ({ children }) => {
     });
 
     newSocket.on('data-updated', (data) => {
-        // console.log('Notificação recebida:', data);
+        console.log('Notificação recebida:', data);
+        fetchUserInfo()
         // showNotification("Limppay Administrativo", data?.resource);
     });
 
