@@ -1,20 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { HeaderApp, Logo,Footer} from '../../componentes/imports.jsx'
+import {Logo,} from '../../componentes/imports.jsx'
 import User from "../../assets/img/diarista-cadastro/user.webp"
-import LoadingSpinner from '../../componentes/FormCadastro/Loading.jsx';
 import EditClienteModal from './EditClienteModal.jsx';
-import { CreateEnderecosCliente, createReview, deleteEnderecosCliente, getAvaliacoes, getEnderecoDefaultCliente, getPrestadorMaisContratado, getSolicitacoesDoMes, getSolicitacoesTotal, getGastoMes, perfil } from '../../services/api.js';
+import { CreateEnderecosCliente, createReview, deleteEnderecosCliente, getPrestadorMaisContratado, getSolicitacoesDoMes, getSolicitacoesTotal, getGastoMes, perfil } from '../../services/api.js';
 import HeaderWebApp from '../../componentes/App/HeaderWebApp.jsx';
 import { Avatar, ScrollShadow, Spinner,  } from '@nextui-org/react';
-import { getAgendamentos } from '../../services/api.js';
 'use client'
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { Button } from '@nextui-org/react';
 import {Accordion, AccordionItem} from "@nextui-org/accordion";
-import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
+import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 
-import { useForm, Controller } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
@@ -24,9 +21,6 @@ import { useUser } from '../../context/UserProvider';
 import { useNavigate } from 'react-router-dom';
 import CheckoutNotification from '../App/CheckoutNotification.jsx';
 import Navigation from './Navigation.jsx';
-
-import { io } from 'socket.io-client';
-import { useWebSocket } from '../../context/WebSocketContext.jsx';
 
 const AreaCliente = () => {
     const { user, setUser  } = useUser();
@@ -139,35 +133,35 @@ const AreaCliente = () => {
         }
     };
     
-      const estados = {
-        "AC": "Acre",
-        "AL": "Alagoas",
-        "AP": "Amapá",
-        "AM": "Amazonas",
-        "BA": "Bahia",
-        "CE": "Ceará",
-        "DF": "Distrito Federal",
-        "ES": "Espírito Santo",
-        "GO": "Goiás",
-        "MA": "Maranhão",
-        "MT": "Mato Grosso",
-        "MS": "Mato Grosso do Sul",
-        "MG": "Minas Gerais",
-        "PA": "Pará",
-        "PB": "Paraíba",
-        "PR": "Paraná",
-        "PE": "Pernambuco",
-        "PI": "Piauí",
-        "RJ": "Rio de Janeiro",
-        "RN": "Rio Grande do Norte",
-        "RS": "Rio Grande do Sul",
-        "RO": "Rondônia",
-        "RR": "Roraima",
-        "SC": "Santa Catarina",
-        "SP": "São Paulo",
-        "SE": "Sergipe",
-        "TO": "Tocantins"
-      };
+    const estados = {
+    "AC": "Acre",
+    "AL": "Alagoas",
+    "AP": "Amapá",
+    "AM": "Amazonas",
+    "BA": "Bahia",
+    "CE": "Ceará",
+    "DF": "Distrito Federal",
+    "ES": "Espírito Santo",
+    "GO": "Goiás",
+    "MA": "Maranhão",
+    "MT": "Mato Grosso",
+    "MS": "Mato Grosso do Sul",
+    "MG": "Minas Gerais",
+    "PA": "Pará",
+    "PB": "Paraíba",
+    "PR": "Paraná",
+    "PE": "Pernambuco",
+    "PI": "Piauí",
+    "RJ": "Rio de Janeiro",
+    "RN": "Rio Grande do Norte",
+    "RS": "Rio Grande do Sul",
+    "RO": "Rondônia",
+    "RR": "Roraima",
+    "SC": "Santa Catarina",
+    "SP": "São Paulo",
+    "SE": "Sergipe",
+    "TO": "Tocantins"
+    };
       
     const handleCepChange = async (e) => {
         const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
@@ -910,11 +904,7 @@ const AreaCliente = () => {
                                                                     
                                                                     <div className='text-prim w-full flex flex-col gap-5'>
                                                                         <p className='text-justify'>
-                                                                            {agendamento.Servico} - {agendamento.horaServico} - {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
-                                                                                day: '2-digit',
-                                                                                month: 'long',
-                                                                                year: 'numeric'
-                                                                            })}
+                                                                            {agendamento.Servico} - {agendamento.horaServico} - {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
 
                                                                         </p>
 
@@ -1066,11 +1056,7 @@ const AreaCliente = () => {
                                                                             <p><b>Observação:</b> {agendamento?.observacao ? agendamento.observacao : "Nenhuma obervação."}</p>
 
 
-                                                                            <p><b>Data:</b> {new Date(agendamento?.dataServico).toLocaleDateString('pt-BR', {
-                                                                                day: '2-digit',
-                                                                                month: 'long',
-                                                                                year: 'numeric'
-                                                                            })}</p>
+                                                                            <p><b>Data:</b> {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}</p>
                                                                             <div className='flex flex-col gap-2 max-w-[100vh]'>
                                                                                 <p><b>Endereço:</b> {agendamento?.enderecoCliente}</p>
                                                                                 <a 
@@ -1279,12 +1265,7 @@ const AreaCliente = () => {
                                                         </div>
                                                         <div className='w-full flex justify-end'>
                                                             <span>
-                                                                {avaliacao?.createdAt &&
-                                                                new Intl.DateTimeFormat('pt-BR', {
-                                                                    day: '2-digit',
-                                                                    month: 'long',
-                                                                    year: 'numeric'
-                                                                }).format(new Date(avaliacao.createdAt))}
+                                                            {formatarData(new Date(avaliacao?.createdAt).toISOString().split('T')[0])}
                                                             </span>
                                                         </div>
 
@@ -1534,7 +1515,7 @@ const AreaCliente = () => {
                                                     </div>
                                                 </ScrollShadow>
                                                     <ModalFooter className='justify-between'>
-                                                        <Button color="danger" variant="light" onPress={() => (onClose(), setOpenEdit(true))}
+                                                        <Button color="danger" variant="light" onPress={() => onClose()}
                                                         >
                                                         Cancelar
                                                         </Button>

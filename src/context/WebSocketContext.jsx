@@ -20,13 +20,12 @@ export const WebSocketProvider = ({ children }) => {
 
   const fetchUserInfo = async () => {
       try {
-          const response = await perfil()
-          console.log(response)
-          setUser(response)
-          
+        const response = await perfil()
+        console.log(response)
+        setUser(response)
           
       } catch (error) {
-          console.error('Erro ao buscar informações do usuário:', error);
+        console.error('Erro ao buscar informações do usuário:', error);
 
       }
   };
@@ -38,7 +37,7 @@ export const WebSocketProvider = ({ children }) => {
       setPrestador(response)
         
     } catch (error) {
-        console.error('Erro ao buscar informações do usuário:', error);
+      console.error('Erro ao buscar informações do usuário:', error);
 
     }
   };
