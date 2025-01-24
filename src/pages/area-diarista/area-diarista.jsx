@@ -734,6 +734,11 @@ const AreaDiarista = () => {
         const [ano, mes, dia] = dataISO.split("-"); // Divide "aaaa-mm-dd"
         return `${dia}/${mes}/${ano}`; // Retorna no formato "dd/mm/aaaa"
     }
+
+    const taxaPrestador = (valor) => {
+        const value = valor * 0.75
+        return formatarMoeda(value)
+    }
     
     return (
         <>
@@ -1144,7 +1149,7 @@ const AreaDiarista = () => {
                                     <div className='flex flex-col lg:flex-row h-screen'>
                                         {/* menu lateral */}
                                         <div className={`hidden lg:flex flex-col pt-[7vh] min-h-[15vh]  lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
-                                        isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[15vh] xl:max-w-[15vh] 2xl:min-w-[12vh] 2xl:max-w-[12vh] "
+                                        isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "overflow-hidden w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[15vh] xl:max-w-[15vh] 2xl:min-w-[12vh] 2xl:max-w-[12vh] "
                                         }`}>
 
                                             <div className=" hidden  shadow-md lg:flex items-center justify-between pt-2 pb-2 p-4 ">
@@ -1155,7 +1160,7 @@ const AreaDiarista = () => {
                                                 />
 
 
-                                                <Button className="bg- text-des justify-end" onPress={() => toggleSidebar()} >
+                                                <Button className="bg- text-desSec justify-end" onPress={() => toggleSidebar()} >
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
                                                 </svg>
@@ -1163,9 +1168,25 @@ const AreaDiarista = () => {
                                             </div>
                                             
                                             <div className='flex flex-row lg:grid gap-5 pt-5 p-2 '>
+                                                {/* tela para o dashboard */}
                                                 <div>
                                                     <Button
-                                                    className='w-full border shadow-md bg-trans text-des justify-start '
+                                                    className={`w-full justify-start  transition-all ${screenSelected == 'painel' ? "bg-desSec text-white" : "bg-white text-prim"} `}
+                                                    onPress={() => setScreenSelected("painel")}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                                        </svg>
+
+
+                                                        {isOpen ? "Painel" : ""}
+                                                        
+                                                    </Button>
+                                                </div>
+
+                                                <div>
+                                                    <Button
+                                                    className={`w-full justify-start  transition-all ${screenSelected == 'perfil' ? "bg-desSec text-white" : "bg-white text-prim"} `}
                                                     onPress={() => setScreenSelected("perfil")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -1180,7 +1201,7 @@ const AreaDiarista = () => {
 
                                                 <div>
                                                     <Button
-                                                    className='w-full border shadow-md bg-trans text-des justify-start'
+                                                    className={`w-full justify-start  transition-all ${screenSelected == 'pedidos' ? "bg-desSec text-white" : "bg-white text-prim"} `}
                                                     onPress={() => setScreenSelected("pedidos")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -1194,7 +1215,7 @@ const AreaDiarista = () => {
 
                                                 <div>
                                                     <Button
-                                                    className='w-full border shadow-md bg-trans text-des justify-start'
+                                                    className={`w-full justify-start  transition-all ${screenSelected == 'avaliacoes' ? "bg-desSec text-white" : "bg-white text-prim"} `}
                                                     onPress={() => setScreenSelected("avaliacoes")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -1209,7 +1230,7 @@ const AreaDiarista = () => {
 
                                                 <div>
                                                     <Button
-                                                    className='w-full border shadow-md bg-trans text-des justify-start'
+                                                    className={`w-full justify-start  transition-all ${screenSelected == 'datasBloqueadas' ? "bg-desSec text-white" : "bg-white text-prim"} `}
                                                     onPress={() => setScreenSelected("datasBloqueadas")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -1225,7 +1246,7 @@ const AreaDiarista = () => {
 
                                                 <div>
                                                     <Button
-                                                    className='w-full border shadow-md bg-trans text-des justify-start'
+                                                    className={`w-full justify-start  transition-all ${screenSelected == 'servicos' ? "bg-desSec text-white" : "bg-white text-prim"} `}
                                                     onPress={() => setScreenSelected("servicos")}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -1240,21 +1261,7 @@ const AreaDiarista = () => {
                                                     </Button>
                                                 </div>
 
-                                                {/* tela para o dashboard */}
-                                                <div>
-                                                    <Button
-                                                    className='w-full border border-des bg-trans text-des justify-start'
-                                                    onPress={() => setScreenSelected("painel")}
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                                                        </svg>
-
-
-                                                        {isOpen ? "Painel" : ""}
-                                                        
-                                                    </Button>
-                                                </div> 
+                                                
 
                                             </div>
                                                 
@@ -1362,7 +1369,7 @@ const AreaDiarista = () => {
 
                                                     <h2 className="text-xl pt-10 text-prim font-semibold">Disponibilidade e Serviços</h2>
                                                     <div className="pt-2">
-                                                        <span className="font-semibold text-prim pt-5 text-lg">Serviços</span>
+                                                        <span className="font-semibold text-prim pt-5 text-sm lg:text-lg">Serviços</span>
                                                         <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pb-5 pt-5">
 
                                                         {prestador?.UserServico.map((service) => (
@@ -1599,11 +1606,7 @@ const AreaDiarista = () => {
                                                                         <div className="overflow-y-auto bg-white p-3 rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between">
                                                                             <p>
                                                                                 {agendamento.Servico} - {agendamento.horaServico} -{" "}
-                                                                                {new Date(agendamento?.dataServico).toLocaleDateString("pt-BR", {
-                                                                                    day: "2-digit",
-                                                                                    month: "long",
-                                                                                    year: "numeric",
-                                                                                })}
+                                                                                {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
                                                                             </p>
                                                                             <p>Subtotal: {formatarMoeda(taxaPrestador(valorLiquidoServico))}</p>
                                                                             <div className="w-4/12 sm:w-auto text-center pt-2 sm:pt-0">
@@ -1645,14 +1648,7 @@ const AreaDiarista = () => {
                                                                                     </p>
                                                                                     <p>
                                                                                         <b>Data:</b>{" "}
-                                                                                        {new Date(agendamento?.dataServico).toLocaleDateString(
-                                                                                            "pt-BR",
-                                                                                            {
-                                                                                                day: "2-digit",
-                                                                                                month: "long",
-                                                                                                year: "numeric",
-                                                                                            }
-                                                                                        )}
+                                                                                        {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
                                                                                     </p>
                                                                                     <div className="flex flex-col gap-2 max-w-[100vh]">
                                                                                         <p>
@@ -1706,34 +1702,54 @@ const AreaDiarista = () => {
                                         {screenSelected == "avaliacoes" && (
                                             <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                                 <div className='p-5 flex flex-col gap-5'>
-                                                {prestador?.Review.length > 0 ? (
-                                                    prestador?.Review?.map((avaliacao) => (
-                                                        
-                                                        <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full shadow-lg shadow-bord rounded-md'>
+                                                    {/* Média de estrelas */}
+                                                    <div className="lg:col-span-3  bg-white shadow-md rounded-lg p-6">
+                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                            Média de Estrelas
+                                                        </h2>
+                                                        <div className="flex flex-col gap-6">
+                                                            {prestador?.Review && prestador?.Review?.length > 0 ? (
+                                                                (() => {
+                                                                    const totalEstrelas = prestador?.Review?.reduce((sum, avaliacao) => sum + (avaliacao.stars || 0), 0);
+                                                                    const mediaEstrelas = (totalEstrelas / prestador?.Review?.length).toFixed(1);
 
-                                                            <div className=' avaliacao flex gap-3   bg-opacity-30 rounded-md  '>
-                                                                <div className='flex flex-col w-full'>
-                                                                    <div className="overflow-y-auto max-h-52 bg-white pt-2 rounded-md w-full min-h-20">
-                                                                        <p className='text-prim'>{avaliacao?.comment === "" ? <span className='text-prim text-opacity-40'>Nenhum comentário</span>: avaliacao.comment}</p>
-                                                                    </div>
-                                                                    <div className='flex justify-center sm:justify-start gap-10'>
-                                                                        {[1, 2, 3, 4, 5].map((star) => (
-                                                                            <StarReview
-                                                                            key={star}
-                                                                            filled={star <= avaliacao?.stars}
-                                                                            />
-                                                                        ))}
+                                                                    return (
+                                                                        <p className="text-desSec text-3xl font-bold text-gray-800">{mediaEstrelas} ★</p>
+                                                                    );
+                                                                })()
+                                                            ) : (
+                                                                <p className="text-prim">Nenhuma avaliação recebida ainda.</p>
+                                                            )}
+                                                        </div>
+                                                    </div>  
+                                                    {prestador?.Review.length > 0 ? (
+                                                        prestador?.Review?.map((avaliacao) => (
+                                                            
+                                                            <div key={avaliacao.id} className='avaliacoes p-5 overflow-y-auto max-h-96 flex flex-col gap-5 min-w-full shadow-lg shadow-bord rounded-md'>
+
+                                                                <div className=' avaliacao flex gap-3   bg-opacity-30 rounded-md  '>
+                                                                    <div className='flex flex-col w-full'>
+                                                                        <div className="overflow-y-auto max-h-52 bg-white pt-2 rounded-md w-full min-h-20">
+                                                                            <p className='text-prim'>{avaliacao?.comment === "" ? <span className='text-prim text-opacity-40'>Nenhum comentário</span>: avaliacao.comment}</p>
+                                                                        </div>
+                                                                        <div className='flex justify-center sm:justify-start gap-10'>
+                                                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                                                <StarReview
+                                                                                key={star}
+                                                                                filled={star <= avaliacao?.stars}
+                                                                                />
+                                                                            ))}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    ))
+                                                        ))
 
-                                                ) : (
-                                                    <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
-                                                        <p>Você não possui nenhuma avaliação no momento</p>
-                                                    </div>
-                                                )}
+                                                    ) : (
+                                                        <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
+                                                            <p>Você não possui nenhuma avaliação no momento</p>
+                                                        </div>
+                                                    )}
                                                     
 
                                                 </div>
@@ -1989,12 +2005,12 @@ const AreaDiarista = () => {
                                         )}
 
                                         {screenSelected === "painel" && (
-                                            <div className="md:pt-28 pt-[8vh] flex-1 p-6 ">                                        
+                                            <div className="md:pt-28 pt-[8vh] pb-[8vh] flex-1 p-6 gap-5 ">                                        
                                                 {/* Grid do dashboard */}
-                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">                                        
+                                                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">                                        
                                                     {/* Solicitações do mês */}
-                                                    <div className="bg-white shadow-md rounded-lg p-6">
-                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                    <div className="bg-white shadow-md  rounded-lg p-6">
+                                                        <h2 className="text-desSec text-sm lg:text-lg font-semibold text-gray-600 mb-4">
                                                             Solicitações do Mês
                                                         </h2>
                                                         <p className="text-desSec text-3xl font-bold text-gray-800">
@@ -2003,81 +2019,33 @@ const AreaDiarista = () => {
                                                     </div>
 
                                                     {/* Total de agendamentos */}
-                                                    <div className="bg-white shadow-md rounded-lg p-6">
-                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                    <div className="bg-white shadow-md  rounded-lg p-6">
+                                                        <h2 className="text-desSec text-sm lg:text-lg font-semibold text-gray-600 mb-4">
                                                             Total de Agendamentos
                                                         </h2>
                                                         <p className="text-desSec text-3xl font-bold text-gray-800">
                                                             {SolicitacoesGeraisPrestador || 0}
                                                         </p>
-                                                    </div> 
-                                                    
+                                                    </div>
+
                                                     {/* Total de faturamento no mês */}
-                                                    <div className="bg-white shadow-md rounded-lg p-6">
-                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                    <div className="col-span-2 lg:col-span-1   bg-white shadow-md  rounded-lg p-6">
+                                                        <h2 className="text-desSec text-sm lg:text-lg font-semibold text-gray-600 mb-4">
                                                             Faturamento no mês 
                                                         </h2>
                                                         <p className="text-desSec text-3xl font-bold text-gray-800">
                                                             {formatarMoeda(FaturamentoMes.toFixed(2) || "0.00")}
                                                         </p>
-                                                    </div> 
+                                                    </div>
+
+                                                    
                                                 </div>
-                                                
 
                                                 {/* Próximo agendamento e média de estrelas */}
-                                                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4 pt-5">
-                                                    Próximo Agendamento
-                                                </h2>
-                                                <div className="flex flex-col md:flex-row gap-6">
-                                                    {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
-                                                        (() => {
-                                                            const hoje = new Date();
-                                                            const proximoAgendamento = agendamentosFiltrados
-                                                                .filter(
-                                                                    agendamento => 
-                                                                        new Date(agendamento.dataServico) >= hoje && // Data futura ou atual
-                                                                        agendamento.status === "Agendado" // Status "Agendado"
-                                                                )
-                                                                .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
-
-                                                            return proximoAgendamento ? (
-                                                                <div className="flex-1">
-                                                                    <div className="flex flex-col gap-3 shadow-lg rounded-lg p-5">
-                                                                        <p><b>Serviço:</b> {proximoAgendamento.Servico}</p>
-                                                                        <p><b>Data:</b> {new Date(proximoAgendamento.dataServico).toLocaleDateString('pt-BR', {
-                                                                            day: '2-digit',
-                                                                            month: 'long',
-                                                                            year: 'numeric'
-                                                                        })}</p>
-                                                                        <p><b>Hora:</b> {proximoAgendamento.horaServico}</p>
-                                                                        <p><b>Preço:</b> {formatarMoeda(proximoAgendamento.valorServico)}</p>
-                                                                        <p><b>Status:</b> {proximoAgendamento.status}</p>
-                                                                        <p><b>Endereço:</b> {proximoAgendamento.enderecoCliente}</p>
-                                                                        <a 
-                                                                            href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
-                                                                            target="_blank" 
-                                                                            rel="noopener noreferrer"
-                                                                        >
-                                                                            <Button className="w-full bg-sec text-white mt-4">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
-                                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-                                                                                </svg>
-                                                                                Abrir com o Google Maps
-                                                                            </Button>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            ) : (
-                                                                <p className="text-prim flex-1">Nenhum agendamento futuro encontrado com status "Agendado".</p>
-                                                            );
-                                                        })()
-                                                    ) : (
-                                                        <p className="text-prim flex-1">Nenhum agendamento encontrado.</p>
-                                                    )}
-
+                                                <div className="flex flex-col md:flex-row gap-6 pt-5">
                                                     {/* Média de estrelas */}
-                                                    <div className="flex-1 bg-white shadow-md rounded-lg p-6">
-                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4">
+                                                    <div className="lg:col-span-3  bg-white shadow-md  rounded-lg p-6 w-full">
+                                                        <h2 className="text-desSec text-sm lg:text-lg font-semibold text-gray-600 mb-4">
                                                             Média de Estrelas
                                                         </h2>
                                                         <div className="flex flex-col gap-6">
@@ -2095,7 +2063,66 @@ const AreaDiarista = () => {
                                                             )}
                                                         </div>
                                                     </div>
+
+                                                    <div className='w-full'>
+                                                        <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4 pt-2"> Próximo Agendamento </h2>
+                                                        
+                                                        {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
+                                                            (() => {
+                                                                const hoje = new Date();
+                                                                const proximoAgendamento = agendamentosFiltrados
+                                                                    .filter(
+                                                                        agendamento => 
+                                                                            new Date(agendamento.dataServico) >= hoje && // Data futura ou atual
+                                                                            agendamento.status === "Agendado" // Status "Agendado"
+                                                                    )
+                                                                    .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
+
+                                                                return proximoAgendamento ? (
+                                                                    <div className="flex-1 w-full">
+                                                                        <div className="flex flex-col gap-3 shadow-lg rounded-lg p-5">
+                                                                            <div className='flex gap-5 justify-between'>
+                                                                                <p> {proximoAgendamento.Servico}</p>
+                                                                                <p> {new Date(proximoAgendamento.dataServico).toLocaleDateString('pt-BR', {
+                                                                                    day: '2-digit',
+                                                                                    month: 'long',
+                                                                                    year: 'numeric'
+                                                                                })}</p>
+                                                                                <p>{proximoAgendamento.horaServico}</p>
+                                                                            </div>
+                                                                            <p> {proximoAgendamento.enderecoCliente}</p>
+
+                                                                            <p>{taxaPrestador(proximoAgendamento.valorServico)}</p>
+
+                                                                            <a 
+                                                                                href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
+                                                                                target="_blank" 
+                                                                                rel="noopener noreferrer"
+                                                                            >
+                                                                                <Button className="w-full bg-sec text-white mt-4">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                                                                    </svg>
+                                                                                    Abrir com o Google Maps
+                                                                                </Button>
+                                                                            </a>
+
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <p className="text-prim flex w-full">Nenhum agendamento futuro encontrado com status "Agendado".</p>
+                                                                );
+                                                            })()
+                                                        ) : (
+                                                            <p className="text-prim flex w-full">Nenhum agendamento encontrado.</p>
+                                                        )}
+
+                                                    </div>
+                                                      
+                                                    
+                                                    
                                                 </div>
+
                                             </div>
                                         )}
                                         <NavigationDiarista screenSelected={screenSelected} setScreenSelected={setScreenSelected}/>

@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext } from 'react';
 const ScreenSelectContext = createContext();
 
 export const ScreenSelect = ({ children }) => {
-    const [screenSelected, setScreenSelected] = useState("perfil")
+    const [screenSelected, setScreenSelected] = useState("painel")
 
     return (
         <ScreenSelectContext.Provider value={{screenSelected, setScreenSelected}}>
