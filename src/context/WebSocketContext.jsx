@@ -20,18 +20,9 @@ export const WebSocketProvider = ({ children }) => {
 
   const fetchUserInfo = async () => {
       try {
-          const response = await user ? perfil() : prestadorProfile()
+          const response = await perfil()
           console.log(response)
-          
-          if(user) {
-            setUser(response)
-
-          } else if (prestador) {
-            setPrestador(response)
-
-          } else {
-            console.log("Nenhum usuário online")
-          }
+          setUser(response)
           
           
       } catch (error) {
@@ -40,12 +31,26 @@ export const WebSocketProvider = ({ children }) => {
       }
   };
 
+  const fetchPrestadorInfo = async () => {
+    try {
+      const response = await prestadorProfile()
+      console.log(response)
+      setPrestador(response)
+        
+    } catch (error) {
+        console.error('Erro ao buscar informações do usuário:', error);
+
+    }
+  };
+
+
   useEffect(() => {
     if (!socket ) return;
 
     socket.on('data-updated', (data) => {
-        console.log('Notificação recebida:', data);
-        fetchUserInfo(); // Atualiza os dados ao receber o evento
+        // console.log('Notificação recebida:', data);
+        if(user) fetchUserInfo(); // Atualiza os dados ao receber o evento
+        if(prestador) fetchPrestadorInfo()
     });
 
     return () => {
@@ -89,9 +94,9 @@ export const WebSocketProvider = ({ children }) => {
     });
 
     newSocket.on('data-updated', (data) => {
-        console.log('Notificação recebida:', data);
-        fetchUserInfo()
-        // showNotification("Limppay Administrativo", data?.resource);
+        // console.log('Notificação recebida:', data);
+        if(user) fetchUserInfo(); // Atualiza os dados ao receber o evento
+        if(prestador) fetchPrestadorInfo()
     });
 
     return () => {
