@@ -2028,13 +2028,13 @@ const AreaDiarista = () => {
                                                                             {servico.nome}
                                                                         </td>
                                                                         <td className=" px-5 py-2">
-                                                                            {servico.valorDiaria ? `R$ ${servico.valorDiaria},00` : "-"}
+                                                                            {servico.valorDiaria ? `${taxaPrestador(servico.valorDiaria)}` : "-"}
                                                                         </td>
                                                                         <td className=" px-5 py-2">
-                                                                            {servico.valorMeiaDiaria ? `R$ ${servico.valorMeiaDiaria},00` : "-"}
+                                                                            {servico.valorMeiaDiaria ? `${taxaPrestador(servico.valorMeiaDiaria)}` : "-"}
                                                                         </td>
                                                                         <td className=" px-5 py-2">
-                                                                            {servico.valorUmaHora ? `R$ ${servico.valorUmaHora},00` : "-"}
+                                                                            {servico.valorUmaHora ? `${taxaPrestador(servico.valorUmaHora)}` : "-"}
                                                                         </td>
                                                                     </tr>
                                                                 ))}

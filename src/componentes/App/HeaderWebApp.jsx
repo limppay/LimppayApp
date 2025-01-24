@@ -4,7 +4,7 @@ import ButtonAcess from '../home/ButtonAcess';
 import "../../styles/menu-hamburguer.css";
 import axios from "axios";
 import { useUser } from '../../context/UserProvider';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, Spinner } from "@nextui-org/react";
 import {Button} from "@nextui-org/react";
 import User from "../../assets/img/diarista-cadastro/user.webp"
@@ -15,6 +15,8 @@ import { io } from 'socket.io-client';
 export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
   const { user, setUser, loadingUser  } = useUser();
   const navigate = useNavigate();
+  // const location = useLocation()
+  console.log(location.pathname)
 
   useEffect(() => {
     const hamburguerButton = document.getElementById("hamburguerButton");
@@ -109,7 +111,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
 
                     <div>
                       <Button
-                        className={`bg-white border text-desSec hidden md:flex ${location.pathname != "/area-cliente" && "hidden" } `}
+                        className={`bg-white border text-desSec hidden ${location.pathname != "/area-cliente" ? "md:hidden" : "md:flex"} `}
                         onPress={() => (navigate("/contrate-online"))}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="size-6">
