@@ -264,7 +264,6 @@ const AreaCliente = () => {
     };
     
     const buttons = [
-        { link: "/contrate-online", text: "Contrate Online"},
         { link: "/", text: "Quem Somos"},
         { link: "/", text: "Dúvidas"},
     ]
@@ -558,6 +557,14 @@ const AreaCliente = () => {
                                             </p>
                                         </div> 
                                         
+                                        <div className='w-full sm:hidden col-span-2'>
+                                            <Button className='w-full text-desSec bg-white border-2 font-semibold' onPress={() => (navigate("/contrate-online"))}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="size-6">
+                                                    <path strokeLinecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                                </svg>
+                                                Agendar novo serviço
+                                            </Button>
+                                        </div>
                                     </div>
 
 
@@ -577,8 +584,7 @@ const AreaCliente = () => {
                                                 {PrestadorMaisContratado?.name || <span className='text-white'> <Spinner/> </span>}
                                                 </span>
                                             </div>
-                                        </div>
-                                        
+                                        </div>                                        
 
                                         {/* Próximo Agendamento */}
                                         <div className="bg-white  rounded-lg ">
@@ -668,8 +674,10 @@ const AreaCliente = () => {
                                                                         </Button>
                                                                         </a>
                                                                     </div>
+
                                                                 </div>
                                                             ))}
+                                                            
                                                             </div>
                                                         );
                                                     })()
@@ -843,7 +851,7 @@ const AreaCliente = () => {
                             {screenSelected == "pedidos" && (
                                 <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                     <div className='p-5 flex flex-col gap-5'>
-                                        <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
+                                        <div className="flex flex-col sm:flex-row items-center gap-4 ">
                                             <input
                                                 type="text"
                                                 placeholder="Pesquisar"
@@ -869,6 +877,14 @@ const AreaCliente = () => {
                                                 />
 
                                             </div>
+                                        </div>
+                                        <div className='w-full sm:hidden'>
+                                            <Button className='w-full text-desSec font-semibold  bg-white border-2' onPress={() => (navigate("/contrate-online"))}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="size-6">
+                                                    <path strokeLinecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                                </svg>
+                                                Agendar novo serviço
+                                            </Button>
                                         </div>
 
                                         {user?.agendamentos.length > 0 ? (
