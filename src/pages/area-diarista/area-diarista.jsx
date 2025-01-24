@@ -1554,18 +1554,7 @@ const AreaDiarista = () => {
                                             <section className='w-full  gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                                 <div className='p-5 flex flex-col gap-5'>
                                                 <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
-                                                        <Button
-                                                        className='w-full border shadow-sm bg-trans text-desSec justify-start'
-                                                        onPress={() => setScreenSelected("avaliacoes")}
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-                                                            </svg>
-
-
-                                                            Minhas Avaliações
-                                                            
-                                                        </Button>
+                                                      
                                                         <input
                                                             type="text"
                                                             placeholder="Pesquisar"
@@ -1591,6 +1580,19 @@ const AreaDiarista = () => {
                                                             />
 
                                                         </div>
+                                                        <Button
+                                                        className='w-full border shadow-sm bg-trans text-desSec justify-start'
+                                                        onPress={() => setScreenSelected("avaliacoes")}
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                                            </svg>
+
+
+                                                            Minhas Avaliações
+                                                            
+                                                        </Button>
+                                                        
 
 
                                                 </div>
@@ -1614,7 +1616,7 @@ const AreaDiarista = () => {
                                                                                 {agendamento.Servico} - {agendamento.horaServico} -{" "}
                                                                                 {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
                                                                             </p>
-                                                                            <p>Subtotal: {formatarMoeda(taxaPrestador(valorLiquidoServico))}</p>
+                                                                            <p>{formatarMoeda(taxaPrestador(agendamento?.valorLiquido))}</p>
                                                                             <div className="w-4/12 sm:w-auto text-center pt-2 sm:pt-0">
                                                                                 <div
                                                                                     className={`p-2 rounded-md text-white ${
@@ -2089,16 +2091,12 @@ const AreaDiarista = () => {
                                                                         <div className="flex flex-col gap-3 shadow-lg rounded-lg p-5">
                                                                             <div className='flex gap-5 justify-between'>
                                                                                 <p> {proximoAgendamento.Servico}</p>
-                                                                                <p> {new Date(proximoAgendamento.dataServico).toLocaleDateString('pt-BR', {
-                                                                                    day: '2-digit',
-                                                                                    month: 'long',
-                                                                                    year: 'numeric'
-                                                                                })}</p>
+                                                                                <p>{formatarData(new Date(proximoAgendamento?.dataServico).toISOString().split('T')[0])} </p>
                                                                                 <p>{proximoAgendamento.horaServico}</p>
                                                                             </div>
                                                                             <p> {proximoAgendamento.enderecoCliente}</p>
 
-                                                                            <p>{taxaPrestador(proximoAgendamento.valorServico)}</p>
+                                                                            <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
 
                                                                             <a 
                                                                                 href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 

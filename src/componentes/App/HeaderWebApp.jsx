@@ -132,6 +132,7 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                         border
                         border-error
                          text-error
+                         rounded-md
                         '
                         onPress={() => HandleExitUser()}
                         isDisabled={loggout}

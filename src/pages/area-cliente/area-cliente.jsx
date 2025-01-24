@@ -709,7 +709,7 @@ const AreaCliente = () => {
                                                     <Avatar src={user?.AvatarUrl?.avatarUrl ? user?.AvatarUrl?.avatarUrl : User}
                                                     id='avatar' 
                                                     alt="foto de perfil" 
-                                                    className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md cursor-pointer" 
+                                                    className="transition-all duration-200 rounded-full w-60 h-60  hover:bg-ter shadow-md cursor-pointer" 
                                                     onClick={()=> SetOpen(true)}
                                                     
                                                     />                                             
