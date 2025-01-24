@@ -687,7 +687,7 @@ const AreaDiarista = () => {
 
         handleGetServicos()
 
-    }, [])
+    }, [prestador, setPrestador])
 
     useEffect(() => {
         if (selectedServices) {
@@ -740,6 +740,8 @@ const AreaDiarista = () => {
         const value = valor * 0.75
         return formatarMoeda(value)
     }
+
+    console.log(servicos)
     
     return (
         <>
@@ -796,7 +798,7 @@ const AreaDiarista = () => {
                                                                     handleImageChange(e); // Exibe a imagem
                                                                     setValue("arquivoFoto", file, { shouldValidate: true }); // Atribui o arquivo e dispara a validação
                                                                 }}
-                                                                className="p-2 w-full hidden"
+                                                                className="p-2  w-full hidden"
                                                             />                      
                                                         </label>
                                                         <div className="flex gap-2 items-center">
@@ -1956,12 +1958,12 @@ const AreaDiarista = () => {
                                         )}
 
                                         {screenSelected == "servicos" && (
-                                            <section className='w-full gap-1 pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+                                            <section className='w-full gap-1 pt-[8vh] pb-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
                                                 <div className='p-7   flex flex-col gap-5'>
                                                     <div>
                                                         <h2 className='text-2xl font-semibold '>Serviços</h2>
                                                     </div>
-                                                    <div className="w-full pb-10 ">
+                                                    <div className="w-full pb-10 flex flex-col gap-5 ">
                                                         <form className='flex flex-col gap-5 ' onSubmit={handleSubmitService(handleUpdateServicos)}>
                                                             <div className="overflow-y-auto max-h-[60vh] lg:p-2 grid grid-cols-1 gap-5 lg:grid-cols-5 items-center lg:gap-5">
                                                                 {servicos
@@ -1998,15 +2000,49 @@ const AreaDiarista = () => {
 
                                                         </form>
                                                         
+                                                        <span className='opacity-50 flex items-center gap-2'>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                                                            </svg>
+
+                                                            Selecione os serviços que você deseja realizar
+                                                        </span>
                                                     </div>
 
-                                                    <span className='opacity-50 flex items-center gap-2'>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                                                        </svg>
+                                                    <h2 className="font-semibold text-xl mb-4">Tabela de Preços</h2>
+                                                    <div className="overflow-x-auto border rounded-md">
+                                                        <table className="min-w-full table-auto rounded-md  ">
+                                                            <thead className=''>
+                                                                <tr className=" text-white  text-sm  bg-sec ">
+                                                                    <th className="p-2 text-start  ">Serviço</th>
+                                                                    <th className="p-2 text-start ">Valor Diária</th>
+                                                                    <th className="p-2 text-start">Valor Meia Diária</th>
+                                                                    <th className="p-2 text-start">Valor por Hora</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody >
+                                                                {servicos.filter((servico) => servico.status).map((servico) => (
+                                                                    <tr key={servico.id} className="hover:bg-gray-50 border-b border-t ">
+                                                                        <td className=" px-5 py-2 font-medium">
+                                                                            <i className={`fas fa-${servico.icone} mr-2`}></i>
+                                                                            {servico.nome}
+                                                                        </td>
+                                                                        <td className=" px-5 py-2">
+                                                                            {servico.valorDiaria ? `R$ ${servico.valorDiaria},00` : "-"}
+                                                                        </td>
+                                                                        <td className=" px-5 py-2">
+                                                                            {servico.valorMeiaDiaria ? `R$ ${servico.valorMeiaDiaria},00` : "-"}
+                                                                        </td>
+                                                                        <td className=" px-5 py-2">
+                                                                            {servico.valorUmaHora ? `R$ ${servico.valorUmaHora},00` : "-"}
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                        </div>
 
-                                                        Selecione os serviços que você deseja realizar
-                                                    </span>
+
 
                                                 </div>
                                             </section>
