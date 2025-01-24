@@ -8,7 +8,7 @@ import axios from "axios"
 import { updateUser } from '../../services/api';
 
 import InputMask from "react-input-mask"
-import { Button, Spinner } from '@nextui-org/react';
+import { Avatar, Button, Spinner } from '@nextui-org/react';
 import { usePrestador } from '../../context/PrestadorProvider';
 
 
@@ -299,9 +299,9 @@ const EditUserModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                             <div className='lg:flex-row flex flex-col items-center lg:justify-around'>
 
                             <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
-                                  <img src={image} 
-                                  alt="foto de perfil" 
-                                  className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
+                                  <Avatar src={image} 
+                                    alt="foto de perfil" 
+                                    className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter shadow-md" 
                                   />                  
                                   <input 
                                       type="file" 
