@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { applyCoupom, createCheckout, CreateEnderecosCliente, deleteEnderecosCliente, getDisponiveis, perfil } from '../../services/api';
+import { applyCoupom, createCheckout, getDisponiveis } from '../../services/api';
 import {Avatar, Spinner} from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
 import {Logo, Footer } from '../../componentes/imports';
@@ -17,14 +17,9 @@ import { useSelectedProvider } from '../../context/SelectedProvider';
 import { useSelectedDates } from '../../context/SelectedDates';
 import { useSelectedTimes } from '../../context/SelectedTimes';
 
-import DeleteIcon from '@mui/icons-material/Delete'
-
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-
-import InputMask from "react-input-mask"
-import axios from 'axios';
 
 import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import { Button } from '@nextui-org/react';
@@ -55,7 +50,7 @@ export default function ContrateOnline() {
     const [finding, setFinding] = useState(false)
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const [currentStep, setCurrentStep] = useState(2);
+    const [currentStep, setCurrentStep] = useState(0);
     const [showCalendar, setShowCalendar] = useState(false);
     const [numberOfDays, setNumberOfDays] = useState(0); // Número de dias que o usuário selecionou
 
