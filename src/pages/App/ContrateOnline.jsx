@@ -1,19 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { applyCoupom, createCheckout, CreateEnderecosCliente, deleteEnderecosCliente, getDisponiveis, perfil } from '../../services/api';
+import {Avatar, Spinner} from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
 import {Logo, Footer } from '../../componentes/imports';
 import ServiceSelection from '../../componentes/App/ServiceSelection';
 import CustomCalendar from '../../componentes/App/DatePicker';
 import ProgressBar from '../../componentes/App/ProgressBar';
-import { applyCoupom, createAgendamento, createCheckout, CreateEnderecosCliente, deleteEnderecosCliente, getAvaliacoesByPrestador, getDisponiveis, getEnderecoDefaultCliente, getEnderecosCliente, getUserProfile, perfil } from '../../services/api';
-import {Avatar, Spinner, spinner} from "@nextui-org/react";
-'use client'
-import {CircularProgress} from "@nextui-org/progress";
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import Banner from "../../assets/img/App/limpando.webp"
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 import StepLoginCustomer from './StepLoginCustomer';
-import {ScrollShadow} from "@nextui-org/scroll-shadow";
-import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
+import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 
 import { useUser } from '../../context/UserProvider';
 import { useAgendamentoData } from '../../context/AgendamentoData';
@@ -26,7 +22,6 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { v4 as uuidv4 } from 'uuid';
 
 import InputMask from "react-input-mask"
 import axios from 'axios';
@@ -40,36 +35,59 @@ import { Helmet } from 'react-helmet-async';
 
 import { useCheckout } from '../../context/CheckoutData';
 import CheckoutNotification from './CheckoutNotification';
+import AdressCliente from '../../componentes/App/AdressCliente';
 
 
 export default function ContrateOnline() {
     const { checkoutData, setCheckoutData } = useCheckout()
+    const { setAgendamentoData } = useAgendamentoData()
+    const { setSelectedProvider } = useSelectedProvider()
+    const { selectedDates, setSelectedDates } = useSelectedDates([])
     const { user, setUser, loadingUser } = useUser();
-    const clienteId = user?.id;
+    const navigate = useNavigate();
+    
+    const [provider, setProvider] = useState()
+    const [observacao, setObservacao ] = useState('')
+    const [cidade, setCidade] = useState("")
+    const [estado, setEstado] = useState("")
+    const [providers, setProviders] = useState([])
+    const [open, setOpen] = useState(false)
+    const [finding, setFinding] = useState(false)
+    const [isExpanded, setIsExpanded] = useState(false);
 
-    const fetchUserInfo = async () => {
-        try {
-            const response = await perfil()
-            console.log(response)
-            setUser(response)
-                    
-        } catch (error) {
-            console.error('Erro ao buscar informações do usuário:', error);
-        }
-    };
+    const [currentStep, setCurrentStep] = useState(2);
+    const [showCalendar, setShowCalendar] = useState(false);
+    const [numberOfDays, setNumberOfDays] = useState(0); // Número de dias que o usuário selecionou
 
-    const schema = yup.object({
-        clienteId: yup.string().default(clienteId),
-        localServico: yup.string().required("Informe o nome do endereço").trim(),
-        cep: yup.string().required("Cep é obrigatório"),
-        logradouro: yup.string(),
-        numero: yup.string().required("Número é obrigatório").trim(),
-        complemento: yup.string(),
-        referencia: yup.string(),
-        bairro: yup.string(),
-        cidade: yup.string(),
-        estado: yup.string(),
-    })
+    const [selectedService, setSelectedService] = useState(''); // Estado para armazenar o serviço selecionado
+    const [servicoId, setServicoId] = useState("")
+    const [serviceValue, setServiceValue] = useState() // Estado para armazenar o valor do serviço
+    
+    const {selectedTimes, setSelectedTimes} = useSelectedTimes([])
+
+    const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])    
+    const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState(null)
+
+    const [providerId, setProviderId] = useState("")
+    const [avaliacoes, setAvaliacoes] = useState([])
+    const [mediaStars, setMediaStars] = useState(0)
+    const [loadingReview, setLoadingReview] = useState(false)
+
+    const [searchQuery, setSearchQuery] = useState('');
+
+    
+    const [sumValueService, setSumValueService] = useState(serviceValue * selectedDates.length)
+
+    const [valorCupom, setValorCupom] = useState(0)
+    const [descontoTotal, setDescontoTotal] = useState(0)
+    const [valorLiquido, setValorLiquido]  = useState(0)
+
+    const [apply, setApply] = useState(false);
+    const [cupomError, setCupomError] = useState(null);
+
+    const [loadingCheckout, setLoadingCheckout] = useState(false)
+
+
 
     const cupom = yup.object({
         code: yup.string().required("Digite o codigo do cupom"),
@@ -83,109 +101,6 @@ export default function ContrateOnline() {
         } = useForm({
         resolver: yupResolver(cupom),
     })
-
-
-    const {
-        register,
-        handleSubmit,
-        trigger,
-        formState: { errors },
-        reset,
-        setValue, 
-        getValues,
-        setError, 
-        watch,
-        clearErrors
-        } = useForm({
-        resolver: yupResolver(schema),
-    })
-
-    // Criar endereço do cliente
-    const onSubmit = async (data) => {
-        setIsCreatingAdress(true)
-        try {
-          const response = await CreateEnderecosCliente(data);
-          await fetchUserInfo()
-          reset()
-          setOpenCreateAdress(false)
-          setIsCreatingAdress(false)
-
-        
-        } catch (error) {
-            console.error(error.message);
-            setMessage(error.message)
-            setIsCreatingAdress(false)
-
-        } 
-
-    }
-
-    const estados = {
-        "AC": "Acre",
-        "AL": "Alagoas",
-        "AP": "Amapá",
-        "AM": "Amazonas",
-        "BA": "Bahia",
-        "CE": "Ceará",
-        "DF": "Distrito Federal",
-        "ES": "Espírito Santo",
-        "GO": "Goiás",
-        "MA": "Maranhão",
-        "MT": "Mato Grosso",
-        "MS": "Mato Grosso do Sul",
-        "MG": "Minas Gerais",
-        "PA": "Pará",
-        "PB": "Paraíba",
-        "PR": "Paraná",
-        "PE": "Pernambuco",
-        "PI": "Piauí",
-        "RJ": "Rio de Janeiro",
-        "RN": "Rio Grande do Norte",
-        "RS": "Rio Grande do Sul",
-        "RO": "Rondônia",
-        "RR": "Roraima",
-        "SC": "Santa Catarina",
-        "SP": "São Paulo",
-        "SE": "Sergipe",
-        "TO": "Tocantins"
-    };
-      
-    const handleCepChange = async (e) => {
-        const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
-        setCepError("")
-        
-        if (cep.length === 8) {
-            try {
-
-                const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-
-                if (!response.data.erro) {
-                    setValue("logradouro", response.data.logradouro);
-                    setValue("bairro", response.data.bairro);
-                    setValue("cidade", response.data.localidade);
-            
-                    // Converter a sigla do estado para o nome completo
-                    const nomeEstado = estados[response.data.uf];
-                    setValue("estado", nomeEstado);
-            
-                    setCepError("");
-                } else {
-                    setCepError("CEP não encontrado");
-                }
-
-            } catch (error) {
-                console.error('Erro ao buscar o CEP:', error);
-                alert('Erro ao buscar o CEP.');
-            }
-        }
-    };
-
-    const removerMascara = (valor) => {
-        return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são números
-    };
-
-    const inputRef = useRef(null)
-
 
     const buttons = [
         { link: "#quem-somos", text: "Quem Somos" },
@@ -201,93 +116,13 @@ export default function ContrateOnline() {
         },
     ];
 
-    const [cepError, setCepError] = useState("")
-    const [showCalendar, setShowCalendar] = useState(false);
-    const [currentStep, setCurrentStep] = useState(0);
-    const [isLoading, setIsLoading] = useState(false)
-    const [numberOfDays, setNumberOfDays] = useState(0); // Número de dias que o usuário selecionou
-
-    const [selectedService, setSelectedService] = useState(''); // Estado para armazenar o serviço selecionado
-    const [servicoId, setServicoId] = useState("")
-    const [serviceValue, setServiceValue] = useState() // Estado para armazenar o valor do serviço
-    
-    const {selectedTimes, setSelectedTimes} = useSelectedTimes([])
-
-    const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])    
-    const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState(null)
-
     useEffect(() => {
         setSelectedEnderecoCliente(user?.EnderecoDefault[0].id);
         setEstado(user?.EnderecoDefault[0].estado)
         setCidade(user?.EnderecoDefault[0].cidade)
 
     }, [user]);
-    
-
-    const [observacao, setObservacao ] = useState('')
-    const [providers, setProviders] = useState([])
-    const [open, setOpen] = useState(false)
-    const [openCreateAdress, setOpenCreateAdress] = useState(false)
-    const [enderecosCliente, setEnderecosCliente] = useState([])
-    const [isCreatingAdress, setIsCreatingAdress] = useState(false)
-    const [isDeleteAdress, setIsDeleteAdress] = useState(false)
-    const navigate = useNavigate();
-    const [cidade, setCidade] = useState("")
-    const [estado, setEstado] = useState("")
-    const [finding, setFinding] = useState(false)
-
-    const { agendamentoData, setAgendamentoData } = useAgendamentoData()
-    const { selectedProvider, setSelectedProvider } = useSelectedProvider()
-    const [provider, setProvider] = useState()
-
-    const { selectedDates, setSelectedDates } = useSelectedDates([])
-    const [isExpanded, setIsExpanded] = useState(false);
-
-
-    const status = localStorage.getItem("status")
-    const ativo = user?.ativa
-
-    if(status == "false" || ativo == "false") {
-        return (
-        <>
-            <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
-            <main className="w-screen h-screen bg-neutral-900 flex justify-center items-center">
-            <div className="flex flex-col justify-center items-center">
-                <div className="text-neutral-500">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-28">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
-                </svg>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                    <h1 className="text-neutral-500 font-semibold text-xl">Não foi possível continuar</h1>
-                    <p className="text-neutral-500">Sua conta foi desativada, entre em contato com o suporte</p>
-                </div>
-
-            </div>
-            </main>
-        </>
-        )
-    }
-
-
-    
-    useEffect(() => {
-
-        if(status == "false" || ativo == "false") {
-            return 
-            
-        }
-
         
-    }, [selectedService, setSelectedService, currentStep, user])
-
-    
-    const [providerId, setProviderId] = useState("")
-    const [avaliacoes, setAvaliacoes] = useState([])
-    const [mediaStars, setMediaStars] = useState(0)
-    const [loadingReview, setLoadingReview] = useState(false)
-
-
     // função para resetar o agendamento, toda vez que sair de checkout e voltar para contrate
     useEffect(() => {
         setAgendamentoData([]);
@@ -393,20 +228,6 @@ export default function ContrateOnline() {
         setNumberOfDays(days); // Atualiza o número de dias selecionados
     };
 
-    const HandleDeleteEndereco = async (enderecoId) => {
-        try {
-            setIsDeleteAdress(true)
-            const DeleteEndereco = await deleteEnderecosCliente(enderecoId);
-            await fetchUserInfo()
-            setIsDeleteAdress(false)
-
-        } catch (error) {
-            console.error("Erro ao excluir o endereço: ", error);
-            setIsDeleteAdress(false)
-
-        } 
-    };
-    
     //função que recebe as informações de data e serviço, para retorna os prestadores disponveis 
     const handleConfirmSelection = async () => {
         setCurrentStep(currentStep + 1);
@@ -438,8 +259,6 @@ export default function ContrateOnline() {
     }, [providerId])
     
 
-    const [searchQuery, setSearchQuery] = useState('');
-
     const filteredProviders = providers.filter(provider =>
         provider.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -456,19 +275,6 @@ export default function ContrateOnline() {
 
         return idade;
     };
-
-    const formatarCep = (cep) => {
-        return cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2");
-    };
-
-    const [sumValueService, setSumValueService] = useState(serviceValue * selectedDates.length)
-
-    const [valorCupom, setValorCupom] = useState(0)
-    const [descontoTotal, setDescontoTotal] = useState(0)
-    const [valorLiquido, setValorLiquido]  = useState(0)
-
-    const [apply, setApply] = useState(false);
-    const [cupomError, setCupomError] = useState(null);
 
     // Atualiza dinamicamente o valor total ao selecionar novas datas ou alterar o valor do serviço
     useEffect(() => {
@@ -487,7 +293,7 @@ export default function ContrateOnline() {
         setCupomError(null); // Limpa erros anteriores
 
         try {
-            const response = await applyCoupom(data.code, sumValueService, clienteId );
+            const response = await applyCoupom(data.code, sumValueService, user?.id );
             setApply(false);
 
             if (response && response.data) {
@@ -510,23 +316,11 @@ export default function ContrateOnline() {
 
     }, [descontoTotal])
 
-
-    // Exibe o valor atualizado no console ou na interface
-
-
     const formatarMoeda = (valor) => {
         return new Intl.NumberFormat('pt-BR', { 
             style: 'currency', 
             currency: 'BRL' 
         }).format(valor);
-    }
-
-    const HandleTimesForDate = () => {
-        selectedDates.forEach((date) => {
-            const formateDate = new Date(date).toDateString()
-            const times = selectedTimes[formateDate]
-
-        })
     }
 
     const gerarCodigoAleatorio = () => {
@@ -538,7 +332,6 @@ export default function ContrateOnline() {
         return codigo;
     };
       
-
     const gerarIDGrupo = () => {
         const prefixo = 'CB';
         const codigo = gerarCodigoAleatorio()
@@ -547,7 +340,6 @@ export default function ContrateOnline() {
         return novoGrupoID
     };
 
-    const [loadingCheckout, setLoadingCheckout] = useState(false)
     const HandleNavigateCheckout = async () => {
         setLoadingCheckout(true)
         const codeComb = gerarIDGrupo()
@@ -560,7 +352,7 @@ export default function ContrateOnline() {
     
             return {
                 userId: provider.id,
-                clienteId: clienteId,
+                clienteId: user?.id,
                 servicoId: servicoId,
                 dataServico: FormDate,
                 Servico: selectedService,
@@ -626,6 +418,28 @@ export default function ContrateOnline() {
         const mediaB = calcularMediaStars(b?.Review);
         return mediaB - mediaA; // Ordem decrescente, do maior para o menor
     });
+    
+    if(user && !user?.ativa) {
+        return (
+            <>
+                <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
+                <main className="w-screen h-screen bg-neutral-900 flex justify-center items-center">
+                    <div className="flex flex-col justify-center items-center p-10">
+                        <div className="text-prim ">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-28">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                            </svg>
+                        </div>
+                        <div className="flex flex-col justify-center items-center">
+                            <h1 className="text-prim  font-semibold text-xl">Não foi possível continuar</h1>
+                            <p className="text-prim  text-justify">Sua conta foi desativada, entre em contato com o suporte</p>
+                        </div>
+
+                    </div>
+                </main>
+            </>
+        )
+    }
 
     return (
         <>
@@ -641,7 +455,6 @@ export default function ContrateOnline() {
 
             ) : (
                 <main className="relative p-4 pb-20 flex justify-center gap-5 min-h-[100vh] md:justify-around lg:justify-around 2xl:pt-[3vh]">
-                    
                     <div className='flex flex-col items-center text-center min-w-[30vh] max-w-[50vh] sm:max-w-[80vh] sm:min-w-[80vh]  lg:min-w-[100vh] lg:max-w-[100vh] xl:min-w-[120vh] xl:max-w-[100vh] 2xl:min-w-[110vh] 2xl:max-w-[130vh]    '>
 
                         <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
@@ -660,344 +473,28 @@ export default function ContrateOnline() {
                         {currentStep == 1 && (
                             <>
                                 <CustomCalendar 
-                                onConfirmSelection={handleConfirmSelection}
-                                selectedDates={selectedDates}
-                                setSelectedDates={setSelectedDates}
-                                maxSelection={numberOfDays} // Defina aqui o número máximo de seleções permitidas
-
-                                selectedTimes={selectedTimes}
-                                setSelectedTimes={handleTimeChange}
-                                
-
+                                    onConfirmSelection={handleConfirmSelection}
+                                    selectedDates={selectedDates}
+                                    setSelectedDates={setSelectedDates}
+                                    maxSelection={numberOfDays} // Defina aqui o número máximo de seleções permitidas
+                                    selectedTimes={selectedTimes}
+                                    setSelectedTimes={handleTimeChange}
                                 />
-                            
                             </>
                         )}
 
                         {currentStep == 2 && (
                             <>
                                 {user ? (
-                                    <div className='flex flex-col justify-between pb-[8vh]  max-h-[85vh] min-h-[80vh] gap-10'>
-                                        <div 
-                                            className='grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2
-                                            pt-5 gap-10 overflow-auto max-h-[65vh] sm:max-h-[100vh] scrollbar-hide justify-items-center'
-                                        >
-                                            {/* endereço padrão do cliente */}
-                                            <div 
-                                                className={
-                                                    ` border-2 border-bord rounded-lg transition-all max-w-[40vh] min-w-[40vh] sm:max-w-full sm:min-w-full min-h-[30vh]
+                                    <AdressCliente 
+                                        finding={finding} 
+                                        handleProceed={handleProceed} 
+                                        selectedEnderecoCliente={selectedEnderecoCliente}
+                                        setSelectedEnderecoCliente={setSelectedEnderecoCliente}
+                                        setCidade={setCidade} 
+                                        setEstado={setEstado}
+                                    />
 
-                                                    ${user?.EnderecoDefault[0] ? selectedEnderecoCliente == user?.EnderecoDefault[0].id ? 'border-sec shadow-sm shadow-sec bg-secsec bg-opacity-20' : 'hover:border-sec border-bord' : "" }`
-                                                }
-
-                                                onClick={() => {
-                                                    setSelectedEnderecoCliente(user?.EnderecoDefault[0].id)
-                                                    setCidade(user?.EnderecoDefault[0].cidade)
-                                                    setEstado(user?.EnderecoDefault[0].estado)
-                                                }}
-
-                                            >
-                                                <div className={`border-b-2 border-bord p-3 
-                                                ${
-                                                    user?.EnderecoDefault[0] ?
-                                                    selectedEnderecoCliente == user?.EnderecoDefault[0].id ? "border-sec" : "border-bord" : ""
-                                                    
-                                                }`}>
-
-                                                    <h1 className={` font-semibold 
-                                                        ${
-                                                            user?.EnderecoDefault[0] ?
-                                                            selectedEnderecoCliente == user?.EnderecoDefault[0].id ? "text-sec" : "text-prim" : ""
-                                                        
-                                                        } `}
-                                                        
-                                                        >
-                                                            
-                                                        {user?.EnderecoDefault[0] ? selectedEnderecoCliente == user?.EnderecoDefault[0].id ? "Serviço será feito aqui" : "Selecionar endereço": ""}
-                                                    </h1>
-
-                                                </div>
-                                                <div className='p-5 text-start flex flex-col text-prim'>
-                                                    <h2 className='text-prim font-semibold pb-2'>Endereço principal</h2>
-                                                    <p>{user?.EnderecoDefault[0]?.logradouro}, {user?.EnderecoDefault[0]?.numero}</p> 
-                                                    <p>{user?.EnderecoDefault[0]?.complemento}</p> 
-                                                    <p>{user?.EnderecoDefault[0]?.bairro}</p> 
-                                                    <p>{user?.EnderecoDefault[0]?.cidade}, {user?.EnderecoDefault[0]?.estado} - {formatarCep(user?.EnderecoDefault[0]?.cep)} </p> 
-                                                </div>
-
-                                            </div>
-
-                                            {/* endereços do cliente ( caso tenha ) */}
-                                            {user?.EnderecosCliente.map((endereco) => (
-                                                <div key={endereco.id} className={`border-2 border-bord rounded-lg transition-all w-full min-h-[30vh]
-
-                                                ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? 'border-sec shadow-sm shadow-sec' : 'border-bord' }
-                                                
-                                                ${isDeleteAdress && selectedEnderecoCliente.id == endereco.id ? "border-none shadow-white" : "hover:border-sec"}
-
-                                                `}
-
-
-                                                onClick={() => {
-                                                    setSelectedEnderecoCliente(endereco)
-                                                    setCidade(endereco.cidade)
-                                                    setEstado(endereco.estado)
-                                                }}
-
-
-                                                >
-                                                    {isDeleteAdress && selectedEnderecoCliente.id == endereco.id ? (
-                                                        <div className='rounded-md w-full h-full flex items-center justify-center  text-white'>
-                                                            <Spinner size='lg'/>
-                                                        </div>
-                                                    ) : (
-                                                        <>
-                                                            <div className={`border-b-2 border-bord p-3 ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "border-sec" : "border-bord"} `}>
-
-                                                                <h1 className={` font-semibold ${selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "text-sec" : "text-prim"} `}>{selectedEnderecoCliente && selectedEnderecoCliente.id === endereco.id ? "Serviço será feito aqui" : "Selecionar endereço"}</h1>
-                                                            </div>
-                                                            <div className='p-5 text-start flex flex-col text-prim'>
-                                                                <h2 className='text-prim font-semibold pb-2'>{endereco?.localServico}</h2>
-                                                                <p>{endereco?.logradouro}, {endereco?.numero}</p> 
-                                                                <p>{endereco?.complemento}</p> 
-                                                                <p>{endereco?.bairro}</p> 
-                                                                <p>{endereco?.cidade}, {endereco?.estado} - {formatarCep(endereco?.cep)} </p> 
-                                                                <div className='text-start pt-2'>
-                                                                    <button
-                                                                    onClick={() => (HandleDeleteEndereco(endereco.id))}
-                                                                    >
-                                                                        <DeleteIcon style={{ fontSize: 24, color: 'red' }} /> 
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            ))}
-
-                                            {/* botão para criar novo endereço */}
-                                            <div className='w-full flex flex-col justify-center items-center '>
-                                                <Button 
-                                                className='p-2 border bg-desSec sm:bg-white sm:text-desSec  rounded-md text-white text-sm w-full sm:min-h-[30vh]'
-                                                onPress={() => setOpenCreateAdress(true)}
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                    </svg>  
-                                                </Button>
-
-                                            </div>
-                                            
-
-
-                                            <Modal 
-                                                backdrop="opaque" 
-                                                isOpen={openCreateAdress} 
-                                                onClose={setOpenCreateAdress}
-                                                classNames={{
-                                                backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-                                                body: "bg-white",
-                                                header: "bg-white",
-                                                
-                                                }}
-                                                placement='center'
-            
-            
-                                                className="max-w-[40vh] sm:min-w-[80vh]"
-                                            >
-                                                <ModalContent>
-                                                    {(onClose) => (
-                                                        <>
-                                                            <ModalHeader className="flex flex-col gap-1 text-desSec">Cadastrar novo endereço</ModalHeader>
-                                                            <ModalBody>
-                                                                <form 
-                                                                className={`transition-all duration-150 pt-0 flex flex-col gap-5 w-full`} 
-                                                                onSubmit={handleSubmit(onSubmit)}
-                                                                >
-                                                                    <div className='overflow-auto h-[65vh] lg:h-[55vh]'>
-                                                                        <div className="mt-4  pt-0 pb-0 flex flex-col">
-                                                                            <label htmlFor="localServico" className="text-prim">Local do serviço</label>
-                                                                            <input 
-                                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                            id="localServico" 
-                                                                            type="text" 
-                                                                            placeholder="nome do endereço" 
-                                                                            {...register("localServico")}
-                                                                            disabled={isCreatingAdress}
-                                                                            />
-                                                                            {errors.localServico && 
-                                                                            <span className="text-error opacity-75">{errors.localServico?.message}</span>}
-                                                                        </div>
-                                                                        <div className="mt-4  pt-0 pb-0 flex flex-col">
-                                                                            <label htmlFor="cep" className="text-prim">CEP</label>
-                                                                            <InputMask 
-                                                                            ref={inputRef}
-                                                                            mask="99999-999"
-                                                                            maskChar={null}
-                                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                            id="cep" 
-                                                                            type="text" 
-                                                                            placeholder="Somente números" 
-                                                                            {...register("cep")}
-                                                                            onChange={handleCepChange}
-                                                                            disabled={isCreatingAdress}
-
-                                                                            />
-                                                                            {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
-                                                                        </div>
-                                                                        <div className="mt-4  pt-0 pb-0 flex flex-col">
-                                                                            <label htmlFor="logradouro" className="text-prim">Logradouro</label>
-                                                                            <input 
-                                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                            id="logradouro" 
-                                                                            type="text" 
-                                                                            placeholder="" 
-                                                                            {...register("logradouro")}
-                                                                            readOnly
-                                                                            disabled={isCreatingAdress}
-
-                                                                            />
-                                                                            {errors.logradouro && 
-                                                                            <span className="text-error opacity-75">{errors.logradouro?.message}</span>}
-                                                                        </div>
-                                                                        <div className="mt-4  pt-0 pb-0 flex flex-col">
-                                                                            <label htmlFor="numero" className="text-prim">Número</label>
-                                                                            <input 
-                                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                            id="numero" 
-                                                                            type="text" 
-                                                                            placeholder="" 
-                                                                            disabled={isCreatingAdress}
-                                                                            {...register("numero")}
-                                                                            />
-                                                                            {errors.numero && 
-                                                                            <span className="text-error opacity-75">{errors.numero?.message}</span>}
-                                                                        </div>
-                                                                        <div className="mt-4  pt-0 pb-0 flex flex-col">
-                                                                            <label htmlFor="complemento" className="text-prim">Complemento</label>
-                                                                            <input 
-                                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                            id="complemento" 
-                                                                            type="text" 
-                                                                            placeholder="Casa, apt, bloco, etc"
-                                                                            maxLength="100" 
-                                                                            disabled={isCreatingAdress}
-                                                                            {...register("complemento")}
-                                                                            />
-                                                                            {errors.complemento && 
-                                                                            <span className="text-error opacity-75">{errors.complemento?.message}</span>}
-                                                                        </div>
-                                                                        <div className="mt-4  pt-0 pb-0 flex flex-col">
-                                                                            <label htmlFor="pontoRef" className="text-prim">Ponto de Referência</label>
-                                                                            <input 
-                                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                            id="pontoRef" 
-                                                                            type="text" 
-                                                                            disabled={isCreatingAdress}
-                                                                            placeholder="" 
-                                                                            maxLength="150"
-                                                                            {...register("referencia")}
-                                                                            />
-                                                                            {errors.pontoRef && 
-                                                                            <span className="text-error opacity-75">{errors.referencia?.message}</span>}
-                                                                        </div>
-                                                                        <div className="mt-4  pt-0 pb-0 flex flex-col">
-                                                                            <label htmlFor="bairro" className="text-prim">Bairro</label>
-                                                                            <input 
-                                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                            disabled={isCreatingAdress}
-                                                                            id="bairro" 
-                                                                            type="text" 
-                                                                            placeholder="" 
-                                                                            {...register("bairro")}
-                                                                            readOnly
-                                                                            />
-                                                                            {errors.bairro && 
-                                                                            <span className="text-error opacity-75">{errors.bairro?.message}</span>}
-                                                                        </div>
-
-                                                                        <div className="mt-4  pt-0 pb-0 flex flex-col">
-                                                                            <label htmlFor="cidade" className="text-prim">Cidade</label>
-                                                                            <input 
-                                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                            id="cidade" 
-                                                                            disabled={isCreatingAdress}
-                                                                            type="text" 
-                                                                            placeholder="" 
-                                                                            {...register("cidade")}
-                                                                            readOnly
-                                                                            />
-                                                                            {errors.cidade && 
-                                                                            <span className="text-error opacity-75">{errors.cidade?.message}</span>}
-                                                                        </div>
-
-                                                                        <div className="mt-4  pt-0 pb-0 flex flex-col">
-                                                                            <label htmlFor="estado" className="text-prim">Estado</label>
-                                                                            <input 
-                                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                                            id="estado" 
-                                                                            disabled={isCreatingAdress}
-                                                                            type="text" 
-                                                                            placeholder=""
-                                                                            {...register("estado")}
-                                                                            readOnly
-                                                                            />
-                                                                            {errors.estado && 
-                                                                            <span className="text-error opacity-75">{errors.estado?.message}</span>}
-                                                                        </div>
-                                                                    </div>
-
-                                                                    
-                                                                    <ModalFooter className='bg-none shadow-none p-0 pt-[2vh]'>
-                                                                        <Button color="danger" variant="light" onPress={onClose} isDisabled={isCreatingAdress} >
-                                                                            Cancelar
-                                                                        </Button>
-                                                                        <Button className='bg-desSec text-white' type='submit' isDisabled={isCreatingAdress} >
-                                                                            {isCreatingAdress ? <Spinner/> : "Criar"}
-                                                                        </Button>
-                                                                    </ModalFooter>
-                                                                    
-                                                                </form>
-                                                        
-                                                            </ModalBody>
-                                                        </>
-                                                    )}
-                                                </ModalContent>
-                                            </Modal>
-
-
-                                        </div>
-
-                                        {selectedEnderecoCliente && (
-                                            <div className='flex justify-center  border-b border-bord'>
-                                                <Button
-                                                    type="button"
-                                                    data-autofocus
-                                                    className="p-2 rounded-md 
-                                                    text-center
-                                                    text-white 
-                                                    bg-des         
-                                                    hover:text-white transition-all
-                                                    duration-200
-                                                    hover:bg-sec hover:bg-opacity-75
-                                                    hover:border-trans
-                                                    flex 
-                                                    items-center
-                                                    justify-center
-                                                    text-sm
-                                                    gap-2
-                                                    w-full
-                                                    "
-                                                    onPress={() => handleProceed()}
-                                                    isDisabled={finding}
-                                                >
-                                                    {finding ? <Spinner /> : "Selecionar e prosseguir"}  
-                                                </Button>
-                                            </div>
-                                        )}
-
-                                    </div>
-                                    
                                 ) : (
                                     <StepLoginCustomer />
 
