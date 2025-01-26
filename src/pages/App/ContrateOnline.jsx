@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { applyCoupom, createCheckout, getDisponiveis } from '../../services/api';
+import React, { useEffect, useState } from 'react';
+import { createCheckout, getDisponiveis } from '../../services/api';
 import {Avatar, Spinner} from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
 import {Logo, Footer } from '../../componentes/imports';
@@ -16,11 +16,6 @@ import { useSelectedProvider } from '../../context/SelectedProvider';
 import { useSelectedDates } from '../../context/SelectedDates';
 import { useSelectedTimes } from '../../context/SelectedTimes';
 
-import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import * as yup from "yup"
-
-import { Button } from '@nextui-org/react';
 import CookieBanner from '../../componentes/App/CookieBanner';
 import WhatsappButton from '../../componentes/WhatsAppContact';
 import WhatsAppIcon from "../../assets/img/whatsapp.webp"
@@ -30,7 +25,7 @@ import { useCheckout } from '../../context/CheckoutData';
 import CheckoutNotification from './CheckoutNotification';
 import AdressCliente from '../../componentes/App/AdressCliente';
 import Prestadores from '../../componentes/App/Prestadores';
-
+import FinallyStep from '../../componentes/App/FinallyStep';
 
 export default function ContrateOnline() {
     const { checkoutData, setCheckoutData } = useCheckout()
@@ -60,11 +55,6 @@ export default function ContrateOnline() {
 
     const [enderecoDefaultCliente, SetEnderecoDefaultCliente] = useState([])    
     const [selectedEnderecoCliente, setSelectedEnderecoCliente] = useState(null)
-
-    const [providerId, setProviderId] = useState("")
-    const [avaliacoes, setAvaliacoes] = useState([])
-    const [mediaStars, setMediaStars] = useState(0)
-    const [loadingReview, setLoadingReview] = useState(false)
     
     const [sumValueService, setSumValueService] = useState(serviceValue * selectedDates.length)
 
@@ -72,23 +62,8 @@ export default function ContrateOnline() {
     const [descontoTotal, setDescontoTotal] = useState(0)
     const [valorLiquido, setValorLiquido]  = useState(0)
 
-    const [apply, setApply] = useState(false);
-    const [cupomError, setCupomError] = useState(null);
-
     const [loadingCheckout, setLoadingCheckout] = useState(false)
 
-    const cupom = yup.object({
-        code: yup.string().required("Digite o codigo do cupom"),
-    })
-
-    const {
-        register: registerCupom,
-        handleSubmit: handleSubmitCupom,
-        formState: { errors: errorCupom },
-        reset: resetCupom,
-        } = useForm({
-        resolver: yupResolver(cupom),
-    })
 
     const buttons = [
         { link: "#quem-somos", text: "Quem Somos" },
@@ -156,7 +131,6 @@ export default function ContrateOnline() {
                 // Faz a requisição para a API enviando o array de datas
                 const response = await getDisponiveis(formattedDates, servicoId, cidade, estado);
 
-
                 // Inicialmente, define os providers sem as URLs de avatar
                 setProviders(response.data);
 
@@ -220,29 +194,6 @@ export default function ContrateOnline() {
         setShowCalendar(false);
 
     };
-
-    const handleObterAvaliacoes = async () => {
-        setLoadingReview(true) // Indica que as avaliações estão sendo carregadas
-        
-        setAvaliacoes([])
-        setAvaliacoes([]) // Limpa as avaliações para o novo provider
-        setMediaStars()
-    
-        setAvaliacoes(provider?.Review)
-        const totalStars = avaliacoes.reduce((acc, avaliacao) => acc + avaliacao.stars, 0);
-        const averageStars = totalStars / avaliacoes.length;
-        setMediaStars(averageStars)
-
-        setLoadingReview(false) // Termina o carregamento
-    }
-
-    // UseEffect para carregar as avaliações quando providerId mudar
-    useEffect(() => {
-        if (providerId) {
-            handleObterAvaliacoes()
-
-        }
-    }, [providerId])
     
     // Atualiza dinamicamente o valor total ao selecionar novas datas ou alterar o valor do serviço
     useEffect(() => {
@@ -256,28 +207,6 @@ export default function ContrateOnline() {
 
     }, [sumValueService])
 
-    const handleApplyCupom = async (data) => {
-        setApply(true);
-        setCupomError(null); // Limpa erros anteriores
-
-        try {
-            const response = await applyCoupom(data.code, sumValueService, user?.id );
-            setApply(false);
-
-            if (response && response.data) {
-
-                // Atualiza o valor total do pedido com o valor descontado
-                setDescontoTotal(response.data.discount);
-                setValorLiquido(sumValueService - Number(descontoTotal))
-                
-            } else {
-                setCupomError("Não foi possível adicionar este cupom");
-            }
-        } catch (error) {
-            setApply(false);
-            setCupomError("Ocorreu um erro ao tentar aplicar o cupom");
-        }
-    };
 
     useEffect(() => {
         setValorLiquido(sumValueService - Number(descontoTotal))
@@ -337,9 +266,7 @@ export default function ContrateOnline() {
                 ...(
                     selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id },
                     selectedDates.length > 1 && { comboId: codeComb }
-                ),
-                    
-                
+                ),                    
             };
 
         });
@@ -399,27 +326,23 @@ export default function ContrateOnline() {
                         <ProgressBar currentStep={currentStep} onStepClick={handleStepClick} />
 
                         {currentStep == 0 && (
-                            <>
-                                <ServiceSelection 
-                                    onProceed={handleConfirmSelection} 
-                                    onDaysChange={handleDaysChange} // Passa a função de atualizar os dias
-                                    onServiceChange={handleServiceChange} // Passa a função de atualizar o serviço
-                                    setServiceValue={setServiceValue}
-                                />
-                            </>
+                            <ServiceSelection 
+                                onProceed={handleConfirmSelection} 
+                                onDaysChange={handleDaysChange} // Passa a função de atualizar os dias
+                                onServiceChange={handleServiceChange} // Passa a função de atualizar o serviço
+                                setServiceValue={setServiceValue}
+                            />
                         )}
 
                         {currentStep == 1 && (
-                            <>
-                                <CustomCalendar 
-                                    onConfirmSelection={handleConfirmSelection}
-                                    selectedDates={selectedDates}
-                                    setSelectedDates={setSelectedDates}
-                                    maxSelection={numberOfDays} // Defina aqui o número máximo de seleções permitidas
-                                    selectedTimes={selectedTimes}
-                                    setSelectedTimes={handleTimeChange}
-                                />
-                            </>
+                            <CustomCalendar 
+                                onConfirmSelection={handleConfirmSelection}
+                                selectedDates={selectedDates}
+                                setSelectedDates={setSelectedDates}
+                                maxSelection={numberOfDays} // Defina aqui o número máximo de seleções permitidas
+                                selectedTimes={selectedTimes}
+                                setSelectedTimes={handleTimeChange}
+                            />
                         )}
 
                         {currentStep == 2 && (
@@ -438,111 +361,29 @@ export default function ContrateOnline() {
                                     <StepLoginCustomer />
 
                                 )}
-                                
-                            </>                 
+                            </>                                            
                         )}
 
                         {currentStep == 3 && (
-                            <>
-                                <Prestadores
-                                    HandleSelectedRandomProvider={HandleSelectedRandomProvider}
-                                    handleConfirmSelection={handleConfirmSelection}
-                                    providers={providers}
-                                />
-                            </>
+                            <Prestadores
+                                HandleSelectedRandomProvider={HandleSelectedRandomProvider}
+                                handleConfirmSelection={handleConfirmSelection}
+                                providers={providers}
+                            />
+                           
                         )}
 
                         {currentStep == 4 && (
-                            <>
-                                <div className='w-full  flex flex-col items-center  justify-between  p-2 gap-5 sm:p-10 sm:pl-20 sm:pr-20 pt-5 shadow-md rounded-md pb-0 h-[60vh]'>
-                                    <div className='w-full 2xl:min-w-[70vh]'>
-                                        <div className='flex flex-col gap-14 '>
-                                            <div className='w-full flex flex-col gap-3'>
-                                                <h2 className='text-desSec font-semibold text-xl'>Observação</h2>
-                                                <textarea
-                                                placeholder="Se necessário, deixe-nos uma observação"
-                                                className="border rounded-md border-bord p-3 min-h-20 lg:min-h-24 2xl:min-h-36 focus:outline-ter text-prim w-full max-h-1"
-                                                rows="3"
-                                                value={observacao}  // Valor vinculado ao estado
-                                                onChange={(e) => setObservacao(e.target.value)}  // Atualiza o estado quando o valor mudar
-                                                ></textarea>
-                                            </div>
-                                            
-                                            <div className='w-full flex flex-col gap-3'>
-                                                <h2 className='text-desSec font-semibold text-xl'>Cupom de desconto</h2>
-                                                <div className='flex gap-5'>
-                                                    <form onSubmit={handleSubmitCupom(handleApplyCupom)} className='flex gap-5 w-full'>
-                                                        <div className='w-full flex flex-col items-center gap-2'>
-                                                            <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' 
-                                                                {...registerCupom("code")}
-                                                            />
-                                                            <span className='text-error'>{cupomError}</span>
-
-
-                                                        </div>
-                                                        <Button 
-                                                        type='submit'
-                                                        className="p-2 rounded-md 
-                                                        text-center
-                                                        text-white 
-                                                        bg-des         
-                                                        hover:text-white transition-all
-                                                        duration-200
-                                                        hover:bg-sec hover:bg-opacity-75
-                                                        hover:border-trans
-                                                        flex 
-                                                        items-center
-                                                        justify-center
-                                                        text-sm
-                                                        gap-2
-                                                        w-4/12
-                                                        "
-                                                        isDisabled={apply}
-                                                        >
-                                                            {apply ? <Spinner/> : "Utilizar"}
-                                                        </Button>
-
-                                                    </form>
-                                                </div>
-                                                
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-                                    <div className=' w-full 2xl:min-w-[70vh]'>
-                                        <div className='w-full flex flex-col gap-5 pt-5 pb-5 '>
-                                            <Button 
-                                            className="
-                                            p-5 rounded-md 
-                                            text-center
-                                            text-white 
-                                            bg-sec         
-                                            hover:text-white transition-all
-                                            duration-200
-                                            hover:bg-sec hover:bg-opacity-75
-                                            hover:border-trans
-                                            flex 
-                                            items-center
-                                            justify-center
-                                            text-sm
-                                            gap-2
-                                            w-full
-                                            
-                                            "
-                                            onPress={() => HandleNavigateCheckout()}
-                                            isDisabled={loadingCheckout}
-
-                                            >
-                                                {loadingCheckout ? <Spinner/> : "Conferir e solicitar serviço"}
-                                            </Button>
-                                        </div>
-                                    </div>
-
-                                    
-
-                                </div>
-                            </>
+                            <FinallyStep
+                                HandleNavigateCheckout={HandleNavigateCheckout}
+                                descontoTotal={descontoTotal}
+                                loadingCheckout={loadingCheckout}
+                                setDescontoTotal={setDescontoTotal}
+                                setValorLiquido={setValorLiquido}
+                                sumValueService={sumValueService}
+                                observacao={observacao}
+                                setObservacao={setObservacao}
+                            />
                         )}
                         
                     </div>
