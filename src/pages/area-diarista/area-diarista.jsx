@@ -8,7 +8,7 @@ import { accordion, Avatar, Button, ScrollShadow, Spinner, Tooltip } from '@next
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import {Accordion, AccordionItem} from "@nextui-org/accordion";
 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { CreateStepTwo, findAllServicos, getAgendamentos, getAvaliacoesByPrestador, updateServico, getSolicitacoesGeraisPrestador, getSolicitacoesTotalPrestador, getFaturamentoMes, prestadorProfile} from '../../services/api.js';
@@ -407,7 +407,8 @@ const AreaDiarista = () => {
         trigger,
         formState: { errors },
         reset,
-        setValue, 
+        setValue,
+        control, 
         getValues,
         setError, 
         watch,
@@ -528,32 +529,31 @@ const AreaDiarista = () => {
         "TO": "Tocantins"
     };
       
-    const handleCepChange = async (e) => {
-        const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
-        setCepError("")
-        
+    // Função para retorna o endereço do CEP 
+    const handleCepChange = async (cep, setValue, setCepError) => {
+        cep = cep.replace(/\D/g, ''); // Remove qualquer não numérico
+        setCepError("");
+    
         if (cep.length === 8) {
             try {
-            setLoading(true);
-            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-            if (!response.data.erro) {
-                setValue("logradouro", response.data.logradouro);
-                setValue("bairro", response.data.bairro);
-                setValue("cidade", response.data.localidade);
-        
-                // Converter a sigla do estado para o nome completo
-                const nomeEstado = estados[response.data.uf];
-                setValue("estado", nomeEstado);
-        
-                setCepError("");
-            } else {
-                setCepError("CEP não encontrado");
-            }
+                const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    
+                if (!response.data.erro) {
+                    setValue("logradouro", response.data.logradouro);
+                    setValue("bairro", response.data.bairro);
+                    setValue("cidade", response.data.localidade);
+    
+                    // Converter a sigla do estado para o nome completo
+                    const nomeEstado = estados[response.data.uf];
+                    setValue("estado", nomeEstado);
+    
+                    setCepError("");
+                } else {
+                    setCepError("CEP não encontrado");
+                }
             } catch (error) {
-                console.error('Erro ao buscar o CEP:', error);
-                alert('Erro ao buscar o CEP.');
-            } finally {
-                setLoading(false);
+                console.error("Erro ao buscar o CEP:", error);
+                alert("Erro ao buscar o CEP.");
             }
         }
     };
@@ -741,7 +741,6 @@ const AreaDiarista = () => {
         return formatarMoeda(value)
     }
 
-    console.log(servicos)
     
     return (
         <>
@@ -911,16 +910,26 @@ const AreaDiarista = () => {
                                                     <div className="lg:flex lg:justify-between">
                                                         <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                                                             <label htmlFor="cep" className="text-prim">CEP</label>
-                                                            <InputMask 
-                                                            ref={inputRef}
-                                                            mask="99999-999"
-                                                            maskChar={null}
-                                                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                                                            id="cep" 
-                                                            type="text" 
-                                                            placeholder="Somente números" 
-                                                            {...register("cep")}
-                                                            onChange={handleCepChange}
+                                                            <Controller
+                                                                name="cep"
+                                                                control={control}
+                                                                render={({ field: { onChange, value, ref } }) => (
+                                                                    <InputMask
+                                                                        ref={ref}
+                                                                        mask="99999-999"
+                                                                        maskChar={null}
+                                                                        className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter"
+                                                                        id="cep"
+                                                                        type="text"
+                                                                        placeholder="Somente números"
+                                                                        value={value || ""}
+                                                                        onChange={(e) => {
+                                                                            const cepValue = e.target.value;
+                                                                            onChange(cepValue); // Atualiza o valor no react-hook-form
+                                                                            handleCepChange(cepValue, setValue, setCepError); // Chama a lógica de CEP
+                                                                        }}
+                                                                    />
+                                                                )}
                                                             />
                                                             {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
                                                         </div>

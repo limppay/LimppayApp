@@ -11,7 +11,7 @@ import { Button } from '@nextui-org/react';
 import {Accordion, AccordionItem} from "@nextui-org/accordion";
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
@@ -163,32 +163,31 @@ const AreaCliente = () => {
     "TO": "Tocantins"
     };
       
-    const handleCepChange = async (e) => {
-        const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
-        setCepError("")
-        
+    // Função para retorna o endereço do CEP 
+    const handleCepChange = async (cep, setValue, setCepError) => {
+        cep = cep.replace(/\D/g, ''); // Remove qualquer não numérico
+        setCepError("");
+    
         if (cep.length === 8) {
             try {
-
                 const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-
+    
                 if (!response.data.erro) {
                     setValue("logradouro", response.data.logradouro);
                     setValue("bairro", response.data.bairro);
                     setValue("cidade", response.data.localidade);
-
+    
                     // Converter a sigla do estado para o nome completo
                     const nomeEstado = estados[response.data.uf];
                     setValue("estado", nomeEstado);
-            
+    
                     setCepError("");
                 } else {
                     setCepError("CEP não encontrado");
                 }
-
             } catch (error) {
-                console.error('Erro ao buscar o CEP:', error);
-                alert('Erro ao buscar o CEP.');
+                console.error("Erro ao buscar o CEP:", error);
+                alert("Erro ao buscar o CEP.");
             }
         }
     };
@@ -419,6 +418,11 @@ const AreaCliente = () => {
     function formatarData(dataISO) {
         const [ano, mes, dia] = dataISO.split("-"); // Divide "aaaa-mm-dd"
         return `${dia}/${mes}/${ano}`; // Retorna no formato "dd/mm/aaaa"
+    }
+
+    const HandleCancel = (onClose) => {
+        onClose()
+        reset()
     }
 
     return (
@@ -1369,19 +1373,19 @@ const AreaCliente = () => {
 
                                     {/* modal para criar um novo endereço */}
                                     <Modal 
-                                    backdrop="opaque" 
-                                    isOpen={openCreateAdress} 
-                                    onClose={setOpenCreateAdress}
-                                    classNames={{
-                                    backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-                                    body: "bg-white",
-                                    header: "bg-white",
-                                    
-                                    }}
-                                    placement='center'
+                                        backdrop="opaque" 
+                                        isOpen={openCreateAdress} 
+                                        onClose={setOpenCreateAdress}
+                                        classNames={{
+                                            backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                            body: "bg-white",
+                                            header: "bg-white",
+                                        
+                                        }}
+                                        placement='center'
 
 
-                                    className="max-w-[40vh] sm:min-w-[80vh]"
+                                        className="max-w-[40vh] sm:min-w-[80vh]"
                                     >
                                         <ModalContent className="bg-">
                                         {(onClose) => (
@@ -1420,16 +1424,26 @@ const AreaCliente = () => {
                                                                 </div>
                                                                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                                                                     <label htmlFor="cep" className="text-prim">CEP</label>
-                                                                    <InputMask 
-                                                                    ref={inputRef}
-                                                                    mask="99999-999"
-                                                                    maskChar={null}
-                                                                    className="placeholder:text-neutral-600 border rounded-md border-bord bg-neutral-700 p-3 pt-2 pb-2 focus:outline-neutral-600 text-prim "
-                                                                    id="cep" 
-                                                                    type="text" 
-                                                                    placeholder="Somente números" 
-                                                                    {...register("cep")}
-                                                                    onChange={handleCepChange}
+                                                                    <Controller
+                                                                        name="cep"
+                                                                        control={control}
+                                                                        render={({ field: { onChange, value, ref } }) => (
+                                                                            <InputMask
+                                                                                ref={ref}
+                                                                                mask="99999-999"
+                                                                                maskChar={null}
+                                                                                className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter"
+                                                                                id="cep"
+                                                                                type="text"
+                                                                                placeholder="Somente números"
+                                                                                value={value || ""}
+                                                                                onChange={(e) => {
+                                                                                    const cepValue = e.target.value;
+                                                                                    onChange(cepValue); // Atualiza o valor no react-hook-form
+                                                                                    handleCepChange(cepValue, setValue, setCepError); // Chama a lógica de CEP
+                                                                                }}
+                                                                            />
+                                                                        )}
                                                                     />
                                                                     {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
                                                                 </div>
@@ -1531,7 +1545,7 @@ const AreaCliente = () => {
                                                     </div>
                                                 </ScrollShadow>
                                                     <ModalFooter className='justify-between'>
-                                                        <Button color="danger" variant="light" onPress={() => onClose()}
+                                                        <Button color="danger" variant="light" onPress={() => HandleCancel(onClose)}
                                                         >
                                                         Cancelar
                                                         </Button>

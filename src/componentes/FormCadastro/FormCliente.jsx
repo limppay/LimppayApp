@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import {useEffect} from 'react'
@@ -14,7 +14,7 @@ import {useNavigate } from 'react-router-dom';
 import { Logo } from "../imports.jsx"
 
 import User from "../../assets/img/diarista-cadastro/user.webp"
-import { Spinner } from "@nextui-org/react"
+import { Avatar, Spinner } from "@nextui-org/react"
 import {Button} from "@nextui-org/react";
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
 
@@ -74,6 +74,7 @@ export default function FormCliente() {
         getValues,
         setError, 
         watch,
+        control,
         clearErrors
         } = useForm({
         resolver: yupResolver(schema),
@@ -290,32 +291,31 @@ export default function FormCliente() {
         "TO": "Tocantins"
     };
       
-    const handleCepChange = async (e) => {
-        const cep = e.target.value.replace(/\D/g, ''); // Remove qualquer não numérico
-        setCepError("")
-        
+    // Função para retorna o endereço do CEP 
+    const handleCepChange = async (cep, setValue, setCepError) => {
+        cep = cep.replace(/\D/g, ''); // Remove qualquer não numérico
+        setCepError("");
+    
         if (cep.length === 8) {
             try {
-            setLoading(true);
-            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-            if (!response.data.erro) {
-                setValue("logradouro", response.data.logradouro);
-                setValue("bairro", response.data.bairro);
-                setValue("cidade", response.data.localidade);
-        
-                // Converter a sigla do estado para o nome completo
-                const nomeEstado = estados[response.data.uf];
-                setValue("estado", nomeEstado);
-        
-                setCepError("");
-            } else {
-                setCepError("CEP não encontrado");
-            }
+                const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    
+                if (!response.data.erro) {
+                    setValue("logradouro", response.data.logradouro);
+                    setValue("bairro", response.data.bairro);
+                    setValue("cidade", response.data.localidade);
+    
+                    // Converter a sigla do estado para o nome completo
+                    const nomeEstado = estados[response.data.uf];
+                    setValue("estado", nomeEstado);
+    
+                    setCepError("");
+                } else {
+                    setCepError("CEP não encontrado");
+                }
             } catch (error) {
-            console.error('Erro ao buscar o CEP:', error);
-            alert('Erro ao buscar o CEP.');
-            } finally {
-            setLoading(false);
+                console.error("Erro ao buscar o CEP:", error);
+                alert("Erro ao buscar o CEP.");
             }
         }
     };
@@ -337,9 +337,10 @@ export default function FormCliente() {
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col items-center">
                     <div className="flex flex-col justify-center items-center gap-2">
                         <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
-                            <img src={image} 
-                            alt="foto de perfil" 
-                            className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter p-0.5 hover:bg-opacity-40 shadow-md" 
+                            <Avatar 
+                                src={image} 
+                                alt="foto de perfil" 
+                                className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter shadow-md" 
                             />                  
                             <input
                                 type="file"
@@ -372,8 +373,6 @@ export default function FormCliente() {
                         {errors.arquivoFoto && (
                             <span className="text-error opacity-75">{errors.arquivoFoto.message}</span>
                         )}
-
-
                     </div>
                 </div>
             </div>
@@ -496,9 +495,6 @@ export default function FormCliente() {
                     )}
                 </div>
 
-                
-            
-                
             </div>
 
             <div className="lg:flex">
@@ -576,16 +572,26 @@ export default function FormCliente() {
             <div className="lg:flex lg:justify-between">
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
                     <label htmlFor="cep" className="text-prim">CEP</label>
-                    <InputMask 
-                    ref={inputRef}
-                    mask="99999-999"
-                    maskChar={null}
-                    className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
-                    id="cep" 
-                    type="text" 
-                    placeholder="Somente números" 
-                    {...register("cep")}
-                    onChange={handleCepChange}
+                    <Controller
+                        name="cep"
+                        control={control}
+                        render={({ field: { onChange, value, ref } }) => (
+                            <InputMask
+                                ref={ref}
+                                mask="99999-999"
+                                maskChar={null}
+                                className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter"
+                                id="cep"
+                                type="text"
+                                placeholder="Somente números"
+                                value={value || ""}
+                                onChange={(e) => {
+                                    const cepValue = e.target.value;
+                                    onChange(cepValue); // Atualiza o valor no react-hook-form
+                                    handleCepChange(cepValue, setValue, setCepError); // Chama a lógica de CEP
+                                }}
+                            />
+                        )}
                     />
                     {cepError && <p className="text-error text-sm mt-1">{cepError}</p>}
                 </div>
