@@ -1,16 +1,19 @@
 import React from 'react';
+import { usePrestador } from '../../context/PrestadorProvider';
+import { formatarData } from "../../common/FormatarData"
 
 const ProgressBar = ({ step }) => {
+  const { prestador } = usePrestador()
 
   const steps = [
-    { id: 1, label: "Conta criada" },
-    { id: 2, label: "Entrevista" },
-    { id: 3, label: "Completar cadastro" },
-    { id: 4, label: "Ativação da conta" },
+    { id: 1, label: ` Data de criação ${formatarData(new Date(prestador?.createdAt).toISOString().split('T')[0])}`},
+    { id: 2, label:  prestador?.Entrevista ? "Entrevista aprovada" : "Entrevista" },
+    { id: 3, label:  prestador?.cadastroCompleto ? "Cadastro completo" : "Completar cadastro" },
+    { id: 4, label:  "Ativação da conta" },
   ];
 
   return (
-    <div className="flex flex-col items-center w-full h-[45vh] pt-5">
+    <div className="flex flex-col items-center w-full pt-5">
       {steps.map((item, index) => (
         <div key={item.id} className="flex items-baseline w-full h-full ">
           {/* Coluna para bolinha e linha */}
@@ -36,7 +39,7 @@ const ProgressBar = ({ step }) => {
 
           {/* Texto ao lado da bolinha */}
           <span
-            className={`ml-4 text-sm ${
+            className={`ml-4 text-sm w-full ${
               step >= item.id ? 'text-desSec' : 'text-prim'
             }`}
           >

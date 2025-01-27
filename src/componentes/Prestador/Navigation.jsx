@@ -2,7 +2,7 @@
 import { Button } from '@nextui-org/react';
 import React, { useState } from 'react';
 
-export default function NavigationDiarista({screenSelected, setScreenSelected}) {
+export default function Navigation({screenSelected, setScreenSelected}) {
 
   const buttons = [
         { id: 'servicos', label: 'Serviços', icon: <AvaliacoesIcon /> },
