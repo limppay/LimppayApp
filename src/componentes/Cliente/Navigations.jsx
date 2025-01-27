@@ -79,5 +79,4 @@ export default function Navigation({screenSelected, setScreenSelected}) {
     }
 
 
-// Outros ícones (AvaliacoesIcon, EnderecosIcon, PerfilIcon, HomeIcon) seguem o mesmo padrão
 

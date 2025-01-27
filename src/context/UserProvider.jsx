@@ -1,12 +1,11 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { perfil } from '../services/api';
-import { useWebSocket } from './WebSocketContext';
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
 
-  const [loadingUser, setLoadingUser] = useState(false)
+  const [loadingUser, setLoadingUser] = useState(true)
   const [user, setUser] = useState(null);
 
 
