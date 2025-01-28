@@ -72,6 +72,7 @@ const AreaDiarista = () => {
         }
 
     }, [prestador, loadingUser])
+
     
     return (
         <>

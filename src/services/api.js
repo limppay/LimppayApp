@@ -631,6 +631,19 @@ export const getFaturamentoMes = async (userId) => {
   }
 }
 
+export const updateAgendamento = async (id, agendamentoData) => {
+  try {
+    const response = await api.patch(`/agendamentos/${id}`, agendamentoData);
+    return response.data; 
+    
+  } catch (error) {
+    console.error('Erro ao atualizar o agendamento:', error.response?.data || error.message);
+    return false
+
+  }
+
+}
+
 export default api;
 
 

@@ -4,12 +4,24 @@ import { Button } from '@nextui-org/button';
 import { formatarData } from '../../common/FormatarData';
 import { formatarMoeda } from '../../common/FormatarMoeda';
 import { Accordion, AccordionItem } from '@nextui-org/accordion';
+import Temporizador from './Temporizador';
+import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
+import { fetchPrestadorInfo } from '../../common/FetchPrestadorInfo';
+import { updateAgendamento } from '../../services/api';
+import { Spinner } from '@nextui-org/react';
 
 export default function Pedidos({setScreenSelected}) {
-    const { prestador } = usePrestador()
+    const { prestador, setPrestador } = usePrestador()
     const [searchTerm, setSearchTerm] = useState("");
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [ open, setOpen ] = useState(false)
+    const [ loading, setLoading ] = useState(false)
+
+    const taxaPrestador = (valor) => {
+        const value = valor * 0.75
+        return formatarMoeda(value)
+    }
     
     const agendamentosFiltrados = prestador?.Agendamentos && prestador?.Agendamentos?.filter((agendamento) => {
         const nameMatch = agendamento.Servico.toLowerCase().includes(searchTerm.toLowerCase());
@@ -19,10 +31,42 @@ export default function Pedidos({setScreenSelected}) {
         return nameMatch && dateMatch;
     });
 
+    const hoje = new Date();
+    const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+    
+    const proximoAgendamento = prestador?.Agendamentos
+      ?.filter(agendamento => {
+        const dataServico = new Date(agendamento.dataServico);
+        const dataServicoSemHora = new Date(dataServico.getFullYear(), dataServico.getMonth(), dataServico.getDate());
+        const statusValido = agendamento.status !== "Cancelado" && agendamento.status !== "Realizado";
+        return dataServicoSemHora.getTime() === hojeSemHora.getTime() && statusValido;
+      })
+      .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
+    
+    
+    const handleIniciarAgendamento = async (agendamento) => {
+        setLoading(true);
+        const data = {
+            status: 'Iniciado'
+        }
+
+        try {        
+            const response = await updateAgendamento(agendamento?.id, data);
+            await fetchPrestadorInfo(setPrestador)
+            setLoading(false)
+            setOpen(false)
+            console.log("Agendamento atualizado com sucesso!", response);
+
+        } catch (error) {
+            console.error("Erro ao atualizar o agendamento:", error);
+        }
+
+    };
+
     return (
         <section className='w-full  gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
             <div className='p-5 flex flex-col gap-5'>
-                <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
+                <div className="flex flex-col sm:flex-row items-center gap-4 ">
                     <input
                         type="text"
                         placeholder="Pesquisar"
@@ -63,6 +107,92 @@ export default function Pedidos({setScreenSelected}) {
                         
                 </div>
 
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-h-[50vh] rounded-xl shadow-md justify-between'>
+                    {/* relogio */}
+                    <div className='w-full h-full '>
+                        <Temporizador
+                            agendamento={proximoAgendamento}
+                        />
+                    </div>
+
+                    {/* Agedamento em andamento */}
+                    <div className='w-full h-full justify-center flex'>
+                        {proximoAgendamento ? (
+                            <div className="flex flex-col rounded-lg p-5 gap-10 h-full justify-between w-full">
+                                <div className='flex flex-col gap-2 text-prim'>
+                                    <div className='flex gap-5 justify-between text-prim'>
+                                        <p className='font-semibold'> {proximoAgendamento.Servico}</p>
+                                        <p className='font-semibold'>{formatarData(new Date(proximoAgendamento?.dataServico).toISOString().split('T')[0])} </p>
+                                        <p className='font-semibold'>{proximoAgendamento.horaServico}</p>
+                                    </div>
+                                    <p> {proximoAgendamento.enderecoCliente}</p>
+
+                                    <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
+                                    
+                                </div>
+                                <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>                                
+                                    <Button className='text-white bg-desSec w-full' isDisabled={proximoAgendamento?.status == "Iniciado"} onPress={() => (setOpen(true))}>
+                                        {proximoAgendamento?.status == "Iniciado" ? "Serviço em andamento" : "Iniciar serviço"}
+                                    </Button>
+                                </div>
+
+                                <Modal 
+                                    backdrop="opaque" 
+                                    isOpen={open} 
+                                    onClose={setOpen}
+                                    placement='center'
+                                    classNames={{
+                                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                        body: "bg-white",
+                                        header: "bg-white",
+                                        footer: "bg-white"
+                                    }}
+                                    className="max-w-[40vh] sm:min-w-[80vh]"
+                                >
+                                    <ModalContent className="bg-">
+                                    {(onClose) => (
+                                        <>
+                                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                            <div className="flex w-full justify-between pr-10">
+                                                <h2 className='text-desSec'>Iniciar agendamento</h2>
+                                            </div>
+                                        </ModalHeader>
+
+                                        <ModalBody>
+                                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                                <div className='text-ter grid gap-2'>
+                                                    <p>Deseja iniciar o serviço?</p>
+                                                </div>
+                                                
+                                            </div>
+                                        </ModalBody>
+                                        <ModalFooter className='shadow-none'>
+                                            <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
+                                                Voltar
+                                            </Button>
+                                            <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handleIniciarAgendamento(proximoAgendamento)}>
+                                                {loading ? <Spinner/> : "Confirmar"}
+                                            </Button>
+                                        </ModalFooter>
+                                        </>
+                                    )}
+                                    </ModalContent>
+                                </Modal>
+
+
+                            </div>
+                        
+                        ) : (
+                            <div className='text-center w-full flex flex-col gap-10'>
+                                <p className="font-semibold">Nenhum serviço pra hoje.</p>
+                            </div>
+                        )}
+
+                        
+                    </div>
+
+                </div>
+
                 {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
                     agendamentosFiltrados.map((agendamento) => {
                         // Lógica de cálculo
@@ -74,7 +204,7 @@ export default function Pedidos({setScreenSelected}) {
 
                         return (
                             <>
-                                <div className="flex flex-col gap-3 shadow-lg shadow-bord rounded-lg p-5 justify-center items-start">
+                                <div className="flex flex-col gap-3 shadow-md shadow-bord rounded-lg p-5 justify-center items-start">
                                     <div className="flex flex-col lg:flex-row gap-5 items-start w-full justify-between">
                                         <div className="flex flex-col gap-2 w-full">
                                             <div className="overflow-y-auto bg-white p-3 rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between">

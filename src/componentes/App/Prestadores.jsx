@@ -5,10 +5,8 @@ import { Accordion, AccordionItem } from '@nextui-org/accordion';
 import { Avatar } from '@nextui-org/avatar';
 
 
-export default function Prestadores({providers, handleConfirmSelection, HandleSelectedRandomProvider}) {
+export default function Prestadores({providers, handleConfirmSelection, HandleSelectedRandomProvider, provider, setProvider, setProviderId, providerId}) {
     const [searchQuery, setSearchQuery] = useState('');
-    const [provider, setProvider] = useState()
-    const [providerId, setProviderId] = useState("")
     const [open, setOpen] = useState(false)
     
     const filteredProviders = providers.filter(provider =>

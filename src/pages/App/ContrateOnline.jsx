@@ -38,6 +38,8 @@ export default function ContrateOnline() {
     const navigate = useNavigate();
     
     const [provider, setProvider] = useState()
+    const [providerId, setProviderId] = useState("")
+    
     const [observacao, setObservacao ] = useState('')
     const [cidade, setCidade] = useState("")
     const [estado, setEstado] = useState("")
@@ -64,6 +66,8 @@ export default function ContrateOnline() {
     const [valorLiquido, setValorLiquido]  = useState(0)
 
     const [loadingCheckout, setLoadingCheckout] = useState(false)
+    const [ tipoServico, setTipoServico ] = useState('')
+
 
 
     const buttons = [
@@ -243,12 +247,14 @@ export default function ContrateOnline() {
             const times = selectedTimes[FormDate]; // Obtém o horário correspondente
     
             return {
-                userId: provider.id,
+                userId: provider?.id,
                 clienteId: user?.id,
                 servicoId: servicoId,
                 dataServico: FormDate,
                 Servico: selectedService,
                 horaServico: times,
+                tipoServico: tipoServico,
+
                 valorServico: serviceValue,
                 valorBruto: sumValueService,
 
@@ -310,6 +316,7 @@ export default function ContrateOnline() {
                                 onDaysChange={handleDaysChange} // Passa a função de atualizar os dias
                                 onServiceChange={handleServiceChange} // Passa a função de atualizar o serviço
                                 setServiceValue={setServiceValue}
+                                setTipoServico={setTipoServico}
                             />
                         )}
 
@@ -348,6 +355,11 @@ export default function ContrateOnline() {
                                 HandleSelectedRandomProvider={HandleSelectedRandomProvider}
                                 handleConfirmSelection={handleConfirmSelection}
                                 providers={providers}
+                                provider={provider}
+                                setProvider={setProvider}
+                                providerId={providerId}
+                                setProviderId={providerId}
+                            
                             />
                            
                         )}

@@ -25,7 +25,7 @@ import {
   faMartiniGlass,
 } from "@fortawesome/free-solid-svg-icons";
 
-const ServiceCard = ({HandleSetServiceValue, icon, title, description, value, isExpanded, onClick, days, setDays, onProceed, valueMeia, valueHora }) => {
+const ServiceCard = ({HandleSetServiceValue, HandleSetTipoServico, icon, title, description, value, isExpanded, onClick, days, setDays, onProceed, valueMeia, valueHora }) => {
   const incrementDays = () => {
     setDays(days + 1); // Aumentar o número de dias
   };
@@ -91,9 +91,10 @@ const ServiceCard = ({HandleSetServiceValue, icon, title, description, value, is
         <div className='flex flex-col gap-2 text-start'>
           {/* Diaria */}
           <Button className="text-md font-semibold text-desSec text-start bg-white justify-between"
-            onClick={() => (
+            onPress={() => (
               onProceed(),
-              HandleSetServiceValue(value)
+              HandleSetTipoServico('8'),
+              HandleSetTipoServico(value)
             )}
           >
             <div className='flex items-center  gap-2'>
@@ -117,8 +118,9 @@ const ServiceCard = ({HandleSetServiceValue, icon, title, description, value, is
           {/* Meia-Diaria */}
           {valueMeia > 0 && 
             <Button className="text-md font-semibold text-desSec text-start bg-white justify-between"
-            onClick={() => (
+            onPress={() => (
               onProceed(),
+              HandleSetTipoServico('4'),
               HandleSetServiceValue(valueMeia)
             )}
             >
@@ -136,8 +138,9 @@ const ServiceCard = ({HandleSetServiceValue, icon, title, description, value, is
           {/* Servico de 1hr (somente empresarial) */}
           {valueHora > 0 && 
             <Button className="text-md font-semibold text-desSec text-start bg-white justify-between"
-            onClick={() => (
+            onPress={() => (
               onProceed(),
+              HandleSetTipoServico('1'),
               HandleSetServiceValue(valueHora)
             )}
             >
