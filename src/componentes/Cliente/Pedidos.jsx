@@ -9,6 +9,7 @@ import { calcularIdade } from '../../common/CalcularIdade';
 import { Accordion, AccordionItem } from '@nextui-org/accordion';
 import CreateAvaliacao from './CreateAvaliacao';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
+import Temporizador from '../Prestador/Temporizador';
 
 
 export default function Pedidos() {
@@ -19,6 +20,7 @@ export default function Pedidos() {
     const [searchTerm, setSearchTerm] = useState("");
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [ runnig, setRunnig ] = useState(false)
     
     const calcularValorLiquido = (valorLiquido, desconto, valorServico) => {
         const ValorBruto =  valorLiquido + desconto
@@ -89,7 +91,29 @@ export default function Pedidos() {
 
         // Retorna true se ambos os filtros (nome e data) coincidirem
         return nameMatch && (!startDate || !endDate || dateMatch);
-    });
+    }) ;
+
+    const hoje = new Date();
+    const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+
+    const agendamentosDoMesmoDia = user?.agendamentos?.filter(agendamento => {
+        const dataServico = new Date(agendamento.dataServico);
+        const dataServicoSemHora = Date.UTC(
+          dataServico.getUTCFullYear(),
+          dataServico.getUTCMonth(),
+          dataServico.getUTCDate()
+        );
+      
+        const hojeSemHora = Date.UTC(
+          hoje.getUTCFullYear(),
+          hoje.getUTCMonth(),
+          hoje.getUTCDate()
+        );
+      
+        const statusValido = agendamento.status === "Iniciado"; // Verificando se o status é "Iniciado"
+        return dataServicoSemHora === hojeSemHora && statusValido;
+    }).sort((a, b) => new Date(b.timeStart) - new Date(a.timeStart)); // Ordenando do mais recente para o mais antigo
+    
 
     return (
         <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
@@ -121,6 +145,7 @@ export default function Pedidos() {
 
                     </div>
                 </div>
+
                 <div className='w-full sm:hidden'>
                     <Button className='w-full text-desSec font-semibold  bg-white border-2' onPress={() => (navigate("/contrate-online"))}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="size-6">
@@ -130,6 +155,74 @@ export default function Pedidos() {
                     </Button>
                 </div>
 
+                {agendamentosDoMesmoDia && (
+                    agendamentosDoMesmoDia.map((agendamento) => (
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-h-[50vh] rounded-xl shadow-md justify-between'>
+                            {/* relogio */}
+                            <div className='w-full h-full '>
+                                <Temporizador
+                                    agendamento={agendamento}
+                                    setRunnig={setRunnig}
+                                />
+                            </div>
+
+                            {/* Agedamento em andamento */}
+                            <div className='w-full h-full justify-center flex'>
+                                <div className="flex flex-col rounded-lg p-5 gap-10 h-full justify-between w-full">
+                                    <div className='flex flex-col gap-2 text-prim'>
+                                        <div className='w-full flex gap-2 items-center '
+                                            onClick={() => {
+                                                setSelectedAgendamento(agendamento)
+                                                setOpenPerfil(true)
+                                            }}
+                                        >
+                                                <Avatar 
+                                                    src={agendamento.user.avatarUrl.avatarUrl} 
+                                                    alt="avatarPrestador"
+                                                    size='lg'
+                                                />
+                                                <h3 className='text-prim font-semibold flex flex-wrap text-center'>{agendamento.user.name}</h3>
+                                                                                                            
+                                        </div>
+                                        <div className='flex gap-5 justify-between text-prim'>
+                                            <p className='font-semibold'>Serviço de {agendamento.timeTotal}hr</p>
+                                            <p className='font-semibold'> {agendamento.Servico}</p>
+                                            <p className='font-semibold'>{formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])} </p>
+                                            <p className='font-semibold'>{agendamento.horaServico}</p>
+                                        </div>
+                                        <p> {agendamento.enderecoCliente}</p>
+                                        <div>
+                                            <p>{formatarMoeda(agendamento.valorLiquido)}</p>
+                                        </div>
+
+                                        
+                                        
+                                    </div>
+                                    <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>
+                                        <a 
+                                            href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            
+                                        >
+                                            <Button className="w-full bg-sec text-white">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                                </svg>
+                                                Abrir com o Google Maps
+                                            </Button>
+                                        </a>                                   
+
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                        </div>
+                    ))
+                )}
+
+
                 {user?.agendamentos.length > 0 ? (
                     agendamentosFiltrados.sort((a, b) => {
                         const prioridade = (status) => {
@@ -137,8 +230,17 @@ export default function Pedidos() {
                             if (status === "Agendado") return 2;
                             return 3;
                         };
-                        return prioridade(a.status) - prioridade(b.status);
-                    })   
+                    
+                        // Comparação pela prioridade do status
+                        const prioridadeDiff = prioridade(a.status) - prioridade(b.status);
+                        
+                        // Se a prioridade for igual, ordena pela data (do mais recente para o mais antigo)
+                        if (prioridadeDiff === 0) {
+                            return new Date(b.dataServico) - new Date(a.dataServico);
+                        }
+                    
+                        return prioridadeDiff;
+                    }) 
                     .map((agendamento) => (
                         <>
                             <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
@@ -323,7 +425,6 @@ export default function Pedidos() {
                             </a>
                         </div>
                     </div>
-
                 )}
 
                 <Modal 

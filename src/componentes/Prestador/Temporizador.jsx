@@ -39,7 +39,7 @@ const Temporizador = ({ agendamento, setRunnig }) => {
     const minutos = Math.floor((segundos % 3600) / 60);
     const segundosRestantes = segundos % 60;
 
-    return `${horas > 0 ? `${horas}:` : ""}${String(minutos).padStart(2, "0")}:${String(segundosRestantes).padStart(2, "0")}`;
+    return `${horas > 0 ? `${horas}:` : "00:"}${String(minutos).padStart(2, "0")}:${String(segundosRestantes).padStart(2, "0")}`;
   };
 
   useEffect(() => {
@@ -65,7 +65,7 @@ const Temporizador = ({ agendamento, setRunnig }) => {
     const agora = new Date()
     const termino = new Date(agendamento?.timeEnd)
 
-    if(termino.getTime() == agora.getTime()) {
+    if(agora.getTime() >= termino.getTime()) {
       // console.log("Tempo acabou!")
       setRunnig(false)
 
