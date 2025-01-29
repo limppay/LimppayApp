@@ -16,7 +16,10 @@ export default function Pedidos({setScreenSelected}) {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [ open, setOpen ] = useState(false)
+    const [ openFinalizar, setFinalizar ] = useState(false)
     const [ loading, setLoading ] = useState(false)
+
+    const [ sucess, setSucess ] = useState(false)
 
     const [ runnig, setRunnig ] = useState(false)
 
@@ -69,6 +72,26 @@ export default function Pedidos({setScreenSelected}) {
             await fetchPrestadorInfo(setPrestador)
             setLoading(false)
             setOpen(false)
+            console.log("Agendamento atualizado com sucesso!", response);
+
+        } catch (error) {
+            console.error("Erro ao atualizar o agendamento:", error);
+        }
+
+    };
+
+    const handleFinalizarServico = async (agendamento) => {
+        setLoading(true);
+        const data = {
+            status: 'Realizado'
+        }
+
+        try {        
+            const response = await updateAgendamento(agendamento?.id, data);
+            await fetchPrestadorInfo(setPrestador)
+            setLoading(false)
+            setFinalizar(false)
+            setSucess(true)
             console.log("Agendamento atualizado com sucesso!", response);
 
         } catch (error) {
@@ -168,7 +191,7 @@ export default function Pedidos({setScreenSelected}) {
                                             ${proximoAgendamento?.status === "Iniciado" && !runnig ? "text-sec font-semibold" : "text-desSec"} 
                                         `}
                                         isDisabled={proximoAgendamento?.status === "Iniciado" && runnig}
-                                        onPress={() => setOpen(true)}
+                                        onPress={() => proximoAgendamento?.status === "Iniciado" && !runnig ? setFinalizar(true)  : setOpen(true)  }
                                     >
                                         {proximoAgendamento?.status === "Iniciado" && runnig
                                             ? "Serviço em andamento"
@@ -222,7 +245,48 @@ export default function Pedidos({setScreenSelected}) {
                                     </ModalContent>
                                 </Modal>
 
+                                <Modal 
+                                    backdrop="opaque" 
+                                    isOpen={openFinalizar} 
+                                    onClose={setFinalizar}
+                                    placement='center'
+                                    classNames={{
+                                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                        body: "bg-white",
+                                        header: "bg-white",
+                                        footer: "bg-white"
+                                    }}
+                                    className="max-w-[40vh] sm:min-w-[80vh]"
+                                >
+                                    <ModalContent className="bg-">
+                                    {(onClose) => (
+                                        <>
+                                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                            <div className="flex w-full justify-between pr-10">
+                                                <h2 className='text-sec'>Finalizar serviço</h2>
+                                            </div>
+                                        </ModalHeader>
 
+                                        <ModalBody>
+                                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                                <div className='text-ter grid gap-2'>
+                                                    <p>Deseja finalizar o serviço?</p>
+                                                </div>
+                                                
+                                            </div>
+                                        </ModalBody>
+                                        <ModalFooter className='shadow-none'>
+                                            <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
+                                                Voltar
+                                            </Button>
+                                            <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handleFinalizarServico(proximoAgendamento)}>
+                                                {loading ? <Spinner/> : "Confirmar"}
+                                            </Button>
+                                        </ModalFooter>
+                                        </>
+                                    )}
+                                    </ModalContent>
+                                </Modal>
                             </div>
                         
                         ) : (
@@ -231,7 +295,44 @@ export default function Pedidos({setScreenSelected}) {
                             </div>
                         )}
 
-                        
+                        <Modal 
+                            backdrop="opaque" 
+                            isOpen={sucess} 
+                            onClose={setSucess}
+                            placement='center'
+                            classNames={{
+                                backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                body: "bg-white",
+                                header: "bg-white",
+                                footer: "bg-white"
+                            }}
+                            className="max-w-[40vh] sm:min-w-[80vh]"
+                        >
+                            <ModalContent className="bg-">
+                            {(onClose) => (
+                                <>
+                                <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                    <div className="flex w-full justify-between pr-10">
+                                        <h2 className='text-sec'>Sucesso!</h2>
+                                    </div>
+                                </ModalHeader>
+
+                                <ModalBody>
+                                    <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                        <div className='text-ter grid gap-2'>
+                                            <p>Você concluiu esse serviço com sucesso! :D</p>
+                                        </div>
+                                    </div>
+                                </ModalBody>
+                                <ModalFooter className='shadow-none'>
+                                    <Button className='bg-desSec text-white w-1/2'  onPress={() => (onClose())}>
+                                        Continuar
+                                    </Button>
+                                </ModalFooter>
+                                </>
+                            )}
+                            </ModalContent>
+                        </Modal>                        
                     </div>
 
                 </div>

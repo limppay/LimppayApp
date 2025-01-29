@@ -43,18 +43,23 @@ const Temporizador = ({ agendamento, setRunnig }) => {
   };
 
   useEffect(() => {
+    if(agendamento) {
+      setTempoRestante(calcularTempoRestante());
+    }
+
+
     if (agendamento && agendamento?.status === "Iniciado") {
       setTempoRestante(calcularTempoRestante());
       iniciarCronometro();
     }
 
-  }, [prestador, agendamento, tempoRestante]);
+  }, [tempoRestante, agendamento, prestador]);
 
   useEffect(() => {
     if (tempoRestante === 0 && intervaloRef.current) {
       clearInterval(intervaloRef.current); // Parar o cronômetro quando o tempo acabar
     }
-  }, [tempoRestante]);
+  }, [tempoRestante, agendamento, prestador]);
     
   useEffect(() => {
     const agora = new Date()
@@ -88,10 +93,12 @@ const Temporizador = ({ agendamento, setRunnig }) => {
           })}
         />
       </div>
-      <div className="text-center">
-        <h3>Horário de término</h3>
-        <p>{new Date(agendamento?.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
-      </div>
+      {agendamento && (
+        <div className="text-center">
+          <h3>Horário de término</h3>
+          <p>{new Date(agendamento?.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
+        </div>
+      )}
     </div>
   );
 };
