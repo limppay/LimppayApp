@@ -1,9 +1,24 @@
+import { useEffect, useState } from 'react';
 import Instagram from "../assets/img/redes-sociais/instagram.webp";
 import TikTok from "../assets/img/redes-sociais/tiktok.webp";
 import Linkedin from "../assets/img/redes-sociais/linkedin.webp";
 import YouTube from "../assets/img/redes-sociais/youtube.webp";
 
 export default function Footer() {
+  const [year, setYear] = useState(new Date().getFullYear());
+
+  useEffect(() => {
+    fetch('http://worldtimeapi.org/api/timezone/etc/utc')
+      .then(response => response.json())
+      .then(data => {
+        const currentYear = new Date(data.datetime).getFullYear();
+        setYear(currentYear);
+      })
+      .catch(error => {
+        console.error('Erro ao buscar a data:', error);
+      });
+  }, []);
+
   return (
     <footer id="contatos" className="text-ter px-4 py-6 md:px-10 ">
 
@@ -45,7 +60,7 @@ export default function Footer() {
 
       {/* Direitos reservados */}
       <div className="text-center mt-6 pt-4">
-        <p className="text-sm text-gray-600">&copy; Limppay 2024 – Todos os direitos reservados</p>
+        <p className="text-sm text-gray-600">&copy; Limppay {year} – Todos os direitos reservados</p>
       </div>
 
     </footer>
