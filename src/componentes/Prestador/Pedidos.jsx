@@ -18,6 +18,8 @@ export default function Pedidos({setScreenSelected}) {
     const [ open, setOpen ] = useState(false)
     const [ loading, setLoading ] = useState(false)
 
+    const [ runnig, setRunnig ] = useState(false)
+
     const taxaPrestador = (valor) => {
         const value = valor * 0.75
         return formatarMoeda(value)
@@ -124,6 +126,7 @@ export default function Pedidos({setScreenSelected}) {
                     <div className='w-full h-full '>
                         <Temporizador
                             agendamento={proximoAgendamento}
+                            setRunnig={setRunnig}
                         />
                     </div>
 
@@ -160,9 +163,20 @@ export default function Pedidos({setScreenSelected}) {
                                             Abrir com o Google Maps
                                         </Button>
                                     </a>                                   
-                                    <Button className='text-desSec border bg-white w-full' isDisabled={proximoAgendamento?.status == "Iniciado"} onPress={() => (setOpen(true))}>
-                                        {proximoAgendamento?.status == "Iniciado" ? "Serviço em andamento" : "Iniciar serviço"}
+                                    <Button
+                                        className={` border bg-white w-full 
+                                            ${proximoAgendamento?.status === "Iniciado" && !runnig ? "text-sec font-semibold" : "text-desSec"} 
+                                        `}
+                                        isDisabled={proximoAgendamento?.status === "Iniciado" && runnig}
+                                        onPress={() => setOpen(true)}
+                                    >
+                                        {proximoAgendamento?.status === "Iniciado" && runnig
+                                            ? "Serviço em andamento"
+                                            : proximoAgendamento?.status === "Iniciado" && !runnig
+                                            ? "Concluir serviço"
+                                            : "Iniciar serviço"}
                                     </Button>
+
                                 </div>
 
                                 <Modal 

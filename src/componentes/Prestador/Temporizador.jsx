@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "react-circular-progressbar/dist/styles.css";
 import { usePrestador } from "../../context/PrestadorProvider";
 
-const Temporizador = ({ agendamento }) => {
+const Temporizador = ({ agendamento, setRunnig }) => {
   const { prestador } = usePrestador();
   const [tempoRestante, setTempoRestante] = useState(0);
   const intervaloRef = useRef(null);
@@ -55,6 +55,22 @@ const Temporizador = ({ agendamento }) => {
       clearInterval(intervaloRef.current); // Parar o cronômetro quando o tempo acabar
     }
   }, [tempoRestante]);
+    
+  useEffect(() => {
+    const agora = new Date()
+    const termino = new Date(agendamento?.timeEnd)
+
+    if(termino.getTime() == agora.getTime()) {
+      // console.log("Tempo acabou!")
+      setRunnig(false)
+
+    } else {
+      // console.log("Rodando...")
+      setRunnig(true)
+
+    }
+
+  }, [tempoRestante, agendamento, prestador])
 
 
   return (
