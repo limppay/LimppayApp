@@ -35,13 +35,25 @@ export default function Pedidos({setScreenSelected}) {
     const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
     
     const proximoAgendamento = prestador?.Agendamentos
-      ?.filter(agendamento => {
-        const dataServico = new Date(agendamento.dataServico);
-        const dataServicoSemHora = new Date(dataServico.getFullYear(), dataServico.getMonth(), dataServico.getDate());
-        const statusValido = agendamento.status !== "Cancelado" && agendamento.status !== "Realizado";
-        return dataServicoSemHora.getTime() === hojeSemHora.getTime() && statusValido;
-      })
-      .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
+    ?.filter(agendamento => {
+      const dataServico = new Date(agendamento.dataServico);
+      const dataServicoSemHora = Date.UTC(
+        dataServico.getUTCFullYear(),
+        dataServico.getUTCMonth(),
+        dataServico.getUTCDate()
+      );
+  
+      const hojeSemHora = Date.UTC(
+        hoje.getUTCFullYear(),
+        hoje.getUTCMonth(),
+        hoje.getUTCDate()
+      );
+  
+      const statusValido = agendamento.status !== "Cancelado" && agendamento.status !== "Realizado";
+      return dataServicoSemHora === hojeSemHora && statusValido;
+    })
+    .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
+  
     
     
     const handleIniciarAgendamento = async (agendamento) => {

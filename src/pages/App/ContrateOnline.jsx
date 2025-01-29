@@ -37,7 +37,7 @@ export default function ContrateOnline() {
     const { user, setUser, loadingUser } = useUser();
     const navigate = useNavigate();
     
-    const [provider, setProvider] = useState()
+    const [provider, setProvider] = useState('')
     const [providerId, setProviderId] = useState("")
     
     const [observacao, setObservacao ] = useState('')
@@ -358,7 +358,7 @@ export default function ContrateOnline() {
                                 provider={provider}
                                 setProvider={setProvider}
                                 providerId={providerId}
-                                setProviderId={providerId}
+                                setProviderId={setProviderId}
                             
                             />
                            

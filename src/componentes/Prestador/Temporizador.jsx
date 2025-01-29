@@ -5,44 +5,34 @@ import { usePrestador } from "../../context/PrestadorProvider";
 
 const Temporizador = ({ agendamento }) => {
   const { prestador } = usePrestador();
-
-  const [tempoRestante, setTempoRestante] = useState(0); // Tempo restante em segundos
+  const [tempoRestante, setTempoRestante] = useState(0);
   const intervaloRef = useRef(null);
 
-  // Função para converter string HH:mm para timestamp em UTC
-  const horaStringParaTimestampUTC = ( horaString) => {
+  // Se o servidor já envia timestamps, podemos usá-los diretamente.
+  // Se `agendamento.horaServico` for `"HH:mm"`, convertemos para timestamp.
+  const horaStringParaTimestamp = (horaString) => {
     if (!horaString) return 0;
 
     const [horas, minutos] = horaString.split(":").map(Number);
-    
-    // Obter a data atual para garantir que estamos usando o mesmo dia
-    const hoje = new Date();
+    const agora = Date.now(); // Timestamp atual
 
-    // Criar um novo objeto Date com o horário do agendamento, mantendo a data de hoje
-    const dataServico = new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth(), hoje.getUTCDate(), horas, minutos, 0));
+    // Criar um timestamp fixo sem fuso horário
+    const data = new Date(agora);
+    data.setHours(horas, minutos, 0, 0);
 
-    // console.log("Data do serviço: ", dataServico.toISOString())
-
-    return dataServico.getTime(); // Retorna o timestamp em milissegundos
+    return data.getTime(); // Retorna timestamp puro (milissegundos)
   };
 
-  // Função para calcular o tempo restante com base no horário de término em UTC
+  // Cálculo de tempo restante usando timestamps
   const calcularTempoRestante = () => {
-    const hoje = new Date(); // Obtém o timestamp atual em milissegundos
-    const agoraEmMs = new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth(), hoje.getUTCDate(), hoje.getHours(), hoje.getMinutes(), hoje.getSeconds()))
-    // console.log("Timestamp Atual (agoraEmMs):", agoraEmMs.toISOString());
+    const agoraEmMs = Date.now(); // Timestamp puro do momento atual
+    const horaInicio = horaStringParaTimestamp(agendamento?.horaServico);
+    const duracaoMs = Number(agendamento?.tipoServico) * 3600 * 1000; // Converter horas para ms
+    const horaTermino = horaInicio + duracaoMs;
 
-    // Hora de término em UTC
-    const horaTerminoEmMs = horaStringParaTimestampUTC(agendamento?.horaServico) + Number(agendamento?.tipoServico) * 3600 * 1000;
-
-    // Calcular a diferença entre o tempo de término e o tempo atual
-    const restanteEmMs = horaTerminoEmMs - agoraEmMs;
-
-    // Retorna a diferença em segundos (garantindo que seja positivo)
-    return Math.max(0, Math.floor(restanteEmMs / 1000));
+    return Math.max(0, Math.floor((horaTermino - agoraEmMs) / 1000)); // Retorna em segundos
   };
 
-  // Atualiza o tempo restante a cada segundo
   const iniciarCronometro = () => {
     if (intervaloRef.current) clearInterval(intervaloRef.current);
 
@@ -51,30 +41,24 @@ const Temporizador = ({ agendamento }) => {
     }, 1000);
   };
 
-  // Formata o tempo em HH:mm:ss
   const formatarTempo = (segundos) => {
     const horas = Math.floor(segundos / 3600);
     const minutos = Math.floor((segundos % 3600) / 60);
     const segundosRestantes = segundos % 60;
 
-    return `${horas > 0 ? `${horas}:` : ""}${
-      minutos < 10 ? "0" : ""
-    }${minutos}:${segundosRestantes < 10 ? "0" : ""}${segundosRestantes}`;
+    return `${horas > 0 ? `${horas}:` : ""}${String(minutos).padStart(2, "0")}:${String(segundosRestantes).padStart(2, "0")}`;
   };
 
-  // Limpar o intervalo ao desmontar o componente
   useEffect(() => {
     return () => {
       if (intervaloRef.current) clearInterval(intervaloRef.current);
     };
   }, []);
 
-  // Inicia o temporizador quando o agendamento for iniciado
   useEffect(() => {
     setTempoRestante(calcularTempoRestante());
 
     if (agendamento && agendamento?.status === "Iniciado") {
-      setTempoRestante(calcularTempoRestante());
       iniciarCronometro();
     }
   }, [prestador, agendamento]);

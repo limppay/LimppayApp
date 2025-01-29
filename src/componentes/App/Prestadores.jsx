@@ -152,11 +152,11 @@ export default function Prestadores({providers, handleConfirmSelection, HandleSe
                                                             gap-2
                                                             '
 
-                                                            onPress={() => {
-                                                                setProvider(prestador)
-                                                                setProviderId(prestador.id) // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
+                                                            onPress={() => (
+                                                                setProvider(prestador),
+                                                                setProviderId(prestador.id), // Atualiza o providerId e o useEffect dispara handleObterAvaliacoes automaticamente
                                                                 setOpen(true)
-                                                            }}                                                         
+                                                            )}                                                         
                                                         
                                                         >
                                                             <div className='flex items-center gap-2'>
