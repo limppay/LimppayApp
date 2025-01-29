@@ -66,9 +66,7 @@ export default function ContrateOnline() {
     const [valorLiquido, setValorLiquido]  = useState(0)
 
     const [loadingCheckout, setLoadingCheckout] = useState(false)
-    const [ tipoServico, setTipoServico ] = useState('')
-
-
+    const [ timeTotal, setTimeTotal ] = useState(0)
 
     const buttons = [
         { link: "#quem-somos", text: "Quem Somos" },
@@ -253,7 +251,7 @@ export default function ContrateOnline() {
                 dataServico: FormDate,
                 Servico: selectedService,
                 horaServico: times,
-                tipoServico: tipoServico,
+                timeTotal: timeTotal,
 
                 valorServico: serviceValue,
                 valorBruto: sumValueService,
@@ -316,7 +314,7 @@ export default function ContrateOnline() {
                                 onDaysChange={handleDaysChange} // Passa a função de atualizar os dias
                                 onServiceChange={handleServiceChange} // Passa a função de atualizar o serviço
                                 setServiceValue={setServiceValue}
-                                setTipoServico={setTipoServico}
+                                setTimeTotal={setTimeTotal}
                             />
                         )}
 

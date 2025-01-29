@@ -8,29 +8,30 @@ const Temporizador = ({ agendamento }) => {
   const [tempoRestante, setTempoRestante] = useState(0);
   const intervaloRef = useRef(null);
 
-  // Se o servidor já envia timestamps, podemos usá-los diretamente.
-  // Se `agendamento.horaServico` for `"HH:mm"`, convertemos para timestamp.
-  const horaStringParaTimestamp = (horaString) => {
-    if (!horaString) return 0;
-
-    const [horas, minutos] = horaString.split(":").map(Number);
-    const agora = Date.now(); // Timestamp atual
-
-    // Criar um timestamp fixo sem fuso horário
-    const data = new Date(agora);
-    data.setHours(horas, minutos, 0, 0);
-
-    return data.getTime(); // Retorna timestamp puro (milissegundos)
-  };
-
-  // Cálculo de tempo restante usando timestamps
+  // Cálculo de tempo restante usando timeStart, timeTotal e timeEnd
   const calcularTempoRestante = () => {
-    const agoraEmMs = Date.now(); // Timestamp puro do momento atual
-    const horaInicio = horaStringParaTimestamp(agendamento?.horaServico);
-    const duracaoMs = Number(agendamento?.tipoServico) * 3600 * 1000; // Converter horas para ms
-    const horaTermino = horaInicio + duracaoMs;
+    if (!agendamento?.timeStart || !agendamento?.timeTotal) return 0;
 
-    return Math.max(0, Math.floor((horaTermino - agoraEmMs) / 1000)); // Retorna em segundos
+    // Garantir que timeStart seja interpretado corretamente no horário local
+    const horaInicio = new Date(agendamento.timeStart); // Hora de início no fuso horário local
+    const horaTermino = new Date(horaInicio.getTime() + agendamento.timeTotal * 60 * 60 * 1000); // Hora de término no horário local
+
+    console.log("Hora de inicio no banco de dados: ", agendamento?.timeStart)
+    console.log("Apos usar new Date no timeStart: ", new Date(agendamento.timeStart))
+
+    console.log("Hora de início (timeStart):", horaInicio.toLocaleString());
+    console.log("Hora de término (timeEnd):", horaTermino.toLocaleString());
+    console.log("Timestamp atual:", new Date().toLocaleString());
+
+    const agoraEmMs = new Date().getTime(); // Timestamp atual em fuso horário local
+
+    // Verifique se o timestamp atual é após o tempo de término
+    if (agoraEmMs >= horaTermino.getTime()) {
+      return 0; // O tempo já acabou
+    }
+
+    // Retorna o tempo restante até o timeEnd em segundos
+    return Math.max(0, Math.floor((horaTermino.getTime() - agoraEmMs) / 1000)); // Tempo restante em segundos
   };
 
   const iniciarCronometro = () => {
@@ -50,25 +51,26 @@ const Temporizador = ({ agendamento }) => {
   };
 
   useEffect(() => {
-    return () => {
-      if (intervaloRef.current) clearInterval(intervaloRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    setTempoRestante(calcularTempoRestante());
-
     if (agendamento && agendamento?.status === "Iniciado") {
+      setTempoRestante(calcularTempoRestante());
       iniciarCronometro();
     }
-  }, [prestador, agendamento]);
+  }, [prestador, agendamento, tempoRestante]);
+
+  useEffect(() => {
+    if (tempoRestante === 0 && intervaloRef.current) {
+      clearInterval(intervaloRef.current); // Parar o cronômetro quando o tempo acabar
+    }
+  }, [tempoRestante]);
+
+  console.log("Tempo restante:", tempoRestante);
 
   return (
     <div className="flex flex-col items-center gap-5 h-full">
       <h2 className="font-semibold">Tempo de serviço</h2>
       <div className="w-48 h-48">
         <CircularProgressbar
-          value={(tempoRestante / (agendamento?.tipoServico * 3600)) * 100 || 0}
+          value={(tempoRestante / (agendamento?.timeTotal * 3600)) * 100 || 0} // Calculando o progresso
           text={formatarTempo(tempoRestante)}
           styles={buildStyles({
             textSize: "16px",

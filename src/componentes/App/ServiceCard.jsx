@@ -25,7 +25,7 @@ import {
   faMartiniGlass,
 } from "@fortawesome/free-solid-svg-icons";
 
-const ServiceCard = ({HandleSetServiceValue, HandleSetTipoServico, icon, title, description, value, isExpanded, onClick, days, setDays, onProceed, valueMeia, valueHora }) => {
+const ServiceCard = ({HandleSetServiceValue, HandleSetTimeTotal, icon, title, description, value, isExpanded, onClick, days, setDays, onProceed, valueMeia, valueHora }) => {
   const incrementDays = () => {
     setDays(days + 1); // Aumentar o número de dias
   };
@@ -93,8 +93,8 @@ const ServiceCard = ({HandleSetServiceValue, HandleSetTipoServico, icon, title, 
           <Button className="text-md font-semibold text-desSec text-start bg-white justify-between"
             onPress={() => (
               onProceed(),
-              HandleSetTipoServico('8'),
-              HandleSetTipoServico(value)
+              HandleSetTimeTotal(8),
+              HandleSetServiceValue(value)
             )}
           >
             <div className='flex items-center  gap-2'>
@@ -120,7 +120,7 @@ const ServiceCard = ({HandleSetServiceValue, HandleSetTipoServico, icon, title, 
             <Button className="text-md font-semibold text-desSec text-start bg-white justify-between"
             onPress={() => (
               onProceed(),
-              HandleSetTipoServico('4'),
+              HandleSetTimeTotal(4),
               HandleSetServiceValue(valueMeia)
             )}
             >
@@ -140,7 +140,7 @@ const ServiceCard = ({HandleSetServiceValue, HandleSetTipoServico, icon, title, 
             <Button className="text-md font-semibold text-desSec text-start bg-white justify-between"
             onPress={() => (
               onProceed(),
-              HandleSetTipoServico('1'),
+              HandleSetTimeTotal(1),
               HandleSetServiceValue(valueHora)
             )}
             >

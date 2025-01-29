@@ -11,7 +11,7 @@ import * as yup from "yup"
 import { io } from 'socket.io-client';
 
 
-const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setServiceValue, setTipoServico }) => {
+const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setServiceValue, setTimeTotal }) => {
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [days, setDays] = useState(0);
@@ -92,8 +92,8 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
     setServiceValue(value)
   }
 
-  const HandleSetTipoServico = (value) => {
-    setTipoServico(value)
+  const HandleSetTimeTotal = (value) => {
+    setTimeTotal(value)
   }
 
   const handleProceed = () => {
@@ -183,7 +183,7 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
                     setDays={setDays}
                     onProceed={handleProceed} // Passa a função onProceed para o ServiceCard
                     HandleSetServiceValue={HandleSetServiceValue}
-                    HandleSetTipoServico={HandleSetTipoServico}
+                    HandleSetTimeTotal={HandleSetTimeTotal}
                   />
                 ))
               ) : (
