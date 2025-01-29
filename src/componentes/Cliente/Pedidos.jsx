@@ -91,10 +91,9 @@ export default function Pedidos() {
 
         // Retorna true se ambos os filtros (nome e data) coincidirem
         return nameMatch && (!startDate || !endDate || dateMatch);
-    }) ;
+    });
 
     const hoje = new Date();
-    const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
 
     const agendamentosDoMesmoDia = user?.agendamentos?.filter(agendamento => {
         const dataServico = new Date(agendamento.dataServico);
@@ -112,8 +111,11 @@ export default function Pedidos() {
       
         const statusValido = agendamento.status === "Iniciado"; // Verificando se o status é "Iniciado"
         return dataServicoSemHora === hojeSemHora && statusValido;
-    }).sort((a, b) => new Date(b.timeStart) - new Date(a.timeStart)); // Ordenando do mais recente para o mais antigo
+    })
+    .sort((a, b) => new Date(b.timeStart) - new Date(a.timeStart)); // Ordenando do mais recente para o mais antigo
     
+    
+      
 
     return (
         <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
@@ -156,7 +158,19 @@ export default function Pedidos() {
                 </div>
 
                 {agendamentosDoMesmoDia && (
-                    agendamentosDoMesmoDia.map((agendamento) => (
+                    agendamentosDoMesmoDia.sort((a, b) => {
+                        const prioridade = (status) => {
+                            if (status === "Iniciado") return 1;
+                            if (status === "Agendado") return 2;
+                            return 3;
+                        };
+                    
+                        // Comparação pela prioridade do status
+                        const prioridadeDiff = prioridade(a.status) - prioridade(b.status);
+                    
+                        return prioridadeDiff;
+                    }) 
+                    .map((agendamento) => (
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-h-[50vh] rounded-xl shadow-md justify-between'>
                             {/* relogio */}
                             <div className='w-full h-full '>
@@ -230,17 +244,8 @@ export default function Pedidos() {
                             if (status === "Agendado") return 2;
                             return 3;
                         };
-                    
-                        // Comparação pela prioridade do status
-                        const prioridadeDiff = prioridade(a.status) - prioridade(b.status);
-                        
-                        // Se a prioridade for igual, ordena pela data (do mais recente para o mais antigo)
-                        if (prioridadeDiff === 0) {
-                            return new Date(b.dataServico) - new Date(a.dataServico);
-                        }
-                    
-                        return prioridadeDiff;
-                    }) 
+                        return prioridade(a.status) - prioridade(b.status);
+                    })   
                     .map((agendamento) => (
                         <>
                             <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
