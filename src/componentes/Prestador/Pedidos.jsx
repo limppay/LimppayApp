@@ -133,17 +133,34 @@ export default function Pedidos({setScreenSelected}) {
                             <div className="flex flex-col rounded-lg p-5 gap-10 h-full justify-between w-full">
                                 <div className='flex flex-col gap-2 text-prim'>
                                     <div className='flex gap-5 justify-between text-prim'>
+                                        <p className='font-semibold'>Serviço de {proximoAgendamento.timeTotal}hr</p>
                                         <p className='font-semibold'> {proximoAgendamento.Servico}</p>
                                         <p className='font-semibold'>{formatarData(new Date(proximoAgendamento?.dataServico).toISOString().split('T')[0])} </p>
                                         <p className='font-semibold'>{proximoAgendamento.horaServico}</p>
                                     </div>
                                     <p> {proximoAgendamento.enderecoCliente}</p>
+                                    <div>
+                                        <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
+                                    </div>
 
-                                    <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
+                                    
                                     
                                 </div>
-                                <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>                                
-                                    <Button className='text-white bg-desSec w-full' isDisabled={proximoAgendamento?.status == "Iniciado"} onPress={() => (setOpen(true))}>
+                                <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>
+                                    <a 
+                                        href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        
+                                    >
+                                        <Button className="w-full bg-sec text-white">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                            </svg>
+                                            Abrir com o Google Maps
+                                        </Button>
+                                    </a>                                   
+                                    <Button className='text-desSec border bg-white w-full' isDisabled={proximoAgendamento?.status == "Iniciado"} onPress={() => (setOpen(true))}>
                                         {proximoAgendamento?.status == "Iniciado" ? "Serviço em andamento" : "Iniciar serviço"}
                                     </Button>
                                 </div>

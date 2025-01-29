@@ -15,14 +15,6 @@ const Temporizador = ({ agendamento }) => {
     // Garantir que timeStart seja interpretado corretamente no horário local
     const horaInicio = new Date(agendamento.timeStart); // Hora de início no fuso horário local
     const horaTermino = new Date(horaInicio.getTime() + agendamento.timeTotal * 60 * 60 * 1000); // Hora de término no horário local
-
-    console.log("Hora de inicio no banco de dados: ", agendamento?.timeStart)
-    console.log("Apos usar new Date no timeStart: ", new Date(agendamento.timeStart))
-
-    console.log("Hora de início (timeStart):", horaInicio.toLocaleString());
-    console.log("Hora de término (timeEnd):", horaTermino.toLocaleString());
-    console.log("Timestamp atual:", new Date().toLocaleString());
-
     const agoraEmMs = new Date().getTime(); // Timestamp atual em fuso horário local
 
     // Verifique se o timestamp atual é após o tempo de término
@@ -55,6 +47,7 @@ const Temporizador = ({ agendamento }) => {
       setTempoRestante(calcularTempoRestante());
       iniciarCronometro();
     }
+
   }, [prestador, agendamento, tempoRestante]);
 
   useEffect(() => {
@@ -63,11 +56,10 @@ const Temporizador = ({ agendamento }) => {
     }
   }, [tempoRestante]);
 
-  console.log("Tempo restante:", tempoRestante);
 
   return (
     <div className="flex flex-col items-center gap-5 h-full">
-      <h2 className="font-semibold">Tempo de serviço</h2>
+      <h2 className="font-semibold">Tempo restante</h2>
       <div className="w-48 h-48">
         <CircularProgressbar
           value={(tempoRestante / (agendamento?.timeTotal * 3600)) * 100 || 0} // Calculando o progresso
@@ -79,6 +71,10 @@ const Temporizador = ({ agendamento }) => {
             trailColor: "#d6d6d6",
           })}
         />
+      </div>
+      <div className="text-center">
+        <h3>Horário de término</h3>
+        <p>{new Date(agendamento?.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
       </div>
     </div>
   );
