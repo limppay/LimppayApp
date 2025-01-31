@@ -95,7 +95,7 @@ const Temporizador = ({ agendamento, setRunnig }) => {
       </div>
       {agendamento && (
         <div className="text-center">
-          <h3>Horário de término</h3>
+          <h3 className="font-semibold">Previsão para terminar o serviço</h3>
           <p>{new Date(agendamento?.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
         </div>
       )}

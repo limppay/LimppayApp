@@ -109,7 +109,7 @@ export default function Pedidos() {
           hoje.getUTCDate()
         );
       
-        const statusValido = agendamento.status === "Iniciado"; // Verificando se o status é "Iniciado"
+        const statusValido = agendamento.status === "Iniciado" || agendamento.status === 'Repouso'; // Verificando se o status é "Iniciado"
         return dataServicoSemHora === hojeSemHora && statusValido;
     })
     .sort((a, b) => new Date(b.timeStart) - new Date(a.timeStart)); // Ordenando do mais recente para o mais antigo
@@ -212,7 +212,7 @@ export default function Pedidos() {
                                         
                                         
                                     </div>
-                                    <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>
+                                    <div className='grid grid-cols-1  gap-3 items-center w-full justify-between '>
                                         <a 
                                             href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`} 
                                             target="_blank" 
@@ -225,7 +225,18 @@ export default function Pedidos() {
                                                 </svg>
                                                 Abrir com o Google Maps
                                             </Button>
-                                        </a>                                   
+                                        </a> 
+
+                                        {(agendamento?.status === "Iniciado" || agendamento?.status === "Repouso") && (
+                                            <Button
+                                                className='bg-white border text-desSec' 
+                                                isDisabled
+                                            >
+                                                {agendamento?.status === "Repouso" ? "Serviço em repouso" : "Serviço em andamento"}
+                                            </Button>
+                                        )}
+
+
 
                                     </div>
                                 </div>
@@ -269,10 +280,9 @@ export default function Pedidos() {
                                         <div className="overflow-y-auto  bg-white  rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5 ">
                                             
                                             <div className='text-prim w-full flex flex-col gap-5'>
-                                                <p className='text-justify'>
-                                                    {agendamento.Servico} - {agendamento.horaServico} - {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
-
-                                                </p>
+                                                <div className='flex gap-5  text-prim'>
+                                                    <p className='font-semibold'>Serviço de {agendamento.timeTotal}hr - {agendamento.Servico} - {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])} - {agendamento.horaServico} </p> 
+                                                </div>
 
                                                 <div className='flex flex-col w-full gap-5 '>
                                                     {calcularQtdAgendamentos(agendamento?.valorLiquido, agendamento?.descontoTotal, agendamento?.valorServico) > 1 && (
@@ -361,7 +371,6 @@ export default function Pedidos() {
                                     <AccordionItem key={agendamento.id} title="Detalhes" >
                                         
                                         <div className="mt-2">
-                                            
                                             {agendamento.status === "Realizado" && (
                                                 <CreateAvaliacao
                                                     agendamento={agendamento}
@@ -375,11 +384,16 @@ export default function Pedidos() {
                                                     month: 'long',
                                                     year: 'numeric'
                                                 })}</p>
+                                                
                                                 <div className='text-justify flex flex-col gap-4'>
-
-                                                    <p><b>Prestador:</b> {agendamento?.user?.name}</p>
+                                                    <p>
+                                                        <b>Serviço de {agendamento.timeTotal}hr</b>
+                                                    </p>
 
                                                     <p><b>Serviço:</b> {agendamento?.Servico}</p>
+
+                                                    <p><b>Prestador:</b> {agendamento?.user?.name}</p>
+                                                    
 
                                                     <p><b>Observação:</b> {agendamento?.observacao ? agendamento.observacao : "Nenhuma obervação."}</p>
 

@@ -7,8 +7,9 @@ import { Accordion, AccordionItem } from '@nextui-org/accordion';
 import Temporizador from './Temporizador';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import { fetchPrestadorInfo } from '../../common/FetchPrestadorInfo';
-import { updateAgendamento } from '../../services/api';
-import { Spinner } from '@nextui-org/react';
+import { finalizarAgendamento, iniciarAgendamento, pausarAgendamento, retornarAgendamento, updateAgendamento } from '../../services/api';
+import { Avatar, Spinner } from '@nextui-org/react';
+import User from "../../assets/img/diarista-cadastro/user.webp"
 
 export default function Pedidos({setScreenSelected}) {
     const { prestador, setPrestador } = usePrestador()
@@ -16,6 +17,8 @@ export default function Pedidos({setScreenSelected}) {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [ open, setOpen ] = useState(false)
+    const [ openPausar, setOpenPausar ] = useState(false)
+    const [ openRetornar, setOpenRetornar ] = useState(false)
     const [ openFinalizar, setFinalizar ] = useState(false)
     const [ loading, setLoading ] = useState(false)
 
@@ -63,12 +66,9 @@ export default function Pedidos({setScreenSelected}) {
     
     const handleIniciarAgendamento = async (agendamento) => {
         setLoading(true);
-        const data = {
-            status: 'Iniciado'
-        }
 
         try {        
-            const response = await updateAgendamento(agendamento?.id, data);
+            const response = await iniciarAgendamento(agendamento?.id);
             await fetchPrestadorInfo(setPrestador)
             setLoading(false)
             setOpen(false)
@@ -80,14 +80,41 @@ export default function Pedidos({setScreenSelected}) {
 
     };
 
-    const handleFinalizarServico = async (agendamento) => {
+    const handlePausarAgendamento = async (agendamento) => {
         setLoading(true);
-        const data = {
-            status: 'Realizado'
-        }
 
         try {        
-            const response = await updateAgendamento(agendamento?.id, data);
+            const response = await pausarAgendamento(agendamento?.id);
+            await fetchPrestadorInfo(setPrestador)
+            setLoading(false)
+            setOpenPausar(false)
+            console.log("Agendamento atualizado com sucesso!", response);
+
+        } catch (error) {
+            console.error("Erro ao atualizar o agendamento:", error);
+        }
+    };
+
+    const handleRetornarAgendamento = async (agendamento) => {
+        setLoading(true);
+
+        try {        
+            const response = await retornarAgendamento(agendamento?.id);
+            await fetchPrestadorInfo(setPrestador)
+            setLoading(false)
+            setOpenRetornar(false)
+            console.log("Agendamento atualizado com sucesso!", response);
+
+        } catch (error) {
+            console.error("Erro ao atualizar o agendamento:", error);
+        }
+    };
+
+    const handleFinalizarServico = async (agendamento) => {
+        setLoading(true);
+
+        try {        
+            const response = await finalizarAgendamento(agendamento?.id);
             await fetchPrestadorInfo(setPrestador)
             setLoading(false)
             setFinalizar(false)
@@ -99,6 +126,8 @@ export default function Pedidos({setScreenSelected}) {
         }
 
     };
+
+    console.log("Agendamentos: ", agendamentosFiltrados)
 
     return (
         <section className='w-full  gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
@@ -158,11 +187,23 @@ export default function Pedidos({setScreenSelected}) {
                         {proximoAgendamento ? (
                             <div className="flex flex-col rounded-lg p-5 gap-10 h-full justify-between w-full">
                                 <div className='flex flex-col gap-2 text-prim'>
+                                    <div className='w-full flex gap-2 items-center '>
+                                        <Avatar 
+                                            src={User} 
+                                            alt="avatarPrestador"
+                                            size='lg'
+                                        />
+                                        <h3 className='text-prim font-semibold flex flex-wrap text-center'>{proximoAgendamento.cliente?.name}</h3>
+                                                                                                        
+                                    </div>
+
+
                                     <div className='flex gap-5 justify-between text-prim'>
                                         <p className='font-semibold'>Serviço de {proximoAgendamento.timeTotal}hr</p>
                                         <p className='font-semibold'> {proximoAgendamento.Servico}</p>
                                         <p className='font-semibold'>{formatarData(new Date(proximoAgendamento?.dataServico).toISOString().split('T')[0])} </p>
-                                        <p className='font-semibold'>{proximoAgendamento.horaServico}</p>
+                                        {/* <p className='font-semibold'>{new Date(proximoAgendamento?.timeStart)}</p> */}
+                                        <p className='font-semibold'>{new Date(proximoAgendamento?.timeStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
                                     </div>
                                     <p> {proximoAgendamento.enderecoCliente}</p>
                                     <div>
@@ -185,19 +226,42 @@ export default function Pedidos({setScreenSelected}) {
                                             </svg>
                                             Abrir com o Google Maps
                                         </Button>
-                                    </a>                                   
+                                    </a>
+
+                                    {proximoAgendamento?.status == 'Repouso' ? (
+                                        <Button
+                                            className="bg-white text-sec border"
+                                            onPress={() => (setOpenRetornar(true)) }
+                                        >
+                                            Voltar ao serviço 
+                                        </Button>
+
+                                    ) : (
+                                        <Button
+                                            className="bg-white text-sec border"
+                                            onPress={() => (setOpenPausar(true)) }
+                                            isDisabled={!!proximoAgendamento?.timePause }
+                                        >
+                                            {!!proximoAgendamento?.timePause ? "Você ja fez uma pausa" : "Pausar serviço"} 
+                                        </Button>
+
+                                    )}
+
+                            
                                     <Button
                                         className={` border bg-white w-full 
                                             ${proximoAgendamento?.status === "Iniciado" && !runnig ? "text-sec font-semibold" : "text-desSec"} 
                                         `}
-                                        isDisabled={proximoAgendamento?.status === "Iniciado" && runnig}
+                                        isDisabled={proximoAgendamento?.status === "Iniciado" && runnig || proximoAgendamento?.status === 'Repouso' }
                                         onPress={() => proximoAgendamento?.status === "Iniciado" && !runnig ? setFinalizar(true)  : setOpen(true)  }
                                     >
-                                        {proximoAgendamento?.status === "Iniciado" && runnig
+                                        {   proximoAgendamento?.status === "Iniciado" && runnig
                                             ? "Serviço em andamento"
                                             : proximoAgendamento?.status === "Iniciado" && !runnig
-                                            ? "Concluir serviço"
-                                            : "Iniciar serviço"}
+                                            ? "Concluir serviço" 
+                                            : proximoAgendamento?.status === "Repouso" ? "Em repouso" 
+                                            : "Iniciar serviço"
+                                        }
                                     </Button>
 
                                 </div>
@@ -287,6 +351,95 @@ export default function Pedidos({setScreenSelected}) {
                                     )}
                                     </ModalContent>
                                 </Modal>
+
+                                <Modal 
+                                    backdrop="opaque" 
+                                    isOpen={openPausar} 
+                                    onClose={setOpenPausar}
+                                    placement='center'
+                                    classNames={{
+                                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                        body: "bg-white",
+                                        header: "bg-white",
+                                        footer: "bg-white"
+                                    }}
+                                    className="max-w-[40vh] sm:min-w-[80vh]"
+                                >
+                                    <ModalContent className="bg-">
+                                    {(onClose) => (
+                                        <>
+                                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                            <div className="flex w-full justify-between pr-10">
+                                                <h2 className='text-sec'>Deseja fazer uma pausa?</h2>
+                                            </div>
+                                        </ModalHeader>
+
+                                        <ModalBody>
+                                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                                <div className='text-ter grid gap-2'>
+                                                    <p>não se preocupe, assim que você retornar da sua pausa, o seu horário para terminar o serviço será calculado novamente :)</p>
+                                                </div>
+                                                
+                                            </div>
+                                        </ModalBody>
+                                        <ModalFooter className='shadow-none'>
+                                            <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
+                                                Voltar
+                                            </Button>
+                                            <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handlePausarAgendamento(proximoAgendamento)}>
+                                                {loading ? <Spinner/> : "Confirmar"}
+                                            </Button>
+                                        </ModalFooter>
+                                        </>
+                                    )}
+                                    </ModalContent>
+                                </Modal>
+
+                                <Modal 
+                                    backdrop="opaque" 
+                                    isOpen={openRetornar} 
+                                    onClose={setOpenRetornar}
+                                    placement='center'
+                                    classNames={{
+                                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                        body: "bg-white",
+                                        header: "bg-white",
+                                        footer: "bg-white"
+                                    }}
+                                    className="max-w-[40vh] sm:min-w-[80vh]"
+                                >
+                                    <ModalContent className="bg-">
+                                    {(onClose) => (
+                                        <>
+                                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                            <div className="flex w-full justify-between pr-10">
+                                                <h2 className='text-sec'>Retornar ao serviço</h2>
+                                            </div>
+                                        </ModalHeader>
+
+                                        <ModalBody>
+                                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                                <div className='text-ter grid gap-2'>
+                                                    <p>Deseja retornar ao serviço?</p>
+                                                </div>
+                                                
+                                            </div>
+                                        </ModalBody>
+                                        <ModalFooter className='shadow-none'>
+                                            <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
+                                                Voltar
+                                            </Button>
+                                            <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handleRetornarAgendamento(proximoAgendamento)}>
+                                                {loading ? <Spinner/> : "Confirmar"}
+                                            </Button>
+                                        </ModalFooter>
+                                        </>
+                                    )}
+                                    </ModalContent>
+                                </Modal>
+
+
+
                             </div>
                         
                         ) : (
@@ -349,30 +502,41 @@ export default function Pedidos({setScreenSelected}) {
                         return (
                             <>
                                 <div className="flex flex-col gap-3 shadow-md shadow-bord rounded-lg p-5 justify-center items-start">
-                                    <div className="flex flex-col lg:flex-row gap-5 items-start w-full justify-between">
-                                        <div className="flex flex-col gap-2 w-full">
-                                            <div className="overflow-y-auto bg-white p-3 rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between">
-                                                <p>
-                                                    {agendamento.Servico} - {agendamento.horaServico} -{" "}
-                                                    {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
-                                                </p>
-                                                <p>{formatarMoeda(taxaPrestador(agendamento?.valorLiquido))}</p>
-                                                <div className="w-4/12 sm:w-auto text-center pt-2 sm:pt-0">
-                                                    <div
-                                                        className={`p-2 rounded-md text-white ${
-                                                            agendamento.status === "Agendado"
-                                                                ? "bg-des"
-                                                                : agendamento.status === "Iniciado"
-                                                                ? "bg-desSec"
-                                                                : agendamento.status === "Cancelado"
-                                                                ? "bg-error"
-                                                                : agendamento.status === "Realizado"
-                                                                ? "text-sec bg-sec"
-                                                                : ""
-                                                        } `}
-                                                    >
-                                                        {agendamento.status}
+                                    <div className='flex flex-col  gap-5 items-start w-full justify-between p-2'>
+                                        <div className='w-full flex gap-2 items-center '>
+                                            <Avatar 
+                                                src={User} 
+                                                alt="avatarPrestador"
+                                                size='lg'
+                                            />
+                                            <h3 className='text-prim font-semibold flex flex-wrap text-center'>{agendamento.cliente?.name}</h3>
+                                                                                                            
+                                        </div>
+
+                                        <div className='flex flex-col gap-2 w-full  '>
+                                            <div className="overflow-y-auto  bg-white  rounded-md text-ter w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5 ">
+                                                <div className='text-prim w-full flex flex-col gap-5'>
+                                                    <div className='flex gap-5  text-prim'>
+                                                        <p className='font-semibold'>Serviço de {agendamento.timeTotal}hr - {agendamento.Servico} - {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])} - {agendamento.horaServico} </p> 
                                                     </div>
+    
+                                                    <div className='flex flex-col w-full gap-5 '>    
+                                                        <div >    
+                                                            <div className='w-full flex justify-between'>
+                                                                <span>
+                                                                    Valor Serviço: 
+                                                                </span>
+                                                                {formatarMoeda(taxaPrestador(agendamento.valorServico))}
+                                                            </div>
+    
+                                                        </div>    
+                                                    </div>
+    
+    
+                                                    <div className='w-4/12 sm:w-auto text-center pt- sm:pt-0 flex items-center justify-start gap-5'>
+                                                        <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
+                                                    </div>
+    
                                                 </div>
                                             </div>
                                         </div>
@@ -383,6 +547,9 @@ export default function Pedidos({setScreenSelected}) {
                                                 <div className="flex flex-col gap-7 text-prim overflow-y-auto max-h-[60vh]">
                                                     <div className="text-justify flex flex-col gap-2">
                                                         <p>
+                                                            <b>Serviço de {agendamento.timeTotal}hr</b>
+                                                        </p>
+                                                        <p>
                                                             <b>Serviço:</b> {agendamento?.Servico}
                                                         </p>
                                                         <p>
@@ -392,7 +559,7 @@ export default function Pedidos({setScreenSelected}) {
                                                                 : "Nenhuma observação."}
                                                         </p>
                                                         <p>
-                                                            <b>Preço:</b> {formatarMoeda(taxaPrestador(valorLiquidoServico))}
+                                                            <b>Valor serviço:</b> {formatarMoeda(taxaPrestador(valorLiquidoServico))}
                                                         </p>
                                                         <p>
                                                             <b>Data:</b>{" "}

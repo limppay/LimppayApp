@@ -644,6 +644,58 @@ export const updateAgendamento = async (id, agendamentoData) => {
 
 }
 
+export const iniciarAgendamento = async (id) => {
+  try {
+    const response = await api.patch(`/agendamentos/init/${id}`);
+    return response.data; 
+    
+  } catch (error) {
+    console.error('Erro ao atualizar o agendamento:', error.response?.data || error.message);
+    return false
+
+  }
+
+}
+
+export const pausarAgendamento = async (id) => {
+  try {
+    const response = await api.patch(`/agendamentos/pause/${id}`);
+    return response.data; 
+    
+  } catch (error) {
+    console.error('Erro ao atualizar o agendamento:', error.response?.data || error.message);
+    return false
+
+  }
+
+}
+
+export const retornarAgendamento = async (id) => {
+  try {
+    const response = await api.patch(`/agendamentos/retornar/${id}`);
+    return response.data; 
+    
+  } catch (error) {
+    console.error('Erro ao atualizar o agendamento:', error.response?.data || error.message);
+    return false
+
+  }
+
+}
+
+export const finalizarAgendamento = async (id) => {
+  try {
+    const response = await api.patch(`/agendamentos/finalizar/${id}`);
+    return response.data; 
+    
+  } catch (error) {
+    console.error('Erro ao atualizar o agendamento:', error.response?.data || error.message);
+    return false
+
+  }
+
+}
+
 export default api;
 
 
