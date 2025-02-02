@@ -21,6 +21,8 @@ export default function Pedidos() {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [ runnig, setRunnig ] = useState(false)
+    const [ disablePause, setDisablePause ] = useState(false)
+    
     
     const calcularValorLiquido = (valorLiquido, desconto, valorServico) => {
         const ValorBruto =  valorLiquido + desconto
@@ -177,6 +179,7 @@ export default function Pedidos() {
                                 <Temporizador
                                     agendamento={agendamento}
                                     setRunnig={setRunnig}
+                                    setDisablePause={setDisablePause}
                                 />
                             </div>
 
@@ -389,6 +392,39 @@ export default function Pedidos() {
                                                     <p>
                                                         <b>Serviço de {agendamento.timeTotal}hr</b>
                                                     </p>
+
+                                                    {agendamento.status === "Realizado" && (
+                                                        <div>
+                                                            <>
+                                                                <p>
+                                                                    <b>Horário que iniciou: </b>
+                                                                    {new Date(agendamento?.timeStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+                                                                </p>
+
+                                                                <p>
+                                                                    <b>Tempo de trabalho: </b>
+                                                                    {(() => {
+                                                                        const timeStart = new Date(agendamento?.timeStart);
+                                                                        const timeFinally = new Date(agendamento?.timeFinally);
+                                                                        const diff = timeFinally - timeStart; // Diferença em milissegundos
+
+                                                                        const hoursWorked = Math.floor(diff / 1000 / 60 / 60); // Converte para horas
+                                                                        const minutesWorked = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); // Converte para minutos restantes
+
+                                                                        return `${hoursWorked}h ${minutesWorked}m`;
+                                                                    })()}
+                                                                </p>
+
+                                                                <p>
+                                                                    <b>Horário que terminou: </b>
+                                                                    {new Date(agendamento?.timeFinally).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+                                                                </p>
+                                                            </>
+
+                                                        </div>
+                                                        
+
+                                                    )}
 
                                                     <p><b>Serviço:</b> {agendamento?.Servico}</p>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePrestador } from '../../context/PrestadorProvider';
 import { Button } from '@nextui-org/button';
 import { formatarData } from '../../common/FormatarData';
@@ -21,10 +21,9 @@ export default function Pedidos({setScreenSelected}) {
     const [ openRetornar, setOpenRetornar ] = useState(false)
     const [ openFinalizar, setFinalizar ] = useState(false)
     const [ loading, setLoading ] = useState(false)
-
     const [ sucess, setSucess ] = useState(false)
-
     const [ runnig, setRunnig ] = useState(false)
+    const [ disablePause, setDisablePause ] = useState(false)
 
     const taxaPrestador = (valor) => {
         const value = valor * 0.75
@@ -173,12 +172,13 @@ export default function Pedidos({setScreenSelected}) {
                         
                 </div>
 
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-h-[50vh] rounded-xl shadow-md justify-between'>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-h-[50vh]  rounded-xl shadow-md justify-between'>
                     {/* relogio */}
-                    <div className='w-full h-full '>
+                    <div className='w-full h-full p-[2vh] '>
                         <Temporizador
                             agendamento={proximoAgendamento}
                             setRunnig={setRunnig}
+                            setDisablePause={setDisablePause}
                         />
                     </div>
 
@@ -202,8 +202,8 @@ export default function Pedidos({setScreenSelected}) {
                                         <p className='font-semibold'>Serviço de {proximoAgendamento.timeTotal}hr</p>
                                         <p className='font-semibold'> {proximoAgendamento.Servico}</p>
                                         <p className='font-semibold'>{formatarData(new Date(proximoAgendamento?.dataServico).toISOString().split('T')[0])} </p>
-                                        {/* <p className='font-semibold'>{new Date(proximoAgendamento?.timeStart)}</p> */}
-                                        <p className='font-semibold'>{new Date(proximoAgendamento?.timeStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
+                                        <p className='font-semibold'>{proximoAgendamento?.horaServico}</p>
+                                        
                                     </div>
                                     <p> {proximoAgendamento.enderecoCliente}</p>
                                     <div>
@@ -228,7 +228,7 @@ export default function Pedidos({setScreenSelected}) {
                                         </Button>
                                     </a>
 
-                                    {proximoAgendamento.status != "Agendado" && (
+                                    {proximoAgendamento.status != "Agendado" && !disablePause && (
                                         proximoAgendamento?.status == 'Repouso' ? (
                                             <Button
                                                 className="bg-white text-sec border"
@@ -551,6 +551,38 @@ export default function Pedidos({setScreenSelected}) {
                                                         <p>
                                                             <b>Serviço de {agendamento.timeTotal}hr</b>
                                                         </p>
+
+                                                        <div className='pb-[2vh] '>
+                                                            {agendamento?.status == 'Realizado' && (
+                                                                <>
+                                                                    <p>
+                                                                        <b>Horário que iniciou: </b>
+                                                                        {new Date(agendamento?.timeStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+                                                                    </p>
+
+                                                                    <p>
+                                                                        <b>Tempo de trabalho: </b>
+                                                                        {(() => {
+                                                                            const timeStart = new Date(agendamento?.timeStart);
+                                                                            const timeFinally = new Date(agendamento?.timeFinally);
+                                                                            const diff = timeFinally - timeStart; // Diferença em milissegundos
+
+                                                                            const hoursWorked = Math.floor(diff / 1000 / 60 / 60); // Converte para horas
+                                                                            const minutesWorked = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); // Converte para minutos restantes
+
+                                                                            return `${hoursWorked}h ${minutesWorked}m`;
+                                                                        })()}
+                                                                    </p>
+
+                                                                    <p>
+                                                                        <b>Horário que terminou: </b>
+                                                                        {new Date(agendamento?.timeFinally).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+                                                                    </p>
+                                                                </>
+                                                            )}
+
+                                                        </div>
+                                                        
                                                         <p>
                                                             <b>Serviço:</b> {agendamento?.Servico}
                                                         </p>

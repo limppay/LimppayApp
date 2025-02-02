@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "react-circular-progressbar/dist/styles.css";
 import { usePrestador } from "../../context/PrestadorProvider";
 
-const Temporizador = ({ agendamento, setRunnig }) => {
+const Temporizador = ({ agendamento, setRunnig, setDisablePause }) => {
   const { prestador } = usePrestador();
   const [tempoRestante, setTempoRestante] = useState(0);
   const intervaloRef = useRef(null);
@@ -12,18 +12,18 @@ const Temporizador = ({ agendamento, setRunnig }) => {
   const calcularTempoRestante = () => {
     if (!agendamento?.timeStart || !agendamento?.timeTotal) return 0;
   
-    const horaInicio = new Date(agendamento.timeStart);
-    let horaTermino = new Date(horaInicio.getTime() + agendamento.timeTotal * 60 * 60 * 1000);
+    const horaInicio = new Date(agendamento?.timeStart);
+    let horaTermino = new Date(horaInicio.getTime() + agendamento?.timeTotal * 60 * 60 * 1000);
     const agoraEmMs = new Date().getTime();
   
     // Se o serviço já teve seu tempo ajustado (por exemplo, após uma pausa)
-    if (agendamento.timeEnd) {
-      horaTermino = new Date(agendamento.timeEnd);
+    if (agendamento?.timeEnd) {
+      horaTermino = new Date(agendamento?.timeEnd);
     }
   
     // Se o serviço estiver pausado, considerar o tempo de pausa
-    if (agendamento.timePause) {
-      const tempoPausado = agoraEmMs - new Date(agendamento.timePause).getTime();
+    if (agendamento?.timePause) {
+      const tempoPausado = agoraEmMs - new Date(agendamento?.timePause).getTime();
       horaTermino = new Date(horaTermino.getTime() + tempoPausado);
     }
   
@@ -52,12 +52,7 @@ const Temporizador = ({ agendamento, setRunnig }) => {
   };
 
   useEffect(() => {
-    if(agendamento) {
-      setTempoRestante(calcularTempoRestante());
-    }
-
-
-    if (agendamento && agendamento?.status === "Iniciado") {
+    if (agendamento && (agendamento?.status === "Iniciado" || agendamento?.status === 'Repouso')) {
       setTempoRestante(calcularTempoRestante());
       iniciarCronometro();
     }
@@ -76,6 +71,7 @@ const Temporizador = ({ agendamento, setRunnig }) => {
 
     if(agora.getTime() >= termino.getTime()) {
       // console.log("Tempo acabou!")
+      setDisablePause(true)
       setRunnig(false)
 
     } else {
@@ -84,7 +80,7 @@ const Temporizador = ({ agendamento, setRunnig }) => {
 
     }
 
-  }, [tempoRestante, agendamento, prestador])
+  }, [tempoRestante, setTempoRestante, agendamento, prestador])
 
 
   return (
@@ -102,10 +98,26 @@ const Temporizador = ({ agendamento, setRunnig }) => {
           })}
         />
       </div>
-      {agendamento && (
-        <div className="text-center">
-          <h3 className="font-semibold">Previsão para finalizar o serviço</h3>
-          <p>{new Date(agendamento?.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
+      {(agendamento?.status == "Iniciado" || agendamento?.status == 'Repouso') && (
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 pt-[2vh] justify-between">
+          <div className="md:text-center">
+            <h3 className="font-semibold">Horário que iniciou</h3>
+            <p>{new Date(agendamento?.timeStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
+          </div>
+
+          <div className="md:text-center">
+            <h3 className="font-semibold">Tempo de repouso</h3>
+            <span>{agendamento?.totalPausado ? (agendamento?.totalPausado / 60000).toFixed(2) + " min" : "0 min"} </span>
+
+          </div>
+
+          <div className="col-span-2 md:text-center">
+            <h3 className="font-semibold">Previsão para finalizar o serviço</h3>
+            <p>{new Date(agendamento?.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
+
+          </div>
+
+
         </div>
       )}
     </div>

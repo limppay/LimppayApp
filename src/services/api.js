@@ -689,8 +689,8 @@ export const finalizarAgendamento = async (id) => {
     return response.data; 
     
   } catch (error) {
-    console.error('Erro ao atualizar o agendamento:', error.response?.data || error.message);
-    return false
+    const errorMessage = error.response?.data?.message || 'Problemas de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
 
   }
 
