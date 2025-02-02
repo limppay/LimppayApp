@@ -18,7 +18,7 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
     name: userInfo?.name || '',
 
     genero: userInfo?.genero || '',
-    estadoCivil: userInfo?.estadoCivil || '',
+    estadoCivil: userInfo?.estadoCivil || 0,
 
     telefone_1: userInfo?.telefone_1 || '',
     telefone_2: userInfo?.telefone_2 || '',
@@ -38,8 +38,8 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
     // scheam do prisma na API
     name: yup.string().trim().required("O nome é obrigatório"),
 
-    genero: yup.string(),
-    estadoCivil: yup.number().required("Estado civil é obrigatório").typeError("Estado Civil é obrigatório"),
+    genero: yup.string().default(''),
+    estadoCivil: yup.number().default(0),
 
     telefone_1: yup.string().trim().required("Telefone é obrigatório"),
     telefone_2: yup.string(),
@@ -72,6 +72,8 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
       resolver: yupResolver(schema),
       defaultValues: userValues
   })
+
+  console.log(errors)
 
   // Efeito para resetar o formulário ao abrir o modal
   useEffect(() => {
@@ -151,6 +153,24 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
   const [image, setImage] = useState(avatarUrl)
   const [file, setFile] = useState(null);
 
+  const imageDefault = () => {
+    // Buscar o caminho da imagem padrão e convertê-la em um arquivo
+    fetch(User)
+    .then((response) => response.blob())
+    .then((blob) => {
+        const defaultFile = new File([blob], "default.png", { type: blob.type });
+        setValue("arquivoFoto", defaultFile, { shouldValidate: true }); // Define o arquivo no formulário
+        setFile(defaultFile); // Armazenando o arquivo diretamente no estado
+        setImage(User); // Exibe a imagem padrão
+    });
+  }
+
+  const removeImage = () => {
+    setImage(userInfo?.AvatarUrl?.avatarUrl)
+    setFile(null)
+  }
+
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -160,6 +180,7 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
       trigger("arquivoFoto");
     }
   };
+
 
   // Carrega os dados do usuário
   useEffect(() => {
@@ -290,12 +311,26 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                         <form className='flex flex-col gap-4' onSubmit={handleSubmit(onSubmit)}  >
                           <div className="overflow-y-auto max-h-[70vh] lg:max-h-[60vh]"> 
 
-                            <div className='lg:flex-row flex flex-col items-center lg:justify-around'>
+                            <div className='lg:flex-row flex flex-col items-center lg:justify-around gap-2'>
                                 <label htmlFor="fotoPerfil" className="cursor-pointer flex justify-center flex-col items-center gap-1">
-                                    <Avatar src={image ? image: User} 
-                                    alt="foto de perfil" 
-                                    className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter shadow-md" 
-                                    />                  
+                                    <div className='relative'>
+                                      {image && image !== userInfo?.AvatarUrl?.avatarUrl && image !== "/src/assets/img/diarista-cadastro/user.webp" && (
+                                        <Button className="text-error bg-trans absolute right-0 z-20 " onPress={() => removeImage()}>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" classNamw="size-24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                          </svg>
+
+                                        </Button>
+                                        
+                                        
+                                      )} 
+                                      
+                                      <Avatar src={image ? image: User} 
+                                      alt="foto de perfil" 
+                                      className="transition-all duration-200 rounded-full w-60 h-60 hover:bg-ter shadow-md" 
+                                      />
+                                        
+                                    </div>
                                     <input 
                                         type="file" 
                                         id="fotoPerfil"
@@ -306,6 +341,10 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                                         className="p-2 w-full hidden"
                                     />                      
                                 </label>
+                                <Button className='bg-desSec text-white' onPress={() => (imageDefault())}>
+                                  Foto padrão
+                                </Button>
+                                                               
                             </div>
 
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col w-full">
@@ -376,8 +415,8 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                                 placeholder="(00) 00000-0000" 
                                 {...register("telefone_1")}
                                 />
-                                {errors.telefone && 
-                                <span className="text-error opacity-75">{errors.telefone?.message}</span>}
+                                {errors.telefone_2 && 
+                                <span className="text-error opacity-75">{errors.telefone_1?.message}</span>}
                             </div>
 
                             <div className="p-5 pt-4 pb-0 flex flex-col">
@@ -392,8 +431,8 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                                 placeholder="(00) 00000-0000" 
                                 {...register("telefone_2")}
                                 />
-                                {errors.telefone && 
-                                <span className="text-error opacity-75">{errors.telefone?.message}</span>}
+                                {errors.telefone_2 && 
+                                <span className="text-error opacity-75">{errors.telefone_2?.message}</span>}
                             </div>
 
                             <div className="mt-4 p-5 pt-0 pb-0 flex flex-col w-full">
@@ -402,7 +441,7 @@ const EditClienteModal = ({ Open, SetOpen, userInfo, Urls, onUserUpdated}) => {
                                 id="EstadoCivil"
                                 {...register("estadoCivil")}
                                 className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
-                                    <option defaultValue='0' >Selecione</option>
+                                    <option value={0} >Selecione</option>
                                     {EstadoCivil.map((options, index) => (
                                         <option key={index} value={options.value}>{options.text}</option>
                                     ))}

@@ -103,7 +103,7 @@ export default function Profile() {
 
                         <div className="grid gap-2">
                         <label htmlFor="genero" className="text-neutral-500">Gênero</label>
-                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.genero} />
+                        <input type="text" className="p-2 rounded-md bg-neutral-600 text-neutral-400" disabled value={user?.genero || ''} />
                         </div>
 
                     </div>

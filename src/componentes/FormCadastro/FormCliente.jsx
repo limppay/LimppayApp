@@ -28,8 +28,8 @@ export default function FormCliente() {
 
         cpfCnpj: yup.string().trim().required("O CPF é obrigatório").min(11, "Digite um CPF válido"),
 
-        genero: yup.string(),
-        estadoCivil: yup.number().required("Estado civil é obrigatório").typeError("Estado Civil é obrigatório"),
+        genero: yup.string().default(""),
+        estadoCivil: yup.number().default(0),
 
         telefone_1: yup.string().trim().required("Telefone é obrigatório"),
         telefone_2: yup.string(),
@@ -62,6 +62,7 @@ export default function FormCliente() {
         
     })
     .required()
+
     
     // Hook Forms
     const {
@@ -79,6 +80,9 @@ export default function FormCliente() {
         } = useForm({
         resolver: yupResolver(schema),
     })
+
+    console.log(errors)
+
     
 
     // onSubmit do Forms
@@ -135,13 +139,9 @@ export default function FormCliente() {
 
 
     const closeModal = () => {
-        // setModalIsOpen(false)
         navigate("/login-cliente")
     }
 
-    // Funções
-    // Função de ativar o botão quando o termo for clicado
-    // Função de ativar o botão quando o termo for clicado
     const [termosCheck, setTermosCheck] = useState(true)
     useEffect(() => {
         const checkTermos = document.getElementById("termo")
@@ -184,7 +184,19 @@ export default function FormCliente() {
             setValue("arquivoFoto", defaultFile, { shouldValidate: true }); // Define o arquivo no formulário
             setImage(User); // Exibe a imagem padrão
         });
+
     }, [setValue]);
+
+    const imageDefault = () => {
+        // Buscar o caminho da imagem padrão e convertê-la em um arquivo
+        fetch(User)
+        .then((response) => response.blob())
+        .then((blob) => {
+            const defaultFile = new File([blob], "default.png", { type: blob.type });
+            setValue("arquivoFoto", defaultFile, { shouldValidate: true }); // Define o arquivo no formulário
+            setImage(User); // Exibe a imagem padrão
+        });
+    }
 
 
     const [fileNames, setFileNames] = useState({
@@ -369,6 +381,12 @@ export default function FormCliente() {
                             />
                       
                         </label>
+                        {image != "/src/assets/img/diarista-cadastro/user.webp" && (
+                            <Button className="text-white bg-desSec" onPress={() => (imageDefault())}>
+                                Remover
+                            </Button>
+
+                        )}
                         <span className="text-prim">Foto de perfil</span>
                         {errors.arquivoFoto && (
                             <span className="text-error opacity-75">{errors.arquivoFoto.message}</span>
@@ -379,7 +397,6 @@ export default function FormCliente() {
             
             <div className="lg:flex">
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
-                    <label htmlFor="name" className="text-prim">Nome</label>
                     <input 
                     className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                     id="name"
@@ -415,7 +432,6 @@ export default function FormCliente() {
                             name="outroGenero"
                             value={outroGenero}
                             onChange={handleOutroGeneroChange}
-                            required
                             placeholder="Especifique seu gênero"
                             className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim"
                             />
@@ -425,7 +441,6 @@ export default function FormCliente() {
                         id="Genero"
                         value={genero}
                         onChange={handleGeneroChange}
-                        required
                         className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim w-full">
                             <option value="">Selecione</option>
                             {Genero.map((options, index) => (
@@ -550,7 +565,7 @@ export default function FormCliente() {
                     id="EstadoCivil"
                     {...register("estadoCivil")}
                     className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
-                        <option defaultValue='0' >Selecione</option>
+                        <option value={0} >Selecione</option>
                         {EstadoCivil.map((options, index) => (
                             <option key={index} value={options.value}>{options.text}</option>
                         ))}
