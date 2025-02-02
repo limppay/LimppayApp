@@ -228,22 +228,25 @@ export default function Pedidos({setScreenSelected}) {
                                         </Button>
                                     </a>
 
-                                    {proximoAgendamento?.status == 'Repouso' ? (
-                                        <Button
-                                            className="bg-white text-sec border"
-                                            onPress={() => (setOpenRetornar(true)) }
-                                        >
-                                            Voltar ao serviço 
-                                        </Button>
-
-                                    ) : (
-                                        <Button
-                                            className="bg-white text-sec border"
-                                            onPress={() => (setOpenPausar(true)) }
-                                            isDisabled={!!proximoAgendamento?.timePause }
-                                        >
-                                            {!!proximoAgendamento?.timePause ? "Você ja fez uma pausa" : "Pausar serviço"} 
-                                        </Button>
+                                    {proximoAgendamento.status != "Agendado" && (
+                                        proximoAgendamento?.status == 'Repouso' ? (
+                                            <Button
+                                                className="bg-white text-sec border"
+                                                onPress={() => (setOpenRetornar(true)) }
+                                            >
+                                                Voltar ao serviço 
+                                            </Button>
+    
+                                        ) : (
+                                            <Button
+                                                className="bg-white text-sec border"
+                                                onPress={() => (setOpenPausar(true)) }
+                                                isDisabled={!!proximoAgendamento?.timePause }
+                                            >
+                                                {!!proximoAgendamento?.timePause ? "Você ja fez uma pausa" : "Pausar serviço"} 
+                                            </Button>
+    
+                                        )
 
                                     )}
 
@@ -252,7 +255,9 @@ export default function Pedidos({setScreenSelected}) {
                                         className={` border bg-white w-full 
                                             ${proximoAgendamento?.status === "Iniciado" && !runnig ? "text-sec font-semibold" : "text-desSec"} 
                                         `}
+                                        
                                         isDisabled={proximoAgendamento?.status === "Iniciado" && runnig || proximoAgendamento?.status === 'Repouso' }
+
                                         onPress={() => proximoAgendamento?.status === "Iniciado" && !runnig ? setFinalizar(true)  : setOpen(true)  }
                                     >
                                         {   proximoAgendamento?.status === "Iniciado" && runnig
@@ -437,9 +442,6 @@ export default function Pedidos({setScreenSelected}) {
                                     )}
                                     </ModalContent>
                                 </Modal>
-
-
-
                             </div>
                         
                         ) : (

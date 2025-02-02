@@ -11,21 +11,30 @@ const Temporizador = ({ agendamento, setRunnig }) => {
   // Cálculo de tempo restante usando timeStart, timeTotal e timeEnd
   const calcularTempoRestante = () => {
     if (!agendamento?.timeStart || !agendamento?.timeTotal) return 0;
-
-    // Garantir que timeStart seja interpretado corretamente no horário local
-    const horaInicio = new Date(agendamento.timeStart); // Hora de início no fuso horário local
-    const horaTermino = new Date(horaInicio.getTime() + agendamento.timeTotal * 60 * 60 * 1000); // Hora de término no horário local
-    const agoraEmMs = new Date().getTime(); // Timestamp atual em fuso horário local
-
-    // Verifique se o timestamp atual é após o tempo de término
-    if (agoraEmMs >= horaTermino.getTime()) {
-      return 0; // O tempo já acabou
+  
+    const horaInicio = new Date(agendamento.timeStart);
+    let horaTermino = new Date(horaInicio.getTime() + agendamento.timeTotal * 60 * 60 * 1000);
+    const agoraEmMs = new Date().getTime();
+  
+    // Se o serviço já teve seu tempo ajustado (por exemplo, após uma pausa)
+    if (agendamento.timeEnd) {
+      horaTermino = new Date(agendamento.timeEnd);
     }
-
-    // Retorna o tempo restante até o timeEnd em segundos
+  
+    // Se o serviço estiver pausado, considerar o tempo de pausa
+    if (agendamento.timePause) {
+      const tempoPausado = agoraEmMs - new Date(agendamento.timePause).getTime();
+      horaTermino = new Date(horaTermino.getTime() + tempoPausado);
+    }
+  
+    // Verificar se o tempo já acabou
+    if (agoraEmMs >= horaTermino.getTime()) {
+      return 0; // O tempo já expirou
+    }
+  
     return Math.max(0, Math.floor((horaTermino.getTime() - agoraEmMs) / 1000)); // Tempo restante em segundos
   };
-
+  
   const iniciarCronometro = () => {
     if (intervaloRef.current) clearInterval(intervaloRef.current);
 
@@ -95,7 +104,7 @@ const Temporizador = ({ agendamento, setRunnig }) => {
       </div>
       {agendamento && (
         <div className="text-center">
-          <h3 className="font-semibold">Previsão para terminar o serviço</h3>
+          <h3 className="font-semibold">Previsão para finalizar o serviço</h3>
           <p>{new Date(agendamento?.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h</p>
         </div>
       )}
