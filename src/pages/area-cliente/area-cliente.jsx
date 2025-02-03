@@ -45,6 +45,14 @@ const AreaCliente = () => {
 
     const subscribeUserToPush = async () => {
         const registration = await navigator.serviceWorker.ready;
+
+        // Verifica se já existe uma inscrição ativa
+        const existingSubscription = await registration.pushManager.getSubscription();
+
+        if (existingSubscription) {
+            console.log('Usuário já inscrito');
+            return; // Não cria uma nova inscrição se já existir uma ativa
+        }
         
         const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
