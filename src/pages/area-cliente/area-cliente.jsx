@@ -70,7 +70,7 @@ const AreaCliente = () => {
         
         try {
             // Usando o Axios para enviar a requisição
-            const response = await axios.post(prod, payload, {
+            const response = await axios.post(local, payload, {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: true, // Habilita o envio de cookies, caso necessário
             });
