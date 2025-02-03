@@ -57,7 +57,7 @@ export default function Pedidos({setScreenSelected}) {
       );
   
       const statusValido = agendamento.status !== "Cancelado" && agendamento.status !== "Realizado";
-      return dataServicoSemHora === hojeSemHora && statusValido;
+      return dataServicoSemHora >= hojeSemHora && statusValido;
     })
     .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
   
@@ -172,325 +172,327 @@ export default function Pedidos({setScreenSelected}) {
                         
                 </div>
 
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-h-[50vh]  rounded-xl shadow-md justify-between'>
-                    {/* relogio */}
-                    <div className='w-full h-full p-[2vh] '>
-                        <Temporizador
-                            agendamento={proximoAgendamento}
-                            setRunnig={setRunnig}
-                            setDisablePause={setDisablePause}
-                        />
-                    </div>
+                {proximoAgendamento && (
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-h-[50vh]  rounded-xl shadow-md justify-between'>
+                        {/* relogio */}
+                        <div className='w-full h-full p-[2vh] '>
+                            <Temporizador
+                                agendamento={proximoAgendamento}
+                                setRunnig={setRunnig}
+                                setDisablePause={setDisablePause}
+                            />
+                        </div>
 
-                    {/* Agedamento em andamento */}
-                    <div className='w-full h-full justify-center flex'>
-                        {proximoAgendamento ? (
-                            <div className="flex flex-col rounded-lg p-5 gap-10 h-full justify-between w-full">
-                                <div className='flex flex-col gap-2 text-prim'>
-                                    <div className='w-full flex gap-2 items-center '>
-                                        <Avatar 
-                                            src={User} 
-                                            alt="avatarPrestador"
-                                            size='lg'
-                                        />
-                                        <h3 className='text-prim font-semibold flex flex-wrap text-center'>{proximoAgendamento.cliente?.name}</h3>
-                                                                                                        
-                                    </div>
-
-
-                                    <div className='flex gap-5 justify-between text-prim'>
-                                        <p className='font-semibold'>Serviço de {proximoAgendamento.timeTotal}hr</p>
-                                        <p className='font-semibold'> {proximoAgendamento.Servico}</p>
-                                        <p className='font-semibold'>{formatarData(new Date(proximoAgendamento?.dataServico).toISOString().split('T')[0])} </p>
-                                        <p className='font-semibold'>{proximoAgendamento?.horaServico}</p>
-                                        
-                                    </div>
-                                    <p> {proximoAgendamento.enderecoCliente}</p>
-                                    <div>
-                                        <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
-                                    </div>
-
-                                    
-                                    
-                                </div>
-                                <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>
-                                    <a 
-                                        href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        
-                                    >
-                                        <Button className="w-full bg-sec text-white">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-                                            </svg>
-                                            Abrir com o Google Maps
-                                        </Button>
-                                    </a>
-
-                                    {proximoAgendamento.status != "Agendado" && !disablePause && (
-                                        proximoAgendamento?.status == 'Repouso' ? (
-                                            <Button
-                                                className="bg-white text-sec border"
-                                                onPress={() => (setOpenRetornar(true)) }
-                                            >
-                                                Voltar ao serviço 
-                                            </Button>
-    
-                                        ) : (
-                                            <Button
-                                                className="bg-white text-sec border"
-                                                onPress={() => (setOpenPausar(true)) }
-                                                isDisabled={!!proximoAgendamento?.timePause }
-                                            >
-                                                {!!proximoAgendamento?.timePause ? "Você ja fez uma pausa" : "Pausar serviço"} 
-                                            </Button>
-    
-                                        )
-
-                                    )}
-
-                            
-                                    <Button
-                                        className={` border bg-white w-full 
-                                            ${proximoAgendamento?.status === "Iniciado" && !runnig ? "text-sec font-semibold" : "text-desSec"} 
-                                        `}
-                                        
-                                        isDisabled={proximoAgendamento?.status === "Iniciado" && runnig || proximoAgendamento?.status === 'Repouso' }
-
-                                        onPress={() => proximoAgendamento?.status === "Iniciado" && !runnig ? setFinalizar(true)  : setOpen(true)  }
-                                    >
-                                        {   proximoAgendamento?.status === "Iniciado" && runnig
-                                            ? "Serviço em andamento"
-                                            : proximoAgendamento?.status === "Iniciado" && !runnig
-                                            ? "Concluir serviço" 
-                                            : proximoAgendamento?.status === "Repouso" ? "Em repouso" 
-                                            : "Iniciar serviço"
-                                        }
-                                    </Button>
-
-                                </div>
-
-                                <Modal 
-                                    backdrop="opaque" 
-                                    isOpen={open} 
-                                    onClose={setOpen}
-                                    placement='center'
-                                    classNames={{
-                                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-                                        body: "bg-white",
-                                        header: "bg-white",
-                                        footer: "bg-white"
-                                    }}
-                                    className="max-w-[40vh] sm:min-w-[80vh]"
-                                >
-                                    <ModalContent className="bg-">
-                                    {(onClose) => (
-                                        <>
-                                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
-                                            <div className="flex w-full justify-between pr-10">
-                                                <h2 className='text-desSec'>Iniciar agendamento</h2>
-                                            </div>
-                                        </ModalHeader>
-
-                                        <ModalBody>
-                                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
-                                                <div className='text-ter grid gap-2'>
-                                                    <p>Deseja iniciar o serviço?</p>
-                                                </div>
-                                                
-                                            </div>
-                                        </ModalBody>
-                                        <ModalFooter className='shadow-none'>
-                                            <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
-                                                Voltar
-                                            </Button>
-                                            <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handleIniciarAgendamento(proximoAgendamento)}>
-                                                {loading ? <Spinner/> : "Confirmar"}
-                                            </Button>
-                                        </ModalFooter>
-                                        </>
-                                    )}
-                                    </ModalContent>
-                                </Modal>
-
-                                <Modal 
-                                    backdrop="opaque" 
-                                    isOpen={openFinalizar} 
-                                    onClose={setFinalizar}
-                                    placement='center'
-                                    classNames={{
-                                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-                                        body: "bg-white",
-                                        header: "bg-white",
-                                        footer: "bg-white"
-                                    }}
-                                    className="max-w-[40vh] sm:min-w-[80vh]"
-                                >
-                                    <ModalContent className="bg-">
-                                    {(onClose) => (
-                                        <>
-                                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
-                                            <div className="flex w-full justify-between pr-10">
-                                                <h2 className='text-sec'>Finalizar serviço</h2>
-                                            </div>
-                                        </ModalHeader>
-
-                                        <ModalBody>
-                                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
-                                                <div className='text-ter grid gap-2'>
-                                                    <p>Deseja finalizar o serviço?</p>
-                                                </div>
-                                                
-                                            </div>
-                                        </ModalBody>
-                                        <ModalFooter className='shadow-none'>
-                                            <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
-                                                Voltar
-                                            </Button>
-                                            <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handleFinalizarServico(proximoAgendamento)}>
-                                                {loading ? <Spinner/> : "Confirmar"}
-                                            </Button>
-                                        </ModalFooter>
-                                        </>
-                                    )}
-                                    </ModalContent>
-                                </Modal>
-
-                                <Modal 
-                                    backdrop="opaque" 
-                                    isOpen={openPausar} 
-                                    onClose={setOpenPausar}
-                                    placement='center'
-                                    classNames={{
-                                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-                                        body: "bg-white",
-                                        header: "bg-white",
-                                        footer: "bg-white"
-                                    }}
-                                    className="max-w-[40vh] sm:min-w-[80vh]"
-                                >
-                                    <ModalContent className="bg-">
-                                    {(onClose) => (
-                                        <>
-                                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
-                                            <div className="flex w-full justify-between pr-10">
-                                                <h2 className='text-sec'>Deseja fazer uma pausa?</h2>
-                                            </div>
-                                        </ModalHeader>
-
-                                        <ModalBody>
-                                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
-                                                <div className='text-ter grid gap-2'>
-                                                    <p>não se preocupe, assim que você retornar da sua pausa, o seu horário para terminar o serviço será calculado novamente :)</p>
-                                                </div>
-                                                
-                                            </div>
-                                        </ModalBody>
-                                        <ModalFooter className='shadow-none'>
-                                            <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
-                                                Voltar
-                                            </Button>
-                                            <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handlePausarAgendamento(proximoAgendamento)}>
-                                                {loading ? <Spinner/> : "Confirmar"}
-                                            </Button>
-                                        </ModalFooter>
-                                        </>
-                                    )}
-                                    </ModalContent>
-                                </Modal>
-
-                                <Modal 
-                                    backdrop="opaque" 
-                                    isOpen={openRetornar} 
-                                    onClose={setOpenRetornar}
-                                    placement='center'
-                                    classNames={{
-                                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-                                        body: "bg-white",
-                                        header: "bg-white",
-                                        footer: "bg-white"
-                                    }}
-                                    className="max-w-[40vh] sm:min-w-[80vh]"
-                                >
-                                    <ModalContent className="bg-">
-                                    {(onClose) => (
-                                        <>
-                                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
-                                            <div className="flex w-full justify-between pr-10">
-                                                <h2 className='text-sec'>Retornar ao serviço</h2>
-                                            </div>
-                                        </ModalHeader>
-
-                                        <ModalBody>
-                                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
-                                                <div className='text-ter grid gap-2'>
-                                                    <p>Deseja retornar ao serviço?</p>
-                                                </div>
-                                                
-                                            </div>
-                                        </ModalBody>
-                                        <ModalFooter className='shadow-none'>
-                                            <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
-                                                Voltar
-                                            </Button>
-                                            <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handleRetornarAgendamento(proximoAgendamento)}>
-                                                {loading ? <Spinner/> : "Confirmar"}
-                                            </Button>
-                                        </ModalFooter>
-                                        </>
-                                    )}
-                                    </ModalContent>
-                                </Modal>
-                            </div>
-                        
-                        ) : (
-                            <div className='text-center w-full flex flex-col gap-10'>
-                                <p className="font-semibold">Nenhum serviço pra hoje.</p>
-                            </div>
-                        )}
-
-                        <Modal 
-                            backdrop="opaque" 
-                            isOpen={sucess} 
-                            onClose={setSucess}
-                            placement='center'
-                            classNames={{
-                                backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-                                body: "bg-white",
-                                header: "bg-white",
-                                footer: "bg-white"
-                            }}
-                            className="max-w-[40vh] sm:min-w-[80vh]"
-                        >
-                            <ModalContent className="bg-">
-                            {(onClose) => (
-                                <>
-                                <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
-                                    <div className="flex w-full justify-between pr-10">
-                                        <h2 className='text-sec'>Sucesso!</h2>
-                                    </div>
-                                </ModalHeader>
-
-                                <ModalBody>
-                                    <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
-                                        <div className='text-ter grid gap-2'>
-                                            <p>Você concluiu esse serviço com sucesso! :D</p>
+                        {/* Agedamento em andamento */}
+                        <div className='w-full h-full justify-center flex'>
+                            {proximoAgendamento ? (
+                                <div className="flex flex-col rounded-lg p-5 gap-10 h-full justify-between w-full">
+                                    <div className='flex flex-col gap-2 text-prim'>
+                                        <div className='w-full flex gap-2 items-center '>
+                                            <Avatar 
+                                                src={User} 
+                                                alt="avatarPrestador"
+                                                size='lg'
+                                            />
+                                            <h3 className='text-prim font-semibold flex flex-wrap text-center'>{proximoAgendamento.cliente?.name}</h3>
+                                                                                                            
                                         </div>
-                                    </div>
-                                </ModalBody>
-                                <ModalFooter className='shadow-none'>
-                                    <Button className='bg-desSec text-white w-1/2'  onPress={() => (onClose())}>
-                                        Continuar
-                                    </Button>
-                                </ModalFooter>
-                                </>
-                            )}
-                            </ModalContent>
-                        </Modal>                        
-                    </div>
 
-                </div>
+
+                                        <div className='flex gap-5 justify-between text-prim'>
+                                            <p className='font-semibold'>Serviço de {proximoAgendamento.timeTotal}hr</p>
+                                            <p className='font-semibold'> {proximoAgendamento.Servico}</p>
+                                            <p className='font-semibold'>{formatarData(new Date(proximoAgendamento?.dataServico).toISOString().split('T')[0])} </p>
+                                            <p className='font-semibold'>{proximoAgendamento?.horaServico}</p>
+                                            
+                                        </div>
+                                        <p> {proximoAgendamento.enderecoCliente}</p>
+                                        <div>
+                                            <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
+                                        </div>
+
+                                        
+                                        
+                                    </div>
+                                    <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>
+                                        <a 
+                                            href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            
+                                        >
+                                            <Button className="w-full bg-sec text-white">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                                </svg>
+                                                Abrir com o Google Maps
+                                            </Button>
+                                        </a>
+
+                                        {proximoAgendamento.status != "Agendado" && !disablePause && (
+                                            proximoAgendamento?.status == 'Repouso' ? (
+                                                <Button
+                                                    className="bg-white text-sec border"
+                                                    onPress={() => (setOpenRetornar(true)) }
+                                                >
+                                                    Voltar ao serviço 
+                                                </Button>
+        
+                                            ) : (
+                                                <Button
+                                                    className="bg-white text-sec border"
+                                                    onPress={() => (setOpenPausar(true)) }
+                                                    isDisabled={!!proximoAgendamento?.timePause }
+                                                >
+                                                    {!!proximoAgendamento?.timePause ? "Você ja fez uma pausa" : "Pausar serviço"} 
+                                                </Button>
+        
+                                            )
+
+                                        )}
+
+                                
+                                        <Button
+                                            className={` border bg-white w-full 
+                                                ${proximoAgendamento?.status === "Iniciado" && !runnig ? "text-sec font-semibold" : "text-desSec"} 
+                                            `}
+                                            
+                                            isDisabled={proximoAgendamento?.status === "Iniciado" && runnig || proximoAgendamento?.status === 'Repouso' }
+
+                                            onPress={() => proximoAgendamento?.status === "Iniciado" && !runnig ? setFinalizar(true)  : setOpen(true)  }
+                                        >
+                                            {   proximoAgendamento?.status === "Iniciado" && runnig
+                                                ? "Serviço em andamento"
+                                                : proximoAgendamento?.status === "Iniciado" && !runnig
+                                                ? "Concluir serviço" 
+                                                : proximoAgendamento?.status === "Repouso" ? "Em repouso" 
+                                                : "Iniciar serviço"
+                                            }
+                                        </Button>
+
+                                    </div>
+
+                                    <Modal 
+                                        backdrop="opaque" 
+                                        isOpen={open} 
+                                        onClose={setOpen}
+                                        placement='center'
+                                        classNames={{
+                                            backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                            body: "bg-white",
+                                            header: "bg-white",
+                                            footer: "bg-white"
+                                        }}
+                                        className="max-w-[40vh] sm:min-w-[80vh]"
+                                    >
+                                        <ModalContent className="bg-">
+                                        {(onClose) => (
+                                            <>
+                                            <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                                <div className="flex w-full justify-between pr-10">
+                                                    <h2 className='text-desSec'>Iniciar agendamento</h2>
+                                                </div>
+                                            </ModalHeader>
+
+                                            <ModalBody>
+                                                <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                                    <div className='text-ter grid gap-2'>
+                                                        <p>Deseja iniciar o serviço?</p>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </ModalBody>
+                                            <ModalFooter className='shadow-none'>
+                                                <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
+                                                    Voltar
+                                                </Button>
+                                                <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handleIniciarAgendamento(proximoAgendamento)}>
+                                                    {loading ? <Spinner/> : "Confirmar"}
+                                                </Button>
+                                            </ModalFooter>
+                                            </>
+                                        )}
+                                        </ModalContent>
+                                    </Modal>
+
+                                    <Modal 
+                                        backdrop="opaque" 
+                                        isOpen={openFinalizar} 
+                                        onClose={setFinalizar}
+                                        placement='center'
+                                        classNames={{
+                                            backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                            body: "bg-white",
+                                            header: "bg-white",
+                                            footer: "bg-white"
+                                        }}
+                                        className="max-w-[40vh] sm:min-w-[80vh]"
+                                    >
+                                        <ModalContent className="bg-">
+                                        {(onClose) => (
+                                            <>
+                                            <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                                <div className="flex w-full justify-between pr-10">
+                                                    <h2 className='text-sec'>Finalizar serviço</h2>
+                                                </div>
+                                            </ModalHeader>
+
+                                            <ModalBody>
+                                                <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                                    <div className='text-ter grid gap-2'>
+                                                        <p>Deseja finalizar o serviço?</p>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </ModalBody>
+                                            <ModalFooter className='shadow-none'>
+                                                <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
+                                                    Voltar
+                                                </Button>
+                                                <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handleFinalizarServico(proximoAgendamento)}>
+                                                    {loading ? <Spinner/> : "Confirmar"}
+                                                </Button>
+                                            </ModalFooter>
+                                            </>
+                                        )}
+                                        </ModalContent>
+                                    </Modal>
+
+                                    <Modal 
+                                        backdrop="opaque" 
+                                        isOpen={openPausar} 
+                                        onClose={setOpenPausar}
+                                        placement='center'
+                                        classNames={{
+                                            backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                            body: "bg-white",
+                                            header: "bg-white",
+                                            footer: "bg-white"
+                                        }}
+                                        className="max-w-[40vh] sm:min-w-[80vh]"
+                                    >
+                                        <ModalContent className="bg-">
+                                        {(onClose) => (
+                                            <>
+                                            <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                                <div className="flex w-full justify-between pr-10">
+                                                    <h2 className='text-sec'>Deseja fazer uma pausa?</h2>
+                                                </div>
+                                            </ModalHeader>
+
+                                            <ModalBody>
+                                                <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                                    <div className='text-ter grid gap-2'>
+                                                        <p>não se preocupe, assim que você retornar da sua pausa, o seu horário para terminar o serviço será calculado novamente :)</p>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </ModalBody>
+                                            <ModalFooter className='shadow-none'>
+                                                <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
+                                                    Voltar
+                                                </Button>
+                                                <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handlePausarAgendamento(proximoAgendamento)}>
+                                                    {loading ? <Spinner/> : "Confirmar"}
+                                                </Button>
+                                            </ModalFooter>
+                                            </>
+                                        )}
+                                        </ModalContent>
+                                    </Modal>
+
+                                    <Modal 
+                                        backdrop="opaque" 
+                                        isOpen={openRetornar} 
+                                        onClose={setOpenRetornar}
+                                        placement='center'
+                                        classNames={{
+                                            backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                            body: "bg-white",
+                                            header: "bg-white",
+                                            footer: "bg-white"
+                                        }}
+                                        className="max-w-[40vh] sm:min-w-[80vh]"
+                                    >
+                                        <ModalContent className="bg-">
+                                        {(onClose) => (
+                                            <>
+                                            <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                                <div className="flex w-full justify-between pr-10">
+                                                    <h2 className='text-sec'>Retornar ao serviço</h2>
+                                                </div>
+                                            </ModalHeader>
+
+                                            <ModalBody>
+                                                <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                                    <div className='text-ter grid gap-2'>
+                                                        <p>Deseja retornar ao serviço?</p>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </ModalBody>
+                                            <ModalFooter className='shadow-none'>
+                                                <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
+                                                    Voltar
+                                                </Button>
+                                                <Button className='bg-desSec text-white w-1/2' isDisabled={loading} onPress={() => handleRetornarAgendamento(proximoAgendamento)}>
+                                                    {loading ? <Spinner/> : "Confirmar"}
+                                                </Button>
+                                            </ModalFooter>
+                                            </>
+                                        )}
+                                        </ModalContent>
+                                    </Modal>
+                                </div>
+                            
+                            ) : (
+                                <div className='text-center w-full flex flex-col gap-10'>
+                                    <p className="font-semibold">Nenhum serviço pra hoje.</p>
+                                </div>
+                            )}
+
+                            <Modal 
+                                backdrop="opaque" 
+                                isOpen={sucess} 
+                                onClose={setSucess}
+                                placement='center'
+                                classNames={{
+                                    backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                                    body: "bg-white",
+                                    header: "bg-white",
+                                    footer: "bg-white"
+                                }}
+                                className="max-w-[40vh] sm:min-w-[80vh]"
+                            >
+                                <ModalContent className="bg-">
+                                {(onClose) => (
+                                    <>
+                                    <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                                        <div className="flex w-full justify-between pr-10">
+                                            <h2 className='text-sec'>Sucesso!</h2>
+                                        </div>
+                                    </ModalHeader>
+
+                                    <ModalBody>
+                                        <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                            <div className='text-ter grid gap-2'>
+                                                <p>Você concluiu esse serviço com sucesso! :D</p>
+                                            </div>
+                                        </div>
+                                    </ModalBody>
+                                    <ModalFooter className='shadow-none'>
+                                        <Button className='bg-desSec text-white w-1/2'  onPress={() => (onClose())}>
+                                            Continuar
+                                        </Button>
+                                    </ModalFooter>
+                                    </>
+                                )}
+                                </ModalContent>
+                            </Modal>                        
+                        </div>
+
+                    </div>
+                )}
 
                 {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
                     agendamentosFiltrados.map((agendamento) => {
@@ -556,16 +558,29 @@ export default function Pedidos({setScreenSelected}) {
                                                             {agendamento?.status == 'Realizado' && (
                                                                 <>
                                                                     <p>
-                                                                        <b>Horário que iniciou: </b>
-                                                                        {new Date(agendamento?.timeStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+                                                                        <b>Data e hora que iniciou: </b>
+                                                                        {new Date(agendamento?.timeStart).toLocaleString('pt-BR', {
+                                                                            day: '2-digit',
+                                                                            month: '2-digit',
+                                                                            year: 'numeric',
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit',
+                                                                        })}
+                                                                    </p>
+
+                                                                    <p>
+                                                                        <b>Tempo de repouso: </b>
+                                                                        {agendamento?.totalPausado ? (agendamento?.totalPausado / 60000).toFixed(2) + " min" : "0 min"}
                                                                     </p>
 
                                                                     <p>
                                                                         <b>Tempo de trabalho: </b>
                                                                         {(() => {
-                                                                            const timeStart = new Date(agendamento?.timeStart);
-                                                                            const timeFinally = new Date(agendamento?.timeFinally);
-                                                                            const diff = timeFinally - timeStart; // Diferença em milissegundos
+                                                                            const timeStart = new Date(agendamento?.timeStart).getTime();
+                                                                            const timeFinally = new Date(agendamento?.timeFinally).getTime();
+                                                                            const timePause = agendamento?.totalPausado || 0; // Garante que seja um número válido
+
+                                                                            const diff = (timeFinally - timeStart) - timePause; // Subtrai o tempo de pausa da diferença total
 
                                                                             const hoursWorked = Math.floor(diff / 1000 / 60 / 60); // Converte para horas
                                                                             const minutesWorked = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); // Converte para minutos restantes
@@ -574,9 +589,16 @@ export default function Pedidos({setScreenSelected}) {
                                                                         })()}
                                                                     </p>
 
+
                                                                     <p>
-                                                                        <b>Horário que terminou: </b>
-                                                                        {new Date(agendamento?.timeFinally).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+                                                                        <b>Data e hora que terminou: </b>
+                                                                        {new Date(agendamento?.timeFinally).toLocaleString('pt-BR', {
+                                                                            day: '2-digit',
+                                                                            month: '2-digit',
+                                                                            year: 'numeric',
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit',
+                                                                        })}
                                                                     </p>
                                                                 </>
                                                             )}

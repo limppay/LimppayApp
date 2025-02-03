@@ -112,7 +112,7 @@ export default function Pedidos() {
         );
       
         const statusValido = agendamento.status === "Iniciado" || agendamento.status === 'Repouso'; // Verificando se o status é "Iniciado"
-        return dataServicoSemHora === hojeSemHora && statusValido;
+        return dataServicoSemHora >= hojeSemHora && statusValido;
     })
     .sort((a, b) => new Date(b.timeStart) - new Date(a.timeStart)); // Ordenando do mais recente para o mais antigo
     
@@ -381,7 +381,7 @@ export default function Pedidos() {
 
                                             )}
 
-                                            <div className="flex flex-col gap-7 text-prim  overflow-y-auto max-h-[60vh] ">
+                                            <div className="flex flex-col gap-7 text-prim   ">
                                                 <p className='font-semibold border-t-2 pt-5 border-bord'>Agendamento feito dia {new Date(agendamento?.dataAgendamento).toLocaleDateString('pt-BR', {
                                                     day: '2-digit',
                                                     month: 'long',
@@ -397,16 +397,29 @@ export default function Pedidos() {
                                                         <div>
                                                             <>
                                                                 <p>
-                                                                    <b>Horário que iniciou: </b>
-                                                                    {new Date(agendamento?.timeStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+                                                                    <b>Data e hora que iniciou: </b>
+                                                                    {new Date(agendamento?.timeStart).toLocaleString('pt-BR', {
+                                                                        day: '2-digit',
+                                                                        month: '2-digit',
+                                                                        year: 'numeric',
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit',
+                                                                    })}
+                                                                </p>
+
+                                                                <p>
+                                                                    <b>Tempo de repouso: </b>
+                                                                    {agendamento?.totalPausado ? (agendamento?.totalPausado / 60000).toFixed(2) + " min" : "0 min"}
                                                                 </p>
 
                                                                 <p>
                                                                     <b>Tempo de trabalho: </b>
                                                                     {(() => {
-                                                                        const timeStart = new Date(agendamento?.timeStart);
-                                                                        const timeFinally = new Date(agendamento?.timeFinally);
-                                                                        const diff = timeFinally - timeStart; // Diferença em milissegundos
+                                                                        const timeStart = new Date(agendamento?.timeStart).getTime();
+                                                                        const timeFinally = new Date(agendamento?.timeFinally).getTime();
+                                                                        const timePause = agendamento?.totalPausado || 0; // Garante que seja um número válido
+
+                                                                        const diff = (timeFinally - timeStart) - timePause; // Subtrai o tempo de pausa da diferença total
 
                                                                         const hoursWorked = Math.floor(diff / 1000 / 60 / 60); // Converte para horas
                                                                         const minutesWorked = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); // Converte para minutos restantes
@@ -416,9 +429,16 @@ export default function Pedidos() {
                                                                 </p>
 
                                                                 <p>
-                                                                    <b>Horário que terminou: </b>
-                                                                    {new Date(agendamento?.timeFinally).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+                                                                    <b>Data e hora que terminou: </b>
+                                                                    {new Date(agendamento?.timeFinally).toLocaleString('pt-BR', {
+                                                                        day: '2-digit',
+                                                                        month: '2-digit',
+                                                                        year: 'numeric',
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit',
+                                                                    })}
                                                                 </p>
+
                                                             </>
 
                                                         </div>
