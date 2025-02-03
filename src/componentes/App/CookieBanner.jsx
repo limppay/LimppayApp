@@ -37,7 +37,7 @@ const CookieBanner = () => {
         isVisible ? "translate-y-0" : "translate-y-52"
       }`}
     >
-      <div className="max-w-[40vh] left-5 right-5 bg-white text-gray-700 p-4 rounded-lg shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 sm:max-w-[100vh] text-prim border border-bord border-opacity-15">
+      <div className="max-w-[40vh] left-5 right-5 bg-white  text-prim p-4 rounded-lg shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 sm:max-w-[100vh]  border-2 border-desSec">
         <div className="flex items-center gap-4">
           <img src={CookiePng} alt="Cookie" className="w-8 h-8" />
           <p className="text-sm leading-relaxed">
