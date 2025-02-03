@@ -73,6 +73,60 @@ const AreaDiarista = () => {
 
     }, [prestador, loadingUser])
 
+
+    const subscribeUserToPush = async () => {
+        const registration = await navigator.serviceWorker.ready;
+        
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: import.meta.env.VITE_REACT_APP_VAPID_PUBLIC_KEY, // Chave pública VAPID
+        });
+
+        // Convertendo para uma string JSON
+        const jsonString = JSON.stringify(subscription);
+        // Agora, para pegar as chaves de volta, usamos JSON.parse
+        const parsedSubscription = JSON.parse(jsonString);
+
+        // Acessando as chaves
+        const p256dh = parsedSubscription.keys.p256dh;
+        const auth = parsedSubscription.keys.auth;
+        
+        const payload = {
+            endpoint: subscription.endpoint,
+            keys: { p256dh, auth }
+        };
+
+        const local = 'http://localhost:3000/push-notifications/subscribe/prestador'
+        const prod = 'https://limppay-api-production.up.railway.app/push-notifications/subscribe/prestador'
+        
+        try {
+            // Usando o Axios para enviar a requisição
+            const response = await axios.post(prod, payload, {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true, // Habilita o envio de cookies, caso necessário
+            });
+    
+            console.log('Inscrição enviada com sucesso!', response.data);
+        } catch (error) {
+            console.error('Erro ao enviar a inscrição:', error.response.data);
+        }
+    };
+
+    const requestNotificationPermission = async () => {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            console.log('Permissão concedida!');
+            subscribeUserToPush();
+        } else {
+            console.warn('Permissão negada para notificações');
+        }
+    };
+
+    useEffect(() => {
+        requestNotificationPermission()
+
+    }, [])
+
     
     return (
         <>
