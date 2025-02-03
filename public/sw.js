@@ -3,7 +3,7 @@ self.addEventListener('push', function(event) {
   
     self.registration.showNotification(data.title, {
       body: data.message,
-      icon: 'src/assets/img/favicon.ico', // Ícone da notificação
+      icon: '/favicon.ico', // Ícone da notificação
     });
 });
   
