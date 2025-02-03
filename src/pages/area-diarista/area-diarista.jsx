@@ -14,6 +14,7 @@ import Avaliacoes from '../../componentes/Prestador/Avaliacoes.jsx';
 import DatasBloqueadas from '../../componentes/Prestador/DatasBloqueadas.jsx';
 import Servicos from '../../componentes/Prestador/Servicos.jsx';
 import Navigation from '../../componentes/Prestador/Navigation.jsx';
+import axios from 'axios';
 
 const AreaDiarista = () => {
     const { prestador, setPrestador, loadingUser } = usePrestador()
@@ -108,7 +109,7 @@ const AreaDiarista = () => {
     
             console.log('Inscrição enviada com sucesso!', response.data);
         } catch (error) {
-            console.error('Erro ao enviar a inscrição:', error.response.data);
+            console.error('Erro ao enviar a inscrição:', error);
         }
     };
 
@@ -125,7 +126,7 @@ const AreaDiarista = () => {
     useEffect(() => {
         requestNotificationPermission()
 
-    }, [])
+    }, [prestador])
 
     
     return (

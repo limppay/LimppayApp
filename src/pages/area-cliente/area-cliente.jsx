@@ -94,7 +94,7 @@ const AreaCliente = () => {
     useEffect(() => {
         requestNotificationPermission()
 
-    }, [])      
+    }, [user])      
       
 
 
