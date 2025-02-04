@@ -82,8 +82,39 @@ const AreaDiarista = () => {
         const existingSubscription = await registration.pushManager.getSubscription();
 
         if (existingSubscription) {
-            console.log('Usuário já inscrito:', existingSubscription);
-            return; // Não cria uma nova inscrição se já existir uma ativa
+            console.log('Usuário já inscrito', existingSubscription);
+
+            // Convertendo para uma string JSON
+            const jsonString = JSON.stringify(existingSubscription)
+
+            // Agora, para pegar as chaves de volta, usamos JSON.parse
+            const parsedSubscription = JSON.parse(jsonString)
+
+            // Acessando as chaves
+            const p256dh = parsedSubscription.keys.p256dh;
+            const auth = parsedSubscription.keys.auth;
+            
+            const payload = {
+                endpoint: existingSubscription.endpoint,
+                keys: { p256dh, auth }
+            };
+
+            const local = 'http://localhost:3000/push-notifications/subscribe/prestador'
+            const prod = 'https://limppay-api-production.up.railway.app/push-notifications/subscribe/prestador'
+            
+            try {
+                // Usando o Axios para enviar a requisição
+                const response = await axios.post(prod, payload, {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true, // Habilita o envio de cookies, caso necessário
+                });
+        
+                console.log('Inscrição atualizada com sucesso!', response.data);
+            } catch (error) {
+                console.error('Erro ao atualizar a inscrição:', error.response.data);
+            } 
+
+            return
         }
         
         const subscription = await registration.pushManager.subscribe({
