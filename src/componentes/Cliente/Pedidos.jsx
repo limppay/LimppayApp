@@ -112,7 +112,7 @@ export default function Pedidos() {
         );
       
         const statusValido = agendamento.status === "Iniciado" || agendamento.status === 'Repouso'; // Verificando se o status é "Iniciado"
-        return dataServicoSemHora >= hojeSemHora && statusValido;
+        return dataServicoSemHora === hojeSemHora && statusValido;
     })
     .sort((a, b) => new Date(b.timeStart) - new Date(a.timeStart)); // Ordenando do mais recente para o mais antigo
     

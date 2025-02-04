@@ -57,7 +57,7 @@ export default function Pedidos({setScreenSelected}) {
       );
   
       const statusValido = agendamento.status !== "Cancelado" && agendamento.status !== "Realizado";
-      return dataServicoSemHora >= hojeSemHora && statusValido;
+      return dataServicoSemHora === hojeSemHora && statusValido;
     })
     .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
   
