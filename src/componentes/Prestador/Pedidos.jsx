@@ -13,7 +13,7 @@ import User from "../../assets/img/diarista-cadastro/user.webp"
 
 export default function Pedidos({setScreenSelected}) {
     const { prestador, setPrestador } = usePrestador()
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState("")
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [ open, setOpen ] = useState(false)
@@ -25,6 +25,8 @@ export default function Pedidos({setScreenSelected}) {
     const [ runnig, setRunnig ] = useState(false)
     const [ disablePause, setDisablePause ] = useState(false)
 
+    const [ changeHistorico, setChangeHistorico ] = useState(false)
+
     const taxaPrestador = (valor) => {
         const value = valor * 0.75
         return formatarMoeda(value)
@@ -33,11 +35,15 @@ export default function Pedidos({setScreenSelected}) {
     const agendamentosFiltrados = prestador?.Agendamentos && prestador?.Agendamentos?.filter((agendamento) => {
         const nameMatch = agendamento.Servico.toLowerCase().includes(searchTerm.toLowerCase());
         const dateMatch = (!startDate || new Date(agendamento.dataServico) >= new Date(startDate)) &&
-                            (!endDate || new Date(agendamento.dataServico) <= new Date(endDate));
+                          (!endDate || new Date(agendamento.dataServico) <= new Date(endDate));
     
-        return nameMatch && dateMatch;
-    });
-
+        // Aplica o filtro de status apenas se changeHistorico for true
+        const statusMatch = changeHistorico ? ["Cancelado", "Realizado"].includes(agendamento.status) : ["Agendado", "Iniciado"].includes(agendamento.status)
+    
+        return nameMatch && dateMatch && statusMatch;
+    }).sort((a, b) => changeHistorico ? new Date(b.dataServico) - new Date(a.dataServico) : new Date(a.dataServico) - new Date(b.dataServico)  )
+    
+    
     const hoje = new Date();
     const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
     
@@ -61,7 +67,6 @@ export default function Pedidos({setScreenSelected}) {
     })
     .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
   
-    
     
     const handleIniciarAgendamento = async (agendamento) => {
         setLoading(true);
@@ -126,7 +131,11 @@ export default function Pedidos({setScreenSelected}) {
 
     };
 
-    console.log("Agendamentos: ", agendamentosFiltrados)
+    const handleChange = () => {
+        setChangeHistorico(!changeHistorico)
+        setSearchTerm("")
+    }
+    
 
     return (
         <section className='w-full  gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
@@ -157,22 +166,34 @@ export default function Pedidos({setScreenSelected}) {
                         />
 
                     </div>
+                    
+                    <div className='flex gap-2 flex-col w-full md:flex-row-reverse'>
+                        <div className='w-full'>
+                            <Button className='w-full bg-sec text-white' onPress={() => (handleChange())}>
+                                {changeHistorico ? "Voltar" : "Histórico de agendamentos"}
+                            </Button>
+                        </div>
+                        <div className='w-full'>
+                            <Button
+                                className='w-full border shadow-sm bg-trans text-desSec justify-start'
+                                onPress={() => setScreenSelected("avaliacoes")}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                </svg>
 
-                    <Button
-                        className='w-full border shadow-sm bg-trans text-desSec justify-start'
-                        onPress={() => setScreenSelected("avaliacoes")}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-                        </svg>
+                                Minhas Avaliações
+                                
+                            </Button>
+                        </div>
 
-                        Minhas Avaliações
-                        
-                    </Button>
+                    </div>
+                    
+                    
                         
                 </div>
 
-                {proximoAgendamento && (
+                {proximoAgendamento && !changeHistorico && (
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-h-[50vh]  rounded-xl shadow-md justify-between'>
                         {/* relogio */}
                         <div className='w-full h-full p-[2vh] '>
@@ -665,7 +686,7 @@ export default function Pedidos({setScreenSelected}) {
                         <p>Você não possui nenhum agendamento</p>
                     </div>
                 )}
-
+                    
             </div>
             
         </section>

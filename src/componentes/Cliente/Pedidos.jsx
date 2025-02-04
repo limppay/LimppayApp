@@ -22,6 +22,7 @@ export default function Pedidos() {
     const [endDate, setEndDate] = useState(null);
     const [ runnig, setRunnig ] = useState(false)
     const [ disablePause, setDisablePause ] = useState(false)
+    const [ changeHistorico, setChangeHistorico ] = useState(false)
     
     
     const calcularValorLiquido = (valorLiquido, desconto, valorServico) => {
@@ -85,15 +86,18 @@ export default function Pedidos() {
     }
 
     // Função para filtrar os agendamentos com base no nome e na data
-    const agendamentosFiltrados = user?.agendamentos.length > 0 && user?.agendamentos.filter((agendamento) => {
-        const nameMatch = agendamento.user.name.toLowerCase().includes(searchTerm.toLowerCase());
-        
-        // Filtra pela data, caso as datas de início e fim estejam definidas
-        const dateMatch = (startDate && new Date(agendamento.dataServico) >= new Date(startDate)) && (endDate && new Date(agendamento.dataServico) <= new Date(endDate));
+    const agendamentosFiltrados = user?.agendamentos && user?.agendamentos?.filter((agendamento) => {
+        const nameMatch = agendamento.Servico.toLowerCase().includes(searchTerm.toLowerCase());
+        const dateMatch = (!startDate || new Date(agendamento.dataServico) >= new Date(startDate)) &&
+                          (!endDate || new Date(agendamento.dataServico) <= new Date(endDate));
+    
+        // Aplica o filtro de status apenas se changeHistorico for true
+        const statusMatch = changeHistorico ? ["Cancelado", "Realizado"].includes(agendamento.status) : ["Agendado", "Iniciado"].includes(agendamento.status)
+    
+        return nameMatch && dateMatch && statusMatch;
+    }).sort((a, b) => changeHistorico ? new Date(b.dataServico) - new Date(a.dataServico) : new Date(a.dataServico) - new Date(b.dataServico)  )
 
-        // Retorna true se ambos os filtros (nome e data) coincidirem
-        return nameMatch && (!startDate || !endDate || dateMatch);
-    });
+
 
     const hoje = new Date();
 
@@ -116,7 +120,10 @@ export default function Pedidos() {
     })
     .sort((a, b) => new Date(b.timeStart) - new Date(a.timeStart)); // Ordenando do mais recente para o mais antigo
     
-    
+    const handleChange = () => {
+        setChangeHistorico(!changeHistorico)
+        setSearchTerm("")
+    }
       
 
     return (
@@ -148,15 +155,23 @@ export default function Pedidos() {
                         />
 
                     </div>
-                </div>
 
-                <div className='w-full sm:hidden'>
-                    <Button className='w-full text-desSec font-semibold  bg-white border-2' onPress={() => (navigate("/contrate-online"))}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="size-6">
-                            <path strokeLinecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                        </svg>
-                        Agendar novo serviço
-                    </Button>
+                    <div className='flex gap-2 flex-col w-full md:flex-row-reverse'>
+                        <div className='w-full'>
+                            <Button className='w-full bg-sec text-white' onPress={() => (handleChange())}>
+                                {changeHistorico ? "Voltar" : "Histórico de agendamentos"}
+                            </Button>
+                        </div>
+                        <div className='w-full sm:hidden'>
+                            <Button className='w-full text-desSec font-semibold  bg-white border-2' onPress={() => (navigate("/contrate-online"))}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="size-6">
+                                    <path strokeLinecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                </svg>
+                                Agendar novo serviço
+                            </Button>
+                        </div>
+
+                    </div>
                 </div>
 
                 {agendamentosDoMesmoDia && (
@@ -252,15 +267,7 @@ export default function Pedidos() {
 
 
                 {user?.agendamentos.length > 0 ? (
-                    agendamentosFiltrados.sort((a, b) => {
-                        const prioridade = (status) => {
-                            if (status === "Iniciado") return 1;
-                            if (status === "Agendado") return 2;
-                            return 3;
-                        };
-                        return prioridade(a.status) - prioridade(b.status);
-                    })   
-                    .map((agendamento) => (
+                    agendamentosFiltrados.map((agendamento) => (
                         <>
                             <div className='flex flex-col gap-3  shadow-lg shadow-bord rounded-lg p-5 justify-center items-start'>
                                 <div className='flex flex-col  gap-5 items-start w-full justify-between p-2'>
