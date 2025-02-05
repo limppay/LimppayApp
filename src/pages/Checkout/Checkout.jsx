@@ -1,293 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { useAgendamentoData } from '../../context/AgendamentoData';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 import { Logo, Footer } from '../../componentes/imports';
-import CardLogoLimppay from "../../assets/img/limppay-icone-branco-card.svg"
 import { useSelectedProvider } from '../../context/SelectedProvider';
-import { useSelectedDates } from '../../context/SelectedDates';
-import { useSelectedTimes } from '../../context/SelectedTimes';
 import { Avatar } from '@nextui-org/avatar'
-import { createAgendamento, criarFaturaCartao, criarFaturaPix, removeCheckout, verifyCheckout } from '../../services/api';
-import { obterTokenCartao } from '../../services/iuguApi';
 import { useUser } from '../../context/UserProvider';
-import { Button, Input, Spinner } from '@nextui-org/react';
-import {Image} from "@nextui-org/image";
-import {Snippet} from "@nextui-org/snippet";
-
-import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import * as yup from "yup"
-
-import io from 'socket.io-client';
-
+import { Button, Spinner } from '@nextui-org/react';
 'use client'
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
-
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import { useCheckout } from '../../context/CheckoutData';
-import axios from 'axios';
+import Credit_Card from '../../componentes/Checkout/Credit_Card';
+import Pix from '../../componentes/Checkout/Pix';
+import { fetchUserInfo } from '../../common/FetchUserInfo'
+import StepLoginCustomer from '../App/StepLoginCustomer';
+import { createAgendamento, removeCheckout } from '../../services/api';
 
 export default function Checkout() {
-  const {user} = useUser()
-  const {checkoutData , setCheckoutData, isLoadingCheckout} = useCheckout()
-
-
-  const schemaDadosCartao = yup.object({
-    numero: yup.number("Número do cartão é obrigatório.").required("Número do cartão é obrigatório.").typeError("Número do cartão dever ser um número válido."),
-    cvc: yup.number().required("Código de segurança é obrigatório."),
-    mesExpiracao: yup.number("somente numeros").required("Mês de expiração é obrigatório."),
-    anoExpiracao: yup.number("somente numeros").required("Ano de expiração é obrigatório"),
-    nome: yup.string().required("Nome é obrigatório.").trim()
-  })
-
-  const {
-      register,
-      handleSubmit,
-      formState: { errors },
-      reset
-      } = useForm({
-      resolver: yupResolver(schemaDadosCartao),
-  })
-
-
-  const {selectedProvider, setSelectedProvider} = useSelectedProvider()
-  const {selectedDates, setSelectedDates} = useSelectedDates()
-  const {selectedTimes, setSelectedTimes} = useSelectedTimes()
-  const navigate = useNavigate();
-
-  const location = useLocation();
-  const [isLoadingQrCode, setIsLoadingQrCode] = useState(false)
-  const [isExpanded, setIsExpanded] = useState(false);
-
-
-  const [dadosCartao, setDadosCartao] = useState({
-      numero: null,
-      cvc: null,
-      mesExpiracao: null,
-      anoExpiracao: null,
-      nome: ""
-  });
-
+  const {user, setUser, loadingUser} = useUser()
+  const {checkoutData , setCheckoutData, isLoadingCheckout, status, sessionCode} = useCheckout()
+  const { selectedProvider } = useSelectedProvider()
 
   const [metodoPagamento, setMetodoPagamento] = useState('credit_card'); // Cartão de crédito padrão
-  const [qrCodePix, setQrCodePix] = useState('');  // Estado para armazenar o QR Code PIX
-  const [pixChave, setPixChave] = useState('');    // Estado para armazenar a chave PIX
-  const [isLoading, setIsLoading] = useState(false)
-
-  
   const [isPayment, setIsPayment] = useState(false) // abre o modal de loading
   const [isPaymentFinally, setIsPaymentFinally] = useState(false) // define se o pagamento foi finalizado
   const [isPaymentFailed, setIsPaymentFailed] = useState(false) // define se houve erro ou nao ao processar pagamento
-
-  const [paymentStatus, setPaymentStatus] = useState(null);
-
-  const AgendamenteDataQtd = [checkoutData]
+  const navigate = useNavigate();
 
   function calcularDataValidade(diasParaVencer, dataInicial = new Date()) {
     const data = new Date(dataInicial); // Cria uma cópia da data inicial
     data.setDate(data.getDate() + diasParaVencer); // Adiciona os dias
     return data.toISOString().split('T')[0]; // Retorna a data no formato YYYY-MM-DD
   }
-
-
-  const [sessionCodePix, setSessionCodePix] = useState(null);
-  // gera o codigo de sessao unica
-  const getCodeSession = async (id) => {
-    try {
-      const response = await axios.get(`https://limppay-api-production.up.railway.app/checkout/session/${id}`)
-      setSessionCodePix(response.data.sessionCode)
-
-    } catch (error) {
-      
-    }
-    
-  }
-
-  const createPix = async () => {
-    if(isLoading) return
-
-    const response = await criarFaturaPix(
-      {
-        email: user.email,
-        due_date: calcularDataValidade(1),
-        items: [
-          {
-            "description": "Fatura do seu Pedido",
-            "quantity": checkoutData.length,
-            "price_cents": 1 * 100
-          }
-        ],
-        payer: {
-          "cpf_cnpj": "08213350227",
-          "name": user.name
-        },
-      }
-    );
-    
-
-    getCodeSession(response.data.id)
-    setQrCodePix(response.data.pix.qrcode)
-    setPixChave(response.data.pix.qrcode_text)
-    setIsLoading(true)
-  }
-
-  if(metodoPagamento == "pix") {
-    createPix()
-  }
-
-  // efeito para atualizar a pagina ao efetuar o pagamento via pix
-  useEffect(() => {
-    if (!sessionCodePix) return;
-  
-    // Conectar ao WebSocket
-    const socket = io('https://limppay-api-production.up.railway.app', {
-      query: { sessionCodePix }, // Código da sessão como parâmetro
-    });
-  
-  
-    // Escutar eventos do status de pagamento
-    socket.on('payment_status', async (data) => {
-  
-      if (data.status === 'paid') {
-        try {
-          setPaymentStatus({
-            status: 'Pago',
-            amount: data.paidAmount,
-            pixId: data.pixEndToEndId,
-          });
-  
-  
-          const results = await Promise.allSettled(
-            checkoutData.map((agendamento) => createAgendamento(agendamento))
-          );
-  
-          const rejected = results.filter((result) => result.status === 'rejected');
-  
-          if (rejected.length > 0) {
-            console.error("Alguns agendamentos falharam:", rejected);
-            alert("Alguns agendamentos não foram criados. Contate o suporte.");
-          } else {
-            try {
-              const response = await removeCheckout()
-
-            } catch (error) {
-              
-            }
-          }
-        } catch (error) {
-          console.error("Erro ao criar os agendamentos:", error);
-          alert("Erro ao criar agendamentos. Contate o suporte.");
-        } finally {
-          reset();
-        }
-
-      } else {
-        setPaymentStatus({ status: 'Falhou' });
-        alert("Pagamento falhou. Tente novamente.");
-      }
-    });
-  
-    // Desconectar WebSocket ao desmontar o componente
-    return () => {
-      socket.disconnect();
-    };
-  }, [sessionCodePix]);
-
-
-
-  const handleFinalizarCompra = async (data) => {
-    setIsPayment(true);
-    setIsPaymentFinally(false);
-    setIsPaymentFailed(false);
-
-
-    try {
-        // Obter token do cartão
-        const token = await obterTokenCartao(data);
-        if (!token) {
-            throw new Error("Falha ao gerar o token do cartão. Tente novamente.");
-        }
-
-
-        if (metodoPagamento === 'credit_card') {
-            // Criar fatura
-            const response = await criarFaturaCartao({
-                email: user.email,
-                items: [
-                    {
-                        description: "Fatura do seu agendamento na Limppay",
-                        quantity: checkoutData.length,
-                        price_cents: (checkoutData[0].valorLiquido / checkoutData.length) * 100,
-                    },
-                ],
-                payment_method: "credit_card",
-                due_date: calcularDataValidade(2),
-                payer: {
-                    name: data.nome,
-                    cpf_cnpj: "08213350227",
-                },
-                token,
-                credit_card: {
-                    number: data.numero,
-                    verification_value: data.cvc,
-                    expiration_month: data.mesExpiracao,
-                    expiration_year: data.anoExpiracao,
-                    holder_name: data.nome,
-                },
-            });
-
-
-            // Criar agendamentos
-            const agendamentoPromises = checkoutData.map(agendamento => createAgendamento(agendamento));
-            const agendamentoResults = await Promise.allSettled(agendamentoPromises);
-
-            const errosDeAgendamento = agendamentoResults.filter(result => result.status === "rejected");
-
-            if (errosDeAgendamento.length > 0) {
-                console.error("Alguns agendamentos falharam:", errosDeAgendamento);
-
-                // Notificar suporte (opcional: enviar para API de log/suporte)
-                await notificarSuporte({
-                    userId: user.id,
-                    email: user.email,
-                    erro: "Falha ao criar agendamentos após o pagamento.",
-                    detalhes: errosDeAgendamento,
-                });
-
-                // Informar o usuário
-                alert("Pagamento realizado com sucesso, mas houve falha ao criar alguns agendamentos. Nossa equipe já foi notificada e resolveremos o problema.");
-            } else {
-                try {
-                  const response = await removeCheckout()
-
-                } catch (error) {
-                  
-                }
-
-            }
-
-            reset()
-            setIsPaymentFinally(true)
-            setIsPaymentFailed(false)
-        }
-    } catch (error) {
-        console.error("Erro no pagamento ou criação da fatura:", error);
-        setIsPaymentFinally(true)
-        setIsPaymentFailed(true);
-
-    }
-
-  };
-
-
-  
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setDadosCartao((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
 
   const buttons = [
     { link: "#quem-somos", text: "Quem somos" },
@@ -340,400 +83,269 @@ export default function Checkout() {
     setCheckoutData(null)
     navigate('/contrate-online')
   }
+
+  // efeito para identificar se o pedido já foi pago 
+  useEffect(() => {
+    const handleFinalizarCheckout = async () => {
+        if(status == 'Pago') {
+          console.log("Pedido pago com sucesso!, criando agendamentos...")
+          setIsPayment(true)
+
+          try {    
+              const results = await Promise.allSettled(
+                  checkoutData.map((agendamento) => createAgendamento(agendamento))
+              );
   
+              const rejected = results.filter((result) => result.status === 'rejected');
   
+              if (rejected.length > 0) {
+                  console.error("Alguns agendamentos falharam:", rejected);
+                  alert("Alguns agendamentos não foram criados. Contate o suporte.");
+
+              } else {
+                  try {
+                    const response = await removeCheckout()
+                    await fetchUserInfo(setUser)
+                    setIsPaymentFinally(true)
+
+                  } catch (error) {
+                    console.log(error)
+                  }
+              }
+
+          } catch (error) {
+            console.error("Erro ao criar os agendamentos:", error);
+            alert("Erro ao criar agendamentos. Contate o suporte.");
+
+          } 
+          
+        } else {
+          console.log("Pedido ainda não foi pago.")
+
+        }
+    }
+
+    if(checkoutData && status != "Andamento" && !isLoadingCheckout ) {
+      handleFinalizarCheckout()
+    }
+
+  }, [checkoutData, status, sessionCode])
   
 
   return (
     <>
       <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
       <>
-        {isLoadingCheckout || !checkoutData ? (
-          <div className='w-full h-screen flex items-center justify-center text-white'>
-            <Spinner/>
-          </div>
-
-        ) : (
-          <>
-            <main className="relative sm:p-4 flex flex-col sm:flex-row lg:justify-between lg:pl-10 lg:pr-10 justify-center gap-5 sm:pb-25 ">
-              <div className='flex flex-col p-10 md:min-w-90vh]  md:max-w-[90vh]  min-w-[45vh] max-w-[45vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] 2xl:min-w-[100vh] 2xl:max-w-[100vh] lg:min-w-[100vh] lg:max-w-[100vh]  sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl lg:min-h-[95vh] min-h-[90vh] '>
-                <div className="mb-6 flex flex-col">
-                  <div className='pb-4' >
-                    <h1 className='text-prim font-semibold text-lg 2xl:text-xl'>Método de pagamento</h1>
-                  </div>
-                  <div className='flex w-full gap-5'>
-                    <div>
+        {loadingUser || user ? (
+          isLoadingCheckout || !checkoutData ? (
+            <div className='w-full h-screen flex items-center justify-center text-white'>
+              <Spinner/>
+            </div>
+  
+          ) : (
+            <>
+              <main className="relative sm:p-4 flex flex-col sm:flex-row lg:justify-between lg:pl-10 lg:pr-10 justify-center gap-5 sm:pb-25 ">
+                <div className='flex flex-col p-10 md:min-w-90vh]  md:max-w-[90vh]  min-w-[45vh] max-w-[45vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] 2xl:min-w-[100vh] 2xl:max-w-[100vh] lg:min-w-[100vh] lg:max-w-[100vh]  sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl lg:min-h-[95vh] min-h-[90vh] '>
+                  <div className="mb-6 flex flex-col">
+                    <div className='pb-4' >
+                      <h1 className='text-prim font-semibold text-lg 2xl:text-xl'>Método de pagamento</h1>
+                    </div>
+                    <div className='flex w-full gap-5'>
                       <div>
+                        <div>
+                            <Button
+                            className='p-2 border bg-white sm:min-w-[30vh] border-bord rounded-md text-prim  text-start w-full flex items-center gap-2 justify-between'
+                            onPress={() => HandleCreditCard()}
+                            >
+                              <div className='flex items-center gap-2'>
+                                <i className='fas fa-credit-card font-semibold text-ter'></i>
+                                  Cartão de crédito
+                              </div>
+  
+                              {metodoPagamento === "credit_card" && (
+                                <i class="fas fa-check"></i>
+                              )}
+  
+                            </Button>
+                        </div>
+                      </div>
+                      <div className='w-4/12'>
+                        <div className='w-12/12'>
                           <Button
-                          className='p-2 border bg-white sm:min-w-[30vh] border-bord rounded-md text-prim  text-start w-full flex items-center gap-2 justify-between'
-                          onPress={() => HandleCreditCard()}
+                          className='sm:min-w-[30vh]  p-2 border bg-white border-bord rounded-md text-prim lg:w-6/12 w-full text-start flex gap-2 items-center justify-between'
+                          onPress={() => handlePix()}
                           >
-                            <div className='flex items-center gap-2'>
-                              <i className='fas fa-credit-card font-semibold text-ter'></i>
-                                Cartão de crédito
+                            <div className='flex gap-2'>
+                              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
+                                <path fill="#4db6ac" d="M11.9,12h-0.68l8.04-8.04c2.62-2.61,6.86-2.61,9.48,0L36.78,12H36.1c-1.6,0-3.11,0.62-4.24,1.76	l-6.8,6.77c-0.59,0.59-1.53,0.59-2.12,0l-6.8-6.77C15.01,12.62,13.5,12,11.9,12z"></path><path fill="#4db6ac" d="M36.1,36h0.68l-8.04,8.04c-2.62,2.61-6.86,2.61-9.48,0L11.22,36h0.68c1.6,0,3.11-0.62,4.24-1.76	l6.8-6.77c0.59-0.59,1.53-0.59,2.12,0l6.8,6.77C32.99,35.38,34.5,36,36.1,36z"></path><path fill="#4db6ac" d="M44.04,28.74L38.78,34H36.1c-1.07,0-2.07-0.42-2.83-1.17l-6.8-6.78c-1.36-1.36-3.58-1.36-4.94,0	l-6.8,6.78C13.97,33.58,12.97,34,11.9,34H9.22l-5.26-5.26c-2.61-2.62-2.61-6.86,0-9.48L9.22,14h2.68c1.07,0,2.07,0.42,2.83,1.17	l6.8,6.78c0.68,0.68,1.58,1.02,2.47,1.02s1.79-0.34,2.47-1.02l6.8-6.78C34.03,14.42,35.03,14,36.1,14h2.68l5.26,5.26	C46.65,21.88,46.65,26.12,44.04,28.74z"></path>
+                              </svg>
+                              Pix
                             </div>
-
-                            {metodoPagamento === "credit_card" && (
-                              <i class="fas fa-check"></i>
+                            {metodoPagamento === "pix" && (
+                                <i class="fas fa-check"></i>
                             )}
-
                           </Button>
-                      </div>
-                    </div>
-                    <div className='w-4/12'>
-                      <div className='w-12/12'>
-                        <Button
-                        className='sm:min-w-[30vh]  p-2 border bg-white border-bord rounded-md text-prim lg:w-6/12 w-full text-start flex gap-2 items-center justify-between'
-                        onPress={() => handlePix()}
-                        >
-                          <div className='flex gap-2'>
-                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
-                              <path fill="#4db6ac" d="M11.9,12h-0.68l8.04-8.04c2.62-2.61,6.86-2.61,9.48,0L36.78,12H36.1c-1.6,0-3.11,0.62-4.24,1.76	l-6.8,6.77c-0.59,0.59-1.53,0.59-2.12,0l-6.8-6.77C15.01,12.62,13.5,12,11.9,12z"></path><path fill="#4db6ac" d="M36.1,36h0.68l-8.04,8.04c-2.62,2.61-6.86,2.61-9.48,0L11.22,36h0.68c1.6,0,3.11-0.62,4.24-1.76	l6.8-6.77c0.59-0.59,1.53-0.59,2.12,0l6.8,6.77C32.99,35.38,34.5,36,36.1,36z"></path><path fill="#4db6ac" d="M44.04,28.74L38.78,34H36.1c-1.07,0-2.07-0.42-2.83-1.17l-6.8-6.78c-1.36-1.36-3.58-1.36-4.94,0	l-6.8,6.78C13.97,33.58,12.97,34,11.9,34H9.22l-5.26-5.26c-2.61-2.62-2.61-6.86,0-9.48L9.22,14h2.68c1.07,0,2.07,0.42,2.83,1.17	l6.8,6.78c0.68,0.68,1.58,1.02,2.47,1.02s1.79-0.34,2.47-1.02l6.8-6.78C34.03,14.42,35.03,14,36.1,14h2.68l5.26,5.26	C46.65,21.88,46.65,26.12,44.04,28.74z"></path>
-                            </svg>
-                            Pix
-                          </div>
-                          {metodoPagamento === "pix" && (
-                              <i class="fas fa-check"></i>
-                          )}
-                        </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
+  
+                  {metodoPagamento === 'credit_card' && (
+                    <>
+                      <Credit_Card
+                        setIsPayment={setIsPayment}
+                        setIsPaymentFailed={setIsPaymentFailed}
+                        setIsPaymentFinally={setIsPaymentFinally}
+                        calcularDataValidade={calcularDataValidade}
+                        checkoutData={checkoutData}
+                        metodoPagamento={metodoPagamento}
+                        user={user}
+                      />
+                    </>
+                  )}
+  
+                  {metodoPagamento === 'pix' && (
+                    <Pix
+                      calcularDataValidade={calcularDataValidade}
+                      user={user}
+                      checkoutData={checkoutData}
+                      metodoPagamento={metodoPagamento}
+                    />
+                  )}
                 </div>
-
-                {metodoPagamento === 'credit_card' && (
-                  <div>
-                    <div className="max-w-sm mx-auto bg-desSec rounded-xl p-5 shadow-lg text-white mb-4  text-sm lg:text-md">
-                      <div className="flex items-center justify-between mb-6">
-                          <img 
-                            src={CardLogoLimppay} 
-                            alt="Visa Logo"
-                            className="h-7 "
-                          />
-                        <div className='p-4 pl-5 pr-5 border rounded-md bg-white'></div>
-                      </div>
-
-                      <div className="mt-4">
-                        <p className="text-sm uppercase text-gray-400">Número</p>
-                        <p className="text-md font-semibold">{dadosCartao.numero ? dadosCartao.numero : "1234 5678 9101 1121"}</p>
-                      </div>
-
-                      <div className="flex justify-between mt-4">
-                        <div>
-                          <p className="text-sm uppercase text-gray-400">Nome</p>
-                          <p className="text-md uppercase">{dadosCartao.nome ? dadosCartao.nome : "NOME IGUAL DO CARTAO"}</p>
+  
+                <div className="  w-full flex flex-col justify-start items-center ">
+                  <div className='2xl:min-w-[80vh]  2xl:max-w-[80vh] xl:min-w-[90vh]  xl:pt-[10vh] flex flex-col pt-5 p-10 min-w-[45vh] max-w-[50vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] lg:min-w-[60vh]  lg:max-w-[60vh] md:min-w-[50vh]  md:max-w-[50vh] shadow-lg sm:pt-20 rounded-xl    text-prim  '>
+  
+                    <div className='w-full flex flex-col justify-between items-center border-bord pb-2 border-b xl:pt-[2vh] '>
+                        <div className='flex justify-center items-center w-full '>
+                          <h3 className="text-2xl flex flex-wrap text-prim font-semibold justify-center items-center ">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 font-semibold ">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                              </svg>
+  
+                              Resumo do Pedido
+                              
+                          </h3>                        
                         </div>
-                      </div>
-                      <div className='flex justify-between w-full mt-4'>
-                        <div>
-                          <p className="text-sm uppercase text-gray-400">Validade</p>
-                          <p className="text-md">{dadosCartao.mesExpiracao? dadosCartao.mesExpiracao : "MM"} / {dadosCartao.anoExpiracao? dadosCartao.anoExpiracao : "YY"}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm uppercase text-gray-400">ccv</p>
-                          <p className="text-md">{dadosCartao.cvc? dadosCartao.cvc : "000"}</p>
-                        </div>
-                      </div>
+  
                     </div>
-
-                    <form onSubmit={handleSubmit(handleFinalizarCompra)}>
-                      <div className="mb-4">
-                        <label htmlFor="cardholdername" className="block text-prim mb-2">Nome</label>
-                        <input
-                          id="cardholdername"
-                          name="nome"
-                          type="text"
-                          placeholder="Igual ao do cartão"
-                          className=" w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                          onChange={handleInputChange}
-                          {...register("nome")}
-                        />
-                        {errors.nome && 
-                          <span className="text-error opacity-75">{errors.nome?.message}</span>}
-                      </div>
-
-                      <div className="mb-4">
-                        <label htmlFor="cardnumber" className="block text-prim mb-2">Número do cartão</label>
-                        <input
-                          id="cardnumber"
-                          placeholder="8888-8888-8888-8888"
-                          className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                          maxLength="19"
-                          {...register("numero")}
-                        />
-                        {errors.numero && 
-                          <span className="text-error opacity-75">{errors.numero?.message}</span>}
-                      </div>
-
-                      <div className="flex justify-between  mb-4">
-                        <div className="w-1/2 pr-2">
-                          <div className='flex gap-2'>
-                            <label htmlFor="expiry-date" className="block text-prim mb-2">Validade</label>
-                            {errors.mesExpiracao || errors.anoExpiracao ? 
-                                <span className="text-error opacity-75">*</span> : ""}
-                          </div>
-                          <div className="flex gap-2">
-                            <div>
-                              <input
-                                className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                                maxLength="2"
-                                placeholder="MM"
-                                {...register("mesExpiracao")}
-                              />
+                    
+                    <div className='flex flex-col gap-7 w-full pt-5'>
+                      <div>
+                        <div className='w-full flex flex-col gap-5'>
+                          <div className='pt-2'>
+                            <div className='w-full flex justify-between'>
+                              <p>Quantidade: </p>
+                              <span> {checkoutData?.length} </span>
                             </div>
-                            <div>
-                              <input
-                                className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                                maxLength="2"
-                                placeholder="YY"
-                                {...register("anoExpiracao")}
-                              />
+                            <div className='w-full flex justify-between'>
+                              <p>Valor Serviço: </p>
+                              <span> {formatarMoeda(checkoutData[0]?.valorServico)} </span>
                             </div>
+                            <div className='w-full flex justify-between'>
+                              <p>Total: </p>
+                              <span> {formatarMoeda(checkoutData[0]?.valorBruto)} </span>
+                            </div>
+  
                           </div>
-                        </div>
-                        <div className="w-1/2 pl-2">
-                          <div className='flex gap-2'>
-                            <label htmlFor="cvv" className="block text-prim mb-2">CVC</label>
-                            {errors.cvc && 
-                            <span className="text-error opacity-75">*</span>}
+  
+                          <div className='w-full shadow-md  text-prim p-2 rounded-md flex flex-col gap-2'>
+                            <div className='w-full flex justify-between'>
+                              <p>Desconto Total: </p>
+                              <span> {formatarMoeda(checkoutData[0]?.descontoTotal)} </span>
+                            </div>
+                            <div className='w-full flex justify-between'>
+                              <p>Valor a ser pago: </p>
+                              <span> {formatarMoeda(checkoutData[0]?.valorLiquido)} </span>
+                            </div>
+  
                           </div>
-                          <input
-                            maxLength="4"
-                            placeholder="123"
-                            className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                            {...register("cvc")}
-                            />
-                            
+  
+  
                         </div>
                       </div>
-
-                      <div className="mt-6">
-                        <Button 
-                        type='submit'
-                        className="p-2 rounded-md 
-                        text-center
-                        text-white 
-                        bg-des         
-                        hover:text-white transition-all
-                        duration-200
-                        hover:bg-sec hover:bg-opacity-75
-                        hover:border-trans
-                        flex 
-                        items-center
-                        justify-center
-                        text-sm
-                        gap-2
-                        w-full
-                        "
-                        >
-                          <i className="ion-locked mr-2"></i>Finalizar compra
-                        </Button>
-                      </div>
-                    </form>
-                  </div>
-                )}
-
-                {metodoPagamento === 'pix' && (
-                  <div className='flex justify-center w-full h-full'>
-                    {qrCodePix ? (
-                      paymentStatus ? (
-                        <>
-                          <div className='flex flex-col min-h-full min-w-full items-center gap-5'>
-                            <div className='text-center flex flex-col justify-center items-center'>
-                              <h3 className='text-prim font-semibold'>Pagamento realizado com sucesso!</h3>
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-[20vh] text-sec">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-                                </svg>
-
-                            </div>
-                            
-                          </div>
-                        </>
-
-                      ) : (
-                        <>
-                          <div className='flex flex-col min-h-full min-w-full items-center gap-5'>
-                            <div className='text-center flex flex-col justify-center items-center'>
-                              <h3 className='text-prim font-semibold'>Escaneie o QR Code para pagamento via PIX:</h3>
-                              <Image
-                                className='z-0'
-                                height={250}
-                                width={250}
-                                alt="QR Code Pix"
-                                src={qrCodePix}
-                              />
-                            </div>
-                            <div className='max-w-full flex flex-col gap-2'>
-                              <div className='flex justify-center items-center gap-2'>
-                                <p className='text-center text-prim font-semibold'>Pix copia e cole</p>
-                              </div>
-                              <div className='flex items-center gap-2 max-w-full'>
-                                <Snippet hideSymbol="true" 
-                                  tooltipProps={{
-                                    color: "default",
-                                    content: "Copiar chave pix",
-                                    disableAnimation: true,
-                                    placement: "right",
-                                    closeDelay: 0
-                                  }} 
-                                >
-                                  <div className='max-w-60  lg:max-w-[60vh]'>
-                                    <div className='p-2 flex flex-row overflow-x-scroll '>
-                                      <p className='text-prim whitespace-nowrap '>{pixChave}</p>
-                                    </div>
-                                  </div>
-                                </Snippet>
-                              </div>
+  
+                        {checkoutData ?(
+                          <div className="flex flex-col gap-2">
+                            <div className='w-full flex flex-col  gap-2 justify-between'>
+                                <p className='text-lg font-semibold'>Serviço selecionado:</p>
+                                <div className='flex items-center w-full justify-between'>
+                                    <p className='text-base'>{checkoutData[0].Servico}</p>
+                                    <p className='text-base'>{formatarMoeda(checkoutData[0].valorServico)}</p>
+                                </div>
                             </div>
                           </div>
-                        </>
-
-                      )
-
-                    ) : (
-                      <div className='flex justify-center items-center w-full h-1/2 text-white'>
-                        <Spinner size='lg' />
-                      </div>
-                    )}
-            
-            
-                  </div>
-                )}
-              </div>
-
-              <div className="  w-full flex flex-col justify-start items-center ">
-                <div className='2xl:min-w-[80vh]  2xl:max-w-[80vh] xl:min-w-[90vh]  xl:pt-[10vh] flex flex-col pt-5 p-10 min-w-[45vh] max-w-[50vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] lg:min-w-[60vh]  lg:max-w-[60vh] md:min-w-[50vh]  md:max-w-[50vh] shadow-lg sm:pt-20 rounded-xl    text-prim  '>
-
-                  <div className='w-full flex flex-col justify-between items-center border-bord pb-2 border-b xl:pt-[2vh] '>
-                      <div className='flex justify-center items-center w-full '>
-                        <h3 className="text-2xl flex flex-wrap text-prim font-semibold justify-center items-center ">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 font-semibold ">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                            </svg>
-
-                            Resumo do Pedido
-                            
-                        </h3>                        
-                      </div>
-
-                  </div>
-                  
-                  <div className='flex flex-col gap-7 w-full pt-5'>
-                    <div>
-                      <div className='w-full flex flex-col gap-5'>
-                        <div className='pt-2'>
-                          <div className='w-full flex justify-between'>
-                            <p>Quantidade: </p>
-                            <span> {checkoutData?.length} </span>
-                          </div>
-                          <div className='w-full flex justify-between'>
-                            <p>Valor Serviço: </p>
-                            <span> {formatarMoeda(checkoutData[0]?.valorServico)} </span>
-                          </div>
-                          <div className='w-full flex justify-between'>
-                            <p>Total: </p>
-                            <span> {formatarMoeda(checkoutData[0]?.valorBruto)} </span>
-                          </div>
-
-                        </div>
-
-                        <div className='w-full shadow-md  text-prim p-2 rounded-md flex flex-col gap-2'>
-                          <div className='w-full flex justify-between'>
-                            <p>Desconto Total: </p>
-                            <span> {formatarMoeda(checkoutData[0]?.descontoTotal)} </span>
-                          </div>
-                          <div className='w-full flex justify-between'>
-                            <p>Valor a ser pago: </p>
-                            <span> {formatarMoeda(checkoutData[0]?.valorLiquido)} </span>
-                          </div>
-
-                        </div>
-
-
-                      </div>
+                        ):(
+                            <div className='w-full flex flex-col  gap-2'>
+                                <p className='text-lg font-semibold'>Serviço selecionado:</p>
+                                <p className='text-base'>Nenhum serviço selecionado.</p>
+                            </div>
+                        )}
+  
+                        {/*Exibe as datas e horários selecionados */}
+                        {checkoutData.length > 0 ? (
+                            <div className='w-full flex flex-col gap-2 justify-between overflow-y-auto max-h-[40vh]'>
+                                <p className='text-md font-semibold'> Data(s) selecionado(s):</p>
+                                <ul>
+                                    {checkoutData.map((date, index) => (
+                                        <li key={index} className="flex gap-5 items-center justify-between w-1/2">
+                                            {/* Formata a data */}
+                                            <span>{new Date(date.dataServico).toLocaleDateString()}</span>
+                                            {/* Exibe o horário correspondente à data */}
+                                            <span>{date.horaServico ? date.horaServico : "--:--"}</span>
+  
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ):(
+                            <div className='w-full flex flex-col  gap-2'>
+                                <p className='text-lg font-semibold'>Data(s) selecionada(o):</p>
+                                <p className='text-base'>Nenhuma data selecionada</p>
+                            </div>
+                        )}
+  
+                        {selectedProvider ? (
+                            <div className='w-full flex flex-col  gap-2'>
+                                <p className='text-md font-semibold'> Prestador selecionado:</p>
+                                <div className='flex w-full items-center gap-2'>
+                                    <Avatar src={selectedProvider.avatarUrl?.avatarUrl || ""} size="md"/>
+                                    <p className='text-base'>{selectedProvider.name}</p>
+                                </div>
+                            </div>
+                        ):(
+                            <div className='w-full flex flex-col  gap-2'>
+                                <p className='text-lg font-semibold'>Prestador selecionado</p>
+                                <p className='text-base'>Nenhum prestador selecionado.</p>
+                            </div>
+                        )}
+  
+                        {checkoutData ?(
+                            <div className='w-full flex flex-col  gap-2'>
+                                <p className='text-md font-semibold'> Observação:</p>
+                                <div className='flex w-full items-center gap-2'>
+                                    <p className='text-base'>{checkoutData[0].observacao}</p>
+                                    {/*Mostra o avatar do prestador */}
+                                </div>
+                            </div>
+                        ):(
+                            <div className='w-full flex flex-col  gap-2'>
+                                <p className='text-lg font-semibold'>Observação:</p>
+                                <p className='text-base'>Nenhuma</p>
+                            </div>
+                        )}
+  
                     </div>
-
-                      {checkoutData ?(
-                        <div className="flex flex-col gap-2">
-                          <div className='w-full flex flex-col  gap-2 justify-between'>
-                              <p className='text-lg font-semibold'>Serviço selecionado:</p>
-                              <div className='flex items-center w-full justify-between'>
-                                  <p className='text-base'>{checkoutData[0].Servico}</p>
-                                  <p className='text-base'>{formatarMoeda(checkoutData[0].valorServico)}</p>
-                              </div>
-                          </div>
-                        </div>
-                      ):(
-                          <div className='w-full flex flex-col  gap-2'>
-                              <p className='text-lg font-semibold'>Serviço selecionado:</p>
-                              <p className='text-base'>Nenhum serviço selecionado.</p>
-                          </div>
-                      )}
-
-                      {/*Exibe as datas e horários selecionados */}
-                      {checkoutData.length > 0 ? (
-                          <div className='w-full flex flex-col gap-2 justify-between overflow-y-auto max-h-[40vh]'>
-                              <p className='text-md font-semibold'> Data(s) selecionado(s):</p>
-                              <ul>
-                                  {checkoutData.map((date, index) => (
-                                      <li key={index} className="flex gap-5 items-center justify-between w-1/2">
-                                          {/* Formata a data */}
-                                          <span>{new Date(date.dataServico).toLocaleDateString()}</span>
-                                          {/* Exibe o horário correspondente à data */}
-                                          <span>{date.horaServico ? date.horaServico : "--:--"}</span>
-
-                                      </li>
-                                  ))}
-                              </ul>
-                          </div>
-                      ):(
-                          <div className='w-full flex flex-col  gap-2'>
-                              <p className='text-lg font-semibold'>Data(s) selecionada(o):</p>
-                              <p className='text-base'>Nenhuma data selecionada</p>
-                          </div>
-                      )}
-
-                      {selectedProvider ? (
-                          <div className='w-full flex flex-col  gap-2'>
-                              <p className='text-md font-semibold'> Prestador selecionado:</p>
-                              <div className='flex w-full items-center gap-2'>
-                                  <Avatar src={selectedProvider.avatarUrl?.avatarUrl || ""} size="md"/>
-                                  <p className='text-base'>{selectedProvider.name}</p>
-                              </div>
-                          </div>
-                      ):(
-                          <div className='w-full flex flex-col  gap-2'>
-                              <p className='text-lg font-semibold'>Prestador selecionado</p>
-                              <p className='text-base'>Nenhum prestador selecionado.</p>
-                          </div>
-                      )}
-
-                      {checkoutData ?(
-                          <div className='w-full flex flex-col  gap-2'>
-                              <p className='text-md font-semibold'> Observação:</p>
-                              <div className='flex w-full items-center gap-2'>
-                                  <p className='text-base'>{checkoutData[0].observacao}</p>
-                                  {/*Mostra o avatar do prestador */}
-                              </div>
-                          </div>
-                      ):(
-                          <div className='w-full flex flex-col  gap-2'>
-                              <p className='text-lg font-semibold'>Observação:</p>
-                              <p className='text-base'>Nenhuma</p>
-                          </div>
-                      )}
-
+  
+                    
+                                      
                   </div>
-
-                  
-                                    
-                </div>
-              </div> 
-
+                </div> 
+  
               </main>
               <Footer/>
-
+  
               <Dialog open={isPayment} onClose={() => {}} className="relative z-10">
                 <DialogBackdrop
                   transition
@@ -814,9 +426,15 @@ export default function Checkout() {
                   </div>
                 </div>
               </Dialog>
-          </>
-          
+            </>
+            
+          )
+        ) : (
+          <div className='pt-[10vh]'>
+            <StepLoginCustomer/>
+          </div>
         )}
+      
       
       </>
 

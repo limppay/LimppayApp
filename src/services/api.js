@@ -573,6 +573,23 @@ export const createCheckout = async (data) => {
   }
 }
 
+export const paymentCheckoutPix = async (invoiceId, qrCodePix, keyPix) => {
+  try {
+    const response = await api.patch(`/checkout-data/payment/pix`, {
+      invoiceId,
+      qrCodePix,
+      keyPix
+    })
+
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return false; // Retornar false em caso de erro
+  
+  }
+}
+
+
 export const verifyCheckout = async () => {
   try {
     const response = await api.post(`/checkout-data/verify`)
