@@ -7,7 +7,7 @@ import { Accordion, AccordionItem } from '@nextui-org/accordion';
 import Temporizador from './Temporizador';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import { fetchPrestadorInfo } from '../../common/FetchPrestadorInfo';
-import { finalizarAgendamento, iniciarAgendamento, pausarAgendamento, retornarAgendamento, updateAgendamento } from '../../services/api';
+import { cancelarAgendamento, finalizarAgendamento, iniciarAgendamento, pausarAgendamento, retornarAgendamento, updateAgendamento } from '../../services/api';
 import { Avatar, Spinner } from '@nextui-org/react';
 import User from "../../assets/img/diarista-cadastro/user.webp"
 
@@ -20,12 +20,18 @@ export default function Pedidos({setScreenSelected}) {
     const [ openPausar, setOpenPausar ] = useState(false)
     const [ openRetornar, setOpenRetornar ] = useState(false)
     const [ openFinalizar, setFinalizar ] = useState(false)
+
+    const [ openCancelar, setOpenCancelar ] = useState(false)
+    const [ cancelado, setCancelado ] = useState(false)
+
     const [ loading, setLoading ] = useState(false)
     const [ sucess, setSucess ] = useState(false)
     const [ runnig, setRunnig ] = useState(false)
     const [ disablePause, setDisablePause ] = useState(false)
 
     const [ changeHistorico, setChangeHistorico ] = useState(false)
+
+    const [ selectedAgendamento, setSelectedAgendamento ] = useState(null)
 
     const taxaPrestador = (valor) => {
         const value = valor * 0.75
@@ -42,8 +48,13 @@ export default function Pedidos({setScreenSelected}) {
     
         return nameMatch && dateMatch && statusMatch;
     }).sort((a, b) => changeHistorico ? new Date(b.dataServico) - new Date(a.dataServico) : new Date(a.dataServico) - new Date(b.dataServico)  )
-    
-    
+
+    const qtdFinalizados = prestador?.Agendamentos && prestador?.Agendamentos?.filter((agendamento) => {    
+        // Aplica o filtro de status apenas se changeHistorico for true
+        const statusMatch = ["Cancelado", "Realizado"].includes(agendamento.status)
+        return statusMatch;
+    })
+   
     const hoje = new Date();
     const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
     
@@ -66,7 +77,6 @@ export default function Pedidos({setScreenSelected}) {
       return dataServicoSemHora === hojeSemHora && statusValido;
     })
     .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
-  
     
     const handleIniciarAgendamento = async (agendamento) => {
         setLoading(true);
@@ -131,12 +141,46 @@ export default function Pedidos({setScreenSelected}) {
 
     };
 
+    const handleCancelarServico = async (agendamento) => {
+        setLoading(true);
+
+        try {        
+            const response = await cancelarAgendamento(agendamento?.id);
+            await fetchPrestadorInfo(setPrestador)
+            setLoading(false)
+            setOpenCancelar(false)
+            setCancelado(true)
+            console.log("Agendamento canelado com sucesso!", response);
+
+        } catch (error) {
+            console.error("Erro ao cancelar o agendamento:", error);
+        }
+
+    };
+
+
     const handleChange = () => {
         setChangeHistorico(!changeHistorico)
         setSearchTerm("")
     }
-    
 
+    const verifyAgendamento = (agendamento) => {
+        if (!agendamento || !agendamento.status || !agendamento.dataServico) {
+            return false;
+        }
+    
+        const hoje = new Date();
+        const dataServico = new Date(agendamento.dataServico);
+    
+        // Verifica se o status é "agendado"
+        const isAgendado = agendamento.status.toLowerCase() === "agendado";
+    
+        // Verifica se a data atual é menor que a data do serviço
+        const isDataValida = hoje < dataServico;
+        
+        return isAgendado && isDataValida;
+    };
+    
     return (
         <section className='w-full  gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
             <div className='p-5 flex flex-col gap-5'>
@@ -170,7 +214,7 @@ export default function Pedidos({setScreenSelected}) {
                     <div className='flex gap-2 flex-col w-full md:flex-row-reverse'>
                         <div className='w-full'>
                             <Button className='w-full bg-sec text-white' onPress={() => (handleChange())}>
-                                {changeHistorico ? "Voltar" : "Histórico de agendamentos"}
+                                {changeHistorico ? "Voltar" : `Histórico de agendamentos`}
                             </Button>
                         </div>
                         <div className='w-full'>
@@ -219,7 +263,6 @@ export default function Pedidos({setScreenSelected}) {
                                                                                                             
                                         </div>
 
-
                                         <div className='flex gap-5 justify-between text-prim'>
                                             <p className='font-semibold'>Serviço de {proximoAgendamento.timeTotal}hr</p>
                                             <p className='font-semibold'> {proximoAgendamento.Servico}</p>
@@ -230,11 +273,9 @@ export default function Pedidos({setScreenSelected}) {
                                         <p> {proximoAgendamento.enderecoCliente}</p>
                                         <div>
                                             <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
-                                        </div>
-
-                                        
-                                        
+                                        </div>                                        
                                     </div>
+
                                     <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>
                                         <a 
                                             href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
@@ -242,12 +283,23 @@ export default function Pedidos({setScreenSelected}) {
                                             rel="noopener noreferrer"
                                             
                                         >
-                                            <Button className="w-full bg-sec text-white">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                            <button className="justify-center text-sm shadow-sm w-full bg-sec text-white p-2 flex items-center gap-2 rounded-lg">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth="1.5"
+                                                    stroke="currentColor"
+                                                    className="size-6"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
+                                                    />
                                                 </svg>
                                                 Abrir com o Google Maps
-                                            </Button>
+                                            </button>
                                         </a>
 
                                         {proximoAgendamento.status != "Agendado" && !disablePause && (
@@ -471,45 +523,6 @@ export default function Pedidos({setScreenSelected}) {
                                     <p className="font-semibold">Nenhum serviço pra hoje.</p>
                                 </div>
                             )}
-
-                            <Modal 
-                                backdrop="opaque" 
-                                isOpen={sucess} 
-                                onClose={setSucess}
-                                placement='center'
-                                classNames={{
-                                    backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-                                    body: "bg-white",
-                                    header: "bg-white",
-                                    footer: "bg-white"
-                                }}
-                                className="max-w-[40vh] sm:min-w-[80vh]"
-                            >
-                                <ModalContent className="bg-">
-                                {(onClose) => (
-                                    <>
-                                    <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
-                                        <div className="flex w-full justify-between pr-10">
-                                            <h2 className='text-sec'>Sucesso!</h2>
-                                        </div>
-                                    </ModalHeader>
-
-                                    <ModalBody>
-                                        <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
-                                            <div className='text-ter grid gap-2'>
-                                                <p>Você concluiu esse serviço com sucesso! :D</p>
-                                            </div>
-                                        </div>
-                                    </ModalBody>
-                                    <ModalFooter className='shadow-none'>
-                                        <Button className='bg-desSec text-white w-1/2'  onPress={() => (onClose())}>
-                                            Continuar
-                                        </Button>
-                                    </ModalFooter>
-                                    </>
-                                )}
-                                </ModalContent>
-                            </Modal>                        
                         </div>
 
                     </div>
@@ -556,11 +569,26 @@ export default function Pedidos({setScreenSelected}) {
     
                                                         </div>    
                                                     </div>
-    
-    
-                                                    <div className='w-4/12 sm:w-auto text-center pt- sm:pt-0 flex items-center justify-start gap-5'>
-                                                        <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
+
+
+                                                    <div className='flex items-center gap-2 justify-between'>
+                                                        <div className='w-4/12 sm:w-auto text-center pt- sm:pt-0 flex items-center justify-start gap-5'>
+                                                            <div className={`p-2 rounded-md text-white ${agendamento.status === 'Agendado' ? " bg-des" : agendamento.status === "Iniciado" ? "bg-desSec" : agendamento.status === "Cancelado" ? "bg-error" : agendamento.status === "Realizado" ? "text-sec bg-sec " : ""} `}>{agendamento.status}</div>
+                                                            
+                                                        </div>
+
+                                                        <div className='flex items-center'>
+                                                            {verifyAgendamento(agendamento) && (
+                                                                <Button className='bg-white border border-error text-error' onPress={() => (setSelectedAgendamento(agendamento), setOpenCancelar(true))}>
+                                                                    Cancelar serviço
+                                                                </Button>
+                                                            )}
+
+                                                        </div>
+
                                                     </div>
+    
+    
     
                                                 </div>
                                             </div>
@@ -653,7 +681,7 @@ export default function Pedidos({setScreenSelected}) {
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                             >
-                                                                <Button className="w-full bg-sec text-white">
+                                                                <button className="justify-center text-sm shadow-sm w-full bg-sec text-white p-2 flex items-center gap-2 rounded-lg">
                                                                     <svg
                                                                         xmlns="http://www.w3.org/2000/svg"
                                                                         fill="none"
@@ -669,7 +697,7 @@ export default function Pedidos({setScreenSelected}) {
                                                                         />
                                                                     </svg>
                                                                     Abrir com o Google Maps
-                                                                </Button>
+                                                                </button>
                                                             </a>
                                                         </div>
                                                     </div>
@@ -686,8 +714,132 @@ export default function Pedidos({setScreenSelected}) {
                         <p>Você não possui nenhum agendamento</p>
                     </div>
                 )}
-                    
+
+                <Modal 
+                    backdrop="opaque" 
+                    isOpen={sucess} 
+                    onClose={setSucess}
+                    placement='center'
+                    classNames={{
+                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                        body: "bg-white",
+                        header: "bg-white",
+                        footer: "bg-white"
+                    }}
+                    className="max-w-[40vh] sm:min-w-[80vh]"
+                >
+                    <ModalContent className="bg-">
+                    {(onClose) => (
+                        <>
+                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                            <div className="flex w-full justify-between pr-10">
+                                <h2 className='text-sec'>Sucesso!</h2>
+                            </div>
+                        </ModalHeader>
+
+                        <ModalBody>
+                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                <div className='text-ter grid gap-2'>
+                                    <p>Você concluiu esse serviço com sucesso! :D</p>
+                                </div>
+                            </div>
+                        </ModalBody>
+                        <ModalFooter className='shadow-none'>
+                            <Button className='bg-desSec text-white w-1/2'  onPress={() => (onClose())}>
+                                Continuar
+                            </Button>
+                        </ModalFooter>
+                        </>
+                    )}
+                    </ModalContent>
+                </Modal>
+
+                <Modal 
+                    backdrop="opaque" 
+                    isOpen={cancelado} 
+                    onClose={setCancelado}
+                    placement='center'
+                    classNames={{
+                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                        body: "bg-white",
+                        header: "bg-white",
+                        footer: "bg-white"
+                    }}
+                    className="max-w-[40vh] sm:min-w-[80vh]"
+                >
+                    <ModalContent className="bg-">
+                    {(onClose) => (
+                        <>
+                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                            <div className="flex w-full justify-between pr-10">
+                                <h2 className='text-error'>Agendamento cancelado!</h2>
+                            </div>
+                        </ModalHeader>
+
+                        <ModalBody>
+                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                <div className='text-ter grid gap-2'>
+                                    <p>Seu agendamento foi cancelado com sucesso.</p>
+                                </div>
+                            </div>
+                        </ModalBody>
+                        <ModalFooter className='shadow-none'>
+                            <Button className='bg-desSec text-white w-1/2'  onPress={() => (onClose())}>
+                                Continuar
+                            </Button>
+                        </ModalFooter>
+                        </>
+                    )}
+                    </ModalContent>
+                </Modal>    
+
+                <Modal 
+                    backdrop="opaque" 
+                    isOpen={openCancelar} 
+                    onClose={setOpenCancelar}
+                    placement='center'
+                    classNames={{
+                        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+                        body: "bg-white",
+                        header: "bg-white",
+                        footer: "bg-white"
+                    }}
+                    className="max-w-[40vh] sm:min-w-[80vh]"
+                >
+                    <ModalContent className="bg-">
+                    {(onClose) => (
+                        <>
+                        <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
+                            <div className="flex w-full justify-between pr-10">
+                                <h2 className='text-error'>Atenção!</h2>
+                            </div>
+                        </ModalHeader>
+
+                        <ModalBody>
+                            <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
+                                <div className='text-ter grid gap-2'>
+                                    <p>Se houver muitos cancelamentos, sua conta pode ficar temporariamente indisponivel para os clientes.</p>
+
+                                    <p>Você tem certeza que deseja cancelar este serviço? :(</p>
+                                </div>
+                                
+                            </div>
+                        </ModalBody>
+                        <ModalFooter className='shadow-none'>
+                            <Button className=' text-prim border bg-white w-1/2' isDisabled={loading} onPress={() => onClose()}>
+                                Voltar
+                            </Button>
+                            <Button className='bg-error text-white w-1/2' isDisabled={loading} onPress={() => handleCancelarServico(selectedAgendamento)}>
+                                {loading ? <Spinner/> : "Confirmar"}
+                            </Button>
+                        </ModalFooter>
+                        </>
+                    )}
+                    </ModalContent>
+                </Modal>
             </div>
+
+
             
         </section>
     )

@@ -116,9 +116,9 @@ export default function Painel() {
                         </div>
                     ) : PrestadorMaisContratado?.length > 0 ? (
                         PrestadorMaisContratado.map((prestador, index) => (
-                            <div key={prestador.id} className="flex items-center bg-gray-100 p-4 rounded-lg">
+                            <div key={prestador.id} className="flex items-center p-4 rounded-lg">
                                 <span className="text-prim text-lg font-bold text-gray-500 mr-3">{index + 1}º</span>
-                                <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
+                                <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4 text-prim">
                                     <Avatar
                                         src={prestador?.avatarUrl?.avatarUrl || User}
                                         alt={prestador?.name}
@@ -126,11 +126,11 @@ export default function Painel() {
                                     />
                                 </div>
                                 <div>
-                                    <span className="font-medium">{prestador?.name}</span>
-                                    <p className="text-gray-500 text-sm">
+                                    <span className="text-prim font-semibold">{prestador?.name}</span>
+                                    <p className="text-prim text-sm">
                                         Serviços neste mês: <strong>{prestador?.agendamentosNoMes}</strong>
                                     </p>
-                                    <p className="text-gray-500 text-sm">
+                                    <p className="text-prim text-sm">
                                         Total: <strong>{prestador?.totalAgendamentos}</strong>
                                     </p>
                                 </div>
@@ -143,8 +143,8 @@ export default function Painel() {
             </div>
 
             {/* Próximo Agendamento */}
-            <div className="bg-white shadow-md rounded-lg p-6 flex flex-col min-h-[30vh] max-h-[80vh] md:max-h-[55vh] overflow-y-auto">
-                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-2">Próximo Agendamento</h2>
+            <div className="bg-white rounded-lg flex flex-col min-h-[30vh] md:max-h-[55vh] md:overflow-y-auto">
+                <h2 className="text-desSec text-lg font-semibold mb-2">Próximo Agendamento</h2>
 
                 <div className="flex flex-col gap-6">
                     {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
@@ -180,7 +180,7 @@ export default function Painel() {
                             return (
                                 <div className="flex flex-col gap-6">
                                     {agendamentosComMesmoHorario.map((agendamento, index) => (
-                                        <div key={index} className="flex flex-col gap-4 p-4 bg-gray-100 shadow-md rounded-lg">
+                                        <div key={index} className="flex flex-col gap-4 p-4 bg-gray-100 shadow-md rounded-lg bg-white">
                                             <div className="flex items-center gap-4">
                                                 <Avatar 
                                                     src={agendamento.user.avatarUrl.avatarUrl} 
@@ -193,12 +193,14 @@ export default function Painel() {
                                             </div>
 
                                             <div className="flex flex-col gap-3 mt-2">
-                                                <div className="flex justify-between items-center">
-                                                    <p className="text-prim font-medium">{agendamento.Servico}</p>
-                                                    <p className="text-prim text-sm">
-                                                        Data serviço: {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
+                                                <div className="flex gap-5 justify-between text-prim">
+                                                    <p className='text-prim text-sm font-semibold'>Serviço de {agendamento.timeTotal}hr</p>
+
+                                                    <p className="text-prim text-sm font-semibold">{agendamento.Servico}</p>
+                                                    <p className="text-prim text-sm font-semibold">
+                                                        {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
                                                     </p>
-                                                    <p className="text-prim text-sm">Hora do serviço: {agendamento.horaServico}</p>
+                                                    <p className="text-prim text-sm font-semibold">{agendamento.horaServico}</p>
                                                 </div>
                                                 <p className="text-prim text-sm">{agendamento.enderecoCliente}</p>
                                             </div>
@@ -212,14 +214,14 @@ export default function Painel() {
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                 >
-                                                    <Button className="bg-sec text-white flex items-center gap-2">
+                                                    <button className="justify-center text-sm shadow-sm w-full bg-sec text-white p-2 flex items-center gap-2 rounded-lg">
                                                         <svg
                                                             xmlns="http://www.w3.org/2000/svg"
                                                             fill="none"
                                                             viewBox="0 0 24 24"
                                                             strokeWidth="1.5"
                                                             stroke="currentColor"
-                                                            className="w-5 h-5"
+                                                            className="size-6"
                                                         >
                                                             <path
                                                                 strokeLinecap="round"
@@ -227,8 +229,8 @@ export default function Painel() {
                                                                 d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
                                                             />
                                                         </svg>
-                                                        Abrir no Google Maps
-                                                    </Button>
+                                                        Abrir com o Google Maps
+                                                    </button>
                                                 </a>
                                             </div>
 

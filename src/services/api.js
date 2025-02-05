@@ -696,6 +696,18 @@ export const finalizarAgendamento = async (id) => {
 
 }
 
+export const cancelarAgendamento = async (id) => {
+  try {
+    const response = await api.patch(`/agendamentos/cancelar/${id}`);
+    return response.data; 
+    
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problemas de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
+  }
+
+}
+
 export default api;
 
 

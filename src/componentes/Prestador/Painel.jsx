@@ -6,7 +6,8 @@ import { formatarData } from '../../common/FormatarData';
 import { Button } from '@nextui-org/button';
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter} from "@nextui-org/modal";
 import { fetchPrestadorInfo } from '../../common/FetchPrestadorInfo';
-import { Spinner } from '@nextui-org/react';
+import { Avatar, Spinner } from '@nextui-org/react';
+import User from "../../assets/img/diarista-cadastro/user.webp"
 
 export default function Painel() {
     const { prestador, setPrestador } = usePrestador()
@@ -66,24 +67,6 @@ export default function Painel() {
         return formatarMoeda(value)
     }
 
-    const handleCancelarAgendamento = async (agendamento) => {
-        setLoadingEdit(true);
-        const data = {
-            status: 'Cancelado'
-        }
-
-        try {        
-            const response = await updateAgendamento(agendamento?.id, data);
-            await fetchPrestadorInfo(setPrestador)
-            setLoadingEdit(false)
-            setOpen(false)
-            console.log("Agendamento atualizado com sucesso!", response);
-
-        } catch (error) {
-            console.error("Erro ao atualizar o agendamento:", error);
-        }
-
-    };
 
     return (
         <div className="md:pt-28 pt-[8vh] pb-[8vh] flex-1 p-6 gap-5 "> 
@@ -163,83 +146,60 @@ export default function Painel() {
 
                             return proximoAgendamento ? (
                                 <div className="flex-1 w-full">
-                                    <div className="flex flex-col shadow-lg rounded-lg p-5 gap-10">
+                                    <div className="flex flex-col rounded-lg p-5 gap-10 h-full w-full shadow-lg">
                                         <div className='flex flex-col gap-2 text-prim'>
+                                            <div className='w-full flex gap-2 items-center '>
+                                                <Avatar 
+                                                    src={User} 
+                                                    alt="avatarPrestador"
+                                                    size='lg'
+                                                />
+                                                <h3 className='text-prim font-semibold flex flex-wrap text-center'>{proximoAgendamento.cliente?.name}</h3>
+                                                                                                                
+                                            </div>
+    
                                             <div className='flex gap-5 justify-between text-prim'>
+                                                <p className='font-semibold'>Serviço de {proximoAgendamento.timeTotal}hr</p>
                                                 <p className='font-semibold'> {proximoAgendamento.Servico}</p>
                                                 <p className='font-semibold'>{formatarData(new Date(proximoAgendamento?.dataServico).toISOString().split('T')[0])} </p>
-                                                <p className='font-semibold'>{proximoAgendamento.horaServico}</p>
+                                                <p className='font-semibold'>{proximoAgendamento?.horaServico}</p>
+                                                
                                             </div>
                                             <p> {proximoAgendamento.enderecoCliente}</p>
-
-                                            <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
-                                            
+                                            <div>
+                                                <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
+                                            </div>                                        
                                         </div>
 
-                                        <div className='grid grid-cols-1 md:grid-cols-2 gap-2 items-center w-full justify-between'>
-                                            <Button className='border border-error text-error bg-white w-full' onPress={() => (setOpen(true))}>
-                                                Cancelar serviço
-                                            </Button>
+                                        <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>
                                             <a 
                                                 href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
                                                 
                                             >
-                                                <Button className="w-full bg-sec text-white">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2 inline-block">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                                <button className="justify-center text-sm shadow-sm w-full bg-sec text-white p-2 flex items-center gap-2 rounded-lg">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth="1.5"
+                                                        stroke="currentColor"
+                                                        className="size-6"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
+                                                        />
                                                     </svg>
                                                     Abrir com o Google Maps
-                                                </Button>
+                                                </button>
                                             </a>                                           
                                         </div>
                                     </div>
 
-                                    <Modal 
-                                        backdrop="opaque" 
-                                        isOpen={open} 
-                                        onClose={setOpen}
-                                        placement='center'
-                                        classNames={{
-                                            backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-                                            body: "bg-white",
-                                            header: "bg-white",
-                                            footer: "bg-white"
-                                        }}
-                                        className="max-w-[40vh] sm:min-w-[80vh]"
-                                    >
-                                        <ModalContent className="bg-">
-                                        {(onClose) => (
-                                            <>
-                                            <ModalHeader className="flex flex-col gap-1 text-neutral-600 text-2xl  border-b border-bord ">
-                                                <div className="flex w-full justify-between pr-10">
-                                                    <h2 className='text-error'>Atenção!</h2>
-                                                </div>
-                                            </ModalHeader>
 
-                                            <ModalBody>
-                                                <div className="text-neutral-400 flex  w-full justify-between gap-5 pt-5 pb-5 ">
-                                                    <div className='text-ter grid gap-2'>
-                                                        <p>Se houver muitos cancelamentos, sua conta pode ficar temporariamente indisponivel para os clientes.</p>
-
-                                                        <p>Você tem certeza que deseja cancelar este serviço? :(</p>
-                                                    </div>
-                                                    
-                                                </div>
-                                            </ModalBody>
-                                            <ModalFooter className='shadow-none'>
-                                                <Button className=' text-prim border bg-white w-1/2' isDisabled={loadingEdit} onPress={() => onClose()}>
-                                                    Voltar
-                                                </Button>
-                                                <Button className='bg-error text-white w-1/2' isDisabled={loadingEdit} onPress={() => handleCancelarAgendamento(proximoAgendamento)}>
-                                                    {loadingEdit ? <Spinner/> : "Confirmar"}
-                                                </Button>
-                                            </ModalFooter>
-                                            </>
-                                        )}
-                                        </ModalContent>
-                                    </Modal>
                                 </div>
                             ) : (
                                 <p className="text-prim flex w-full">Nenhum agendamento futuro encontrado com status "Agendado".</p>
