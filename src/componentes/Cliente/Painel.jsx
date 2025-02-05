@@ -69,7 +69,7 @@ export default function Painel() {
                 {/* Solicitações do mês */}
                 <div className="bg-white  shadow-md rounded-lg p-6">
                     <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">
-                        Solicitações do Mês
+                        Solicitações no Mês
                     </h2>
                     <p className="text-desSec text-3xl font-bold text-gray-800">
                         {SolicitacoesDoMes || 0}
@@ -100,148 +100,153 @@ export default function Painel() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-5">
-                {/* Prestador mais contratado */}
-                <div className="bg-white  shadow-md rounded-lg p-6">
-                    <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">Prestador Mais Contratado</h2>
-                    <div className="flex items-center ">
-                        {loading ? (
-                            <div className='w-full flex justify-center items-center text-white pt-[5vh]'>
-                                <Spinner size='lg'/>
+            {/* Container principal */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-5">
+
+            {/* Prestadores mais contratados */}
+            <div className="bg-white shadow-md rounded-lg p-3">
+                <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-4">
+                    Prestadores Mais Contratados
+                </h2>
+
+                <div className="flex flex-col gap-4">
+                    {loading ? (
+                        <div className="w-full flex justify-center items-center text-white pt-[5vh]">
+                            <Spinner size="lg" />
+                        </div>
+                    ) : PrestadorMaisContratado?.length > 0 ? (
+                        PrestadorMaisContratado.map((prestador, index) => (
+                            <div key={prestador.id} className="flex items-center bg-gray-100 p-4 rounded-lg">
+                                <span className="text-prim text-lg font-bold text-gray-500 mr-3">{index + 1}º</span>
+                                <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
+                                    <Avatar
+                                        src={prestador?.avatarUrl?.avatarUrl || User}
+                                        alt={prestador?.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div>
+                                    <span className="font-medium">{prestador?.name}</span>
+                                    <p className="text-gray-500 text-sm">
+                                        Serviços neste mês: <strong>{prestador?.agendamentosNoMes}</strong>
+                                    </p>
+                                    <p className="text-gray-500 text-sm">
+                                        Total: <strong>{prestador?.totalAgendamentos}</strong>
+                                    </p>
+                                </div>
                             </div>
-
-                        ) : (
-                            PrestadorMaisContratado ? (
-                                <>
-                                    <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden mr-4">
-                                        <Avatar
-                                            src={PrestadorMaisContratado?.avatarUrl?.avatarUrl || User}
-                                            alt={PrestadorMaisContratado?.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <span className="text-desSec  font-medium">
-                                        {PrestadorMaisContratado?.name || <span className='text-white'> <Spinner/> </span> }
-                                    </span>
-                                
-                                </>
-
-                            ) : (
-                                <span  className='text-sm text-prim'>Não há dados o suficiente.</span>
-
-                            )
-
-
-                        )}
-                    </div>
-
-                </div>                                        
-
-                {/* Próximo Agendamento */}
-                <div className="bg-white  rounded-lg lg:col-span-2 ">
-                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-2">Próximo Agendamento</h2>
-                    <div className="flex flex-col gap-6">
-                        {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
-                            (() => {
-                                const hoje = new Date();
-
-                                // Filtrar apenas agendamentos futuros com status "Agendado"
-                                const agendamentosFuturos = agendamentosFiltrados.filter(
-                                    agendamento =>
-                                        new Date(agendamento.dataServico) >= hoje &&
-                                        agendamento.status === "Agendado"
-                                );
-
-                                if (agendamentosFuturos.length === 0) {
-                                    return <p className="text-prim flex-1">Nenhum agendamento futuro encontrado com status "Agendado".</p>;
-                                }
-
-                                // Ordenar por data e hora
-                                const agendamentosOrdenados = agendamentosFuturos.sort((a, b) => {
-                                    const dataA = new Date(a.dataServico).setHours(...a.horaServico.split(':').map(Number));
-                                    const dataB = new Date(b.dataServico).setHours(...b.horaServico.split(':').map(Number));
-                                    return dataA - dataB;
-                                });
-
-                                // Selecionar o primeiro agendamento e todos com a mesma data e horário
-                                const primeiroAgendamento = agendamentosOrdenados[0];
-                                const agendamentosComMesmoHorario = agendamentosOrdenados.filter(agendamento => {
-                                    const dataHoraA = new Date(agendamento.dataServico).setHours(...agendamento.horaServico.split(':').map(Number));
-                                    const dataHoraB = new Date(primeiroAgendamento.dataServico).setHours(...primeiroAgendamento.horaServico.split(':').map(Number));
-                                    return dataHoraA === dataHoraB;
-                                });
-
-                                return (
-                                    <div className="flex flex-col gap-6 flex-1">
-                                        {agendamentosComMesmoHorario.map((agendamento, index) => (
-                                            <div key={index} className="flex flex-col gap-4 p-4 bg-gray-100 shadow-md rounded-lg">
-                                                <div className="flex items-center gap-4">
-                                                    <Avatar 
-                                                    src={agendamento.user.avatarUrl.avatarUrl} 
-                                                    alt="avatarPrestador"
-                                                    size="lg"
-                                                    />
-                                                    <h3 className="text-prim font-semibold text-lg">
-                                                    {agendamento.user.name}
-                                                    </h3>
-                                                </div>
-
-                                                <div className="flex flex-col gap-3 mt-2">
-                                                    <div className="flex justify-between items-center">
-                                                    <p className="text-prim font-medium">{agendamento.Servico}</p>
-                                                    <p className="text-prim text-sm">
-                                                        {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
-                                                    </p>
-                                                    <p className="text-prim text-sm">{agendamento.horaServico}</p>
-                                                    </div>
-                                                    <p className="text-prim text-sm">{agendamento.enderecoCliente}</p>
-                                                </div>
-
-                                                <div className="flex justify-between items-center mt-2">
-                                                    <p className="text-prim font-semibold">
-                                                    {formatarMoeda(agendamento.valorServico)}
-                                                    </p>
-                                                    <a
-                                                    href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    >
-                                                    <Button className="bg-sec text-white flex items-center gap-2">
-                                                        <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        strokeWidth="1.5"
-                                                        stroke="currentColor"
-                                                        className="w-5 h-5"
-                                                        >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
-                                                        />
-                                                        </svg>
-                                                        Abrir no Google Maps
-                                                    </Button>
-                                                    </a>
-                                                </div>
-
-                                            </div>
-                                        ))}
-                                    
-                                    </div>
-                                );
-                            })()
-                        ) : (
-                            <div className="flex flex-col gap-4 p-4 bg-gray-100 shadow-md rounded-lg md:min-h-[30vh]">
-                                <p className="text-prim flex-1 ">Nenhum agendamento encontrado.</p>
-
-                            </div>
-                        )}
-                    </div>
+                        ))
+                    ) : (
+                        <span className="text-sm text-prim">Não há dados o suficiente.</span>
+                    )}
                 </div>
             </div>
 
+            {/* Próximo Agendamento */}
+            <div className="bg-white shadow-md rounded-lg p-6 flex flex-col min-h-[30vh] max-h-[80vh] md:max-h-[55vh] overflow-y-auto">
+                <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-2">Próximo Agendamento</h2>
+
+                <div className="flex flex-col gap-6">
+                    {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
+                        (() => {
+                            const hoje = new Date();
+
+                            // Filtrar apenas agendamentos futuros com status "Agendado"
+                            const agendamentosFuturos = agendamentosFiltrados.filter(
+                                agendamento =>
+                                    new Date(agendamento.dataServico) >= hoje &&
+                                    agendamento.status === "Agendado"
+                            );
+
+                            if (agendamentosFuturos.length === 0) {
+                                return <p className="text-prim flex-1">Nenhum agendamento futuro encontrado com status "Agendado".</p>;
+                            }
+
+                            // Ordenar por data e hora
+                            const agendamentosOrdenados = agendamentosFuturos.sort((a, b) => {
+                                const dataA = new Date(a.dataServico).setHours(...a.horaServico.split(':').map(Number));
+                                const dataB = new Date(b.dataServico).setHours(...b.horaServico.split(':').map(Number));
+                                return dataA - dataB;
+                            });
+
+                            // Selecionar o primeiro agendamento e todos com a mesma data e horário
+                            const primeiroAgendamento = agendamentosOrdenados[0];
+                            const agendamentosComMesmoHorario = agendamentosOrdenados.filter(agendamento => {
+                                const dataHoraA = new Date(agendamento.dataServico).setHours(...agendamento.horaServico.split(':').map(Number));
+                                const dataHoraB = new Date(primeiroAgendamento.dataServico).setHours(...primeiroAgendamento.horaServico.split(':').map(Number));
+                                return dataHoraA === dataHoraB;
+                            });
+
+                            return (
+                                <div className="flex flex-col gap-6">
+                                    {agendamentosComMesmoHorario.map((agendamento, index) => (
+                                        <div key={index} className="flex flex-col gap-4 p-4 bg-gray-100 shadow-md rounded-lg">
+                                            <div className="flex items-center gap-4">
+                                                <Avatar 
+                                                    src={agendamento.user.avatarUrl.avatarUrl} 
+                                                    alt="avatarPrestador"
+                                                    size="lg"
+                                                />
+                                                <h3 className="text-prim font-semibold text-lg">
+                                                    {agendamento.user.name}
+                                                </h3>
+                                            </div>
+
+                                            <div className="flex flex-col gap-3 mt-2">
+                                                <div className="flex justify-between items-center">
+                                                    <p className="text-prim font-medium">{agendamento.Servico}</p>
+                                                    <p className="text-prim text-sm">
+                                                        Data serviço: {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
+                                                    </p>
+                                                    <p className="text-prim text-sm">Hora do serviço: {agendamento.horaServico}</p>
+                                                </div>
+                                                <p className="text-prim text-sm">{agendamento.enderecoCliente}</p>
+                                            </div>
+
+                                            <div className="flex justify-between items-center mt-2">
+                                                <p className="text-prim font-semibold">
+                                                    {formatarMoeda(agendamento.valorServico)}
+                                                </p>
+                                                <a
+                                                    href={`https://www.google.com/maps/place/${encodeURIComponent(agendamento.enderecoCliente)}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    <Button className="bg-sec text-white flex items-center gap-2">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth="1.5"
+                                                            stroke="currentColor"
+                                                            className="w-5 h-5"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
+                                                            />
+                                                        </svg>
+                                                        Abrir no Google Maps
+                                                    </Button>
+                                                </a>
+                                            </div>
+
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+                        })()
+                    ) : (
+                        <div className="flex flex-col gap-4 p-4 bg-gray-100 shadow-md rounded-lg md:min-h-[30vh]">
+                            <p className="text-prim flex-1 ">Nenhum agendamento encontrado.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
-    )
+
+
+    </div>
+)
 }
