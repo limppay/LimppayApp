@@ -38,12 +38,12 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
         resolver: yupResolver(schemaDadosCartao),
     })
 
-
+    
     const handleFinalizarCompra = async (data) => {
         setIsPayment(true);
         setIsPaymentFinally(false);
         setIsPaymentFailed(false);
-
+        
         try {
             // Obter token do cartão
             const token = await obterTokenCartao(data);
@@ -78,18 +78,18 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                         holder_name: data.nome,
                     },
                 });
-
+                
 
                 // Criar agendamentos
                 const agendamentoPromises = checkoutData.map(agendamento => createAgendamento(agendamento));
                 
                 const agendamentoResults = await Promise.allSettled(agendamentoPromises);
-
+                
                 const errosDeAgendamento = agendamentoResults.filter(result => result.status === "rejected");
-
+                
                 if (errosDeAgendamento.length > 0) {
                     console.error("Alguns agendamentos falharam:", errosDeAgendamento);
-
+                    
                     // Notificar suporte (opcional: enviar para API de log/suporte)
                     await notificarSuporte({
                         userId: user.id,
@@ -107,7 +107,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                         setInvoiceId(null)
                         setCodePix(null)
                         setKeyPix(null)
-
+                        
                     } catch (error) {
                         console.log(error)
                         
@@ -124,7 +124,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
             setIsPaymentFinally(true)
             setIsPaymentFailed(true);
         }
-
+        
     };
 
     const handleInputChange = (e) => {
@@ -134,7 +134,19 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
           [name]: value,
         }));
     };
-
+    
+    // Função auxiliar que mescla o onChange do react-hook-form com o handleInputChange
+    const registerWithOnChange = (name) => {
+      const { onChange, ...rest } = register(name)
+      return {
+        onChange: (e) => {
+          handleInputChange(e)
+          onChange(e)
+        },
+        ...rest
+      }
+    }
+    
     return (
         <div>
             {/* cartão ilustrativo */}
@@ -182,7 +194,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                         placeholder="Igual ao do cartão"
                         className=" w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
                         onChange={handleInputChange}
-                        {...register("nome")}
+                        {...registerWithOnChange("nome")}
                     />
                     {errors.nome && <span className="text-error opacity-75">{errors.nome?.message}</span>}
                 </div>
@@ -194,7 +206,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                         placeholder="8888-8888-8888-8888"
                         className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
                         maxLength="19"
-                        {...register("numero")}
+                        {...registerWithOnChange("numero")}
                     />
                     {errors.numero && <span className="text-error opacity-75">{errors.numero?.message}</span>}
                 </div>
@@ -212,7 +224,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                             className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
                             maxLength="2"
                             placeholder="MM"
-                            {...register("mesExpiracao")}
+                            {...registerWithOnChange("mesExpiracao")}
                             />
                         </div>
                         <div>
@@ -220,7 +232,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                             className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
                             maxLength="2"
                             placeholder="YY"
-                            {...register("anoExpiracao")}
+                            {...registerWithOnChange("anoExpiracao")}
                             />
                         </div>
                         </div>
@@ -235,7 +247,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                         maxLength="4"
                         placeholder="123"
                         className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                        {...register("cvc")}
+                        {...registerWithOnChange("cvc")}
                         />
                         
                     </div>
