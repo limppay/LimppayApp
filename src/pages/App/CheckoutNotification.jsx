@@ -58,27 +58,29 @@ const CheckoutNotification = () => {
 
 
   return (
-    <div
-      className={`fixed bottom-4 w-full flex justify-center items-center transition-transform duration-300 ${
-        showNotification ? "translate-y-0" : "translate-y-52"
-      }`}
-    >
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-prim border border-prim border-opacity-15 py-2 px-4 rounded-lg shadow-lg min-w-[40vh] max-w-[40vh] sm:max-w-[150vh]">
-        <div className="flex flex-col w-full sm:flex-row justify-between items-center gap-5 p-2">
-          <span>Você tem um pedido em andamento no checkout</span>
-          <div className="flex gap-2">
-            <Button className="bg-white text-error shadow-md " onPress={() => (handleCloseNotification())} isDisabled={loading}>
-              Cancelar
-            </Button>
-            <a href="/checkout-pagamento">
-              <button className="bg-white border-desSec border shadow-md text-desSec p-2 rounded-lg">
-                Continuar
-              </button>
-            </a>
+    user && (
+      <div
+        className={`fixed bottom-4 w-full flex justify-center items-center transition-transform duration-300 ${
+          showNotification ? "translate-y-0" : "translate-y-52"
+        }`}
+      >
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-prim border border-prim border-opacity-15 py-2 px-4 rounded-lg shadow-lg min-w-[40vh] max-w-[40vh] sm:max-w-[150vh]">
+          <div className="flex flex-col w-full sm:flex-row justify-between items-center gap-5 p-2">
+            <span>Você tem um pedido em andamento no checkout</span>
+            <div className="flex gap-2">
+              <Button className="bg-white text-error shadow-md " onPress={() => handleCloseNotification()} isDisabled={loading}>
+                Cancelar
+              </Button>
+              <a href="/checkout-pagamento">
+                <button className="bg-white border-desSec border shadow-md text-desSec p-2 rounded-lg">
+                  Continuar
+                </button>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    )
   );
 };
 
