@@ -16,15 +16,17 @@ import StepLoginCustomer from '../App/StepLoginCustomer';
 import { createAgendamento, removeCheckout } from '../../services/api';
 
 export default function Checkout() {
+  const navigate = useNavigate();
   const {user, setUser, loadingUser} = useUser()
-  const {checkoutData , setCheckoutData, isLoadingCheckout, status, sessionCode} = useCheckout()
   const { selectedProvider } = useSelectedProvider()
+  const {checkoutData , setCheckoutData, isLoadingCheckout, status, setStatus, setInvoiceId, setCodePix, setKeyPix, fetchCheckoutData} = useCheckout()
 
   const [metodoPagamento, setMetodoPagamento] = useState('credit_card'); // Cartão de crédito padrão
   const [isPayment, setIsPayment] = useState(false) // abre o modal de loading
   const [isPaymentFinally, setIsPaymentFinally] = useState(false) // define se o pagamento foi finalizado
   const [isPaymentFailed, setIsPaymentFailed] = useState(false) // define se houve erro ou nao ao processar pagamento
-  const navigate = useNavigate();
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  
 
   function calcularDataValidade(diasParaVencer, dataInicial = new Date()) {
     const data = new Date(dataInicial); // Cria uma cópia da data inicial
@@ -62,14 +64,11 @@ export default function Checkout() {
   }
 
   useEffect(() => {
-
     if(!isLoadingCheckout ) {
       if (!checkoutData) {
         navigate("/contrate-online");
         return;
-        
       } 
-
     }
       
   }, [isLoadingCheckout, checkoutData]);
@@ -87,50 +86,54 @@ export default function Checkout() {
   // efeito para identificar se o pedido já foi pago 
   useEffect(() => {
     const handleFinalizarCheckout = async () => {
-        if(status == 'Pago') {
-          console.log("Pedido pago com sucesso!, criando agendamentos...")
-          setIsPayment(true)
-
-          try {    
-              const results = await Promise.allSettled(
-                  checkoutData.map((agendamento) => createAgendamento(agendamento))
-              );
   
-              const rejected = results.filter((result) => result.status === 'rejected');
-  
-              if (rejected.length > 0) {
-                  console.error("Alguns agendamentos falharam:", rejected);
-                  alert("Alguns agendamentos não foram criados. Contate o suporte.");
+      if (status === "Pago") {
+        console.log("Pedido pago com sucesso!");
+        setIsPayment(true);
 
-              } else {
-                  try {
-                    const response = await removeCheckout()
-                    await fetchUserInfo(setUser)
-                    setIsPaymentFinally(true)
+        // Criar agendamentos
+        const agendamentoPromises = checkoutData.map(agendamento => createAgendamento(agendamento));
+        const agendamentoResults = await Promise.allSettled(agendamentoPromises);
+        const errosDeAgendamento = agendamentoResults.filter(result => result.status === "rejected");
 
-                  } catch (error) {
-                    console.log(error)
-                  }
-              }
+        if (errosDeAgendamento.length > 0) {
+          console.error("Alguns agendamentos falharam:", errosDeAgendamento);
+
+          // Notificar suporte (opcional: enviar para API de log/suporte)
+
+          // Informar o usuário
+          alert("Pagamento realizado com sucesso, mas houve falha ao criar alguns agendamentos. Nossa equipe já foi notificada e resolveremos o problema.");
+
+        } else {
+          try {
+            const response = await removeCheckout()
+            setPaymentStatus(null);
+            setStatus(null)
+            setInvoiceId(null)
+            setCodePix(null)
+            setKeyPix(null)
+            setIsPaymentFinally(true)
 
           } catch (error) {
-            console.error("Erro ao criar os agendamentos:", error);
-            alert("Erro ao criar agendamentos. Contate o suporte.");
-
-          } 
-          
-        } else {
-          console.log("Pedido ainda não foi pago.")
-
+            console.log(error)
+              
+          }
         }
-    }
 
-    if(checkoutData && status != "Andamento" && !isLoadingCheckout ) {
-      handleFinalizarCheckout()
-    }
+      } else {
+        console.log("Pedido ainda não foi pago.");
 
-  }, [checkoutData, status, sessionCode])
+      }
+    };
   
+    if (!isLoadingCheckout && !isPayment && checkoutData && status === "Pago") {
+      handleFinalizarCheckout();
+    } 
+
+
+  }, [checkoutData, status, isLoadingCheckout]);
+  
+
 
   return (
     <>
@@ -210,6 +213,8 @@ export default function Checkout() {
                       user={user}
                       checkoutData={checkoutData}
                       metodoPagamento={metodoPagamento}
+                      setPaymentStatus={setPaymentStatus}
+                      paymentStatus={paymentStatus}
                     />
                   )}
                 </div>
@@ -417,7 +422,9 @@ export default function Checkout() {
                               <Spinner size='lg'/>
                             </div>
                             <div>
-                              <h2 className='text-prim font-semibold'>Processando pagamento</h2>
+                              <h2 className='text-prim font-semibold text-center'>
+                                {metodoPagamento == 'credit_card' ? "Processando pagamento" : " Criando agendamentos, aguarde :)"} 
+                              </h2>
                             </div>
                           </>
                         )}

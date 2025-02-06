@@ -22,6 +22,28 @@ export const CheckoutProvider = ({ children }) => {
 
   const [isLoadingCheckout, setiIsLoadingCheckout] = useState(true); // Para controlar o estado de carregamento
   const { selectedProvider, setSelectedProvider } = useSelectedProvider()
+
+  const fetchCheckoutData = async () => {
+      
+    if(sessionCode) {
+      // setiIsLoadingCheckout(true); // Inicia o carregamento
+      try {
+        const response = await verifyCheckout(sessionCode); // Envia o sessionCode para a API
+        setCheckoutData(response?.data.data); // Atualiza com os dados retornados
+        setSelectedProvider(response?.data.user)
+        setStatus(response?.data?.status)
+        setInvoiceId(response?.data?.invoiceId)
+        setCodePix(response?.data?.qrCodePix)
+        setKeyPix(response?.data?.keyPix)
+        
+      } catch (error) {
+        console.error("Erro ao recuperar os dados de checkout:", error);
+        
+      } 
+      
+    } 
+    
+  }
   
   // Fazer a requisição para recuperar os dados do checkout usando o sessionCode
   useEffect(() => {
@@ -60,7 +82,7 @@ export const CheckoutProvider = ({ children }) => {
   }, [sessionCode]);
   
   return (
-    <CheckoutContext.Provider value={{ sessionCode, status, invoiceId, codePix, keyPix, checkoutData, isLoadingCheckout, setCheckoutData }}>
+    <CheckoutContext.Provider value={{ sessionCode, status, setStatus, invoiceId, setInvoiceId, codePix, setCodePix, setKeyPix, keyPix, checkoutData, isLoadingCheckout, setCheckoutData, fetchCheckoutData}}>
       {children}
     </CheckoutContext.Provider>
   );

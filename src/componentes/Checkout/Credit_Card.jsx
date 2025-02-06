@@ -6,8 +6,11 @@ import * as yup from "yup"
 import { obterTokenCartao } from '../../services/iuguApi'
 import { createAgendamento, criarFaturaCartao, removeCheckout } from '../../services/api'
 import { Button } from '@nextui-org/button'
+import { useCheckout } from '../../context/CheckoutData'
 
 export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPaymentFailed, metodoPagamento, checkoutData, calcularDataValidade, user}) {
+
+    const { setCheckoutData, setStatus, setInvoiceId, setCodePix, setKeyPix, } = useCheckout()
 
     const [dadosCartao, setDadosCartao] = useState({
         numero: null,
@@ -79,6 +82,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
 
                 // Criar agendamentos
                 const agendamentoPromises = checkoutData.map(agendamento => createAgendamento(agendamento));
+                
                 const agendamentoResults = await Promise.allSettled(agendamentoPromises);
 
                 const errosDeAgendamento = agendamentoResults.filter(result => result.status === "rejected");
@@ -99,8 +103,13 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                 } else {
                     try {
                         const response = await removeCheckout()
+                        setStatus(null)
+                        setInvoiceId(null)
+                        setCodePix(null)
+                        setKeyPix(null)
 
                     } catch (error) {
+                        console.log(error)
                         
                     }
 

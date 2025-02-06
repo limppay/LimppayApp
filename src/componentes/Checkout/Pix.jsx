@@ -7,16 +7,18 @@ import { criarFaturaPix, paymentCheckoutPix, removeCheckout } from '../../servic
 import io from 'socket.io-client';
 import { useCheckout } from '../../context/CheckoutData'
 
-export default function Pix({calcularDataValidade, user, checkoutData, metodoPagamento}) {
-    const { sessionCode, status, invoiceId, codePix, keyPix } = useCheckout()
+export default function Pix({calcularDataValidade, user, checkoutData, metodoPagamento, setPaymentStatus, paymentStatus}) {
+    const { isLoadingCheckout, sessionCode, status, invoiceId, codePix, keyPix, setInvoiceId, setCodePix, setKeyPix, fetchCheckoutData } = useCheckout()
 
     const [qrCodePix, setQrCodePix] = useState('');  // Estado para armazenar o QR Code PIX
     const [pixChave, setPixChave] = useState('');    // Estado para armazenar a chave PIX
     const [isLoading, setIsLoading] = useState(false)
-    const [paymentStatus, setPaymentStatus] = useState(null);
     const [ loading, setloandig ] = useState(false)
 
     console.log("Status do checkout: ", status)
+    // console.log("Fatura do checkout: ", invoiceId)
+    // console.log("Pix do checkout: ", keyPix)
+    // console.log("QrCODE do checkout: ", codePix)
 
     // salva no banco de dados a fatura do pix
     const handlePaymentePix = async (invoiceId, qrCodePix, keyPix) => {
@@ -48,7 +50,7 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
                 }
                 ],
                 payer: {
-                "cpf_cnpj": "08213350227",
+                "cpf_cnpj": "08213350227", // trocar para "user?.cpfCnpj"
                 "name": user.name
                 },
             }
@@ -56,6 +58,10 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
         
         setQrCodePix(response.data.pix.qrcode)
         setPixChave(response.data.pix.qrcode_text)
+
+        setInvoiceId(response.data.id)
+        setCodePix(response.data.pix.qrcode)
+        setKeyPix(response.data.pix.qrcode_text)
 
         handlePaymentePix(response.data.id, response.data.pix.qrcode, response.data.pix.qrcode_text)
         setIsLoading(true)
@@ -73,42 +79,12 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
         // Escutar eventos do status de pagamento
         socket.on('payment_status', async (data) => {
             if (data.status === 'paid') {
-                try {
-                    setPaymentStatus({
-                        status: 'Pago',
-                        amount: data.paidAmount,
-                        pixId: data.pixEndToEndId,
-                    });
-        
-                    const results = await Promise.allSettled(
-                        checkoutData.map((agendamento) => createAgendamento(agendamento))
-                    );
-        
-                    const rejected = results.filter((result) => result.status === 'rejected');
-        
-                    if (rejected.length > 0) {
-                        console.error("Alguns agendamentos falharam:", rejected);
-                        alert("Alguns agendamentos não foram criados. Contate o suporte.");
-                    } else {
-                        try {
-                            const response = await removeCheckout()
-
-                        } catch (error) {
-                        
-                        }
-                    }
-                } catch (error) {
-                    console.error("Erro ao criar os agendamentos:", error);
-                    alert("Erro ao criar agendamentos. Contate o suporte.");
-
-                } finally {
-                    reset();
-                    
-                }
+                await fetchCheckoutData()
 
             } else {
                 setPaymentStatus({ status: 'Falhou' });
-                alert("Pagamento falhou. Tente novamente.");
+                alert("Pagamento falhou. Tente novamente ou contate o suporte.");
+
             }
         });
     
@@ -120,17 +96,34 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
     }, [sessionCode]);
     
     useEffect(() => {
-        if(metodoPagamento == "pix" && !invoiceId) {
-            createPix()
+        const handleVerify = async () => {
+            try {
+                await fetchCheckoutData()
+                
+                if (isLoadingCheckout || metodoPagamento !== "pix") return; // Evita execuções desnecessárias
+                
+                if (!invoiceId) {  
+                    console.log("Fatura não encontrada ou incompleta, gerando uma nova...");
+                    createPix();
+        
+                } else {
+                    console.log("Já existe uma fatura em aberto.");
+                    setQrCodePix(codePix);
+                    setPixChave(keyPix);
+        
+                }
 
-        } else if (metodoPagamento == "pix" && invoiceId) {
-            console.log("Já existe uma fatura em aberto.")
-            setQrCodePix(codePix)
-            setPixChave(keyPix)
+            } catch (error) {
+                console.log(error)
+
+            }
         }
 
-    }, [invoiceId, checkoutData])
+        handleVerify()
 
+    }, [invoiceId, codePix, keyPix, isLoadingCheckout]);
+    
+    // fetchCheckoutData()
     return (
         <div className='flex justify-center w-full h-full'>
             {qrCodePix && !loading ? (
