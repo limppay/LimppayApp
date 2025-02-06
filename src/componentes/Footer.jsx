@@ -27,7 +27,7 @@ export default function Footer() {
         {/* Contato */}
         <div className="flex flex-col md:w-6/12">
           <h3 className="text-lg font-semibold mb-2 text-gray-800">Contato</h3>
-          <p className="text-gray-700 text-sm">Telefone: (92) 9264 presta8251</p>
+          <p className="text-gray-700 text-sm">Telefone: (92) 9264-8251</p>
           <p className="text-gray-700 text-sm">Email: contato@limppay.com</p>
           <div className="flex gap-4 items-center justify-start mt-4">
             <a href="https://www.instagram.com/limppay/" target="_blank" rel="noreferrer">
