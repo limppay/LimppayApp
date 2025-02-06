@@ -9,7 +9,7 @@ const CheckoutNotification = () => {
   const { user } = useUser()
   const {setStatus, setInvoiceId, setCodePix, setKeyPix } = useCheckout()
 
-  const [showNotification, setShowNotification] = useState(true);
+  const [showNotification, setShowNotification] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
