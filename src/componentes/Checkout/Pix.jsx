@@ -123,7 +123,6 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
 
     }, [invoiceId, codePix, keyPix, isLoadingCheckout]);
     
-    // fetchCheckoutData()
     return (
         <div className='flex justify-center w-full h-full'>
             {qrCodePix && !loading ? (

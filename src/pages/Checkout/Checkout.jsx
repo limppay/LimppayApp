@@ -133,8 +133,6 @@ export default function Checkout() {
 
   }, [checkoutData, status, isLoadingCheckout]);
   
-
-
   return (
     <>
       <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
