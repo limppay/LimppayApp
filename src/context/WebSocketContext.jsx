@@ -65,7 +65,7 @@ export const WebSocketProvider = ({ children }) => {
     const prod = "https://limppay-api-production.up.railway.app/";
     const local = "http://localhost:3000/";
 
-    const newSocket = io(prod, {
+    const newSocket = io(import.meta.env.VITE_URL_API, {
       query: {
         appId: user?.id || prestador?.id,
         username: user?.name || prestador?.name

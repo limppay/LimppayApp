@@ -50,7 +50,7 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
                 }
                 ],
                 payer: {
-                "cpf_cnpj": "08213350227", // trocar para "user?.cpfCnpj"
+                "cpf_cnpj": user?.cpfCnpj, // trocar para "user?.cpfCnpj"
                 "name": user.name
                 },
             }
@@ -72,7 +72,7 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
         if (!sessionCode) return;
     
         // Conectar ao WebSocket
-        const socket = io('https://limppay-api-production.up.railway.app', {
+        const socket = io(import.meta.env.VITE_URL_API, {
             query: { sessionCode }, // Código da sessão como parâmetro
         });
     

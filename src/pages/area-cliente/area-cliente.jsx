@@ -68,7 +68,7 @@ const AreaCliente = () => {
             };
 
             const local = 'http://localhost:3000/push-notifications/subscribe/cliente'
-            const prod = 'https://limppay-api-production.up.railway.app/push-notifications/subscribe/cliente'
+            const prod = `${import.meta.env.VITE_URL_API}/push-notifications/subscribe/cliente`
             
             try {
                 // Usando o Axios para enviar a requisição
@@ -105,7 +105,7 @@ const AreaCliente = () => {
         };
 
         const local = 'http://localhost:3000/push-notifications/subscribe/cliente'
-        const prod = 'https://limppay-api-production.up.railway.app/push-notifications/subscribe/cliente'
+        const prod = `${import.meta.env.VITE_URL_API}/push-notifications/subscribe/cliente`
         
         try {
             // Usando o Axios para enviar a requisição

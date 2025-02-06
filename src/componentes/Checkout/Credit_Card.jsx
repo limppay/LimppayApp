@@ -67,7 +67,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                     due_date: calcularDataValidade(2),
                     payer: {
                         name: data.nome,
-                        cpf_cnpj: "08213350227",
+                        cpf_cnpj: user?.cpfCnpj,
                     },
                     token,
                     credit_card: {
