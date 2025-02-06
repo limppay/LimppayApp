@@ -46,7 +46,7 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
                 {
                     "description": "Fatura do seu Pedido",
                     "quantity": checkoutData.length,
-                    "price_cents": 1 * 100
+                    "price_cents": (checkoutData[0].valorLiquido / checkoutData.length) * 100
                 }
                 ],
                 payer: {
