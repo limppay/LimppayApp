@@ -7,9 +7,9 @@ import { useUser } from "../../context/UserProvider";
 
 const CheckoutNotification = () => {
   const { user } = useUser()
-  const {setStatus, setInvoiceId, setCodePix, setKeyPix, } = useCheckout()
+  const {setStatus, setInvoiceId, setCodePix, setKeyPix } = useCheckout()
 
-  const [showNotification, setShowNotification] = useState(false);
+  const [showNotification, setShowNotification] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +36,6 @@ const CheckoutNotification = () => {
 
     try {
       const response = await removeCheckout()
-      setPaymentStatus(null)
       setStatus(null)
       setInvoiceId(null)
       setCodePix(null)
@@ -51,6 +50,7 @@ const CheckoutNotification = () => {
 
 
     } catch (error) {
+      console.log(error)
       
     }
 
