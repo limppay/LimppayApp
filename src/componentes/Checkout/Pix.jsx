@@ -3,12 +3,12 @@ import { Spinner } from '@nextui-org/react'
 import { Snippet } from '@nextui-org/snippet'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { criarFaturaPix, paymentCheckoutPix, removeCheckout } from '../../services/api'
+import { criarFaturaPix, paymentCheckoutPix, removeCheckout, verifyCheckout } from '../../services/api'
 import io from 'socket.io-client';
 import { useCheckout } from '../../context/CheckoutData'
 
 export default function Pix({calcularDataValidade, user, checkoutData, metodoPagamento, setPaymentStatus, paymentStatus}) {
-    const { isLoadingCheckout, sessionCode, status, invoiceId, codePix, keyPix, setInvoiceId, setCodePix, setKeyPix, fetchCheckoutData } = useCheckout()
+    const { isLoadingCheckout, sessionCode, status, setInvoiceId, setCodePix, setKeyPix, fetchCheckoutData } = useCheckout()
 
     const [qrCodePix, setQrCodePix] = useState('');  // Estado para armazenar o QR Code PIX
     const [pixChave, setPixChave] = useState('');    // Estado para armazenar a chave PIX
@@ -16,9 +16,6 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
     const [ loading, setloandig ] = useState(false)
 
     console.log("Status do checkout: ", status)
-    // console.log("Fatura do checkout: ", invoiceId)
-    // console.log("Pix do checkout: ", keyPix)
-    // console.log("QrCODE do checkout: ", codePix)
 
     // salva no banco de dados a fatura do pix
     const handlePaymentePix = async (invoiceId, qrCodePix, keyPix) => {
@@ -67,6 +64,40 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
         setIsLoading(true)
     }
 
+    useEffect(() => {
+        const handleVerify = async () => {
+            try {
+                console.log("Codigo de sessão: ", sessionCode)
+
+                if (isLoadingCheckout || metodoPagamento !== "pix" || !sessionCode) return; // Evita execuções desnecessárias
+
+                const response = await verifyCheckout(sessionCode); // Envia o sessionCode para a API
+                console.log("Fatura: ", response?.data?.invoiceId)
+                console.log("Chave Pix: ", response?.data?.keyPix)
+                console.log("QR Pix: ", response?.data?.qrCodePix)
+                
+                
+                if (!response?.data?.invoiceId) {  
+                    console.log("Fatura não encontrada ou incompleta, gerando uma nova...");
+                    createPix();
+        
+                } else {
+                    console.log("Já existe uma fatura em aberto.");
+                    setQrCodePix(response?.data?.qrCodePix);
+                    setPixChave(response?.data?.keyPix);
+        
+                }
+
+            } catch (error) {
+                console.log(error)
+
+            }
+        }
+
+        handleVerify()
+
+    }, []);
+
     // efeito para atualizar a pagina ao efetuar o pagamento via pix
     useEffect(() => {
         if (!sessionCode) return;
@@ -94,34 +125,6 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
         };
 
     }, [sessionCode]);
-    
-    useEffect(() => {
-        const handleVerify = async () => {
-            try {
-                await fetchCheckoutData()
-                
-                if (isLoadingCheckout || metodoPagamento !== "pix") return; // Evita execuções desnecessárias
-                
-                if (!invoiceId) {  
-                    console.log("Fatura não encontrada ou incompleta, gerando uma nova...");
-                    createPix();
-        
-                } else {
-                    console.log("Já existe uma fatura em aberto.");
-                    setQrCodePix(codePix);
-                    setPixChave(keyPix);
-        
-                }
-
-            } catch (error) {
-                console.log(error)
-
-            }
-        }
-
-        handleVerify()
-
-    }, [invoiceId, codePix, keyPix, isLoadingCheckout]);
     
     return (
         <div className='flex justify-center w-full h-full'>

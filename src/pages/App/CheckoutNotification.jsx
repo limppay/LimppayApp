@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
 import { useCheckout } from "../../context/CheckoutData";
-import { removeCheckout } from "../../services/api";
+import { cancelarFatura, removeCheckout, verifyCheckout } from "../../services/api";
 import { useUser } from "../../context/UserProvider";
 
 const CheckoutNotification = () => {
   const { user } = useUser()
-  const {setStatus, setInvoiceId, setCodePix, setKeyPix } = useCheckout()
+  const {setStatus, setInvoiceId, setCodePix, setKeyPix, sessionCode } = useCheckout()
 
   const [showNotification, setShowNotification] = useState(false);
   const navigate = useNavigate();
@@ -33,9 +33,22 @@ const CheckoutNotification = () => {
   const [loading, setLoading] = useState(false)
   const handleCloseNotification = async () => {
     setLoading(true)
-
     try {
+      if(!sessionCode) return
+      const verify = await verifyCheckout(sessionCode)
+
+      if(verify?.data?.invoiceId) {
+        const response = await cancelarFatura(verify?.data?.invoiceId)
+        console.log("Fatura cancelada com sucesso!")
+
+      } else {
+        console.log("Nenhuma fatura criada nesse pedido.")
+
+      }
+
       const response = await removeCheckout()
+      console.log("Pedido cancelado com sucesso!")
+
       setStatus(null)
       setInvoiceId(null)
       setCodePix(null)
@@ -48,11 +61,11 @@ const CheckoutNotification = () => {
       setTimeout(() => setShowNotification(false), 1000);
       setLoading(false)
 
-
     } catch (error) {
       console.log(error)
       
     }
+
 
   };
 
