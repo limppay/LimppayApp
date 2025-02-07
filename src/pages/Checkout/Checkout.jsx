@@ -19,7 +19,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const {user, setUser, loadingUser} = useUser()
   const { selectedProvider } = useSelectedProvider()
-  const {checkoutData , setCheckoutData, isLoadingCheckout, sessionCode, setiIsLoadingCheckout} = useCheckout()
+  const {checkoutData , setCheckoutData, isLoadingCheckout, sessionCode, setiIsLoadingCheckout, setStatus, setInvoiceId, setCodePix, setKeyPix} = useCheckout()
 
   const [metodoPagamento, setMetodoPagamento] = useState('credit_card'); // Cartão de crédito padrão
   const [isPayment, setIsPayment] = useState(false) // abre o modal de loading
@@ -86,13 +86,11 @@ export default function Checkout() {
   // efeito para identificar se o pedido já foi pago 
   useEffect(() => {
     const handleFinalizarCheckout = async () => {
-      setiIsLoadingCheckout(true)
       try {
           console.log("Codigo de sessão: ", sessionCode)
           if (!sessionCode) return; // Evita execuções desnecessárias
 
           const response = await verifyCheckout(sessionCode); // Envia o sessionCode para a API
-          setiIsLoadingCheckout(false)
 
           console.log("Status do pedido: ", response?.data?.status)
 
@@ -135,7 +133,6 @@ export default function Checkout() {
           }
 
       } catch (error) {
-        setiIsLoadingCheckout(false)
         console.log(error)
 
       }
@@ -145,7 +142,7 @@ export default function Checkout() {
     
     handleFinalizarCheckout();
 
-  }, [sessionCode, checkoutData]);
+  }, [sessionCode, checkoutData, isLoadingCheckout]);
   
   return (
     <>
