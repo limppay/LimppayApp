@@ -238,9 +238,60 @@ export default function StepTwo({old, etapaCadastro}) {
     const handleToggleFoto = () => setIsOpenFoto(!isOpenFoto);
 
     const Banco = [
-        {text: "Santander", value: 1}
-
-    ]
+        { text: "Bradesco", value: 800 },
+        { text: "Pagseguro", value: 801 },
+        { text: "Caixa Econômica", value: 802 },
+        { text: "Banco C6", value: 803 },
+        { text: "Banco da Amazonia", value: 804 },
+        { text: "Santander", value: 805 },
+        { text: "Banco Original", value: 806 },
+        { text: "Nubank", value: 807 },
+        { text: "Banco do Brasil", value: 808 },
+        { text: "Itaú", value: 809 },
+        { text: "Inter", value: 811 },
+        { text: "Banrisul", value: 812 },
+        { text: "Sicredi", value: 813 },
+        { text: "Sicoob", value: 814 },
+        { text: "BRB", value: 815 },
+        { text: "Via Credi", value: 816 },
+        { text: "Neon", value: 817 },
+        { text: "Votorantim", value: 818 },
+        { text: "Safra", value: 819 },
+        { text: "Modal", value: 820 },
+        { text: "Banestes", value: 821 },
+        { text: "Unicred", value: 822 },
+        { text: "Money Plus", value: 823 },
+        { text: "Mercantil do Brasil", value: 824 },
+        { text: "JP Morgan", value: 825 },
+        { text: "Gerencianet Pagamentos do Brasil", value: 826 },
+        { text: "BS2", value: 827 },
+        { text: "Banco Topazio", value: 828 },
+        { text: "Uniprime", value: 829 },
+        { text: "Stone", value: 830 },
+        { text: "Banco Daycoval", value: 831 },
+        { text: "Rendimento", value: 832 },
+        { text: "Banco do Nordeste", value: 833 },
+        { text: "Citibank", value: 834 },
+        { text: "PJBank", value: 835 },
+        { text: "Cooperativa Central de Credito Noroeste Brasileiro", value: 836 },
+        { text: "Uniprime Norte do Paraná", value: 837 },
+        { text: "Global SCM", value: 838 },
+        { text: "Next", value: 839 },
+        { text: "Cora", value: 840 },
+        { text: "Mercado Pago", value: 841 },
+        { text: "BNP Paribas Brasil", value: 842 },
+        { text: "Juno", value: 843 },
+        { text: "Cresol", value: 844 },
+        { text: "BRL Trust DTVM", value: 845 },
+        { text: "Banco Banese", value: 846 },
+        { text: "Banco BTG Pactual", value: 847 },
+        { text: "Banco Omni", value: 848 },
+        { text: "Acesso Soluções de Pagamento", value: 849 },
+        { text: "CCR de São Miguel do Oeste", value: 850 },
+        { text: "Polocred", value: 851 },
+        { text: "Ótimo", value: 852 }
+    ];
+    
 
     const [cepError, setCepError] = useState("")
 
@@ -352,13 +403,14 @@ export default function StepTwo({old, etapaCadastro}) {
                         </div>
                     </div>
 
-                    <div className='grid sm:grid-cols-2 '>
-                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
+                    <div className='grid sm:grid-cols-2 w-full'>
+                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col overflow-hidden">
                             <label htmlFor="banco" className="text-prim">Banco</label>
                             <select  
                             id="banco"
+                            defaultValue={prestador?.banco || ''} 
                             {...register("banco")}
-                            className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim">
+                            className="border border-bord rounded-md p-3 pt-2 pb-2 text-prim focus:outline-prim ">
                                 <option value="" >Selecione</option>
                                 {Banco.map((options, index) => (
                                     <option key={index} value={options.value}>{options.text}</option>
@@ -367,13 +419,14 @@ export default function StepTwo({old, etapaCadastro}) {
                             {errors.banco && 
                             <span className="text-error opacity-75">{errors.banco?.message}</span>}           
                         </div>
-                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col">
+                        <div className="mt-4 p-9 pt-0 pb-0 flex flex-col ">
                             <label htmlFor="agencia" className="text-prim">Agência</label>
                             <input 
-                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full "
+                            className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter  "
                             id="agencia" 
                             type="text" 
-                            placeholder="Somente números" 
+                            placeholder="Somente números"
+                            defaultValue={prestador?.agencia || ''} 
                             {...register("agencia")}
                             />
                             {errors.agencia && 
@@ -385,7 +438,8 @@ export default function StepTwo({old, etapaCadastro}) {
                             className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                             id="conta" 
                             type="text" 
-                            placeholder="Somente números" 
+                            placeholder="Somente números"
+                            defaultValue={prestador?.conta || ''} 
                             {...register("conta")}
                             />
                             {errors.conta && 
@@ -398,7 +452,8 @@ export default function StepTwo({old, etapaCadastro}) {
                             className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                             id="pix" 
                             type="text" 
-                            placeholder="Digite sua chave pix" 
+                            placeholder="Digite sua chave pix"
+                            defaultValue={prestador?.pix || ''} 
                             {...register("pix")}
                             />
                             {errors.pix && 
@@ -414,7 +469,8 @@ export default function StepTwo({old, etapaCadastro}) {
                             className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter "
                             id="rg" 
                             type="text" 
-                            placeholder="Somente números" 
+                            placeholder="Somente números"
+                            value={prestador?.rg || ''} 
                             {...register("rg")}
                             />
                             {errors.rg && 
@@ -676,14 +732,14 @@ export default function StepTwo({old, etapaCadastro}) {
                 </div>
                 
                 <div className="mt-4 pl-9 pr-9 pb-9 space-y-5">
-                    <Button type="submit" className="text-center w-full md:max-w-md   bg-des rounded-md text-white p-2 hover:bg-sec transition-all " id="buttonSubmit"  >{loading ? <Spinner /> : 'Enviar'}</Button>
+                    <Button type="submit" className="text-center w-full md:max-w-md   bg-des rounded-md text-white p-2 hover:bg-sec transition-all " id="buttonSubmit" isDisabled={loading} >{loading ? <Spinner /> : 'Enviar'}</Button>
                 </div>
             </form>
 
             <Modal 
                 backdrop="opaque" 
                 isOpen={openSucess} 
-                onClose={setOpenSucess}
+                onClose={() => {}}
                 placement='center'
                 classNames={{
                     backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
@@ -713,6 +769,11 @@ export default function StepTwo({old, etapaCadastro}) {
  
                     </ModalBody>
                     <ModalFooter>
+                        <div>
+                            <Button className='bg-desSec text-white' onPress={() => window.location.reload()}>
+                                Continuar
+                            </Button>
+                        </div>
                     </ModalFooter>
                     </>
                 )}

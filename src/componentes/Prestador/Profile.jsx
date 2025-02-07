@@ -21,9 +21,59 @@ export default function Profile() {
     ];
 
     const Banco = [
-        {text: "Santander", value: 1}
-
-    ]
+        { text: "Bradesco", value: 800 },
+        { text: "Pagseguro", value: 801 },
+        { text: "Caixa Econômica", value: 802 },
+        { text: "Banco C6", value: 803 },
+        { text: "Banco da Amazonia", value: 804 },
+        { text: "Santander", value: 805 },
+        { text: "Banco Original", value: 806 },
+        { text: "Nubank", value: 807 },
+        { text: "Banco do Brasil", value: 808 },
+        { text: "Itaú", value: 809 },
+        { text: "Inter", value: 811 },
+        { text: "Banrisul", value: 812 },
+        { text: "Sicredi", value: 813 },
+        { text: "Sicoob", value: 814 },
+        { text: "BRB", value: 815 },
+        { text: "Via Credi", value: 816 },
+        { text: "Neon", value: 817 },
+        { text: "Votorantim", value: 818 },
+        { text: "Safra", value: 819 },
+        { text: "Modal", value: 820 },
+        { text: "Banestes", value: 821 },
+        { text: "Unicred", value: 822 },
+        { text: "Money Plus", value: 823 },
+        { text: "Mercantil do Brasil", value: 824 },
+        { text: "JP Morgan", value: 825 },
+        { text: "Gerencianet Pagamentos do Brasil", value: 826 },
+        { text: "BS2", value: 827 },
+        { text: "Banco Topazio", value: 828 },
+        { text: "Uniprime", value: 829 },
+        { text: "Stone", value: 830 },
+        { text: "Banco Daycoval", value: 831 },
+        { text: "Rendimento", value: 832 },
+        { text: "Banco do Nordeste", value: 833 },
+        { text: "Citibank", value: 834 },
+        { text: "PJBank", value: 835 },
+        { text: "Cooperativa Central de Credito Noroeste Brasileiro", value: 836 },
+        { text: "Uniprime Norte do Paraná", value: 837 },
+        { text: "Global SCM", value: 838 },
+        { text: "Next", value: 839 },
+        { text: "Cora", value: 840 },
+        { text: "Mercado Pago", value: 841 },
+        { text: "BNP Paribas Brasil", value: 842 },
+        { text: "Juno", value: 843 },
+        { text: "Cresol", value: 844 },
+        { text: "BRL Trust DTVM", value: 845 },
+        { text: "Banco Banese", value: 846 },
+        { text: "Banco BTG Pactual", value: 847 },
+        { text: "Banco Omni", value: 848 },
+        { text: "Acesso Soluções de Pagamento", value: 849 },
+        { text: "CCR de São Miguel do Oeste", value: 850 },
+        { text: "Polocred", value: 851 },
+        { text: "Ótimo", value: 852 }
+    ];
 
     const estadoCivilTexto = EstadoCivil.find(item => item.value === prestador?.estadoCivil)?.text || '';
     const bancoTexto = Banco.find(item => item.value === prestador?.banco)?.text || '';
