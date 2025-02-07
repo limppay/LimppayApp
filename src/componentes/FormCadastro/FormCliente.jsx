@@ -14,7 +14,7 @@ import {useNavigate } from 'react-router-dom';
 import { Logo } from "../imports.jsx"
 
 import User from "../../assets/img/diarista-cadastro/user.webp"
-import { Avatar, Spinner } from "@nextui-org/react"
+import { Avatar, Spinner, Tooltip } from "@nextui-org/react"
 import {Button} from "@nextui-org/react";
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
 
@@ -336,6 +336,8 @@ export default function FormCliente() {
         return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são números
     };
     
+    const [isOpenAlert, setIsOpenAlert] = useState(false);
+    const handleToggleAlert = () => setIsOpenAlert (!isOpenAlert);
       
 
   return (
@@ -457,9 +459,27 @@ export default function FormCliente() {
                 
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
                     <div className="flex gap-2 justify-between">
-                        <label htmlFor="CpfCnpj" className="text-prim">
-                            {cpfCnpj ? cpfCnpj : "CPF / CNPJ"} {/* Exibe CPF ou CNPJ se selecionado */}
-                        </label>
+                        <div>
+                            <label htmlFor="CpfCnpj" className="text-prim">
+                                {cpfCnpj ? cpfCnpj : "CPF / CNPJ"} {/* Exibe CPF ou CNPJ se selecionado */}
+                            </label>
+                            <Tooltip
+                                content="Atenção! para que os metodos de pagamento funcione corretamente, preencha esse campo com um CPF / CNPJ válido."
+                                isOpen={isOpenAlert}
+                                onOpenChange={setIsOpenAlert}
+                                size="md"
+                                radius="md"
+                                shadow="sm"
+                                placement="top"
+                                showArrow
+                                shouldFlip
+                            >
+                                <button type="button" onClick={handleToggleAlert} onMouseEnter={() => setIsOpenAlert(true)} onMouseLeave={() => setIsOpenAlert(false)} className="w-5 h-5 text-white bg-prim rounded-full">
+                                    ?
+                                </button>
+                            </Tooltip>
+
+                        </div>
 
                         {cpfCnpj === 'CPF' || cpfCnpj === 'CNPJ' ? (
                             <p onClick={voltarParaSelectCpfCnpj} className="cursor-pointer text-prim">Voltar para seleção</p>
