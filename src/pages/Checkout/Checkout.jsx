@@ -83,12 +83,18 @@ export default function Checkout() {
     navigate('/contrate-online')
   }
 
+  console.log("Codigo de sessão: ", sessionCode)
+  if (!sessionCode) {            
+    setiIsLoadingCheckout(true)
+    window.location.reload()
+  }
+
   // efeito para identificar se o pedido já foi pago 
   useEffect(() => {
     const handleFinalizarCheckout = async () => {
       try {
           console.log("Codigo de sessão: ", sessionCode)
-          if (!sessionCode) return; // Evita execuções desnecessárias
+          if (!sessionCode) return
 
           const response = await verifyCheckout(sessionCode); // Envia o sessionCode para a API
 

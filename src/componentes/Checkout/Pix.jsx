@@ -178,6 +178,7 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
                                 </Snippet>
                                 </div>
                             </div>
+                            <span className='pt-[2vh] text-prim text-sm text-center'>Realizou o pagamento e não foi atualizado? tente atualizar a pagina :)</span>
                         </div>
                     </>
                 )
