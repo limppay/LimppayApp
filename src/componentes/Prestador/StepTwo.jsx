@@ -470,7 +470,7 @@ export default function StepTwo({old, etapaCadastro}) {
                             id="rg" 
                             type="text" 
                             placeholder="Somente números"
-                            value={prestador?.rg || ''} 
+                            defaultValue={prestador?.rg || ''} 
                             {...register("rg")}
                             />
                             {errors.rg && 
