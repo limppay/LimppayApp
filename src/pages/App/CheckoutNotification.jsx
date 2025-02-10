@@ -7,7 +7,7 @@ import { useUser } from "../../context/UserProvider";
 
 const CheckoutNotification = () => {
   const { user } = useUser()
-  const {setStatus, setInvoiceId, setCodePix, setKeyPix, sessionCode } = useCheckout()
+  const {setStatus, setInvoiceId, setCodePix, setKeyPix, sessionCode, setSessionCodeState } = useCheckout()
 
   const [showNotification, setShowNotification] = useState(false);
   const navigate = useNavigate();
@@ -53,6 +53,7 @@ const CheckoutNotification = () => {
       setInvoiceId(null)
       setCodePix(null)
       setKeyPix(null)
+      setSessionCodeState(null)
 
       // Oculta a notificação
       setShowNotification(false);

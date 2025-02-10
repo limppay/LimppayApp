@@ -101,7 +101,7 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
     // efeito para atualizar a pagina ao efetuar o pagamento via pix
     useEffect(() => {
         if (!sessionCode) return;
-    
+
         // Conectar ao WebSocket
         const socket = io(import.meta.env.VITE_URL_API, {
             query: { sessionCode }, // Código da sessão como parâmetro

@@ -82,7 +82,7 @@ export const CheckoutProvider = ({ children }) => {
   }, [sessionCode]);
   
   return (
-    <CheckoutContext.Provider value={{ sessionCode, status, setStatus, invoiceId, setInvoiceId, codePix, setCodePix, setKeyPix, keyPix, checkoutData, isLoadingCheckout, setCheckoutData, fetchCheckoutData, setiIsLoadingCheckout}}>
+    <CheckoutContext.Provider value={{ sessionCode, setSessionCodeState, status, setStatus, invoiceId, setInvoiceId, codePix, setCodePix, setKeyPix, keyPix, checkoutData, isLoadingCheckout, setCheckoutData, fetchCheckoutData, setiIsLoadingCheckout}}>
       {children}
     </CheckoutContext.Provider>
   );

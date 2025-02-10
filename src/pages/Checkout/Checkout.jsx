@@ -19,7 +19,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const {user, setUser, loadingUser} = useUser()
   const { selectedProvider } = useSelectedProvider()
-  const {checkoutData , setCheckoutData, isLoadingCheckout, sessionCode, setiIsLoadingCheckout, setStatus, setInvoiceId, setCodePix, setKeyPix} = useCheckout()
+  const {checkoutData , setCheckoutData, isLoadingCheckout, sessionCode, setiIsLoadingCheckout, setStatus, setInvoiceId, setCodePix, setKeyPix, setSessionCodeState} = useCheckout()
 
   const [metodoPagamento, setMetodoPagamento] = useState('credit_card'); // Cartão de crédito padrão
   const [isPayment, setIsPayment] = useState(false) // abre o modal de loading
@@ -126,6 +126,7 @@ export default function Checkout() {
                 setInvoiceId(null)
                 setCodePix(null)
                 setKeyPix(null)
+                setSessionCodeState(null)
                 setIsPaymentFinally(true)
 
               } catch (error) {
