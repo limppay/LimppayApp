@@ -75,11 +75,13 @@ export default function Checkout() {
 
   const HandleContinue = () => {
     setCheckoutData(null)
+    setSessionCodeState(null)
     navigate('/area-cliente')
   }
 
   const HandleNew = () => {
     setCheckoutData(null)
+    setSessionCodeState(null)
     navigate('/contrate-online')
   }
 
@@ -126,7 +128,6 @@ export default function Checkout() {
                 setInvoiceId(null)
                 setCodePix(null)
                 setKeyPix(null)
-                setSessionCodeState(null)
                 setIsPaymentFinally(true)
 
               } catch (error) {
