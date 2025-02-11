@@ -42,7 +42,7 @@ export default function ResetPasswordCliente() {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/auth/verify-reset-token?token=${token}`);
+        const response = await axios.get(`${import.meta.env.VITE_URL_API}/auth/verify-reset-token?token=${token}`);
         setTokenValid(response.data.valid);
         
       } catch (error) {
