@@ -187,6 +187,17 @@ export default function Pedidos({setScreenSelected}) {
         
         return isAgendado && isDataValida;
     };
+
+    const formatarTempoPausado = (tempoMs) => {
+        const minutos = Math.floor(tempoMs / 60000);
+        const horas = Math.floor(minutos / 60);
+        const minutosRestantes = minutos % 60;
+      
+        if (horas > 0) {
+          return `${horas}h ${minutosRestantes}min`;
+        }
+        return `${minutosRestantes} min`;
+    };
     
     return (
         <section className='w-full  gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
@@ -626,7 +637,9 @@ export default function Pedidos({setScreenSelected}) {
 
                                                                     <p>
                                                                         <b>Tempo de repouso: </b>
-                                                                        {agendamento?.totalPausado ? (agendamento?.totalPausado / 60000).toFixed(2) + " min" : "0 min"}
+                                                                        {agendamento?.totalPausado 
+                                                                        ? formatarTempoPausado(agendamento.totalPausado) 
+                                                                        : "0 min"}
                                                                     </p>
 
                                                                     <p>

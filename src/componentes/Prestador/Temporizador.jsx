@@ -82,6 +82,18 @@ const Temporizador = ({ agendamento, setRunnig }) => {
 
   }, [tempoRestante, setTempoRestante, agendamento, prestador])
 
+  const formatarTempoPausado = (tempoMs) => {
+    const minutos = Math.floor(tempoMs / 60000);
+    const horas = Math.floor(minutos / 60);
+    const minutosRestantes = minutos % 60;
+  
+    if (horas > 0) {
+      return `${horas}h ${minutosRestantes}min`;
+    }
+    return `${minutosRestantes} min`;
+  };
+  
+
 
   return (
     <div className="flex flex-col items-center gap-5 h-full">
@@ -107,9 +119,13 @@ const Temporizador = ({ agendamento, setRunnig }) => {
 
           <div className="md:text-center">
             <h3 className="font-semibold">Tempo de repouso</h3>
-            <span>{agendamento?.totalPausado ? (agendamento?.totalPausado / 60000).toFixed(2) + " min" : "0 min"} </span>
-
+            <span>
+              {agendamento?.totalPausado 
+                ? formatarTempoPausado(agendamento.totalPausado) 
+                : "0 min"}
+            </span>
           </div>
+
 
           <div className="col-span-2 md:text-center">
             <h3 className="font-semibold">Previsão para finalizar o serviço</h3>
