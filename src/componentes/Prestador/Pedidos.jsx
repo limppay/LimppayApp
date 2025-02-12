@@ -634,6 +634,16 @@ export default function Pedidos({setScreenSelected}) {
                                                                             minute: '2-digit',
                                                                         })}
                                                                     </p>
+                                                                    <p>
+                                                                        <b>Data e hora que terminou: </b>
+                                                                        {new Date(agendamento?.timeFinally).toLocaleString('pt-BR', {
+                                                                            day: '2-digit',
+                                                                            month: '2-digit',
+                                                                            year: 'numeric',
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit',
+                                                                        })}
+                                                                    </p>
 
                                                                     <p>
                                                                         <b>Tempo de repouso: </b>
@@ -659,16 +669,7 @@ export default function Pedidos({setScreenSelected}) {
                                                                     </p>
 
 
-                                                                    <p>
-                                                                        <b>Data e hora que terminou: </b>
-                                                                        {new Date(agendamento?.timeFinally).toLocaleString('pt-BR', {
-                                                                            day: '2-digit',
-                                                                            month: '2-digit',
-                                                                            year: 'numeric',
-                                                                            hour: '2-digit',
-                                                                            minute: '2-digit',
-                                                                        })}
-                                                                    </p>
+                                                                    
                                                                 </>
                                                             )}
 
