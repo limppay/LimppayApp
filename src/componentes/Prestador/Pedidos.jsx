@@ -55,28 +55,35 @@ export default function Pedidos({setScreenSelected}) {
         return statusMatch;
     })
    
+    // const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
     const hoje = new Date();
-    const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+
+    // Remover horas para comparar apenas a data
+    const hojeSemHora = Date.UTC(
+      hoje.getUTCFullYear(),
+      hoje.getUTCMonth(),
+      hoje.getUTCDate()
+    );
     
     const proximoAgendamento = prestador?.Agendamentos
     ?.filter(agendamento => {
-      const dataServico = new Date(agendamento.dataServico);
-      const dataServicoSemHora = Date.UTC(
-        dataServico.getUTCFullYear(),
-        dataServico.getUTCMonth(),
-        dataServico.getUTCDate()
-      );
-  
-      const hojeSemHora = Date.UTC(
-        hoje.getUTCFullYear(),
-        hoje.getUTCMonth(),
-        hoje.getUTCDate()
-      );
-  
-      const statusValido = agendamento.status !== "Cancelado" && agendamento.status !== "Realizado";
-      return dataServicoSemHora === hojeSemHora && statusValido;
+        const dataServico = new Date(agendamento.dataServico);
+        const dataServicoSemHora = Date.UTC(
+            dataServico.getUTCFullYear(),
+            dataServico.getUTCMonth(),
+            dataServico.getUTCDate()
+        );
+
+        // Verifica se o agendamento ainda está em andamento ou em repouso
+        const statusValido = !["Cancelado", "Realizado"].includes(agendamento.status);
+
+        // Manter apenas agendamentos do dia ou não concluídos dos dias anteriores
+        return (dataServicoSemHora <= hojeSemHora && statusValido);
     })
     .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
+    
+    
+    
     
     const handleIniciarAgendamento = async (agendamento) => {
         setLoading(true);
@@ -244,7 +251,7 @@ export default function Pedidos({setScreenSelected}) {
                             <Temporizador
                                 agendamento={proximoAgendamento}
                                 setRunnig={setRunnig}
-                                setDisablePause={setDisablePause}
+                                // setDisablePause={setDisablePause}
                             />
                         </div>
 
@@ -302,7 +309,7 @@ export default function Pedidos({setScreenSelected}) {
                                             </button>
                                         </a>
 
-                                        {proximoAgendamento.status != "Agendado" && !disablePause && (
+                                        {proximoAgendamento.status != "Agendado" &&  (
                                             proximoAgendamento?.status == 'Repouso' ? (
                                                 <Button
                                                     className="bg-white text-sec border"

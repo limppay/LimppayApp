@@ -101,22 +101,27 @@ export default function Pedidos() {
 
     const hoje = new Date();
 
+    
+    // Remover horas para comparar apenas a data
+    const hojeSemHora = Date.UTC(
+        hoje.getUTCFullYear(),
+        hoje.getUTCMonth(),
+        hoje.getUTCDate()
+    );
+
     const agendamentosDoMesmoDia = user?.agendamentos?.filter(agendamento => {
-        const dataServico = new Date(agendamento.dataServico);
+       const dataServico = new Date(agendamento.dataServico);
         const dataServicoSemHora = Date.UTC(
-          dataServico.getUTCFullYear(),
-          dataServico.getUTCMonth(),
-          dataServico.getUTCDate()
+            dataServico.getUTCFullYear(),
+            dataServico.getUTCMonth(),
+            dataServico.getUTCDate()
         );
-      
-        const hojeSemHora = Date.UTC(
-          hoje.getUTCFullYear(),
-          hoje.getUTCMonth(),
-          hoje.getUTCDate()
-        );
-      
-        const statusValido = agendamento.status === "Iniciado" || agendamento.status === 'Repouso'; // Verificando se o status é "Iniciado"
-        return dataServicoSemHora === hojeSemHora && statusValido;
+
+        // Verifica se o agendamento ainda está em andamento ou em repouso
+        const statusValido = !["Cancelado", "Realizado"].includes(agendamento.status);
+
+        // Manter apenas agendamentos do dia ou não concluídos dos dias anteriores
+        return (dataServicoSemHora <= hojeSemHora && statusValido);
     })
     .sort((a, b) => new Date(b.timeStart) - new Date(a.timeStart)); // Ordenando do mais recente para o mais antigo
     
