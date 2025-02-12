@@ -21,6 +21,7 @@ export const login = async (email, senha) => {
     const response = await api.post('/auth/login-user', {
       email,
       senha,
+      cpfCnpj: email // utiliza-se o mesmo input, por isso é "email"
     });
 
     // Retorne informações úteis para o front-end
@@ -58,6 +59,7 @@ export const loginCliente = async (email, senha) => {
     const response = await api.post('/auth/login-cliente', {
       email,
       senha,
+      cpfCnpj: email // utiliza-se o mesmo input, por isso é "email"
     });
 
     // Retorne informações úteis para o front-end

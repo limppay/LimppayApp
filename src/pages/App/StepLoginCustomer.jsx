@@ -20,7 +20,7 @@ export default function StepLoginCustomer() {
     setLoading(true);
     
     try {
-        const login = await loginCliente(email, senha);
+        const login = await loginCliente(email, senha, email);
         const profile = await perfil(login)
         setUser(profile)
         console.log("Login realizado com sucesso!", profile)
@@ -46,14 +46,14 @@ export default function StepLoginCustomer() {
         <div className="w-[35vh] lg:w-1/2">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className='text-start'>
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-ter">Email</label>
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-ter">Email ou CPF</label>
               <div className="mt-2">
                 <input
                   id="email"
                   name="email"
-                  type="email"
+                  // type="email"
                   required
-                  autoComplete="email"
+                  // autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"

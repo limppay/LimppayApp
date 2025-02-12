@@ -15,6 +15,7 @@ export default function DaristaLogin() {
     const [senha, setSenha] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -23,7 +24,7 @@ export default function DaristaLogin() {
         setError('')
         
         try {
-            const response = await login(email, senha);
+            const response = await login(email, senha, email); // utiliza-se o mesmo input, por isso é "email"
             
             if (!response) {
                 setError("Erro ao fazer o login");
@@ -78,15 +79,15 @@ export default function DaristaLogin() {
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
                                     <label htmlFor="email" className="block text-sm font-medium leading-6 text-ter">
-                                        Email
+                                        Email ou CPF
                                     </label>
                                     <div className="mt-2">
                                         <input
                                             id="email"
                                             name="email"
-                                            type="email"
+                                            // type="email"
                                             required
-                                            autoComplete="email"
+                                            // autoComplete="email"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             className="border border-bord rounded-md w-full p-2 focus:outline-prim text-ter"
