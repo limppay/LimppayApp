@@ -140,7 +140,7 @@ export default function Pedidos() {
         }
         return `${minutosRestantes} min`;
     };
-    
+
     return (
         <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
             <div className='p-5 flex flex-col gap-5'>
@@ -189,7 +189,7 @@ export default function Pedidos() {
                     </div>
                 </div>
 
-                {agendamentosDoMesmoDia && (
+                {agendamentosDoMesmoDia && !changeHistorico && (
                     agendamentosDoMesmoDia.sort((a, b) => {
                         const prioridade = (status) => {
                             if (status === "Iniciado") return 1;
