@@ -211,6 +211,7 @@ export const requestPasswordReset = async (email, cpfCnpj, type) => {
 
     return response.data;
   } catch (error) {
+    console.log(error)
     const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde';
     throw new Error(errorMessage); // Lançando o erro com a mensagem apropriada
   }
