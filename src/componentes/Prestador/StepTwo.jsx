@@ -22,6 +22,8 @@ export default function StepTwo({old, etapaCadastro}) {
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
     const [image, setImage] = useState(User)
+
+    console.log(old) // Migrate
     
     
     const schema = yup.object({
@@ -36,7 +38,7 @@ export default function StepTwo({old, etapaCadastro}) {
             })
             .min(new Date(1900, 0, 1), "Data de nascimento inválida") // Define uma data mínima
             .max(new Date(), "Data de nascimento não pode ser no futuro") // Define que não pode ser uma data futura
-            .when('old', {
+            .when('$old', {
                 is: 'Migrate', // Se a variável 'old' for igual a "Migrate"
                 then: yup.date().required("Data de nascimento é obrigatória") // Torna obrigatório
             }),
@@ -50,10 +52,105 @@ export default function StepTwo({old, etapaCadastro}) {
             .test("fileType", "Formato de arquivo não suportado", (value) => {
                 return !value || ['image/jpeg', 'image/png', 'application/pdf'].includes(value?.type); // Limita os tipos permitidos
             })
-            .when('old', {
-                is: 'Migrate', // Se a variável 'old' for igual a "Migrate"
+            .when('$old', {
+                is: (value) => value === 'Migrate', // Verificação explícita do valor de 'Migrate'
                 then: yup.mixed().required("Currículo é obrigatório") // Torna obrigatório
             }),
+
+
+        arquivoFoto: yup
+            .mixed()
+            .test("required", "Foto de perfil é obrigatório", (value) => {
+                return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+                return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+                return value && value.type.startsWith('image/'); // Aceita qualquer tipo de imagem
+            }),
+
+        arquivoCpf: yup
+            .mixed()
+            .test("required", "CPF é obrigatório", (value) => {
+            return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
+            }),
+
+        arquivoResidencia: yup
+            .mixed()
+            .test("required", "Comprovante de Residência é obrigatório", (value) => {
+            return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
+            }),            
+
+        arquivodt: yup
+            .mixed()
+            .test("required", "A Identidade é obrigatória", (value) => {
+            return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+            return value && value.size <= 5000000; // Limita o tamanho do arquivo a 5MB (ajuste conforme necessário)
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+            return value && ['image/jpeg', 'image/png', 'application/pdf'].includes(value.type); // Limita os tipos permitidos
+            }),
+
+        agencia: yup.string().required("Agência é obrigatório").trim(),
+        conta: yup.string().required("Conta é obrigatório"),
+        banco: yup.number().required("Banco é obrigatório"),
+        pix: yup.string().required("Informe uma chave pix"),
+
+        cep:  yup.string().required("Preencha os campos abaixo").min(8, "Digite um cep válido"),
+        logradouro:  yup.string(),
+        numero:  yup.string().trim().required("Número é obrigatório"),
+        complemento:  yup.string(),
+        referencia:  yup.string(),
+        bairro:  yup.string(),
+        cidade:  yup.string(),
+        estado: yup.string().typeError(""),
+        rg: yup.string().trim().required("O RG é obrigatório"),
+    })
+    .required()
+
+    const schemaMigrate = yup.object({
+        // Data de nascimento
+        data: yup
+            .date()
+            .required("Data de nascimento é obrigatório.")
+            .nullable()  // Permite que o valor seja null ou não fornecido
+            .typeError('Data de nascimento inválida')
+            .test('is-valid-date', 'Data deve ser uma data válida', (value) => {
+                if (!value) return true; // Se não for fornecido, é considerado válido
+                return !isNaN(value.getTime()); // Verifica se a data é válida
+            })
+            .min(new Date(1900, 0, 1), "Data de nascimento inválida") // Define uma data mínima
+            .max(new Date(), "Data de nascimento não pode ser no futuro"), // Define que não pode ser uma data futura
+
+
+        // Currículo
+        arquivoCurriculo: yup
+            .mixed()
+            .test("required", "Currículo é obrigatório", (value) => {
+                return value instanceof File; // Verifica se o valor é um arquivo
+            })
+            .test("fileSize", "O arquivo é muito grande", (value) => {
+                return !value || value.size <= 5000000; // Limita o tamanho do arquivo a 5MB
+            })
+            .test("fileType", "Formato de arquivo não suportado", (value) => {
+                return !value || ['image/jpeg', 'image/png', 'application/pdf'].includes(value?.type); // Limita os tipos permitidos
+            }),
+            
 
 
         arquivoFoto: yup
@@ -135,8 +232,11 @@ export default function StepTwo({old, etapaCadastro}) {
         watch,
         clearErrors
         } = useForm({
-        resolver: yupResolver(schema),
+
+        resolver: yupResolver(old == "Migrate" ? schemaMigrate : schema),
     })
+
+    console.log(errors)
 
     // onSubmit do Forms
     const onSubmit = async (data) => {
