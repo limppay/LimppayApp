@@ -15,6 +15,7 @@ import DatasBloqueadas from '../../componentes/Prestador/DatasBloqueadas.jsx';
 import Servicos from '../../componentes/Prestador/Servicos.jsx';
 import Navigation from '../../componentes/Prestador/Navigation.jsx';
 import axios from 'axios';
+import Reenviar from '../../componentes/Prestador/Reenviar.jsx';
 
 const AreaDiarista = () => {
     const { prestador, setPrestador, loadingUser } = usePrestador()
@@ -191,9 +192,14 @@ const AreaDiarista = () => {
                                         old={prestador?.Old}
                                     />
                                 )}
+
+                                {prestador?.ReturnFiles &&(
+                                    <Reenviar />
+                                )}
+
                             </div>
 
-                            {cadastroCompleto ? (
+                            {cadastroCompleto && !prestador?.ReturnFiles ? (
                                 <>
                                     <div className='flex flex-col lg:flex-row h-screen'>
                                         {/* menu lateral */}
@@ -349,10 +355,13 @@ const AreaDiarista = () => {
                                 </>
 
                             ) : (
-                                etapaCadastro === 3 && (
-                                    <StepOne 
-                                        etapaCadastro={etapaCadastro}
-                                    />
+                                etapaCadastro === 3 && !prestador?.ReturnFiles && (
+                                    <>
+                                        <StepOne 
+                                            etapaCadastro={etapaCadastro}
+                                        />
+                                    
+                                    </>
                                 )
                             )}                        
                         </>
