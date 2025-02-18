@@ -28,6 +28,7 @@ import BarMolie from '../../componentes/App/BarMolie';
 import BarDesktop from '../../componentes/App/BarDesktop';
 import BannerApp from '../../componentes/App/BannerApp';
 import BlockClient from '../../componentes/App/BlockClient';
+import Welcome from '../../componentes/App/Welcome';
 
 export default function ContrateOnline() {
     const { checkoutData, setCheckoutData } = useCheckout()
@@ -420,7 +421,7 @@ export default function ContrateOnline() {
                 <CheckoutNotification/>
                 
             )} 
-            
+            <Welcome/>
             <CookieBanner/>
             <Footer />
 
