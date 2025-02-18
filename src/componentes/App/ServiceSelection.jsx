@@ -77,15 +77,15 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
   });
 
 
-  const handleServiceClick = (index) => {
-    if (selectedServiceIndex !== index) {
+  const handleServiceClick = (id) => {
+    const selectedService = services.find(service => service.id === id); // Busca o serviço correto
+  
+    if (selectedService) {
       setDays(0);
+      setSelectedServiceIndex(selectedService.id);
+      onServiceChange(selectedService.title, selectedService.id);
+      setServiceValue(selectedService.value);
     }
-
-    setSelectedServiceIndex(selectedServiceIndex === index ? null : index);
-    onServiceChange(services[index].title, services[index].id)
-    setServiceValue(services[index].value)
-    
   };
 
   const HandleSetServiceValue = (value) => {
@@ -170,15 +170,15 @@ const ServiceSelection = ({ onProceed, onDaysChange, onServiceChange, setService
               ) : filteredServices.length > 0 ? (
                 filteredServices.map((service, index) => (
                   <ServiceCard
-                    key={index}
+                    key={service.id}
                     icon={service.icone}
                     title={service.title}
                     description={service.description}
                     value={service.value}
                     valueMeia={service.valueMeia}
                     valueHora={service.valueHora}
-                    isExpanded={selectedServiceIndex === index}
-                    onClick={() => handleServiceClick(index, service?.id)}
+                    isExpanded={selectedServiceIndex === service.id}
+                    onClick={() => handleServiceClick(service?.id)}
                     days={days}
                     setDays={setDays}
                     onProceed={handleProceed} // Passa a função onProceed para o ServiceCard
