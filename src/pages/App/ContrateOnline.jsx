@@ -327,6 +327,7 @@ export default function ContrateOnline() {
                                 maxSelection={numberOfDays} // Defina aqui o número máximo de seleções permitidas
                                 selectedTimes={selectedTimes}
                                 setSelectedTimes={handleTimeChange}
+                                timeTotal={timeTotal}
                             />
                         )}
 
