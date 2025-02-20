@@ -177,7 +177,7 @@ const AreaDiarista = () => {
             <div>
                 <HeaderApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
 
-                <main className='h-screen '>
+                <main className='h-screen pt-[8vh] pb-[8vh]  sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] '>
                     {prestador ? (
                         <>
                             <div className='flex'>
@@ -203,7 +203,7 @@ const AreaDiarista = () => {
                                 <>
                                     <div className='flex flex-col lg:flex-row h-screen'>
                                         {/* menu lateral */}
-                                        <div className={`hidden lg:flex flex-col  pt-[7vh] min-h-[15vh]  lg:pt-[10vh] xl:pt-[12vh] lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
+                                        <div className={`hidden lg:flex flex-col min-h-[15vh]  lg:h-screen bg-neutral-800 shadow-lg transition-all transform overflow-x-auto max-w-[100vh]  ${
                                         isOpen ? " lg:min-w-[30vh] lg:max-w-[30vh] xl:min-w-[35vh] xl:max-w-[35vh] 2xl:min-w-[26vh] 2xl:max-w-[26vh]" : "overflow-hidden w-full lg:min-w-[10vh] lg:max-w-[13vh] xl:min-w-[15vh] xl:max-w-[15vh] 2xl:min-w-[12vh] 2xl:max-w-[12vh] "
                                         }`}>
 
@@ -322,7 +322,7 @@ const AreaDiarista = () => {
                                                                              
                                         </div>
 
-                                        <div className='w-full'>
+                                        <div className='w-full pb-[8vh] '>
                                             {screenSelected === "painel" && (
                                                 <Painel/>
                                             )}
