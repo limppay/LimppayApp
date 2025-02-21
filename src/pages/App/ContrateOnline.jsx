@@ -235,6 +235,8 @@ export default function ContrateOnline() {
         return novoGrupoID
     };
 
+    console.log("Endereço selecionado:", selectedEnderecoCliente)
+
     const HandleNavigateCheckout = async () => {
         setLoadingCheckout(true)
         const codeComb = gerarIDGrupo()
@@ -263,8 +265,10 @@ export default function ContrateOnline() {
                 valorLiquido: valorLiquido || sumValueService,
 
                 observacao: observacao,
+                  
+                enderecoId: selectedEnderecoCliente.id, 
+                
                 ...(
-                    selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id },
                     selectedDates.length > 1 && { comboId: codeComb }
                 ),                    
             };
