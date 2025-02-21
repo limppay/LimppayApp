@@ -687,7 +687,7 @@ export default function Pedidos({setScreenSelected}) {
                                                                 : "Nenhuma observação."}
                                                         </p>
                                                         <p>
-                                                            <b>Valor serviço:</b> {formatarMoeda(taxaPrestador(valorLiquidoServico))}
+                                                            <b>Valor serviço:</b> {formatarMoeda(taxaPrestador(agendamento?.valorBruto))}
                                                         </p>
                                                         <p>
                                                             <b>Data:</b>{" "}
