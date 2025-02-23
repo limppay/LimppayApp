@@ -101,7 +101,7 @@ export default function Servicos() {
     }
 
     return (
-        <section className='w-full gap-1 pt-[8vh] pb-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+        <section className='w-full gap-1  overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
             {loading ? (
                 <div className='text-white flex flex-col items-center justify-center w-full min-h-[80vh]'>
                     <Spinner size='md' />
@@ -164,9 +164,9 @@ export default function Servicos() {
                             <thead className=''>
                                 <tr className=" text-white  text-sm  bg-sec ">
                                     <th className="p-2 text-start  ">Serviço</th>
-                                    <th className="p-2 text-start ">Valor Diária</th>
-                                    <th className="p-2 text-start">Valor Meia Diária</th>
-                                    <th className="p-2 text-start">Valor por Hora</th>
+                                    <th className="p-2 text-start ">Diária</th>
+                                    <th className="p-2 text-start">Meia Diária</th>
+                                    <th className="p-2 text-start">Serviço 1hr</th>
                                 </tr>
                             </thead>
                             <tbody >

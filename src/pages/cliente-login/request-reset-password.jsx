@@ -36,7 +36,7 @@ export default function RequestResetPasswordCliente() {
     const [sendCpfCnpj, setSendCpfCnpj] = useState(false)
     const[cpfCnpj, setcpfCnpj]=useState('')
     const inputRef = useRef(null)
-    const [timer, setTimer] = useState(0); 
+    const [timer, setTimer] = useState(0);
 
 
     const CpfCnpj = [
@@ -69,8 +69,8 @@ export default function RequestResetPasswordCliente() {
           setTimer(30); // Define o timer para 5 segundos após envio bem-sucedido
           
         } catch (error) {
-          setLoading(false);
-          setMessage(error.message); // Definindo a mensagem de erro no estado
+            setLoading(false);
+            setMessage(error.message); // Definindo a mensagem de erro no estado
         }
       };
     
@@ -224,8 +224,23 @@ export default function RequestResetPasswordCliente() {
                                 {loading ? <Spinner/> : timer > 0 ? `Aguarde ${timer}s` : 'Enviar link'} 
                             </Button>
                             {message && (
-                                <p className='text-error'>{message}</p>
+                                <div className="text-error text-center p-2 rounded-md bg-red-100">
+                                    <p>{!message.includes("mas sua conta é de prestador") && message}</p>
+
+                                    {message.includes("mas sua conta é de prestador") && (
+                                    <div className="mt-2">
+                                        <p className="text-sm">Parece que sua conta é de prestador.</p>
+                                        <a
+                                        href="/request-reset-password-user"
+                                        className="inline-block mt-1 text-desSec text-sm font-medium underline hover:text-desSec transition"
+                                        >
+                                        Clique aqui para redefinir como prestador
+                                        </a>
+                                    </div>
+                                    )}
+                                </div>
                             )}
+
                         </div>
                     </form>
                 </div>            

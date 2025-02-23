@@ -84,7 +84,7 @@ export default function Profile() {
     };
 
     return (
-        <section className='w-full gap-1 pb-[8vh] pt-[7vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim   sm:bg-white'>
+        <section className='w-full gap-1 overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim   sm:bg-white '>
             <div className='lg:flex flex-col bg-desSec sm:bg-white max-w-50 min-w-72 min-h-60 pt-5 w-full 
             '>
                 <div className='flex flex-col lg:flex-row lg:justify-between w-full  p-5'>

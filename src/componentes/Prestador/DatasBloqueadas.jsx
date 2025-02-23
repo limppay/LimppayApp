@@ -112,15 +112,15 @@ export default function DatasBloqueadas() {
     };
 
     return (
-        <section className='w-full gap-1 pb-[8vh] pt-[9vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
-            <div className='w-full p-10 pb-0 pt-2'>
+        <section className='w-full gap-1 pt-[2vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+            <div className='w-full p-6 pb-0 pt-2'>
                 <div>
                     <h2 className='text-xl font-semibold'>Precisa mudar os seus dias disponveis na semana? </h2>
                     <p>Sem problemas, você pode editar quando quiser, sinta-se livre! :D </p>
                 </div>
             </div>
 
-            <div className='p-10 flex flex-col md:flex-row gap-10 justify-around  items-start'>
+            <div className='p-6 flex flex-col md:flex-row gap-10 justify-around  items-start'>
                 <form className='w-full grid gap-2' onSubmit={handleSubmitDay(handleUpdateDiasDisponveis)}>
                     <div className='w-full grid grid-cols-3'>
                         <div className="m-3 mb-0 ml-0 flex gap-2">
@@ -211,7 +211,7 @@ export default function DatasBloqueadas() {
                 </form>                
             </div>
 
-            <div className='w-full p-10 pb-0 pt-0'>
+            <div className='w-full p-6 pb-0 pt-0'>
                 <p className='font-semibold text-xl'>Houve um imprevisto?</p>
                 <p>sem problemas, você pode bloquear ou desbloquear especificamente o dia que você não vai está disponível :D</p>
             </div>

@@ -5,7 +5,7 @@ import { Select, SelectSection, SelectItem } from "@nextui-org/select";
 import {  Modal,   ModalContent,   ModalHeader,   ModalBody,   ModalFooter, useDisclosure} from "@nextui-org/modal";
 import { Button } from '@nextui-org/react';
 
-const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSelection, selectedTimes, setSelectedTimes }) => {
+const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSelection, selectedTimes, setSelectedTimes, timeTotal }) => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
   const [showMonths, setShowMonths] = useState(false);
@@ -100,6 +100,11 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
       {key: "15:30", label: "15:30", 'aria-label': "15:30"},
       {key: "16:00", label: "16:00", 'aria-label': "16:00"}
     ];
+
+    // Lista filtrada com base no estado timeTotal
+    const horariosFiltrados = timeTotal >= 8 
+      ? horarios.filter(hora => hora.key <= "12:00") 
+      : horarios;
     
     return (
       <Modal 
@@ -125,7 +130,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
                   onChange={(e) => handleSelectAllTimes(e.target.value)}
                   aria-label='horasTodos'
                 >
-                  {horarios.map((hora) => (
+                  {horariosFiltrados.map((hora) => (
                     <SelectItem key={hora.key} className='text-prim' aria-label={hora.label}>
                       {hora.label}
                     </SelectItem>
@@ -148,7 +153,7 @@ const CustomCalendar = ({ onConfirmSelection, selectedDates, setSelectedDates, m
                     onChange={(e) => handleTimeChange(date.toDateString(), e.target.value)}
                     aria-label="horas"
                   >
-                    {horarios.map((hora) => (
+                    {horariosFiltrados.map((hora) => (
                       <SelectItem key={hora.key} value={hora.key} className="text-prim" aria-label={hora.label}>
                         {hora.label}
                       </SelectItem>

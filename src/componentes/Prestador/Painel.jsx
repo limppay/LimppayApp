@@ -69,57 +69,55 @@ export default function Painel() {
 
 
     return (
-        <div className="md:pt-28 pt-[8vh] pb-[8vh] flex-1 p-6 gap-5 "> 
+        <div className=" flex-1 p-4 md:p-6 gap-5">
             {/* Grid do dashboard */}
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">                                        
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {/* Solicitações do mês */}
-                <div className="bg-white shadow-md  rounded-lg p-6">
-                    <h2 className="text-desSec text-sm lg:text-lg font-semibold text-gray-600 mb-4">
+                <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
+                    <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-2 md:mb-4">
                         Solicitações do Mês
                     </h2>
-                    <p className="text-desSec text-3xl font-bold text-gray-800">
+                    <p className="text-desSec text-2xl md:text-3xl font-bold text-gray-800">
                         {SolicitacoesTotalPrestador || 0}
                     </p>
                 </div>
 
                 {/* Total de agendamentos */}
-                <div className="bg-white shadow-md  rounded-lg p-6">
-                    <h2 className="text-desSec text-sm lg:text-lg font-semibold text-gray-600 mb-4">
+                <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
+                    <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-2 md:mb-4">
                         Total de Agendamentos
                     </h2>
-                    <p className="text-desSec text-3xl font-bold text-gray-800">
+                    <p className="text-desSec text-2xl md:text-3xl font-bold text-gray-800">
                         {SolicitacoesGeraisPrestador || 0}
                     </p>
                 </div>
 
                 {/* Total de faturamento no mês */}
-                <div className="col-span-2 lg:col-span-1   bg-white shadow-md  rounded-lg p-6">
-                    <h2 className="text-desSec text-sm lg:text-lg font-semibold text-gray-600 mb-4">
-                        Faturamento no mês 
+                <div className="col-span-2 lg:col-span-1 bg-white shadow-md rounded-lg p-4 md:p-6">
+                    <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-2 md:mb-4">
+                        Faturamento no mês
                     </h2>
-                    <p className="text-desSec text-3xl font-bold text-gray-800">
+                    <p className="text-desSec text-2xl md:text-3xl font-bold text-gray-800">
                         {formatarMoeda(FaturamentoMes?.toFixed(2) || "0.00")}
                     </p>
                 </div>
-
-                
             </div>
 
             {/* Próximo agendamento e média de estrelas */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-5">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 pt-5">
                 {/* Média de estrelas */}
-                <div className=" bg-white shadow-md  rounded-lg p-6 ">
-                    <h2 className="text-desSec text-sm lg:text-lg font-semibold text-gray-600 mb-4">
+                <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
+                    <h2 className="text-desSec text-sm md:text-lg font-semibold text-gray-600 mb-2 md:mb-4">
                         Média de Estrelas
                     </h2>
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-4 md:gap-6">
                         {prestador?.Review && prestador?.Review?.length > 0 ? (
                             (() => {
                                 const totalEstrelas = prestador?.Review?.reduce((sum, avaliacao) => sum + (avaliacao.stars || 0), 0);
                                 const mediaEstrelas = (totalEstrelas / prestador?.Review?.length).toFixed(1);
 
                                 return (
-                                    <p className="text-desSec text-3xl font-bold text-gray-800">{mediaEstrelas} ★</p>
+                                    <p className="text-desSec text-2xl md:text-3xl font-bold text-gray-800">{mediaEstrelas} ★</p>
                                 );
                             })()
                         ) : (
@@ -128,55 +126,50 @@ export default function Painel() {
                     </div>
                 </div>
 
-                <div className='md:col-span-2'>
-                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4 pt-2"> Próximo Agendamento </h2>
-                    
+                <div className='col-span-1 lg:col-span-2'>
+                    <h2 className="text-desSec text-lg font-semibold text-gray-600 mb-4 pt-2">Próximo Agendamento</h2>
+
                     {agendamentosFiltrados && agendamentosFiltrados.length > 0 ? (
                         (() => {
                             const hoje = new Date();
                             const proximoAgendamento = agendamentosFiltrados
                                 .filter(
-                                    agendamento => 
+                                    agendamento =>
                                         new Date(agendamento.dataServico) >= hoje && // Data futura ou atual
                                         agendamento.status === "Agendado" // Status "Agendado"
                                 )
                                 .sort((a, b) => new Date(a.dataServico) - new Date(b.dataServico))[0]; // Ordenar por proximidade
 
-                            
-
                             return proximoAgendamento ? (
                                 <div className="flex-1 w-full">
-                                    <div className="flex flex-col rounded-lg p-5 gap-10 h-full w-full shadow-lg">
+                                    <div className="flex flex-col rounded-lg p-4 md:p-5 gap-4 md:gap-10 h-full w-full shadow-lg">
                                         <div className='flex flex-col gap-2 text-prim'>
-                                            <div className='w-full flex gap-2 items-center '>
-                                                <Avatar 
-                                                    src={User} 
+                                            <div className='w-full flex gap-2 items-center'>
+                                                <Avatar
+                                                    src={User}
                                                     alt="avatarPrestador"
                                                     size='lg'
                                                 />
                                                 <h3 className='text-prim font-semibold flex flex-wrap text-center'>{proximoAgendamento.cliente?.name}</h3>
-                                                                                                                
                                             </div>
-    
-                                            <div className='flex gap-5 justify-between text-prim'>
+
+                                            <div className='flex flex-col md:flex-row gap-2 md:gap-5 justify-between text-prim'>
                                                 <p className='font-semibold'>Serviço de {proximoAgendamento.timeTotal}hr</p>
                                                 <p className='font-semibold'> {proximoAgendamento.Servico}</p>
                                                 <p className='font-semibold'>{formatarData(new Date(proximoAgendamento?.dataServico).toISOString().split('T')[0])} </p>
                                                 <p className='font-semibold'>{proximoAgendamento?.horaServico}</p>
-                                                
                                             </div>
                                             <p> {proximoAgendamento.enderecoCliente}</p>
                                             <div>
                                                 <p>{taxaPrestador(proximoAgendamento.valorLiquido)}</p>
-                                            </div>                                        
+                                            </div>
                                         </div>
 
-                                        <div className='grid grid-cols-1  gap-2 items-center w-full justify-between'>
-                                            <a 
-                                                href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`} 
-                                                target="_blank" 
+                                        <div className='grid grid-cols-1 gap-2 items-center w-full justify-between'>
+                                            <a
+                                                href={`https://www.google.com/maps/place/${encodeURIComponent(proximoAgendamento.enderecoCliente)}`}
+                                                target="_blank"
                                                 rel="noopener noreferrer"
-                                                
                                             >
                                                 <button className="justify-center text-sm shadow-sm w-full bg-sec text-white p-2 flex items-center gap-2 rounded-lg">
                                                     <svg
@@ -195,11 +188,9 @@ export default function Painel() {
                                                     </svg>
                                                     Abrir com o Google Maps
                                                 </button>
-                                            </a>                                           
+                                            </a>
                                         </div>
                                     </div>
-
-
                                 </div>
                             ) : (
                                 <p className="text-prim flex w-full">Nenhum agendamento futuro encontrado com status "Agendado".</p>
@@ -208,13 +199,8 @@ export default function Painel() {
                     ) : (
                         <p className="text-prim flex w-full">Nenhum agendamento encontrado.</p>
                     )}
-
-
-
                 </div>
-                                                                        
             </div>
-
         </div>
     )
 }

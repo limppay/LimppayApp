@@ -4,6 +4,7 @@ import '../../styles/font.css'
 import '../../styles/duvidas.css'
 import "../../styles/footer.css"
 import Banner from "../../assets/img/seja-diarista/banner-02-1.webp"
+import Welcome from "../../componentes/App/Welcome.jsx"
 
 export default function DiaristaApp() {
     const buttons = [
@@ -172,6 +173,8 @@ export default function DiaristaApp() {
                 </section>
                 <DuvidasFrequentes/>
             </main>
+            <Welcome/>
+            
             <Footer/>
 
         </>

@@ -198,9 +198,11 @@ export default function Pedidos({setScreenSelected}) {
         }
         return `${minutosRestantes} min`;
     };
+
+    console.log("Agendamento: ", agendamentosFiltrados)
     
     return (
-        <section className='w-full  gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+        <section className='w-full  gap-1 overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
             <div className='p-5 flex flex-col gap-5'>
                 <div className="flex flex-col sm:flex-row items-center gap-4 ">
                     <input
@@ -211,7 +213,7 @@ export default function Pedidos({setScreenSelected}) {
                         className="border p-2 rounded-lg w-full border-bord focus:outline-bord"
                     />
 
-                    <div className='flex justify-between w-full gap-5 items-center'>
+                    <div className='grid grid-cols-2 w-full gap-5 items-center'>
                         <input
                             type="date"
                             value={startDate}
@@ -615,7 +617,7 @@ export default function Pedidos({setScreenSelected}) {
                                     <Accordion isCompact itemClasses={{ title: "text-prim" }}>
                                         <AccordionItem key={agendamento.id} title="Detalhes">
                                             <div className="mt-2">
-                                                <div className="flex flex-col gap-7 text-prim overflow-y-auto max-h-[60vh]">
+                                                <div className="flex flex-col gap-7 text-prim ">
                                                     <div className="text-justify flex flex-col gap-2">
                                                         <p>
                                                             <b>Serviço de {agendamento.timeTotal}hr</b>
@@ -685,15 +687,23 @@ export default function Pedidos({setScreenSelected}) {
                                                                 : "Nenhuma observação."}
                                                         </p>
                                                         <p>
-                                                            <b>Valor serviço:</b> {formatarMoeda(taxaPrestador(valorLiquidoServico))}
+                                                            <b>Valor serviço:</b> {formatarMoeda(taxaPrestador(agendamento?.valorBruto))}
                                                         </p>
                                                         <p>
                                                             <b>Data:</b>{" "}
                                                             {formatarData(new Date(agendamento?.dataServico).toISOString().split('T')[0])}
                                                         </p>
-                                                        <div className="flex flex-col gap-2 max-w-[100vh]">
+                                                        <div className="flex flex-col gap-2 max-w-[100vh] pt-[5vh]">
                                                             <p>
-                                                                <b>Endereço:</b> {agendamento?.enderecoCliente}
+                                                                <b>Endereço:</b> {agendamento?.enderecoCliente} 
+                                                                
+                                                            </p>
+                                                            <p>
+                                                                <b>Complemento:</b> {agendamento?.complemento} 
+                                                            </p>
+                                                            <p>
+                                                                <b>Número:</b> {agendamento?.numero} 
+                                                                
                                                             </p>
                                                             <a
                                                                 href={`https://www.google.com/maps/place/${encodeURIComponent(

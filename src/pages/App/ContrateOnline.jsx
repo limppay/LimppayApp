@@ -28,6 +28,7 @@ import BarMolie from '../../componentes/App/BarMolie';
 import BarDesktop from '../../componentes/App/BarDesktop';
 import BannerApp from '../../componentes/App/BannerApp';
 import BlockClient from '../../componentes/App/BlockClient';
+import Welcome from '../../componentes/App/Welcome';
 
 export default function ContrateOnline() {
     const { checkoutData, setCheckoutData } = useCheckout()
@@ -234,6 +235,8 @@ export default function ContrateOnline() {
         return novoGrupoID
     };
 
+    console.log("Endereço selecionado:", selectedEnderecoCliente)
+
     const HandleNavigateCheckout = async () => {
         setLoadingCheckout(true)
         const codeComb = gerarIDGrupo()
@@ -262,8 +265,10 @@ export default function ContrateOnline() {
                 valorLiquido: valorLiquido || sumValueService,
 
                 observacao: observacao,
+                  
+                enderecoId: selectedEnderecoCliente.id, 
+                
                 ...(
-                    selectedEnderecoCliente?.id && { enderecoId: selectedEnderecoCliente.id },
                     selectedDates.length > 1 && { comboId: codeComb }
                 ),                    
             };
@@ -326,6 +331,7 @@ export default function ContrateOnline() {
                                 maxSelection={numberOfDays} // Defina aqui o número máximo de seleções permitidas
                                 selectedTimes={selectedTimes}
                                 setSelectedTimes={handleTimeChange}
+                                timeTotal={timeTotal}
                             />
                         )}
 
@@ -421,7 +427,7 @@ export default function ContrateOnline() {
                 <CheckoutNotification/>
                 
             )} 
-            
+            <Welcome/>
             <CookieBanner/>
             <Footer />
 

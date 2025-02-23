@@ -235,7 +235,7 @@ const Calendar = ({ onConfirmSelection, selectedDates, setSelectedDates, maxSele
         animate="center"
         exit="exit"
       >
-        <div className="flex justify-between items-center mb-4 p-3 border-b-2 border-desSec border-opacity-50 cursor-pointer">
+        <div className="flex justify-between items-center  mb-4 p-3 border-b-2 border-desSec border-opacity-50 cursor-pointer">
           <button onClick={handlePrev} className="text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-des">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />

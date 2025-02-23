@@ -224,7 +224,21 @@ export default function RequestResetPassword() {
                                 {loading ? <Spinner/> : timer > 0 ? `Aguarde ${timer}s` : 'Enviar link'} 
                             </Button>
                             {message && (
-                                <p className='text-error'>{message}</p>
+                                <div className="text-error text-center p-2 rounded-md bg-red-100">
+                                    <p>{!message.includes("mas sua conta é de cliente") && message}</p>
+
+                                    {message.includes("mas sua conta é de cliente") && (
+                                    <div className="mt-2">
+                                        <p className="text-sm">Parece que sua conta é de cliente.</p>
+                                        <a
+                                        href="/request-reset-password-cliente"
+                                        className="inline-block mt-1 text-desSec text-sm font-medium underline hover:text-desSec transition"
+                                        >
+                                        Clique aqui para redefinir como cliente
+                                        </a>
+                                    </div>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </form>
