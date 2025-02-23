@@ -61,7 +61,7 @@ export default function ContrateOnline() {
     
     const [sumValueService, setSumValueService] = useState(serviceValue * selectedDates.length)
 
-    const [valorCupom, setValorCupom] = useState(0)
+    const [valorCupom, setValorCupom] = useState('')
     const [descontoTotal, setDescontoTotal] = useState(0)
     const [valorLiquido, setValorLiquido]  = useState(0)
 
@@ -372,6 +372,7 @@ export default function ContrateOnline() {
                                 sumValueService={sumValueService}
                                 observacao={observacao}
                                 setObservacao={setObservacao}
+                                setValorCupom={setValorCupom}
                             />
                         )}
                         

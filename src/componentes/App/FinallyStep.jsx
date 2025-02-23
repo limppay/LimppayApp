@@ -8,7 +8,7 @@ import * as yup from "yup"
 import { useUser } from '../../context/UserProvider';
 import { Spinner } from '@nextui-org/react';
 
-export default function FinallyStep({setDescontoTotal, descontoTotal, setValorLiquido, HandleNavigateCheckout, loadingCheckout, sumValueService, observacao, setObservacao}) {
+export default function FinallyStep({setDescontoTotal, descontoTotal, setValorLiquido, HandleNavigateCheckout, loadingCheckout, sumValueService, observacao, setObservacao, setValorCupom}) {
     const { user } = useUser()
     const [apply, setApply] = useState(false);
     const [cupomError, setCupomError] = useState(null);
@@ -77,6 +77,7 @@ export default function FinallyStep({setDescontoTotal, descontoTotal, setValorLi
                                 <div className='w-full flex flex-col items-center gap-2'>
                                     <input  className="border rounded-md border-bord p-3 pt-2 pb-2 focus:outline-prim text-ter w-full" placeholder='Digite o cupom' 
                                         {...registerCupom("code")}
+                                        onChange={(e) => setValorCupom(e.target.value)} // Atualiza o estado
                                     />
                                     <span className='text-error'>{cupomError}</span>
                                 </div>
