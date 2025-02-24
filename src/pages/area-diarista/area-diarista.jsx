@@ -193,7 +193,7 @@ const AreaDiarista = () => {
                                     />
                                 )}
 
-                                {prestador?.ReturnFiles &&(
+                                {etapaCadastro === 3 && cadastroCompleto && prestador?.ReturnFiles &&(
                                     <Reenviar />
                                 )}
 
