@@ -429,7 +429,6 @@ export default function ContrateOnline() {
             )} 
             <Welcome/>
             <CookieBanner/>
-            <Footer />
 
         </>
     );

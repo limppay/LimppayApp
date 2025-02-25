@@ -536,14 +536,7 @@ export default function Pedidos() {
                 
                 ) : (
                     <div className='text-prim text-center flex flex-col justify-center items-center h-[70vh] '>
-                        <p>Você não possui nenhum agendamento</p>
-                        <div className='pt-5'>
-                            <a href="/contrate-online">
-                                <Button className='bg-des text-white'>
-                                    Fazer agendamento
-                                </Button>
-                            </a>
-                        </div>
+                        <p>Você não possui nenhum agendamento no momento</p>
                     </div>
                 )}
 

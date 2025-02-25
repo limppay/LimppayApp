@@ -5,11 +5,17 @@ import { Avatar } from '@nextui-org/avatar'
 import User from "../../assets/img/diarista-cadastro/user.webp"
 import InputMask from "react-input-mask"
 import { fetchUserInfo } from '../../common/FetchUserInfo'
+import { loggoutCliente } from '../../services/api'
+import { useNavigate } from 'react-router-dom'
+import { Button } from '@nextui-org/button'
+import { Spinner } from '@nextui-org/react'
 
 export default function Profile() {
     const { user, setUser } = useUser()
     const [Open, SetOpen] = useState(false)
     const inputRef = useRef(null)
+    const [loggout, setLoggout] = useState(false)
+    const navigate = useNavigate();
 
     const EstadoCivil = [
         { text: "Solteiro(a)", value: 1 },
@@ -23,6 +29,26 @@ export default function Profile() {
 
     const handleUserUpdated = () => {    
         fetchUserInfo(setUser)
+    };
+
+    const HandleExitUser = async () => {
+        setLoggout(true)
+
+        try {
+            const response = await loggoutCliente()
+            console.log(response)
+            setUser(null)
+            setLoggout(false)
+
+        } catch (error) {
+            console.log(error)
+
+        } finally {
+            navigate("/contrate-online")
+            window.location.reload()
+            
+        }
+        
     };
 
     return (
@@ -165,6 +191,28 @@ export default function Profile() {
                         
                     </div>
 
+                    <div className='w-full pt-[2vh]'>
+                        <Button 
+                        className='
+                        bg-white
+                        lg:p-2
+                        p-2
+                        text-sm
+                        sm:text-md
+                        md:text-md
+                        lg:text-md
+                        border
+                        border-error
+                        text-error
+                        rounded-md
+                        w-full
+                        '
+                        onPress={() => HandleExitUser()}
+                        isDisabled={loggout}
+                        >
+                        {loggout ? <Spinner className='text-white' color='danger'/> : "Sair"}
+                        </Button>
+                    </div>
                 </div>
 
                 
