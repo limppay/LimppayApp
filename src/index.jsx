@@ -39,24 +39,8 @@ import { PrestadorProvider } from './context/PrestadorProvider';
 const router = createBrowserRouter([
     {
       path: "/",
-      element: <Home/>,
+      element: <ContrateOnline/>,
       errorElement: <Error404/>
-    },
-    {
-      path: "seja-diarista",
-      element: <DiaristaApp/>
-    },
-    {
-      path: "cadastro-diarista",
-      element: <DiaristaCadastro/>
-    },
-    {
-      path: "diarista-login",
-      element: <DaristaLogin/>
-    },
-    {
-      path: "request-reset-password-user",
-      element: <RequestResetPassword/>
     },
     {
       path:"reset-password",
@@ -66,15 +50,7 @@ const router = createBrowserRouter([
       path: "request-reset-password-cliente",
       element: <RequestResetPasswordCliente/>
     },
-    {
-      path: "area-diarista",
-      element: (
-        <WebSocketProvider>
-          <AreaDiarista/>
-        </WebSocketProvider>
-      )
 
-    },
     {
       path: "contrate-online",
       element: <ContrateOnline/>
