@@ -24,4 +24,7 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    allowedHosts: ['4hk6azqffmkjxy2ootw30rzc3.limppay.com']
+  }
 });
