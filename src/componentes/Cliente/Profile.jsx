@@ -44,7 +44,7 @@ export default function Profile() {
             console.log(error)
 
         } finally {
-            navigate("/contrate-online")
+            navigate("/")
             window.location.reload()
             
         }

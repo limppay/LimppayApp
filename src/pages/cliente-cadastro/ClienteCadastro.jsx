@@ -3,6 +3,7 @@ import "../../styles/footer.css"
 import { useState } from "react"
 import FormCliente from "../../componentes/FormCadastro/FormCliente.jsx"
 import { Helmet } from "react-helmet-async"
+import HeaderWebApp from "../../componentes/App/HeaderWebApp.jsx"
 
 export default function ClienteCadastro() {
     const [Open, SetOpen] = useState(false)
@@ -27,7 +28,7 @@ export default function ClienteCadastro() {
             AcessPrim: "Página Inicial",
             LinkPrim: "/",
             AcessSec: "Contrate Online",
-            LinkSec: "/contrate-online",
+            LinkSec: "/",
         }
     ]
 
@@ -36,7 +37,7 @@ export default function ClienteCadastro() {
             <Helmet>
                 <title>Limppay: Cadastro Cliente</title>
             </Helmet>
-            <HeaderApp img={Logo} alt={"Diarista"} buttons={buttons} btnAcess={btnAcess} text1={"Faça seu cadastro"} text2={"E contrate um serviço! :)"}/>
+            <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
             <main className="w-full flex flex-col items-center justify-center">
                 <section className="pt-20">
                     <div className="mt-7 p-9 pt-0 pb-0 flex flex-col gap-2">
@@ -46,10 +47,6 @@ export default function ClienteCadastro() {
                     <FormCliente/>                                  
                 </section>
             </main>
-            <Footer/>
-            {/* modals */}
-            <ModalQuemSomos Open={Open} SetOpen={() => SetOpen(!Open)}/>
-            <ModalDuvidas OpenDuvidas={OpenDuvidas} SetOpenDuvidas={() => SetOpenDuvidas(!OpenDuvidas)}/>
         </>
     )
 }

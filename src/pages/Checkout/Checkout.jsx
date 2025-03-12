@@ -366,7 +366,6 @@ export default function Checkout() {
                 </div> 
   
               </main>
-              <Footer/>
   
               <Dialog open={isPayment} onClose={() => {}} className="relative z-10">
                 <DialogBackdrop

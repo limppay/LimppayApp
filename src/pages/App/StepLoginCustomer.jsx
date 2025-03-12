@@ -96,10 +96,10 @@ export default function StepLoginCustomer() {
                 {error && <p className="text-red-500 flex justify-center text-error">{error}</p>}
               </div>
               <div className='w-full p-2 flex'>
-                <a href="/cadastro-cliente" target='_blank' className='border border-desSec p-2  rounded-lg text-desSec w-full'>
+                <Button className='border border-desSec p-2  rounded-lg text-desSec w-full bg-white' onPress={() => navigate("/cadastro-cliente")}>
                   Nova Conta
-                </a>
-
+                </Button>
+                
               </div>
 
 

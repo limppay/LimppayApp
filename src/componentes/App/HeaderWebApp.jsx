@@ -149,31 +149,30 @@ export default function HeaderWebApp({ img, alt, btnAcess, buttons }) {
                     <ul className='flex w-full gap-2'>
                         {btnAcess.map((acess, index) => (
                             <>
-                                <a href={acess.LinkPrim} key={index}>
-                                    <Button
-                                        onPress={() => acess.OnClickPrim()}
-                                        className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white
-                                        
-                                        '
-                                        isDisabled={loadingUser}                                        
-                                        
-                                    >
-                                        {acess.AcessPrim}
-                                    </Button>
-                                </a>
-
-                                <a href={acess.LinkSec} key={index}>
-                                    <Button
-                                        onPress={() => acess.OnClickSec()}
-                                        className='bg-des hover:bg-sec text-white'
-                                        isDisabled={loadingUser}                                        
-
-                                    >
-                                        {acess.AcessSec}
-                                    </Button>                                            
+                              <Button
+                                key={index}
+                                onPress={() => navigate(acess.LinkPrim)}
+                                className='bg-white border  text-sec border-sec hover:bg-sec hover:text-white
                                 
-                                </a> 
+                                '
+                                isDisabled={loadingUser}                                        
+                                  
+                              >
+                                  {acess.AcessPrim}
+                              </Button>
+                            
 
+                              <Button
+                                key={index}
+                                onPress={() => navigate(acess.LinkSec)}
+                                className='bg-des hover:bg-sec text-white'
+                                isDisabled={loadingUser}                                        
+
+                              >
+                                  {acess.AcessSec}
+                              </Button>                                            
+                                
+                            
                             </>
 
                             

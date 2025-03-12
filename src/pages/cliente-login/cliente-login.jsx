@@ -8,6 +8,7 @@ import { Button } from '@nextui-org/react';
 import { Spinner } from '@nextui-org/react';
 import CookieBanner from '../../componentes/App/CookieBanner';
 import { Helmet } from 'react-helmet-async';
+import HeaderWebApp from '../../componentes/App/HeaderWebApp';
 
 export default function ClienteLogin() {
     const { user, setUser } = useUser();
@@ -28,7 +29,7 @@ export default function ClienteLogin() {
             const profile = await perfil(login)
             setUser(profile)
             console.log("Login realizado com sucesso!", profile)
-            navigate("/contrate-online");
+            navigate("/");
 
         } catch (err) {
             setError(err.message);
@@ -47,13 +48,37 @@ export default function ClienteLogin() {
 
     }, [user])
 
+    const buttons = [
+        {
+            link: "#", 
+            text: "Dúvidas", 
+            OnClick: () => SetOpenDuvidas(true)
+        },
+        {
+            link: "#", 
+            text: "Quem Somos", 
+            Id: "OpenQuemSomos",
+            OnClick: () => SetOpen(true)
+        },
+    ]
+
+    const btnAcess = [
+        {
+            AcessPrim: "Página Inicial",
+            LinkPrim: "/",
+            AcessSec: "Contrate Online",
+            LinkSec: "/",
+        }
+    ]
+
     return (
         <>
             <Helmet>
                 <title>Limppay: Cliente</title>
             </Helmet>
-
-            <div className='flex h-screen justify-center max-w-full'>
+            <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
+            
+            <div className='flex h-screen justify-center max-w-full pt-20'>
                 <div className='h-screen flex flex-col p-10 w-full lg:w-5/12  bg-center bg-cover'>
                     <main className='flex flex-col gap-10 lg:shadow-none rounded-md p-5 bg-white'>
                         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
