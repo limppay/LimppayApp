@@ -20,7 +20,7 @@ export default function Avaliacoes() {
 
 
     return (
-        <section className='w-full gap-1 pb-[8vh] pt-[8vh] sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+        <section className='w-full gap-1 pb-[8vh]  sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
             <div className='p-5 flex flex-col gap-5'>
                 {user?.avaliacoes.length > 0 ? (
                     user?.avaliacoes?.map((avaliacao) => (

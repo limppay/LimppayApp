@@ -64,7 +64,7 @@ export default function Painel() {
 
     
     return (
-        <div className="md:pt-28 flex-1 p-6 pb-[8vh] pt-[10vh] overflow-y-auto  ">
+        <div className="md:pt-28 flex-1 p-6 pb-[8vh] pt-[2vh] overflow-y-auto  ">
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Solicitações do mês */}
                 <div className="bg-white  shadow-md rounded-lg p-6">

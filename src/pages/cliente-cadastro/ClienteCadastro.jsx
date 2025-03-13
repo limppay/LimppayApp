@@ -39,7 +39,7 @@ export default function ClienteCadastro() {
             </Helmet>
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
             <main className="w-full flex flex-col items-center justify-center">
-                <section className="pt-20">
+                <section className="">
                     <div className="mt-7 p-9 pt-0 pb-0 flex flex-col gap-2">
                         <h1 className="text-3xl text-desSec">Cadastro</h1>
                         <p className="text-prim">Crie uma conta para contratar nossos serviços, preenchendo o formulário abaixo.</p>

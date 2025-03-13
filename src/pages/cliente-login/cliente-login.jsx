@@ -78,7 +78,7 @@ export default function ClienteLogin() {
             </Helmet>
             <HeaderWebApp img={Logo} alt={"limppay"} buttons={buttons} btnAcess={btnAcess}/>
             
-            <div className='flex h-screen justify-center max-w-full pt-20'>
+            <div className='flex h-screen justify-center max-w-full '>
                 <div className='h-screen flex flex-col p-10 w-full lg:w-5/12  bg-center bg-cover'>
                     <main className='flex flex-col gap-10 lg:shadow-none rounded-md p-5 bg-white'>
                         <div className="sm:mx-auto sm:w-full sm:max-w-sm">

@@ -52,7 +52,7 @@ export default function Profile() {
     };
 
     return (
-        <section className='w-full gap-1 pb-[8vh] pt-[7vh]  sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
+        <section className='w-full gap-1 pb-[8vh] pt-[vh]  sm:pt-[9vh] lg:pt-[10vh] xl:pt-[12vh] overflow-hidden overflow-y-auto sm:max-h-[100vh] text-prim'>
             <div className='lg:flex flex-col max-w-50 min-w-72 min-h-60 w-full bg-desSec md:bg-white
             '>
                 <div className='flex flex-col lg:flex-row lg:justify-between w-full bg-desSec md:bg-white pt-[2vh] pb-[2vh] '>
