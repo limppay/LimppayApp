@@ -20,49 +20,100 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer id="contatos" className="text-ter px-4 py-6 md:px-10 ">
+    <footer id="contatos" className="bg-gray-50 text-gray-800 px-4 py-8 md:px-12 md:py-10">
+      <div className="max-w-7xl mx-auto">
+        {/* Grid principal */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Contato */}
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">Contato</h3>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-700">Telefone: (92) 9264-8251</p>
+              <p className="text-sm text-gray-700">Email: contato@limppay.com</p>
+            </div>
+            <div className="flex gap-4 mt-4">
+              <a href="https://www.instagram.com/limppay/" target="_blank" rel="noreferrer" className="hover:opacity-80 transition">
+                <img src={Instagram} alt="Instagram" className="w-6 h-6 md:w-7 md:h-7" />
+              </a>
+              <a
+                href="https://www.tiktok.com/@limppay?_r=1&_t=8mNAYb1j6xR&utm_campaign=avaliacoes_dos_clientes_part2&utm_medium=email&utm_source=RD+Station"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:opacity-80 transition"
+              >
+                <img src={TikTok} alt="TikTok" className="w-6 h-6 md:w-7 md:h-7" />
+              </a>
+              <a href="https://www.linkedin.com/company/limppay" target="_blank" rel="noreferrer" className="hover:opacity-80 transition">
+                <img src={Linkedin} alt="LinkedIn" className="w-6 h-6 md:w-7 md:h-7" />
+              </a>
+              <a href="http://www.youtube.com/@limppay2445" target="_blank" rel="noreferrer" className="hover:opacity-80 transition">
+                <img src={YouTube} alt="YouTube" className="w-6 h-6 md:w-7 md:h-7" />
+              </a>
+            </div>
+          </div>
 
-      {/* Contato e Endereço */}
-      <div className="flex flex-col-reverse md:flex-row justify-between items-start md:items-center gap-8">
-        {/* Contato */}
-        <div className="flex flex-col md:w-6/12">
-          <h3 className="text-lg font-semibold mb-2 text-gray-800">Contato</h3>
-          <p className="text-gray-700 text-sm">Telefone: (92) 9264-8251</p>
-          <p className="text-gray-700 text-sm">Email: contato@limppay.com</p>
-          <div className="flex gap-4 items-center justify-start mt-4">
-            <a href="https://www.instagram.com/limppay/" target="_blank" rel="noreferrer">
-              <img src={Instagram} alt="instagram" className="w-6 h-6 md:w-8 md:h-8" />
-            </a>
-            <a
-              href="https://www.tiktok.com/@limppay?_r=1&_t=8mNAYb1j6xR&utm_campaign=avaliacoes_dos_clientes_part2&utm_medium=email&utm_source=RD+Station"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <img src={TikTok} alt="tiktok" className="w-6 h-6 md:w-8 md:h-8" />
-            </a>
-            <a href="https://www.linkedin.com/company/limppay" target="_blank" rel="noreferrer">
-              <img src={Linkedin} alt="linkedin" className="w-6 h-6 md:w-8 md:h-8" />
-            </a>
-            <a href="http://www.youtube.com/@limppay2445" target="_blank" rel="noreferrer">
-              <img src={YouTube} alt="youtube" className="w-6 h-6 md:w-8 md:h-8" />
-            </a>
+          {/* Links */}
+          <div className="space-y-3 md:flex md:flex-col md:items-center">
+            <ul className="flex flex-col items-start space-y-1">
+            <h3 className="text-lg font-semibold text-gray-800">Links úteis</h3>
+              <li>
+                <a
+                  href="/seja-diarista"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Seja Diarista
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/contrate-online"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Contrate Online
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/delete-account"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Excluir Conta
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/politica-de-cookies"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Política de Cookies
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Endereço */}
+          <div className="space-y-3 text-left md:text-right">
+            <h3 className="text-lg font-semibold text-gray-800">Endereço</h3>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-700">Avenida Rodrigo Otávio, nº 6488, Coroado</p>
+              <p className="text-sm text-gray-700">69080-005 Manaus-AM</p>
+            </div>
           </div>
         </div>
 
-        {/* Endereço */}
-        <div className="flex flex-col md:text-end  md:w-6/12">
-          <h3 className="text-lg font-semibold mb-2 text-gray-800">Endereço</h3>
-          <p className="text-gray-700 text-sm">Avenida Rodrigo Otávio, nº 6488, Coroado</p>
-          <p className="text-gray-700 text-sm">69080-005 Manaus-AM</p>
+        {/* Direitos reservados */}
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+          <p className="text-sm text-gray-600">© Limppay {year} – Todos os direitos reservados</p>
         </div>
-
       </div>
-
-      {/* Direitos reservados */}
-      <div className="text-center mt-6 pt-4">
-        <p className="text-sm text-gray-600">&copy; Limppay {year} – Todos os direitos reservados</p>
-      </div>
-
     </footer>
   );
 }

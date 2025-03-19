@@ -214,7 +214,10 @@ export default function Profile() {
                         </Button>
                     </div>
                 </div>
-
+                
+                <div className="pt-6 pr-5 text-end  flex sm:justify-end justify-center w-full">
+                    <p className='text-sm underline cursor-pointer text-error' onClick={()=> navigate("/delete-account") }>Solicitar exclusâo de conta</p>
+                </div>
                 
             </div>
             
