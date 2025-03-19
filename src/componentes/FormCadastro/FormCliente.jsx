@@ -391,7 +391,7 @@ export default function FormCliente() {
                             </Button>
 
                         )}
-                        <span className="text-prim">Foto de perfil</span>
+                        <span className="text-prim text-center">Foto de perfil  <br /> <span className="text-center text-sm">opcional</span> </span>
                         {errors.arquivoFoto && (
                             <span className="text-error opacity-75">{errors.arquivoFoto.message}</span>
                         )}
@@ -415,7 +415,7 @@ export default function FormCliente() {
 
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
                     <div className="flex gap-2 justify-between">
-                        <label htmlFor="Genero" className="text-prim">Gênero</label>
+                        <label htmlFor="Genero" className="text-prim">Gênero <span className="text-sm"> ( opcional ) </span> </label>
 
                         {genero === 'Outro' ? (
                             <>
@@ -582,7 +582,7 @@ export default function FormCliente() {
 
             <div>
                 <div className="mt-4 p-9 pt-0 pb-0 flex flex-col w-full">
-                    <label htmlFor="EstadoCivil" className="text-prim">Estado Civil</label>
+                    <label htmlFor="EstadoCivil" className="text-prim">Estado Civil <span className="text-sm"> ( opcional ) </span> </label>
                     <select  
                     id="EstadoCivil"
                     {...register("estadoCivil")}
