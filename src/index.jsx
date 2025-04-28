@@ -1,5 +1,4 @@
 import React, { Children } from 'react'
-import { StatusBar, Style } from '@capacitor/status-bar';
 
 // 1 - configurando o router
 import ReactDOM from 'react-dom/client'
@@ -92,20 +91,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-useEffect(() => {
-  const configureStatusBar = async () => {
-    try {
-      // Define o estilo da barra de status (Light para fundo claro, Dark para fundo escuro)
-      await StatusBar.setStyle({ style: Style.Light });
-      // Impede que a barra de status sobreponha o conteúdo
-      await StatusBar.setOverlaysWebView({ overlay: false });
-    } catch (error) {
-      console.error('Erro ao configurar StatusBar:', error);
-    }
-  };
-
-  configureStatusBar();
-}, []); // Array vazio garante que o efeito rode apenas uma vez, na montagem
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(

@@ -30,6 +30,9 @@ import BannerApp from '../../componentes/App/BannerApp';
 import BlockClient from '../../componentes/App/BlockClient';
 import Welcome from '../../componentes/App/Welcome';
 
+import { StatusBar, Style } from '@capacitor/status-bar';
+
+
 export default function ContrateOnline() {
     const { checkoutData, setCheckoutData } = useCheckout()
     const { setAgendamentoData } = useAgendamentoData()
@@ -295,6 +298,21 @@ export default function ContrateOnline() {
             <BlockClient/>
         )
     }
+
+    useEffect(() => {
+        const configureStatusBar = async () => {
+          try {
+            // Define o estilo da barra de status (Light para fundo claro, Dark para fundo escuro)
+            await StatusBar.setStyle({ style: Style.Light });
+            // Impede que a barra de status sobreponha o conteúdo
+            await StatusBar.setOverlaysWebView({ overlay: false });
+          } catch (error) {
+            console.error('Erro ao configurar StatusBar:', error);
+          }
+        };
+      
+        configureStatusBar();
+      }, []); // Array vazio garante que o efeito rode apenas uma vez, na montagem
 
     return (
         <>
