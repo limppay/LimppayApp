@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <!-- Define a cor da barra de status (branca) -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Cor da barra de status (branca) -->
         <item name="android:statusBarColor">#FFFFFF</item>
-        <!-- Garante que a barra de status não seja transparente -->
+        <!-- Desativa transparência da barra de status -->
         <item name="android:windowTranslucentStatus">false</item>
-        <!-- Opcional: Define a cor de fundo da janela -->
-        <item name="android:windowBackground">#FFFFFF</item>
-        <!-- Desativa o modo de tela cheia -->
+        <!-- Desativa transparência da barra de navegação -->
+        <item name="android:windowTranslucentNavigation">false</item>
+        <!-- Desativa modo de tela cheia -->
         <item name="android:windowFullscreen">false</item>
-
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <!-- Garante que o layout respeite as janelas do sistema -->
+        <item name="android:fitsSystemWindows">true</item>
+        <!-- Cor de fundo da janela -->
+        <item name="android:windowBackground">#FFFFFF</item>
+        <!-- Permite gerenciar a cor da barra de status -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
