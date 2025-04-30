@@ -306,6 +306,9 @@ export default function ContrateOnline() {
             await StatusBar.setStyle({ style: Style.Light });
             // Impede que a barra de status sobreponha o conteúdo
             await StatusBar.setOverlaysWebView({ overlay: false });
+
+            console.log("Plugin do Capacitor iniciado com sucesso! ")
+
           } catch (error) {
             console.error('Erro ao configurar StatusBar:', error);
           }
