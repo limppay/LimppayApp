@@ -4,11 +4,14 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { obterTokenCartao } from '../../services/iuguApi'
-import { createAgendamento, criarFaturaCartao, removeCheckout } from '../../services/api'
+import { createAgendamento,  criarFaturaCartao, removeCheckout } from '../../services/api'
 import { Button } from '@nextui-org/button'
 import { useCheckout } from '../../context/CheckoutData'
+import { useNavigate } from 'react-router-dom';
 
-export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPaymentFailed, metodoPagamento, checkoutData, calcularDataValidade, user}) {
+export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPaymentFailed, metodoPagamento, checkoutData, calcularDataValidade, user, setMessage, setDetails}) {
+
+    const navigate = useNavigate();
 
     const { setCheckoutData, setStatus, setInvoiceId, setCodePix, setKeyPix, } = useCheckout()
 
@@ -40,6 +43,8 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
 
     
     const handleFinalizarCompra = async (data) => {
+        setMessage(null)
+        setDetails(null)
         setIsPayment(true);
         setIsPaymentFinally(false);
         setIsPaymentFailed(false);
@@ -52,73 +57,69 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                 throw new Error("Falha ao gerar o token do cartão. Tente novamente.");
             }
 
-            if (metodoPagamento === 'credit_card') {
-                // Criar fatura
-                const response = await criarFaturaCartao({
-                    email: user.email,
-                    items: [
-                        {
-                            description: "Fatura do seu agendamento na Limppay",
-                            quantity: checkoutData.length,
-                            price_cents: (checkoutData[0].valorLiquido / checkoutData.length) * 100,
-                        },
-                    ],
-                    payment_method: "credit_card",
-                    due_date: calcularDataValidade(2),
-                    payer: {
-                        name: data.nome,
-                        cpf_cnpj: user?.cpfCnpj,
+            // Criar fatura
+            const fatura = {
+                email: user.email,
+                items: [
+                    {
+                        description: "Fatura do seu agendamento na Limppay",
+                        quantity: checkoutData.length,
+                        price_cents: Math.round(checkoutData[0].valorLiquido / checkoutData.length) * 100,
                     },
-                    token,
-                    credit_card: {
-                        number: data.numero,
-                        verification_value: data.cvc,
-                        expiration_month: data.mesExpiracao,
-                        expiration_year: data.anoExpiracao,
-                        holder_name: data.nome,
-                    },
-                });
-                
+                ],
+                payment_method: "credit_card",
+                due_date: calcularDataValidade(2),
+                payer: {
+                    name: user?.name,
+                    cpf_cnpj: user?.cpfCnpj,
+                },
+                token,
+                credit_card: {
+                    number: data.numero,
+                    verification_value: data.cvc,
+                    expiration_month: data.mesExpiracao,
+                    expiration_year: data.anoExpiracao,
+                    holder_name: data.nome,
+                },
+            }
+            
+            try {
+                const response = await createAgendamento(checkoutData, fatura)
+                console.log("Resposta ao tentar criar o agendamento", response)
 
-                // Criar agendamentos
-                const agendamentoPromises = checkoutData.map(agendamento => createAgendamento(agendamento));
-                
-                const agendamentoResults = await Promise.allSettled(agendamentoPromises);
-                
-                const errosDeAgendamento = agendamentoResults.filter(result => result.status === "rejected");
-                
-                if (errosDeAgendamento.length > 0) {
-                    console.error("Alguns agendamentos falharam:", errosDeAgendamento);
-                    
-                    // Notificar suporte (opcional: enviar para API de log/suporte)
-                    await notificarSuporte({
-                        userId: user.id,
-                        email: user.email,
-                        erro: "Falha ao criar agendamentos após o pagamento.",
-                        detalhes: errosDeAgendamento,
-                    });
-
-                    // Informar o usuário
-                    alert("Pagamento realizado com sucesso, mas houve falha ao criar alguns agendamentos. Nossa equipe já foi notificada e resolveremos o problema.");
-                } else {
-                    try {
-                        const response = await removeCheckout()
-                        setStatus(null)
-                        setInvoiceId(null)
-                        setCodePix(null)
-                        setKeyPix(null)
-                        
-                    } catch (error) {
-                        console.log(error)
-                        
-                    }
-
+                if(!response?.success && !response?.data?.disponivel) {
+                    setIsPaymentFinally(true)
+                    setIsPaymentFailed(true)
+                    setMessage(response?.message)
+                    setDetails(response?.details)
                 }
 
-                reset()
-                setIsPaymentFinally(true)
-                setIsPaymentFailed(false)
+                if(response?.success) {
+                    setIsPaymentFinally(true)
+                    setIsPaymentFailed(false)
+                    reset()
+                    setStatus(null)
+                    setInvoiceId(null)
+                    setCodePix(null)
+                    setKeyPix(null)
+                    navigate('/sucesso')
+
+                } else if (!response?.success && !response?.data?.pagamento) {
+                    setIsPaymentFinally(true)
+                    setIsPaymentFailed(true)
+
+                } else if (!response?.success && response?.data?.pagamento && !response?.data?.agendamentos) {
+                    setIsPaymentFinally(true)
+                    setIsPaymentFailed(false)
+                    
+                } 
+
+            } catch (error) {
+                console.log("Erro ao criar agendamento", error.response.data)
+
             }
+
+
         } catch (error) {
             console.error("Erro no pagamento ou criação da fatura:", error);
             setIsPaymentFinally(true)

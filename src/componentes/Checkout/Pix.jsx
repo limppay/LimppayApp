@@ -6,14 +6,16 @@ import React, { useEffect, useState } from 'react'
 import { criarFaturaPix, paymentCheckoutPix, removeCheckout, verifyCheckout } from '../../services/api'
 import io from 'socket.io-client';
 import { useCheckout } from '../../context/CheckoutData'
+import { useNavigate } from 'react-router-dom';
 
-export default function Pix({calcularDataValidade, user, checkoutData, metodoPagamento, setPaymentStatus, paymentStatus}) {
+export default function Pix({calcularDataValidade, user, checkoutData, metodoPagamento, setPaymentStatus, paymentStatus, setIsPayment, setIsPaymentFailed, setIsPaymentFinally}) {
     const { isLoadingCheckout, sessionCode, status, setInvoiceId, setCodePix, setKeyPix, fetchCheckoutData } = useCheckout()
 
     const [qrCodePix, setQrCodePix] = useState('');  // Estado para armazenar o QR Code PIX
     const [pixChave, setPixChave] = useState('');    // Estado para armazenar a chave PIX
     const [isLoading, setIsLoading] = useState(false)
     const [ loading, setloandig ] = useState(false)
+    const navigate = useNavigate();
 
     console.log("Status do checkout: ", status)
 
@@ -43,7 +45,7 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
                 {
                     "description": "Fatura do seu Pedido",
                     "quantity": checkoutData.length,
-                    "price_cents": (checkoutData[0].valorLiquido / checkoutData.length) * 100
+                    "price_cents": Math.round(checkoutData[0].valorLiquido / checkoutData.length) * 100
                 }
                 ],
                 payer: {
@@ -109,10 +111,18 @@ export default function Pix({calcularDataValidade, user, checkoutData, metodoPag
     
         // Escutar eventos do status de pagamento
         socket.on('payment_status', async (data) => {
+            setIsPayment(true)
+
             if (data.status === 'paid') {
-                await fetchCheckoutData()
+                // await removeCheckout()
+                setIsPaymentFinally(true)
+                setIsPaymentFailed(false)
+                navigate("/sucesso")
+                
 
             } else {
+                setIsPaymentFinally(true)
+                setIsPaymentFailed(true)
                 setPaymentStatus({ status: 'Falhou' });
                 alert("Pagamento falhou. Tente novamente ou contate o suporte.");
 
