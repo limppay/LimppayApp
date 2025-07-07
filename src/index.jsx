@@ -1,16 +1,12 @@
 import React, { Children } from 'react'
+
 // 1 - configurando o router
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider} from "react-router-dom"
 import { HelmetProvider } from "react-helmet-async";
 
 // 2 - Paginas
-import Home from './pages/home/index'
-import DiaristaApp from './pages/seja-diarista/diarista-app'
-import DiaristaCadastro from './pages/diarista-cadastro/diarista-cadastro-app'
 import Error404 from './Error404'
-import DaristaLogin from './pages/diarista-login/diarista-login'
-import AreaDiarista from './pages/area-diarista/area-diarista'
 import ResetPassword from './pages/diarista-login/reset-password'
 import RequestResetPassword from './pages/diarista-login/request-reset-password'
 import ResetPasswordCliente from './pages/cliente-login/reset-password'
@@ -41,24 +37,8 @@ import Sucesso from './componentes/Checkout/Sucesso';
 const router = createBrowserRouter([
     {
       path: "/",
-      element: <Home/>,
+      element: <ContrateOnline/>,
       errorElement: <Error404/>
-    },
-    {
-      path: "seja-diarista",
-      element: <DiaristaApp/>
-    },
-    {
-      path: "cadastro-diarista",
-      element: <DiaristaCadastro/>
-    },
-    {
-      path: "diarista-login",
-      element: <DaristaLogin/>
-    },
-    {
-      path: "request-reset-password-user",
-      element: <RequestResetPassword/>
     },
     {
       path:"reset-password",
@@ -68,15 +48,7 @@ const router = createBrowserRouter([
       path: "request-reset-password-cliente",
       element: <RequestResetPasswordCliente/>
     },
-    {
-      path: "area-diarista",
-      element: (
-        <WebSocketProvider>
-          <AreaDiarista/>
-        </WebSocketProvider>
-      )
 
-    },
     {
       path: "contrate-online",
       element: <ContrateOnline/>
@@ -123,6 +95,7 @@ if ('serviceWorker' in navigator) {
       console.error('Erro ao registrar Service Worker:', error);
     });
 }
+
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
