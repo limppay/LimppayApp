@@ -26,7 +26,8 @@ export default function Checkout() {
   const [isPaymentFinally, setIsPaymentFinally] = useState(false) // define se o pagamento foi finalizado
   const [isPaymentFailed, setIsPaymentFailed] = useState(false) // define se houve erro ou nao ao processar pagamento
   const [paymentStatus, setPaymentStatus] = useState(null);
-  
+  const [message, setMessage] = useState(null)
+  const [details, setDetails] = useState(null)
 
   function calcularDataValidade(diasParaVencer, dataInicial = new Date()) {
     const data = new Date(dataInicial); // Cria uma cópia da data inicial
@@ -99,45 +100,22 @@ export default function Checkout() {
           if (!sessionCode) return
 
           const response = await verifyCheckout(sessionCode); // Envia o sessionCode para a API
-
           console.log("Status do pedido: ", response?.data?.status)
-
 
           if (response?.data?.status === 'Pago') {
             console.log("Pedido pago com sucesso!");
             setIsPayment(true);
-
-            // Criar agendamentos
-            const agendamentoPromises = checkoutData.map(agendamento => createAgendamento(agendamento));
-            const agendamentoResults = await Promise.allSettled(agendamentoPromises);
-            const errosDeAgendamento = agendamentoResults.filter(result => result.status === "rejected");
-
-            if (errosDeAgendamento.length > 0) {
-              console.error("Alguns agendamentos falharam:", errosDeAgendamento);
-
-              // Notificar suporte (opcional: enviar para API de log/suporte)
-
-              // Informar o usuário
-              alert("Pagamento realizado com sucesso, mas houve falha ao criar alguns agendamentos. Nossa equipe já foi notificada e resolveremos o problema.");
-
-            } else {
-              try {
-                const response = await removeCheckout()
-                setPaymentStatus(null);
-                setStatus(null)
-                setInvoiceId(null)
-                setCodePix(null)
-                setKeyPix(null)
-                setIsPaymentFinally(true)
-
-              } catch (error) {
-                console.log(error)
-                  
-              }
-            }  
+            const response = await removeCheckout()
+            setPaymentStatus(null);
+            setStatus(null)
+            setInvoiceId(null)
+            setCodePix(null)
+            setKeyPix(null)
+            setIsPaymentFinally(true)
             
           } else {
             console.log("Pedido ainda não foi pago.");  
+            
           }
 
       } catch (error) {
@@ -151,6 +129,8 @@ export default function Checkout() {
     handleFinalizarCheckout();
 
   }, [sessionCode, checkoutData, isLoadingCheckout]);
+
+  console.log(message, details)
   
   return (
     <>
@@ -165,7 +145,7 @@ export default function Checkout() {
           ) : (
             <>
               <main className="relative sm:p-4 flex flex-col sm:flex-row lg:justify-between lg:pl-10 lg:pr-10 justify-center gap-5 sm:pb-25 ">
-                <div className='flex flex-col p-10 md:min-w-90vh]  md:max-w-[90vh]  min-w-[45vh] max-w-[45vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] 2xl:min-w-[100vh] 2xl:max-w-[100vh] lg:min-w-[100vh] lg:max-w-[100vh]  sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg  rounded-xl lg:min-h-[95vh] min-h-[90vh] '>
+                <div className='flex flex-col p-10 md:min-w-90vh]  md:max-w-[90vh]  min-w-[45vh] max-w-[45vh] 2xl:min-h-[90vh]  2xl:pt-[10vh] 2xl:min-w-[100vh] 2xl:max-w-[100vh] lg:min-w-[100vh] lg:max-w-[100vh]  sm:min-w-[80vh] sm:max-w-[80vh] shadow-lg pt-20 rounded-xl lg:min-h-[95vh] min-h-[90vh] '>
                   <div className="mb-6 flex flex-col">
                     <div className='pb-4' >
                       <h1 className='text-prim font-semibold text-lg 2xl:text-xl'>Método de pagamento</h1>
@@ -220,6 +200,8 @@ export default function Checkout() {
                         checkoutData={checkoutData}
                         metodoPagamento={metodoPagamento}
                         user={user}
+                        setMessage={setMessage}
+                        setDetails={setDetails}
                       />
                     </>
                   )}
@@ -232,6 +214,9 @@ export default function Checkout() {
                       metodoPagamento={metodoPagamento}
                       setPaymentStatus={setPaymentStatus}
                       paymentStatus={paymentStatus}
+                      setIsPayment={setIsPayment}
+                      setIsPaymentFailed={setIsPaymentFailed}
+                      setIsPaymentFinally={setIsPaymentFinally}
                     />
                   )}
                 </div>
@@ -366,6 +351,7 @@ export default function Checkout() {
                 </div> 
   
               </main>
+              <Footer/>
   
               <Dialog open={isPayment} onClose={() => {}} className="relative z-10">
                 <DialogBackdrop
@@ -393,8 +379,8 @@ export default function Checkout() {
                                 </div>
                                 <div className='text-center'>
                                   <p className='text-error'>｡•́︿•̀｡</p>
-                                  <h2 className='text-error font-semibold text-xl'>Falha ao processar pagamento</h2>
-                                  <p className='text-prim text-sm' >Não foi possível realizar o pagamento, tente novamente mais tarde ou entre em contato com o seu banco.</p>
+                                  <h2 className='text-error font-semibold text-xl'>{message ? message : "Falha ao processar pagamento"} </h2>
+                                  <p className='text-prim text-sm' >{details ? details : "Não foi possível realizar o pagamento, tente novamente mais tarde ou entre em contato com o seu banco." }</p>
                                 </div>
                                 <div>
                                   <Button className='bg-white text-error border border-error' onPress={() => setIsPayment(false)}>
