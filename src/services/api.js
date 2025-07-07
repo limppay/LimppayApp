@@ -311,15 +311,18 @@ export const CreateEnderecosCliente = async (enderecoData) => {
   }
 };
 
-export const createAgendamento = async (agendamentoData) => {
+export const createAgendamento = async (agendamentoData, dadosCartao) => {
   try {
-    const response = await api.post('/agendamentos', agendamentoData)
+    const response = await api.post('/agendamentos', {
+      agendamentosDto: agendamentoData,
+      dadosFatura: dadosCartao
+    })
     
     return response.data;
   } catch (error) {
     const errorMessage = error.response?.data?.message || 'Problema de conexão, tente novamente mais tarde'
 
-    throw new Error(errorMessage)
+    return error.response?.data
   }
 };
 
@@ -599,8 +602,19 @@ export const paymentCheckoutPix = async (invoiceId, qrCodePix, keyPix) => {
   }
 }
 
+export const paymentPixPaid = async () => {
+  try {
+    const response = await api.get(`/checkout-data/payment/pix/paid`)
 
-export const verifyCheckout = async () => {
+    return response
+  } catch (error) {
+    console.error(error.response?.data.message || error.message);
+    return error.response; // Retornar false em caso de erro
+  }
+}
+
+
+export const  verifyCheckout = async () => {
   try {
     const response = await api.post(`/checkout-data/verify`)
 
@@ -734,6 +748,19 @@ export const cancelarAgendamento = async (id) => {
   }
 
 }
+
+export const regiosPermitidas = async () => {
+  try {
+    const response = await api.get(`/regioes`);
+    return response.data; 
+    
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Problemas de conexão, tente novamente mais tarde';
+    throw new Error(errorMessage);
+  }
+
+}
+
 
 export default api;
 

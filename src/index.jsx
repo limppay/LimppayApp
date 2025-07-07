@@ -1,5 +1,4 @@
 import React, { Children } from 'react'
-
 // 1 - configurando o router
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider} from "react-router-dom"
@@ -34,14 +33,32 @@ import { ScreenSelect } from './context/ScreenSelect'
 import { CheckoutProvider } from './context/CheckoutData';
 import { WebSocketProvider } from './context/WebSocketContext';
 import { PrestadorProvider } from './context/PrestadorProvider';
+import DeleteAccountPage from './pages/RequestDelete/DeleteAccountPage';
+import Sucesso from './componentes/Checkout/Sucesso';
 
 // 3 - rotas
 
 const router = createBrowserRouter([
     {
       path: "/",
-      element: <ContrateOnline/>,
+      element: <Home/>,
       errorElement: <Error404/>
+    },
+    {
+      path: "seja-diarista",
+      element: <DiaristaApp/>
+    },
+    {
+      path: "cadastro-diarista",
+      element: <DiaristaCadastro/>
+    },
+    {
+      path: "diarista-login",
+      element: <DaristaLogin/>
+    },
+    {
+      path: "request-reset-password-user",
+      element: <RequestResetPassword/>
     },
     {
       path:"reset-password",
@@ -51,7 +68,15 @@ const router = createBrowserRouter([
       path: "request-reset-password-cliente",
       element: <RequestResetPasswordCliente/>
     },
+    {
+      path: "area-diarista",
+      element: (
+        <WebSocketProvider>
+          <AreaDiarista/>
+        </WebSocketProvider>
+      )
 
+    },
     {
       path: "contrate-online",
       element: <ContrateOnline/>
@@ -75,8 +100,16 @@ const router = createBrowserRouter([
       element: <Checkout/>
     },
     {
+      path: "sucesso",
+      element: <Sucesso/>
+    },
+    {
       path: "politica-de-cookies",
       element: <CookiePolicy/>
+    },
+    {
+      path: "delete-account",
+      element: <DeleteAccountPage/>
     }
 ])
 
@@ -90,7 +123,6 @@ if ('serviceWorker' in navigator) {
       console.error('Erro ao registrar Service Worker:', error);
     });
 }
-
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(

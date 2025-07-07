@@ -26,7 +26,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
     
     const schemaDadosCartao = yup.object({
         numero: yup.number("Número do cartão é obrigatório.").required("Número do cartão é obrigatório.").typeError("Número do cartão dever ser um número válido."),
-        cvc: yup.number().required("Código de segurança é obrigatório."),
+        cvc: yup.string().required("Código de segurança é obrigatório."),
         mesExpiracao: yup.number("somente numeros").required("Mês de expiração é obrigatório."),
         anoExpiracao: yup.number("somente numeros").required("Ano de expiração é obrigatório"),
         nome: yup.string().required("Nome é obrigatório.").trim()
@@ -45,6 +45,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
     const handleFinalizarCompra = async (data) => {
         setMessage(null)
         setDetails(null)
+
         setIsPayment(true);
         setIsPaymentFinally(false);
         setIsPaymentFailed(false);
@@ -124,6 +125,7 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
             console.error("Erro no pagamento ou criação da fatura:", error);
             setIsPaymentFinally(true)
             setIsPaymentFailed(true);
+            
         }
         
     };
@@ -245,10 +247,11 @@ export default function Credit_Card({setIsPayment, setIsPaymentFinally, setIsPay
                         <span className="text-error opacity-75">*</span>}
                         </div>
                         <input
-                        maxLength="4"
-                        placeholder="123"
-                        className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
-                        {...registerWithOnChange("cvc")}
+                            type='text'
+                            maxLength="4"
+                            placeholder="123"
+                            className="w-full p-2 border border-bord rounded-md text-prim focus:outline-prim "
+                            {...registerWithOnChange("cvc")}
                         />
                         
                     </div>
